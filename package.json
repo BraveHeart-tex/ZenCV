@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "lint-staged": {
-    "*.{js,ts,json,cjs,mjs,md,css,tsx,jsx}": [
+    "*.{js,ts,json,cjs,mjs,md,css,tsx,jsx,json}": [
       "prettier --write",
       "eslint ."
     ]
@@ -17,14 +17,20 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.471.0",
     "next": "15.1.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@eslint/compat": "^1.2.3",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/compat": "^1.2.3",
     "@next/eslint-plugin-next": "^15.1.4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -25,4 +25,10 @@ export default ts.config(
   ...compat.extends('plugin:@typescript-eslint/recommended'),
   ...compat.extends('next/core-web-vitals'),
   ...compat.extends('prettier'),
+  {
+    rules: {
+      'no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': 'warn',
+    },
+  },
 );
