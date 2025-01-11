@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "lint-staged": {
-    "*.{js,ts,json,cjs,mjs,md,css, svelte}": [
+    "*.{js,ts,json,cjs,mjs,md,css,tsx,jsx}": [
       "prettier --write",
       "eslint ."
     ]
