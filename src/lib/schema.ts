@@ -28,19 +28,27 @@ export interface Item {
   displayOrder: number;
 }
 
-type FieldType = 'string' | 'date-month' | 'select';
-
-export interface Field {
+interface BaseFieldProps {
   id: IdType;
   itemId: IdType;
   name: string;
-  type: FieldType;
-  value: 'string';
-  options?: FieldOption[];
 }
 
-interface FieldOption {
-  placeholder: string;
-  options: string[];
-  selectType: 'basic' | 'level';
+interface StringField extends BaseFieldProps {
+  type: 'string';
+  value: string;
 }
+
+interface DateMonthField extends BaseFieldProps {
+  type: 'date-month';
+  value: string;
+}
+
+interface SelectField extends BaseFieldProps {
+  type: 'select';
+  selectType: 'basic' | 'level';
+  value: string;
+  options: string[];
+}
+
+export type Field = StringField | DateMonthField | SelectField;
