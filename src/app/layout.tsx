@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,7 +37,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <ConfirmDialog />
         </ThemeProvider>
+
         <Toaster />
       </body>
     </html>

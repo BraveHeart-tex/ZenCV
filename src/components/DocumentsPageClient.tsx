@@ -2,6 +2,7 @@
 import { db } from '@/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import CreateDocumentPopover from './CreateDocumentPopover';
+import DocumentCard from './document-card';
 
 const DocumentsPageClient = () => {
   const documentsObservable = useLiveQuery(() => db.documents.toArray());
@@ -23,9 +24,9 @@ const DocumentsPageClient = () => {
   }
 
   return (
-    <div>
+    <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
       {documentsObservable?.map((document) => (
-        <div key={document.id}>{document.title}</div>
+        <DocumentCard key={document.id} document={document} />
       ))}
     </div>
   );

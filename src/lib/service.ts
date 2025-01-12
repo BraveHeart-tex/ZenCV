@@ -10,3 +10,7 @@ export const createDocument = async (
 export const renameDocument = (documentId: Document['id'], title: string) => {
   return db.documents.update(documentId, { title });
 };
+
+export const deleteDocument = async (documentId: Document['id']) => {
+  return await db.documents.delete(documentId);
+};
