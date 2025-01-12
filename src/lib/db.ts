@@ -16,9 +16,12 @@ db.version(1).stores({
   fields: '++id, itemId, name, type, value, selectType, options',
 });
 
-db.documents.hook('updating', (_mods, _primKey, obj) => {
-  obj.updatedAt = new Date().toISOString();
-  return obj;
+db.documents.hook('updating', (modifications, _primKey, object) => {
+  return {
+    ...object,
+    ...modifications,
+    updatedAt: new Date().toISOString(),
+  };
 });
 
 db.documents.hook('creating', (_, obj) => {

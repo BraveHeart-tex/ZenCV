@@ -7,8 +7,11 @@ export const createDocument = async (
   return await db.documents.add(data as Document);
 };
 
-export const renameDocument = (documentId: Document['id'], title: string) => {
-  return db.documents.update(documentId, { title });
+export const renameDocument = async (
+  documentId: Document['id'],
+  title: string,
+) => {
+  return await db.documents.update(documentId, { title });
 };
 
 export const deleteDocument = async (documentId: Document['id']) => {

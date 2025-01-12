@@ -12,8 +12,11 @@ import { Button } from './ui/button';
 import { confirmDialogStore } from '@/lib/confirmDialogStore';
 import { deleteDocument } from '@/lib/service';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
+import RenameDocumentDialog from './RenameDocumentDialog';
+import { useState } from 'react';
 
 const DocumentCard = ({ document }: { document: Document }) => {
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const handleDelete = () => {
     confirmDialogStore.showDialog({
       title: 'Delete Document',
@@ -48,9 +51,7 @@ const DocumentCard = ({ document }: { document: Document }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem
-            // onSelect={() => setIsRenameDialogOpen(true)}
-            >
+            <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
               <Pencil className="w-4 h-4 mr-2" />
               Rename
             </DropdownMenuItem>
@@ -66,28 +67,11 @@ const DocumentCard = ({ document }: { document: Document }) => {
           Updated {new Date(document.updatedAt).toLocaleString()}
         </p>
       </CardContent>
-      {/* <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">
-              Rename Document
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <Input
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Enter new title"
-              className="col-span-3"
-            />
-          </div>
-          <DialogFooter>
-            <Button onClick={handleRename} className="sm:w-auto w-full">
-              Rename
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
+      <RenameDocumentDialog
+        document={document}
+        isOpen={isRenameDialogOpen}
+        onOpenChange={setIsRenameDialogOpen}
+      />
     </Card>
   );
 };

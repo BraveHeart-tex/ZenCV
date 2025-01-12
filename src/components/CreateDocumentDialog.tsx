@@ -6,6 +6,7 @@ import { showErrorToast, showSuccessToast } from './ui/sonner';
 import { createDocument } from '@/lib/service';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -77,7 +78,12 @@ const CreateDocumentDialog = () => {
               required
             />
           </div>
-          <Button type="submit">Create</Button>
+          <div className="flex items-center justify-end gap-2">
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button type="submit">Create</Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>
