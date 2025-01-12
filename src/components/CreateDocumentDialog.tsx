@@ -12,8 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
+import { useRouter } from 'next/navigation';
 
 const CreateDocumentDialog = () => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const input = useRef<HTMLInputElement>(null);
@@ -37,6 +39,7 @@ const CreateDocumentDialog = () => {
         return;
       }
 
+      router.push(`/documents/${documentId}`);
       showSuccessToast('Document created successfully.');
       setName('');
       setOpen(false);
