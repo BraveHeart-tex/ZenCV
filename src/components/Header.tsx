@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { FileUser, MoonIcon, SunIcon } from 'lucide-react';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { Icons } from './icons';
@@ -49,7 +49,14 @@ export default function Header() {
             <MoonIcon className="dark:rotate-0 dark:scale-100 absolute w-6 h-6 transition-all scale-0 rotate-90" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <Button>Get Started</Button>
+          <Link
+            href="/documents"
+            className={buttonVariants({
+              variant: 'default',
+            })}
+          >
+            Get Started
+          </Link>
         </div>
       </div>
     </header>
