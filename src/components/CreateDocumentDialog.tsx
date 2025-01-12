@@ -1,19 +1,28 @@
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { Button } from './ui/button';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
 import { createDocument } from '@/lib/service';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
 
-const CreateDocumentPopover = () => {
+const CreateDocumentDialog = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const input = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!name) {
+    if (!name.replaceAll(' ', '')) {
       showErrorToast('Please enter a name for the document.');
+      setName('');
+      input.current?.focus();
       return;
     }
 
@@ -29,6 +38,7 @@ const CreateDocumentPopover = () => {
 
       showSuccessToast('Document created successfully.');
       setName('');
+      setOpen(false);
     } catch (error) {
       showErrorToast('An error occurred while creating the document.');
       console.error(error);
@@ -36,7 +46,7 @@ const CreateDocumentPopover = () => {
   };
 
   return (
-    <Popover
+    <Dialog
       open={open}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
@@ -45,16 +55,20 @@ const CreateDocumentPopover = () => {
         setOpen(isOpen);
       }}
     >
-      <PopoverTrigger asChild>
+      <DialogTrigger asChild>
         <Button variant={open ? 'outline' : 'default'}>
           Create New Document
         </Button>
-      </PopoverTrigger>
-      <PopoverContent>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create new document</DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
+              ref={input}
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -65,8 +79,8 @@ const CreateDocumentPopover = () => {
           </div>
           <Button type="submit">Create</Button>
         </form>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 };
-export default CreateDocumentPopover;
+export default CreateDocumentDialog;

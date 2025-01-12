@@ -1,7 +1,7 @@
 'use client';
 import { db } from '@/lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
-import CreateDocumentPopover from './CreateDocumentPopover';
+import CreateDocumentDialog from './CreateDocumentDialog';
 import DocumentCard from './document-card';
 
 const DocumentsPageClient = () => {
@@ -18,7 +18,7 @@ const DocumentsPageClient = () => {
             Ready to get started? Click below to create your first document.
           </p>
         </div>
-        <CreateDocumentPopover />
+        <CreateDocumentDialog />
       </div>
     );
   }
