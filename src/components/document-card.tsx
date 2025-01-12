@@ -7,15 +7,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Trash } from 'lucide-react';
+import { FileSymlink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { Button } from './ui/button';
 import { confirmDialogStore } from '@/lib/confirmDialogStore';
 import { deleteDocument } from '@/lib/service';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const DocumentCard = ({ document }: { document: Document }) => {
+  const router = useRouter();
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const handleDelete = () => {
     confirmDialogStore.showDialog({
@@ -51,6 +53,12 @@ const DocumentCard = ({ document }: { document: Document }) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onSelect={() => router.push(`/builder/${document.id}`)}
+            >
+              <FileSymlink className="w-4 h-4 mr-2" />
+              Edit in CV Builder
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
               <Pencil className="w-4 h-4 mr-2" />
               Rename
