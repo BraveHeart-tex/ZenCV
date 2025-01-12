@@ -1,3 +1,4 @@
+import { APP_NAME } from '@/lib/appConfig';
 import { Icons } from './icons';
 
 export default function Footer() {
@@ -7,7 +8,7 @@ export default function Footer() {
         <div className="md:flex-row md:space-y-0 md:space-x-4 flex flex-col items-center space-y-4">
           <Icons.logo />
           <p className="md:text-left text-sm leading-loose text-center">
-            Built by OwnYourCV. The source code is available on{' '}
+            Built by {APP_NAME}. The source code is available on{' '}
             <a
               href="#"
               target="_blank"
