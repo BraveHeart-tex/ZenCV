@@ -46,7 +46,6 @@ const RenameDocumentDialog = ({
         return;
       }
 
-      setNewName('');
       showSuccessToast('Document renamed successfully.');
       onOpenChange(false);
     } catch (error) {

@@ -11,7 +11,7 @@ const DocumentsPageClient = () => {
     return (
       <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min flex flex-col justify-center items-center gap-4">
         <div className="flex flex-col gap-2">
-          <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight">
+          <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
             You don’t have any documents yet!
           </h2>
           <p className="text-muted-foreground">
