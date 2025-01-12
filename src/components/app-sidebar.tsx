@@ -6,12 +6,15 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { ModeToggle } from './mode-toggle';
 import Link from 'next/link';
+import { Icons } from './icons';
+import { APP_NAME } from '@/lib/appConfig';
 
 const items = [
   {
@@ -34,6 +37,20 @@ const items = [
 const AppSidebar = () => {
   return (
     <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
+              <Link href="/">
+                <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
+                  <Icons.logo />
+                </div>
+                <span className="font-semibold leading-none">{APP_NAME}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
