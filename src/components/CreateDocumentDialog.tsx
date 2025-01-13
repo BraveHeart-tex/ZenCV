@@ -39,7 +39,7 @@ const CreateDocumentDialog = () => {
         return;
       }
 
-      router.push(`/documents/${documentId}`);
+      router.push(`/builder/${documentId}`);
       showSuccessToast('Document created successfully.');
       setName('');
       setOpen(false);
