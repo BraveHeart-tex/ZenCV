@@ -16,7 +16,14 @@
     "lint": "next lint",
     "prepare": "husky"
   },
+  "resolutions": {
+    "@react-pdf/layout": "3.11.5",
+    "restructure": "3.0.0"
+  },
   "dependencies": {
+    "@react-pdf/renderer": "^4.1.2",
+    "react-pdf": "^9.1.0",
+    "react-pdf-html": "^2.0.4",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-dialog": "^1.1.4",
     "@radix-ui/react-dropdown-menu": "^2.1.4",
@@ -37,6 +44,7 @@
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-use": "^17.6.0",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
