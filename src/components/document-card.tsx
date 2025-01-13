@@ -19,6 +19,8 @@ import { useRouter } from 'next/navigation';
 const DocumentCard = ({ document }: { document: Document }) => {
   const router = useRouter();
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
   const handleDelete = () => {
     confirmDialogStore.showDialog({
       title: 'Delete Document',
@@ -37,57 +39,65 @@ const DocumentCard = ({ document }: { document: Document }) => {
   };
 
   return (
-    <Card className="bg-background border-border hover:border-border-hover w-full max-w-md transition-colors border">
-      <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
-        <CardTitle className="flex-1 mr-2 font-medium truncate">
-          {document.title}
-        </CardTitle>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground w-6 h-6 p-0"
-            >
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onSelect={() => router.push(`/builder/${document.id}`)}
-            >
-              <FileSymlink className="w-4 h-4 mr-2" />
-              Edit in CV Builder
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
-              <Pencil className="w-4 h-4 mr-2" />
-              Rename
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={handleDelete}>
-              <Trash className="w-4 h-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </CardHeader>
-      <CardContent className="p-3 pt-0">
-        <p className="text-muted-foreground text-sm font-medium">
-          Updated{' '}
-          {new Intl.DateTimeFormat(navigator.language, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          }).format(new Date(document.updatedAt))}
-        </p>
-      </CardContent>
+    <>
+      <Card
+        className="bg-background border-border hover:border-border-hover w-full max-w-md transition-colors border cursor-pointer"
+        onClick={() => {
+          if (isOpen) return;
+          router.push(`/builder/${document.id}`);
+        }}
+      >
+        <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
+          <CardTitle className="flex-1 mr-2 font-medium truncate">
+            {document.title}
+          </CardTitle>
+          <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="text-muted-foreground hover:text-foreground w-6 h-6 p-0"
+              >
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={() => router.push(`/builder/${document.id}`)}
+              >
+                <FileSymlink className="w-4 h-4 mr-2" />
+                Edit in CV Builder
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
+                <Pencil className="w-4 h-4 mr-2" />
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleDelete}>
+                <Trash className="w-4 h-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+        <CardContent className="p-3 pt-0">
+          <p className="text-muted-foreground text-sm font-medium">
+            Updated{' '}
+            {new Intl.DateTimeFormat(navigator.language, {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+            }).format(new Date(document.updatedAt))}
+          </p>
+        </CardContent>
+      </Card>
       <RenameDocumentDialog
         document={document}
         isOpen={isRenameDialogOpen}
         onOpenChange={setIsRenameDialogOpen}
       />
-    </Card>
+    </>
   );
 };
 
