@@ -72,7 +72,14 @@ const DocumentCard = ({ document }: { document: Document }) => {
       </CardHeader>
       <CardContent className="p-3 pt-0">
         <p className="text-muted-foreground text-sm font-medium">
-          Updated {new Date(document.updatedAt).toLocaleString()}
+          Updated{' '}
+          {new Intl.DateTimeFormat(navigator.language, {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+          }).format(new Date(document.updatedAt))}
         </p>
       </CardContent>
       <RenameDocumentDialog
