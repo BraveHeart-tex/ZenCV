@@ -70,6 +70,10 @@ class DocumentBuilderStore {
       this.document.title = newValue;
     });
   };
+
+  getSectionById = (sectionId: number) => {
+    return this.sections.find((section) => section.id === sectionId);
+  };
 }
 
 export const documentBuilderStore = new DocumentBuilderStore();

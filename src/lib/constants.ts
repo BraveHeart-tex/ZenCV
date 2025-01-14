@@ -14,7 +14,8 @@ export const INTERNAL_SECTION_TYPES = {
   LANGUAGES: 'languages',
 } as const;
 
-export type SectionType = keyof typeof INTERNAL_SECTION_TYPES;
+export type SectionType =
+  (typeof INTERNAL_SECTION_TYPES)[keyof typeof INTERNAL_SECTION_TYPES];
 
 export const DELETABLE_INTERNAL_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.CUSTOM,

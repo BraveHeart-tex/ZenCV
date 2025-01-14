@@ -1,93 +1,62 @@
 'use client';
 import { observer } from 'mobx-react-lite';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
-import { cn } from '@/lib/utils';
 import { action } from 'mobx';
-import { useRef, useEffect, useState, FormEvent } from 'react';
-
-const CHARACTER_LIMIT = 100;
+import { Input } from '@/components/ui/input';
+import { useEffect, useRef, useState } from 'react';
 
 const EditableDocumentTitle = observer(() => {
-  const [focused, setFocused] = useState(false);
   const documentTitle = documentBuilderStore.document?.title;
-  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  const [draftValue, setDraftValue] = useState(documentTitle || '');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const spanRef = useRef<HTMLSpanElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (
-      titleRef.current &&
-      documentTitle !== titleRef.current.textContent?.trim()
-    ) {
-      titleRef.current.textContent = documentTitle || '';
+    if (spanRef.current && containerRef.current) {
+      const PLACEHOLDER_OFFSET_PX = 26;
+      const spanWidth = spanRef.current.offsetWidth + PLACEHOLDER_OFFSET_PX;
+      containerRef.current.style.width = `${spanWidth}px`;
     }
-  }, [documentTitle]);
-
-  const handleInput = action(async (e: FormEvent<HTMLHeadingElement>) => {
-    let newTitle = e.currentTarget.textContent?.trim() || '';
-
-    if (!newTitle) {
-      e.currentTarget.innerHTML = '';
-    }
-
-    if (newTitle.length > CHARACTER_LIMIT) {
-      newTitle = newTitle.slice(0, CHARACTER_LIMIT);
-      e.currentTarget.textContent = newTitle;
-    }
-
-    await documentBuilderStore.renameDocument(newTitle);
-  });
+  }, [draftValue, documentTitle]);
 
   return (
-    <>
-      <style jsx>{`
-        [data-placeholder]:empty::before {
-          content: attr(data-placeholder);
-          color: hsl(var(--muted-foreground));
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-          text-align: center;
-          white-space: nowrap;
-        }
-      `}</style>
-      <h1
-        ref={titleRef}
-        className={cn(
-          'scroll-m-20 text-2xl font-semibold tracking-tight outline-none w-full text-center border-b border-transparent transition-all hover:bg-muted flex items-center justify-center',
-          focused && 'border-primary/70 hover:bg-transparent',
-        )}
-        onFocus={() => {
-          setFocused(true);
-        }}
-        onBlur={() => {
-          setFocused(false);
-        }}
-        contentEditable={true}
-        suppressContentEditableWarning={true}
-        onInput={handleInput}
-        onKeyDown={action((e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            e.currentTarget.blur();
-            setFocused(false);
-          } else if (e.key === 'Escape') {
-            e.currentTarget.textContent =
-              documentBuilderStore.document?.title || '';
-            e.currentTarget.blur();
-            setFocused(false);
-          } else if (e.key === 'Backspace') {
-            const element = e.currentTarget;
-            if (!element.textContent?.trim()) {
-              element.innerHTML = '';
-              e.preventDefault();
-            }
-          }
-        })}
-        data-placeholder="Enter document title..."
-        style={{ position: 'relative' }}
-      />
-    </>
+    <div className="flex items-center justify-center w-full gap-2">
+      <div className="flex items-center justify-center w-full !text-2xl font-semibold">
+        <div className="inline-block h-10" ref={containerRef}>
+          <span
+            ref={spanRef}
+            className="absolute !text-2xl font-semibold"
+            style={{
+              visibility: 'hidden',
+            }}
+          >
+            {draftValue || documentTitle}
+          </span>
+          <Input
+            ref={inputRef}
+            className="focus:outline-none focus-visible:ring-0 w-full p-0 overflow-visible !text-2xl font-semibold text-center bg-transparent border-0 rounded-none shadow-none"
+            placeholder={documentTitle}
+            value={draftValue || documentTitle}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                inputRef.current?.blur();
+                setDraftValue('');
+              }
+            }}
+            onChange={(e) => {
+              setDraftValue(e.target.value);
+            }}
+            onBlur={action(async () => {
+              if (!draftValue) return;
+              await documentBuilderStore.renameDocument(draftValue);
+              setDraftValue('');
+            })}
+          />
+        </div>
+      </div>
+    </div>
   );
 });
 
