@@ -91,6 +91,7 @@ class DocumentBuilderStore {
     const field = this.fields.find((field) => field.id === fieldId);
     if (!field) return;
     field.value = value;
+    // TODO: Debouncing this might be a good idea
     await updateField(field.id, value);
   };
 

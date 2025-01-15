@@ -15,7 +15,8 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
         'p-4 px-0',
         item.containerType === 'collapsible' && 'border rounded-md p-2',
         documentBuilderStore.getSectionById(item.sectionId)?.type ===
-          INTERNAL_SECTION_TYPES.PERSONAL_DETAILS && 'grid grid-cols-2 gap-4',
+          INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
+          'grid grid-cols-2 gap-x-4 gap-y-6',
       )}
     >
       {fields.map((field) => (
