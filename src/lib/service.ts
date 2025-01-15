@@ -1,5 +1,5 @@
 import { db } from './db';
-import { Document, Field, Item, SelectField } from './schema';
+import { Document, Field, Item, Section, SelectField } from './schema';
 import {
   getInitialDocumentInsertBoilerplate,
   isSelectField,
@@ -87,6 +87,13 @@ export const renameDocument = async (
   title: string,
 ) => {
   return db.documents.update(documentId, { title });
+};
+
+export const updateSection = async (
+  sectionId: number,
+  data: Partial<Omit<Section, 'id'>>,
+) => {
+  return db.sections.update(sectionId, data);
 };
 
 export const deleteDocument = async (documentId: Document['id']) => {

@@ -1,14 +1,13 @@
 import { action, runInAction, makeAutoObservable, observable } from 'mobx';
 import type { Document, Field, Item, Section } from '@/lib/schema';
 import { db } from '@/lib/db';
-import { renameDocument } from '@/lib/service';
+import { renameDocument, updateSection } from '@/lib/service';
 
 class DocumentBuilderStore {
   document: Document | null = null;
   sections: Section[] = [];
   items: Item[] = [];
   fields: Field[] = [];
-  private renameDebounceTimer: NodeJS.Timeout | null = null;
 
   constructor() {
     makeAutoObservable(this, {
@@ -18,6 +17,7 @@ class DocumentBuilderStore {
       fields: observable,
       initializeStore: action,
       renameDocument: action,
+      renameSection: action,
     });
   }
   initializeStore = async (documentId: number) => {
@@ -57,22 +57,22 @@ class DocumentBuilderStore {
   };
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
-    if (this.renameDebounceTimer) {
-      clearTimeout(this.renameDebounceTimer);
-    }
 
-    this.renameDebounceTimer = setTimeout(async () => {
-      await renameDocument(this.document!.id, newValue);
-    }, 300);
-
-    runInAction(() => {
-      if (!this.document) return;
-      this.document.title = newValue;
-    });
+    this.document.title = newValue;
+    await renameDocument(this.document!.id, newValue);
   };
 
   getSectionById = (sectionId: number) => {
     return this.sections.find((section) => section.id === sectionId);
+  };
+
+  renameSection = async (sectionId: number, value: string) => {
+    const section = this.sections.find((section) => section.id === sectionId);
+    if (!section) return;
+    section.title = value;
+    await updateSection(section.id, {
+      title: value,
+    });
   };
 }
 
