@@ -11,7 +11,7 @@ const DocumentSections = observer(() => {
   return (
     <>
       {sections.map((section) => (
-        <DocumentSection section={section} key={section.id} />
+        <DocumentSection sectionId={section.id} key={section.id} />
       ))}
     </>
   );
