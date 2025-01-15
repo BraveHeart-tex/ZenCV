@@ -15,6 +15,7 @@ import { showErrorToast, showSuccessToast } from './ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { action } from 'mobx';
 
 const DocumentCard = ({ document }: { document: Document }) => {
   const router = useRouter();
@@ -25,7 +26,7 @@ const DocumentCard = ({ document }: { document: Document }) => {
     confirmDialogStore.showDialog({
       title: 'Delete Document',
       message: 'Are you sure you want to delete this document?',
-      onConfirm: async () => {
+      onConfirm: action(async () => {
         try {
           await deleteDocument(document.id);
           showSuccessToast('Document deleted successfully.');
@@ -34,7 +35,7 @@ const DocumentCard = ({ document }: { document: Document }) => {
           showErrorToast('An error occurred while deleting the document.');
         }
         confirmDialogStore.hideDialog();
-      },
+      }),
     });
   };
 

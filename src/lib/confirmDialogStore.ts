@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 
 interface ShowDialogParams {
   message: string;
@@ -17,7 +17,10 @@ class ConfirmDialogStore {
   confirmText: string = 'Confirm';
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      showDialog: action,
+      hideDialog: action,
+    });
   }
 
   showDialog = ({
@@ -44,11 +47,6 @@ class ConfirmDialogStore {
       this.cancelText = 'Cancel';
       this.confirmText = 'Confirm';
     }, 300);
-  };
-
-  confirm = () => {
-    this.onConfirm?.();
-    this.hideDialog();
   };
 }
 

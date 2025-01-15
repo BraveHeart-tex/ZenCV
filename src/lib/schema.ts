@@ -39,16 +39,33 @@ interface StringField extends BaseFieldProps {
   value: string;
 }
 
+interface RichTextField extends BaseFieldProps {
+  type: 'rich-text';
+  value: 'string';
+}
+
 interface DateMonthField extends BaseFieldProps {
   type: 'date-month';
   value: string;
 }
 
-interface SelectField extends BaseFieldProps {
+export interface SelectField extends BaseFieldProps {
   type: 'select';
   selectType: 'basic' | 'level';
   value: string;
   options: string[];
 }
 
-export type Field = StringField | DateMonthField | SelectField;
+export const FIELD_TYPES = {
+  STRING: 'string',
+  RICH_TEXT: 'rich-text',
+  DATE_MONTH: 'date-month',
+  SELECT: 'select',
+} as const;
+
+export const CONTAINER_TYPES = {
+  STATIC: 'static',
+  COLLAPSIBLE: 'collapsible',
+} as const;
+
+export type Field = StringField | DateMonthField | SelectField | RichTextField;

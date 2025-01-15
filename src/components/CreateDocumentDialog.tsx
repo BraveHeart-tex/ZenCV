@@ -8,11 +8,13 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
 import { useRouter } from 'next/navigation';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const CreateDocumentDialog = () => {
   const router = useRouter();
@@ -67,6 +69,11 @@ const CreateDocumentDialog = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new document</DialogTitle>
+          <VisuallyHidden>
+            <DialogDescription>
+              Use the form below to create a new document
+            </DialogDescription>
+          </VisuallyHidden>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-2">
@@ -75,6 +82,7 @@ const CreateDocumentDialog = () => {
               ref={input}
               id="name"
               value={name}
+              type="text"
               onChange={(e) => setName(e.target.value)}
               minLength={1}
               aria-invalid={name ? 'false' : 'true'}
@@ -83,7 +91,12 @@ const CreateDocumentDialog = () => {
           </div>
           <div className="flex items-center justify-end gap-2">
             <DialogClose asChild>
-              <Button variant="outline">Cancel</Button>
+              <Button
+                variant="outline"
+                aria-label="Close create document dialog"
+              >
+                Cancel
+              </Button>
             </DialogClose>
             <Button type="submit">Create</Button>
           </div>

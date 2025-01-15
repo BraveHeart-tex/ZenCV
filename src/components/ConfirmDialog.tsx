@@ -10,34 +10,44 @@ import {
   DialogTitle,
 } from './ui/dialog';
 import { Button } from './ui/button';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { action } from 'mobx';
 
 const ConfirmDialog = observer(() => {
   const isOpen = confirmDialogStore.isOpen;
   const onClose = confirmDialogStore.hideDialog;
 
+  const descriptionContent = (
+    <DialogDescription className="text-muted-foreground mt-2">
+      {confirmDialogStore.message}
+    </DialogDescription>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={action(() => onClose())}>
       <DialogContent className="sm:max-w-[425px] bg-background border-border">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl font-semibold">
             {confirmDialogStore.title}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground mt-2">
-            {confirmDialogStore.message}
-          </DialogDescription>
+          {confirmDialogStore.message ? (
+            descriptionContent
+          ) : (
+            <VisuallyHidden>{descriptionContent}</VisuallyHidden>
+          )}
         </DialogHeader>
         <DialogFooter className="mt-6">
           <Button
             type="button"
             variant="outline"
-            onClick={onClose}
+            onClick={action(() => onClose())}
             className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             {confirmDialogStore.cancelText}
           </Button>
           <Button
             type="submit"
-            onClick={confirmDialogStore.onConfirm}
+            onClick={action(() => confirmDialogStore.onConfirm())}
             className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             {confirmDialogStore.confirmText}
