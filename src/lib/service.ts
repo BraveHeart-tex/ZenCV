@@ -96,6 +96,12 @@ export const updateSection = async (
   return db.sections.update(sectionId, data);
 };
 
+export const updateField = async (fieldId: number, value: string) => {
+  return db.fields.update(fieldId, {
+    value,
+  });
+};
+
 export const deleteDocument = async (documentId: Document['id']) => {
   return db.transaction(
     'rw',

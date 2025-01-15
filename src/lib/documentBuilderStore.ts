@@ -1,7 +1,7 @@
 import { action, runInAction, makeAutoObservable, observable } from 'mobx';
 import type { Document, Field, Item, Section } from '@/lib/schema';
 import { db } from '@/lib/db';
-import { renameDocument, updateSection } from '@/lib/service';
+import { renameDocument, updateField, updateSection } from '@/lib/service';
 
 class DocumentBuilderStore {
   document: Document | null = null;
@@ -18,6 +18,7 @@ class DocumentBuilderStore {
       initializeStore: action,
       renameDocument: action,
       renameSection: action,
+      setFieldValue: action,
     });
   }
   initializeStore = async (documentId: number) => {
@@ -86,10 +87,11 @@ class DocumentBuilderStore {
     return this.items.find((item) => item.id === itemId);
   };
 
-  setFieldValue = (fieldId: number, value: string) => {
+  setFieldValue = async (fieldId: number, value: string) => {
     const field = this.fields.find((field) => field.id === fieldId);
     if (!field) return;
     field.value = value;
+    await updateField(field.id, value);
   };
 
   renameSection = async (sectionId: number, value: string) => {
