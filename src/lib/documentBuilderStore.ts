@@ -48,7 +48,9 @@ class DocumentBuilderStore {
 
         runInAction(() => {
           this.document = document;
-          this.sections = sections;
+          this.sections = sections.sort(
+            (a, b) => a.displayOrder - b.displayOrder,
+          );
           this.fields = fields;
           this.items = items;
         });
@@ -67,11 +69,27 @@ class DocumentBuilderStore {
   };
 
   getItemsBySectionId = (sectionId: number) => {
-    return this.items.filter((item) => item.sectionId === sectionId);
+    return this.items
+      .filter((item) => item.sectionId === sectionId)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
   };
 
   getFieldsByItemId = (itemId: number) => {
     return this.fields.filter((field) => field.itemId === itemId);
+  };
+
+  getFieldById = (fieldId: number) => {
+    return this.fields.find((field) => field.id === fieldId);
+  };
+
+  getItemById = (itemId: number) => {
+    return this.items.find((item) => item.id === itemId);
+  };
+
+  setFieldValue = (fieldId: number, value: string) => {
+    const field = this.fields.find((field) => field.id === fieldId);
+    if (!field) return;
+    field.value = value;
   };
 
   renameSection = async (sectionId: number, value: string) => {
