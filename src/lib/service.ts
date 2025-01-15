@@ -37,7 +37,7 @@ export const createDocument = async (
         const sectionId = sectionInsertIds[sectionIndex];
         if (!sectionTemplate) return;
 
-        sectionTemplate.items.forEach((item, itemIndex) => {
+        sectionTemplate.items.forEach((item) => {
           itemInsertDtos.push({
             containerType: item.containerType || 'static',
             displayOrder: item.displayOrder,
@@ -47,7 +47,7 @@ export const createDocument = async (
           item.fields.forEach((field) => {
             if (isSelectField(field)) {
               (fieldInsertDtos as Omit<SelectField, 'id'>[]).push({
-                itemId: itemIndex,
+                itemId: sectionIndex,
                 name: field.name,
                 type: field.type,
                 selectType: field?.selectType || 'basic',
@@ -56,7 +56,7 @@ export const createDocument = async (
               });
             } else {
               fieldInsertDtos.push({
-                itemId: itemIndex,
+                itemId: sectionIndex,
                 name: field.name,
                 type: field.type,
                 value: field.value,

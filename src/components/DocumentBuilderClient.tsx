@@ -67,7 +67,7 @@ const DocumentBuilderClient = observer(
           <div className="max-w-screen-2xl flex items-center justify-center mx-auto">
             <DocumentBuilderHeader />
           </div>
-          <div className="max-w-screen-2xl grid gap-6 mx-auto">
+          <div className="max-w-screen-2xl grid gap-6 mx-auto mt-4">
             <DocumentSections />
           </div>
         </div>

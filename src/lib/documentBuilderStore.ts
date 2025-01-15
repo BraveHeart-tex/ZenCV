@@ -66,6 +66,14 @@ class DocumentBuilderStore {
     return this.sections.find((section) => section.id === sectionId);
   };
 
+  getItemsBySectionId = (sectionId: number) => {
+    return this.items.filter((item) => item.sectionId === sectionId);
+  };
+
+  getFieldsByItemId = (itemId: number) => {
+    return this.fields.filter((field) => field.itemId === itemId);
+  };
+
   renameSection = async (sectionId: number, value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
