@@ -107,16 +107,16 @@ export const getInitialDocumentInsertBoilerplate = (
               type: FIELD_TYPES.STRING,
             },
             {
+              name: 'Employer',
+              type: FIELD_TYPES.STRING,
+            },
+            {
               name: 'Start Date',
               type: FIELD_TYPES.DATE_MONTH,
             },
             {
               name: 'End Date',
               type: FIELD_TYPES.DATE_MONTH,
-            },
-            {
-              name: 'Employer',
-              type: FIELD_TYPES.STRING,
             },
             {
               name: 'City',

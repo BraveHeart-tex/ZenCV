@@ -7,6 +7,7 @@ import { action } from 'mobx';
 import { FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
 import { getFieldHtmlId } from '@/lib/helpers';
+import { cn } from '@/lib/utils';
 
 const SectionField = observer(({ fieldId }: { fieldId: number }) => {
   const field = documentBuilderStore.getFieldById(fieldId);
@@ -48,7 +49,16 @@ const SectionField = observer(({ fieldId }: { fieldId: number }) => {
     }
   };
 
-  return <div className="flex flex-col gap-1">{renderInput()}</div>;
+  return (
+    <div
+      className={cn(
+        'flex flex-col gap-2',
+        field.type === FIELD_TYPES.RICH_TEXT && 'col-span-2',
+      )}
+    >
+      {renderInput()}
+    </div>
+  );
 });
 
 export default SectionField;
