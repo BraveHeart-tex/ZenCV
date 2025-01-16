@@ -17,14 +17,20 @@ const SectionField = observer(({ fieldId }: { fieldId: number }) => {
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {
       return (
-        <Input
-          id={htmlInputId}
-          type="text"
-          value={field.value}
-          onChange={action(async (e) => {
-            await documentBuilderStore.setFieldValue(field.id, e.target.value);
-          })}
-        />
+        <>
+          <Label htmlFor={htmlInputId}>{field.name}</Label>
+          <Input
+            id={htmlInputId}
+            type="text"
+            value={field.value}
+            onChange={action(async (e) => {
+              await documentBuilderStore.setFieldValue(
+                field.id,
+                e.target.value,
+              );
+            })}
+          />
+        </>
       );
     }
 
@@ -41,12 +47,7 @@ const SectionField = observer(({ fieldId }: { fieldId: number }) => {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-1">
-      <Label htmlFor={htmlInputId}>{field.name}</Label>
-      {renderInput()}
-    </div>
-  );
+  return <div className="flex flex-col gap-1">{renderInput()}</div>;
 });
 
 export default SectionField;

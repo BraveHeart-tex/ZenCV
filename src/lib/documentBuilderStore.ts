@@ -87,11 +87,16 @@ class DocumentBuilderStore {
     return this.items.find((item) => item.id === itemId);
   };
 
-  setFieldValue = async (fieldId: number, value: string) => {
+  setFieldValue = async (
+    fieldId: number,
+    value: string,
+    shouldSaveToStore = true,
+  ) => {
     const field = this.fields.find((field) => field.id === fieldId);
     if (!field) return;
     field.value = value;
     // TODO: Debouncing this might be a good idea
+    if (!shouldSaveToStore) return;
     await updateField(field.id, value);
   };
 
