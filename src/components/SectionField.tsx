@@ -6,13 +6,14 @@ import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
 import { FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
+import { getFieldHtmlId } from '@/lib/helpers';
 
 const SectionField = observer(({ fieldId }: { fieldId: number }) => {
   const field = documentBuilderStore.getFieldById(fieldId);
 
   if (!field) return null;
 
-  const htmlInputId = `${field.itemId}-${field.name}`;
+  const htmlInputId = getFieldHtmlId(field);
 
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {

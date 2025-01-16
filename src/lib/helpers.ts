@@ -231,3 +231,7 @@ export const getInitialDocumentInsertBoilerplate = (
 export const isSelectField = (obj: { type: string }): obj is SelectField => {
   return obj?.type === FIELD_TYPES.SELECT;
 };
+
+export const getFieldHtmlId = (field: Field) => {
+  return `${field.itemId}-${field.name}`;
+};

@@ -34,12 +34,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { getFieldHtmlId } from '@/lib/helpers';
 
 const PRESENT = 'Present';
 
 const DateFieldInput = observer(({ fieldId }: { fieldId: number }) => {
   const field = documentBuilderStore.getFieldById(fieldId)!;
-  const htmlInputId = `${field.itemId}-${field.name}`;
+  const htmlInputId = getFieldHtmlId(field);
 
   const month = useMemo(() => {
     return field.value && field.value !== PRESENT
