@@ -277,6 +277,73 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
         },
       ].map((item) => ({ ...item, value: '' })),
     },
+    [INTERNAL_SECTION_TYPES.EDUCATION]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'School',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Degree',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Start Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'End Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'City',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Description',
+          type: FIELD_TYPES.RICH_TEXT,
+        },
+      ].map((item) => ({
+        ...item,
+        value: '',
+      })),
+    },
+    [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Label',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+        {
+          name: 'Link',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+      ],
+    },
+    [INTERNAL_SECTION_TYPES.SKILLS]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Skill',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+        {
+          name: 'Experience Level',
+          type: FIELD_TYPES.SELECT,
+          selectType: SELECT_TYPES.BASIC,
+          options: ['Beginner', 'Competent', 'Proficient', 'Expert'],
+          value: '',
+        } as Field,
+      ],
+    },
   };
 
   return templateMap[sectionType];
