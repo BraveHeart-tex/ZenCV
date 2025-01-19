@@ -12,6 +12,8 @@ import {
 import { Button } from './ui/button';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { action } from 'mobx';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const ConfirmDialog = observer(() => {
   const isOpen = confirmDialogStore.isOpen;
@@ -36,6 +38,7 @@ const ConfirmDialog = observer(() => {
             <VisuallyHidden>{descriptionContent}</VisuallyHidden>
           )}
         </DialogHeader>
+        <DoNotAskAgainCheckbox />
         <DialogFooter className="mt-6">
           <Button
             type="button"
@@ -55,6 +58,23 @@ const ConfirmDialog = observer(() => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+});
+
+const DoNotAskAgainCheckbox = observer(() => {
+  if (!confirmDialogStore.doNotAskAgainEnabled) return null;
+
+  return (
+    <div className="flex items-center space-x-2">
+      <Checkbox
+        id="doNotAskAgain"
+        checked={confirmDialogStore.doNotAskAgainChecked}
+        onCheckedChange={action((checked) => {
+          confirmDialogStore.handleDoNotAskAgainCheckedChange(!!checked);
+        })}
+      />
+      <Label htmlFor="doNotAskAgain">Do not ask again</Label>
+    </div>
   );
 });
 

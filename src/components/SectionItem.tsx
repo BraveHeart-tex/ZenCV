@@ -32,7 +32,7 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
           'p-4 px-0 grid grid-cols-2 gap-4',
           documentBuilderStore.getSectionById(item.sectionId)?.type ===
             INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
-            'grid grid-cols-2 gap-x-4 gap-y-6',
+            'grid md:grid-cols-2 gap-x-4 gap-y-6',
           fields.length === 2 && 'grid grid-cols-2 gap-4',
         )}
       >

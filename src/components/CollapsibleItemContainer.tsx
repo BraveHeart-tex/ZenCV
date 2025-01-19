@@ -38,6 +38,13 @@ import type React from 'react';
 import { useMedia } from 'react-use';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
+import { confirmDialogStore } from '@/lib/confirmDialogStore';
+import { action } from 'mobx';
+import { showSuccessToast } from '@/components/ui/sonner';
+import {
+  getDeleteConfirmationPreference,
+  setDeleteConfirmationPreference,
+} from '@/lib/userSettings';
 
 interface CollapsibleSectionItemContainerProps {
   // id: `${FIELD_DND_INDEX_PREFIX}-${number}`;
@@ -76,7 +83,35 @@ const CollapsibleSectionItemContainer = observer(
     const shouldShowDeleteButton = true;
     const shouldShowDragButton = true;
 
-    const handleDeleteItemClick = () => {};
+    const handleDeleteItemClick = action(async () => {
+      const shouldNotAskForConfirmation =
+        await getDeleteConfirmationPreference();
+
+      if (shouldNotAskForConfirmation) {
+        await documentBuilderStore.removeItem(itemId);
+        showSuccessToast('Entry deleted successfully.');
+        return;
+      }
+
+      confirmDialogStore.showDialog({
+        title: 'Are you sure you want to delete this entry?',
+        message: 'This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          const doNotAskAgainChecked = confirmDialogStore.doNotAskAgainChecked;
+          await documentBuilderStore.removeItem(itemId);
+          showSuccessToast('Entry deleted successfully.');
+
+          if (doNotAskAgainChecked !== undefined) {
+            await setDeleteConfirmationPreference(doNotAskAgainChecked);
+          }
+
+          confirmDialogStore.hideDialog();
+        },
+        doNotAskAgainEnabled: true,
+      });
+    });
 
     return (
       <div

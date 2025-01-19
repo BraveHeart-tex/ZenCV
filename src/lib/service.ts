@@ -130,3 +130,10 @@ export const deleteDocument = async (documentId: Document['id']) => {
     },
   );
 };
+
+export const deleteItem = async (itemId: number) => {
+  return db.transaction('rw', [db.items, db.fields], async () => {
+    await db.items.delete(itemId);
+    await db.fields.where('itemId').equals(itemId).delete();
+  });
+};

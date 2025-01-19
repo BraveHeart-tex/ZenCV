@@ -1,7 +1,12 @@
 import { action, runInAction, makeAutoObservable, observable } from 'mobx';
 import type { Document, Field, Item, Section } from '@/lib/schema';
 import { db } from '@/lib/db';
-import { renameDocument, updateField, updateSection } from '@/lib/service';
+import {
+  deleteItem,
+  renameDocument,
+  updateField,
+  updateSection,
+} from '@/lib/service';
 
 class DocumentBuilderStore {
   document: Document | null = null;
@@ -114,6 +119,12 @@ class DocumentBuilderStore {
 
   toggleItem = (itemId: number) => {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
+  };
+
+  removeItem = async (itemId: number) => {
+    await deleteItem(itemId);
+    this.items = this.items.filter((item) => item.id !== itemId);
+    this.fields = this.fields.filter((field) => field.itemId !== itemId);
   };
 }
 

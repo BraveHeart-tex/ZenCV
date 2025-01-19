@@ -6,6 +6,8 @@ interface ShowDialogParams {
   title: string;
   cancelText?: string;
   confirmText?: string;
+  doNotAskAgainEnabled?: boolean;
+  doNotAskAgainChecked?: boolean;
 }
 
 class ConfirmDialogStore {
@@ -15,6 +17,8 @@ class ConfirmDialogStore {
   onConfirm: () => void = () => {};
   cancelText: string = 'Cancel';
   confirmText: string = 'Confirm';
+  doNotAskAgainEnabled: boolean = false;
+  doNotAskAgainChecked: boolean = false;
 
   constructor() {
     makeAutoObservable(this, {
@@ -29,6 +33,8 @@ class ConfirmDialogStore {
     title,
     cancelText = 'Cancel',
     confirmText = 'Confirm',
+    doNotAskAgainChecked = false,
+    doNotAskAgainEnabled = false,
   }: ShowDialogParams) => {
     this.message = message;
     this.onConfirm = onConfirm;
@@ -36,6 +42,8 @@ class ConfirmDialogStore {
     this.isOpen = true;
     this.cancelText = cancelText;
     this.confirmText = confirmText;
+    this.doNotAskAgainChecked = doNotAskAgainChecked;
+    this.doNotAskAgainEnabled = doNotAskAgainEnabled;
   };
 
   hideDialog = () => {
@@ -46,7 +54,13 @@ class ConfirmDialogStore {
       this.title = 'Confirm';
       this.cancelText = 'Cancel';
       this.confirmText = 'Confirm';
+      this.doNotAskAgainEnabled = false;
+      this.doNotAskAgainChecked = false;
     }, 300);
+  };
+
+  handleDoNotAskAgainCheckedChange = (checked: boolean) => {
+    this.doNotAskAgainChecked = checked;
   };
 }
 
