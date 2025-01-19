@@ -1,4 +1,4 @@
-import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
+import { INTERNAL_SECTION_TYPES, SELECT_TYPES } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
   Field,
@@ -212,8 +212,8 @@ export const getInitialDocumentInsertBoilerplate = (
             },
             {
               name: 'Experience Level',
-              type: FIELD_TYPES.STRING,
-              selectType: 'basic',
+              type: FIELD_TYPES.SELECT,
+              selectType: SELECT_TYPES.BASIC,
               options: ['Beginner', 'Competent', 'Proficient', 'Expert'],
               value: '',
             },

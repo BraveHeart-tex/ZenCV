@@ -69,3 +69,9 @@ export const MONTHS = [
   'Nov',
   'Dec',
 ] as const;
+
+export const SELECT_TYPES = {
+  BASIC: 'basic',
+} as const;
+
+export type SelectType = (typeof SELECT_TYPES)[keyof typeof SELECT_TYPES];

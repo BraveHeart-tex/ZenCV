@@ -1,4 +1,4 @@
-import type { SectionType } from './constants';
+import type { SectionType, SelectType } from './constants';
 
 type IdType = number;
 
@@ -51,7 +51,7 @@ interface DateMonthField extends BaseFieldProps {
 
 export interface SelectField extends BaseFieldProps {
   type: 'select';
-  selectType: 'basic' | 'level';
+  selectType: SelectType;
   value: string;
   options: string[];
 }

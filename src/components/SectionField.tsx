@@ -8,6 +8,8 @@ import { FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
 import { getFieldHtmlId } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
+import DocumentBuilderSelectInput from '@/components/DocumentBuilderSelectInput';
+import { SELECT_TYPES } from '@/lib/constants';
 
 const SectionField = observer(({ fieldId }: { fieldId: number }) => {
   const field = documentBuilderStore.getFieldById(fieldId);
@@ -41,7 +43,9 @@ const SectionField = observer(({ fieldId }: { fieldId: number }) => {
     }
 
     if (field.type === FIELD_TYPES.SELECT) {
-      return 'select';
+      if (field.selectType === SELECT_TYPES.BASIC) {
+        return <DocumentBuilderSelectInput fieldId={fieldId} />;
+      }
     }
 
     if (field.type === FIELD_TYPES.RICH_TEXT) {
