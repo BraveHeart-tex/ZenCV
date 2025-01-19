@@ -153,6 +153,10 @@ class DocumentBuilderStore {
 
     this.items.push(item);
     this.fields.push(...fields);
+
+    setTimeout(() => {
+      this.toggleItem(item.id);
+    }, 100);
   };
 }
 
