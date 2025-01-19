@@ -282,7 +282,7 @@ const CollapsibleSectionItemContainer = observer(
                   {triggerDescription || '(Not Specified)'}
                 </SheetDescription>
               </SheetHeader>
-              <div className={cn('mt-4')}>{children}</div>
+              <div className={'mt-4 space-y-4'}>{children}</div>
               <SheetFooter className="mt-4">
                 <Button onClick={() => documentBuilderStore.toggleItem(itemId)}>
                   Done
