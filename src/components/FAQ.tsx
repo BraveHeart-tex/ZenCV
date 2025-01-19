@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { APP_NAME } from '@/lib/appConfig';
 
 const faqs = [
   {
@@ -12,9 +13,8 @@ const faqs = [
       'Our CV builder stores all your data locally on your device. This means your information never leaves your computer unless you choose to export it, ensuring maximum privacy and security.',
   },
   {
-    question: 'Can I use CVCraft offline?',
-    answer:
-      "Yes! Once you've loaded the application, you can use CVCraft without an internet connection. Your changes will be saved locally.",
+    question: `Can I use ${APP_NAME} offline?`,
+    answer: `Yes! Once you've loaded the application, you can use ${APP_NAME} without an internet connection. Your changes will be saved locally.`,
   },
   {
     question: 'What file formats can I download my CV in?',
