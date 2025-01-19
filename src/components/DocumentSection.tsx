@@ -4,6 +4,8 @@ import EditableSectionTitle from '@/components/EditableSectionTitle';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import SectionItem from '@/components/SectionItem';
 import SectionDescription from '@/components/SectionDescription';
+import { CONTAINER_TYPES } from '@/lib/schema';
+import AddNewItemButton from '@/components/AddNewItemButton';
 
 const DocumentSection = observer(({ sectionId }: { sectionId: number }) => {
   const items = documentBuilderStore.getItemsBySectionId(sectionId);
@@ -17,6 +19,9 @@ const DocumentSection = observer(({ sectionId }: { sectionId: number }) => {
       {items.map((item) => (
         <SectionItem itemId={item.id} key={item.id} />
       ))}
+      {items.every(
+        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE,
+      ) && <AddNewItemButton sectionId={sectionId} />}
     </section>
   );
 });

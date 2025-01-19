@@ -2,11 +2,13 @@ import { action, runInAction, makeAutoObservable, observable } from 'mobx';
 import type { Document, Field, Item, Section } from '@/lib/schema';
 import { db } from '@/lib/db';
 import {
+  addItemFromTemplate,
   deleteItem,
   renameDocument,
   updateField,
   updateSection,
 } from '@/lib/service';
+import { getItemInsertTemplate } from '@/lib/helpers';
 
 class DocumentBuilderStore {
   document: Document | null = null;
@@ -27,6 +29,7 @@ class DocumentBuilderStore {
       renameSection: action,
       setFieldValue: action,
       toggleItem: action,
+      addNewItemEntry: action,
     });
   }
   initializeStore = async (documentId: number) => {
@@ -125,6 +128,31 @@ class DocumentBuilderStore {
     await deleteItem(itemId);
     this.items = this.items.filter((item) => item.id !== itemId);
     this.fields = this.fields.filter((field) => field.itemId !== itemId);
+  };
+
+  addNewItemEntry = async (sectionId: number) => {
+    const section = this.getSectionById(sectionId);
+    if (!section) return;
+
+    const template = getItemInsertTemplate(section.type);
+    if (!template) return;
+
+    const result = await addItemFromTemplate({
+      ...template,
+      sectionId,
+      displayOrder: this.items.reduce(
+        (displayOrder, currentItem) =>
+          currentItem.displayOrder > displayOrder
+            ? currentItem.displayOrder
+            : displayOrder,
+        0,
+      ),
+    });
+
+    const { fields, item } = result;
+
+    this.items.push(item);
+    this.fields.push(...fields);
   };
 }
 

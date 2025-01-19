@@ -1,4 +1,8 @@
-import { INTERNAL_SECTION_TYPES, SELECT_TYPES } from '@/lib/constants';
+import {
+  INTERNAL_SECTION_TYPES,
+  SectionType,
+  SELECT_TYPES,
+} from '@/lib/constants';
 import {
   CONTAINER_TYPES,
   Field,
@@ -234,4 +238,46 @@ export const isSelectField = (obj: { type: string }): obj is SelectField => {
 
 export const getFieldHtmlId = (field: Field) => {
   return `${field.itemId}-${field.name}`;
+};
+
+export type ItemTemplateType = Omit<Item, 'id' | 'sectionId'> & {
+  fields: Omit<Field, 'id' | 'itemId'>[];
+};
+
+export const getItemInsertTemplate = (sectionType: SectionType) => {
+  // @ts-expect-error Other section types will be implemented as well
+  const templateMap: Record<SectionType, ItemTemplateType> = {
+    [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Job Title',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Employer',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Start Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'End Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'City',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Description',
+          type: FIELD_TYPES.RICH_TEXT,
+        },
+      ].map((item) => ({ ...item, value: '' })),
+    },
+  };
+
+  return templateMap[sectionType];
 };

@@ -137,3 +137,38 @@ export const deleteItem = async (itemId: number) => {
     await db.fields.where('itemId').equals(itemId).delete();
   });
 };
+
+export const addItemFromTemplate = async (
+  template: Omit<Item, 'id'> & { fields: Omit<Field, 'id' | 'itemId'>[] },
+): Promise<{ item: Item; fields: Field[] }> => {
+  return db.transaction('rw', [db.items, db.fields], async () => {
+    const itemId = await db.items.add({
+      sectionId: template.sectionId,
+      containerType: template.containerType,
+      displayOrder: template.displayOrder,
+    });
+
+    const fieldsPayload = template.fields.map((field) => ({
+      ...field,
+      itemId,
+    }));
+
+    const fieldIds = await db.fields.bulkAdd(fieldsPayload, {
+      allKeys: true,
+    });
+
+    return {
+      item: {
+        id: itemId,
+        sectionId: template.sectionId,
+        containerType: template.containerType,
+        displayOrder: template.displayOrder,
+      },
+      fields: fieldsPayload.map((field, index) => ({
+        ...field,
+        id: fieldIds[index],
+        itemId,
+      })) as Field[],
+    };
+  });
+};
