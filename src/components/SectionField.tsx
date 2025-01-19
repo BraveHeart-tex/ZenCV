@@ -11,58 +11,66 @@ import { cn } from '@/lib/utils';
 import DocumentBuilderSelectInput from '@/components/DocumentBuilderSelectInput';
 import { SELECT_TYPES } from '@/lib/constants';
 
-const SectionField = observer(({ fieldId }: { fieldId: number }) => {
-  const field = documentBuilderStore.getFieldById(fieldId);
+interface SectionFieldProps {
+  fieldId: number;
+  shouldAutoFocus?: boolean;
+}
 
-  if (!field) return null;
+const SectionField = observer(
+  ({ fieldId, shouldAutoFocus = false }: SectionFieldProps) => {
+    const field = documentBuilderStore.getFieldById(fieldId);
 
-  const htmlInputId = getFieldHtmlId(field);
+    if (!field) return null;
 
-  const renderInput = () => {
-    if (field.type === FIELD_TYPES.STRING) {
-      return (
-        <>
-          <Label htmlFor={htmlInputId}>{field.name}</Label>
-          <Input
-            id={htmlInputId}
-            type="text"
-            value={field.value}
-            onChange={action(async (e) => {
-              await documentBuilderStore.setFieldValue(
-                field.id,
-                e.target.value,
-              );
-            })}
-          />
-        </>
-      );
-    }
+    const htmlInputId = getFieldHtmlId(field);
 
-    if (field.type === FIELD_TYPES.DATE_MONTH) {
-      return <DateFieldInput fieldId={fieldId} />;
-    }
-
-    if (field.type === FIELD_TYPES.SELECT) {
-      if (field.selectType === SELECT_TYPES.BASIC) {
-        return <DocumentBuilderSelectInput fieldId={fieldId} />;
+    const renderInput = () => {
+      if (field.type === FIELD_TYPES.STRING) {
+        return (
+          <>
+            <Label htmlFor={htmlInputId}>{field.name}</Label>
+            <Input
+              autoFocus={shouldAutoFocus}
+              id={htmlInputId}
+              type="text"
+              value={field.value}
+              onChange={action(async (e) => {
+                await documentBuilderStore.setFieldValue(
+                  field.id,
+                  e.target.value,
+                );
+              })}
+            />
+          </>
+        );
       }
-    }
 
-    if (field.type === FIELD_TYPES.RICH_TEXT) {
-      return 'rich-text';
-    }
-  };
+      if (field.type === FIELD_TYPES.DATE_MONTH) {
+        return <DateFieldInput fieldId={fieldId} />;
+      }
 
-  return (
-    <div
-      className={cn(
-        'flex flex-col gap-2',
-        field.type === FIELD_TYPES.RICH_TEXT && 'col-span-2',
-      )}
-    >
-      {renderInput()}
-    </div>
-  );
-});
+      if (field.type === FIELD_TYPES.SELECT) {
+        if (field.selectType === SELECT_TYPES.BASIC) {
+          return <DocumentBuilderSelectInput fieldId={fieldId} />;
+        }
+      }
+
+      if (field.type === FIELD_TYPES.RICH_TEXT) {
+        return 'rich-text';
+      }
+    };
+
+    return (
+      <div
+        className={cn(
+          'flex flex-col gap-2',
+          field.type === FIELD_TYPES.RICH_TEXT && 'col-span-2',
+        )}
+      >
+        {renderInput()}
+      </div>
+    );
+  },
+);
 
 export default SectionField;

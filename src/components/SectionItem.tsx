@@ -63,7 +63,17 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
           return null;
         }
 
-        return <SectionField fieldId={field.id} key={field.id} />;
+        return (
+          <SectionField
+            fieldId={field.id}
+            key={field.id}
+            shouldAutoFocus={
+              index === 0 &&
+              item.containerType === CONTAINER_TYPES.COLLAPSIBLE &&
+              window.innerWidth > 768
+            }
+          />
+        );
       })}
     </ContainerElement>
   );
