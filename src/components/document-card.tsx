@@ -56,7 +56,7 @@ const DocumentCard = ({ document }: { document: Document }) => {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="text-muted-foreground hover:text-foreground w-6 h-6 p-0"
+                className="text-muted-foreground hover:text-foreground w-7 h-7 p-0"
               >
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="w-4 h-4" />
