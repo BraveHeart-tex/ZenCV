@@ -8,6 +8,7 @@ class DocumentBuilderStore {
   sections: Section[] = [];
   items: Item[] = [];
   fields: Field[] = [];
+  collapsedItemId: number | null = null;
 
   constructor() {
     makeAutoObservable(this, {
@@ -15,10 +16,12 @@ class DocumentBuilderStore {
       sections: observable,
       items: observable,
       fields: observable,
+      collapsedItemId: observable,
       initializeStore: action,
       renameDocument: action,
       renameSection: action,
       setFieldValue: action,
+      toggleItem: action,
     });
   }
   initializeStore = async (documentId: number) => {
@@ -107,6 +110,10 @@ class DocumentBuilderStore {
     await updateSection(section.id, {
       title: value,
     });
+  };
+
+  toggleItem = (itemId: number) => {
+    this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
   };
 }
 

@@ -19,6 +19,7 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
         <CollapsibleItemContainer
           triggerTitle={'Testing'}
           triggerDescription={'testing description'}
+          itemId={item.id}
         >
           {children}
         </CollapsibleItemContainer>
