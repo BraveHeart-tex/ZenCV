@@ -4,24 +4,44 @@ import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import SectionField from '@/components/SectionField';
 import { cn } from '@/lib/utils';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
-import { FIELD_TYPES } from '@/lib/schema';
+import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
+import CollapsibleItemContainer from '@/components/CollapsibleItemContainer';
+import type { ReactNode } from 'react';
 
 const SectionItem = observer(({ itemId }: { itemId: number }) => {
   const item = documentBuilderStore.getItemById(itemId)!;
   const fields = documentBuilderStore.getFieldsByItemId(itemId);
 
+  const ContainerElement = ({ children }: { children: ReactNode }) => {
+    if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
+      return (
+        <CollapsibleItemContainer
+          triggerTitle={'Testing'}
+          triggerDescription={'testing description'}
+        >
+          {children}
+        </CollapsibleItemContainer>
+      );
+    }
+
+    return (
+      <div
+        className={cn(
+          'p-4 px-0 grid grid-cols-2 gap-4',
+          documentBuilderStore.getSectionById(item.sectionId)?.type ===
+            INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
+            'grid grid-cols-2 gap-x-4 gap-y-6',
+          fields.length === 2 && 'grid grid-cols-2 gap-4',
+        )}
+      >
+        {children}
+      </div>
+    );
+  };
+
   return (
-    <div
-      className={cn(
-        'p-4 px-0 grid grid-cols-2 gap-4',
-        item.containerType === 'collapsible' && 'border rounded-md p-2',
-        documentBuilderStore.getSectionById(item.sectionId)?.type ===
-          INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
-          'grid grid-cols-2 gap-x-4 gap-y-6',
-        fields.length === 2 && 'grid grid-cols-2 gap-4',
-      )}
-    >
+    <ContainerElement>
       {fields.map((field, index) => {
         const isDateField = field.type === FIELD_TYPES.DATE_MONTH;
         const nextFieldIsDate =
@@ -44,7 +64,7 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
 
         return <SectionField fieldId={field.id} key={field.id} />;
       })}
-    </div>
+    </ContainerElement>
   );
 });
 

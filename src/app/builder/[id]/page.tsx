@@ -1,4 +1,5 @@
 import DocumentBuilderClient from '@/components/DocumentBuilderClient';
+import { LazyMotion, domAnimation } from 'motion/react';
 
 const DocumentBuilderPage = async ({
   params,
@@ -7,7 +8,11 @@ const DocumentBuilderPage = async ({
 }) => {
   const pageParams = await params;
 
-  return <DocumentBuilderClient documentId={+pageParams.id} />;
+  return (
+    <LazyMotion features={domAnimation} strict>
+      <DocumentBuilderClient documentId={+pageParams.id} />
+    </LazyMotion>
+  );
 };
 
 export default DocumentBuilderPage;
