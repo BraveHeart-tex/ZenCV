@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import {
   addItemFromTemplate,
   deleteItem,
+  deleteSection,
   renameDocument,
   updateField,
   updateSection,
@@ -30,6 +31,8 @@ class DocumentBuilderStore {
       setFieldValue: action,
       toggleItem: action,
       addNewItemEntry: action,
+      removeItem: action,
+      removeSection: action,
     });
   }
   initializeStore = async (documentId: number) => {
@@ -128,6 +131,20 @@ class DocumentBuilderStore {
     await deleteItem(itemId);
     this.items = this.items.filter((item) => item.id !== itemId);
     this.fields = this.fields.filter((field) => field.itemId !== itemId);
+  };
+
+  removeSection = async (sectionId: number) => {
+    await deleteSection(sectionId);
+
+    const itemIdsToKeep = this.items
+      .filter((item) => item.sectionId !== sectionId)
+      .map((item) => item.id);
+
+    this.sections = this.sections.filter((section) => section.id !== sectionId);
+    this.items = this.items.filter((item) => item.sectionId !== sectionId);
+    this.fields = this.fields.filter((field) =>
+      itemIdsToKeep.includes(field.itemId),
+    );
   };
 
   addNewItemEntry = async (sectionId: number) => {

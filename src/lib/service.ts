@@ -172,3 +172,16 @@ export const addItemFromTemplate = async (
     };
   });
 };
+
+export const deleteSection = (sectionId: number) => {
+  return db.transaction('rw', [db.sections, db.items, db.fields], async () => {
+    await db.sections.delete(sectionId);
+    const itemIds = await db.items
+      .where('sectionId')
+      .equals(sectionId)
+      .primaryKeys();
+
+    await db.items.bulkDelete(itemIds);
+    await db.fields.where('itemId').anyOf(itemIds).delete();
+  });
+};

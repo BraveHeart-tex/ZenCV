@@ -42,8 +42,8 @@ import { confirmDialogStore } from '@/lib/confirmDialogStore';
 import { action } from 'mobx';
 import { showSuccessToast } from '@/components/ui/sonner';
 import {
-  getDeleteConfirmationPreference,
-  setDeleteConfirmationPreference,
+  getItemDeleteConfirmationPreference,
+  setItemDeleteConfirmationPreference,
 } from '@/lib/userSettings';
 
 interface CollapsibleSectionItemContainerProps {
@@ -85,7 +85,7 @@ const CollapsibleSectionItemContainer = observer(
 
     const handleDeleteItemClick = action(async () => {
       const shouldNotAskForConfirmation =
-        await getDeleteConfirmationPreference();
+        await getItemDeleteConfirmationPreference();
 
       if (shouldNotAskForConfirmation) {
         await documentBuilderStore.removeItem(itemId);
@@ -104,7 +104,7 @@ const CollapsibleSectionItemContainer = observer(
           showSuccessToast('Entry deleted successfully.');
 
           if (doNotAskAgainChecked !== undefined) {
-            await setDeleteConfirmationPreference(doNotAskAgainChecked);
+            await setItemDeleteConfirmationPreference(doNotAskAgainChecked);
           }
 
           confirmDialogStore.hideDialog();

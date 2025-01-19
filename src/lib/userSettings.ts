@@ -1,13 +1,43 @@
 const ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY = 'doNotAskAgainItemDelete' as const;
+const SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY =
+  'doNotAskAgainSectionDelete' as const;
 
-export const setDeleteConfirmationPreference = async (checked: boolean) => {
-  return localStorage.setItem(
+const setDeleteConfirmationPreference = async (
+  key: string,
+  checked: boolean,
+) => {
+  localStorage.setItem(key, checked.toString());
+};
+
+const getDeleteConfirmationPreference = async (
+  key: string,
+): Promise<boolean> => {
+  const value = localStorage.getItem(key);
+  return value === 'true';
+};
+
+export const setItemDeleteConfirmationPreference = async (checked: boolean) => {
+  await setDeleteConfirmationPreference(
     ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY,
-    checked.toString(),
+    checked,
   );
 };
 
-export const getDeleteConfirmationPreference = async () => {
-  const value = localStorage.getItem(ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY);
-  return value === 'true';
+export const getItemDeleteConfirmationPreference =
+  async (): Promise<boolean> => {
+    return getDeleteConfirmationPreference(ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY);
+  };
+
+export const setSectionDeleteConfirmationPreference = async (
+  checked: boolean,
+) => {
+  await setDeleteConfirmationPreference(
+    SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY,
+    checked,
+  );
 };
+
+export const getSectionDeleteConfirmationPreference =
+  async (): Promise<boolean> => {
+    return getDeleteConfirmationPreference(SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY);
+  };

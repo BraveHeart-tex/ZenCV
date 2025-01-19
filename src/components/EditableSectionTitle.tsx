@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { CornerDownLeftIcon, PencilIcon } from 'lucide-react';
+import { CornerDownLeftIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import {
   Dialog,
   DialogClose,
@@ -24,17 +24,74 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { action } from 'mobx';
+import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/constants';
+import { confirmDialogStore } from '@/lib/confirmDialogStore';
+import {
+  getSectionDeleteConfirmationPreference,
+  setSectionDeleteConfirmationPreference,
+} from '@/lib/userSettings';
 
 const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: number }) => {
     const section = documentBuilderStore.getSectionById(sectionId)!;
 
+    const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.includes(
+      section.type as (typeof DELETABLE_INTERNAL_SECTION_TYPES)[number],
+    );
+
+    const handleDeleteSection = action(async () => {
+      const shouldNotAskConfirmation =
+        await getSectionDeleteConfirmationPreference();
+
+      if (shouldNotAskConfirmation) {
+        await documentBuilderStore.removeSection(sectionId);
+        showSuccessToast('Section removed successfully.');
+        return;
+      }
+
+      confirmDialogStore.showDialog({
+        title: `Are you sure you want to delete "${section.title}"?`,
+        message: 'This action cannot be undone',
+        doNotAskAgainEnabled: true,
+        onConfirm: async () => {
+          const doNotAskAgain = confirmDialogStore.doNotAskAgainChecked;
+
+          await documentBuilderStore.removeSection(sectionId);
+          showSuccessToast('Section removed successfully.');
+
+          if (doNotAskAgain) {
+            await setSectionDeleteConfirmationPreference(doNotAskAgain);
+          }
+
+          confirmDialogStore.hideDialog();
+        },
+      });
+    });
+
     return (
-      <div className="flex items-center w-full gap-2">
+      <div className="group flex items-center w-full gap-2">
         <RenameSectionDialog sectionId={sectionId} />
         <h2 className="scroll-m-20 flex-1 text-xl font-semibold tracking-tight">
           {section.title}
         </h2>
+        {isSectionDeletable && (
+          <div className="lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDeleteSection}
+                >
+                  <TrashIcon size={18} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete {`"${section.title}"`}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        )}
       </div>
     );
   },
