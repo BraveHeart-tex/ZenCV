@@ -13,6 +13,8 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
   const item = documentBuilderStore.getItemById(itemId)!;
   const fields = documentBuilderStore.getFieldsByItemId(itemId);
 
+  if (!item) return null;
+
   const ContainerElement = ({ children }: { children: ReactNode }) => {
     if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
       return (

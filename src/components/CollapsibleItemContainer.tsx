@@ -22,9 +22,8 @@ import {
 import * as motion from 'motion/react-m';
 import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
-// import type { FIELD_DND_INDEX_PREFIX } from '@/lib/constants';
-// import { useSortable } from '@dnd-kit/sortable';
-// import { CSS } from '@dnd-kit/utilities';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
   ArrowLeftIcon,
@@ -60,28 +59,23 @@ const CollapsibleSectionItemContainer = observer(
     triggerDescription,
     children,
     itemId,
-    // id,
   }: CollapsibleSectionItemContainerProps) => {
     const open = itemId === documentBuilderStore.collapsedItemId;
 
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
-    // const {
-    //   attributes,
-    //   listeners,
-    //   setNodeRef,
-    //   transform,
-    //   transition,
-    //   isDragging,
-    //   isOver,
-    //   isSorting,
-    // } = useSortable({ id });
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+      isDragging,
+      isOver,
+      isSorting,
+    } = useSortable({ id: itemId });
 
-    // const shouldShowDeleteButton =
-    //   !isDragging && !isOver && !isSorting;
-    // const shouldShowDragButton = !isDragging && !isOver && !isSorting;
-
-    const shouldShowDeleteButton = true;
-    const shouldShowDragButton = true;
+    const shouldShowDeleteButton = !isDragging && !isOver && !isSorting;
+    const shouldShowDragButton = !isDragging && !isOver && !isSorting;
 
     const handleDeleteItemClick = action(async () => {
       const shouldNotAskForConfirmation =
@@ -116,12 +110,12 @@ const CollapsibleSectionItemContainer = observer(
     return (
       <div
         className="group relative w-full mt-4"
-        // ref={setNodeRef}
-        // style={{
-        //   transition,
-        //   transform: CSS.Translate.toString(transform),
-        // }}
-        // {...attributes}
+        ref={setNodeRef}
+        style={{
+          transition,
+          transform: CSS.Translate.toString(transform),
+        }}
+        {...attributes}
       >
         {shouldShowDragButton ? (
           <TooltipProvider>
@@ -131,7 +125,7 @@ const CollapsibleSectionItemContainer = observer(
                   variant="ghost"
                   size="icon"
                   className="cursor-grab lg:pointer-events-none lg:group-hover:pointer-events-auto lg:opacity-0 lg:group-hover:opacity-100 absolute -left-7 lg:-left-8 top-[19px] z-10 w-8 h-8 text-muted-foreground transition-all"
-                  /*{...listeners}*/
+                  {...listeners}
                 >
                   <GripVertical />
                 </Button>
@@ -152,7 +146,7 @@ const CollapsibleSectionItemContainer = observer(
                 variant="ghost"
                 className="hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent"
                 onClick={() => {
-                  // if (isDragging || isSorting || isOver) return;
+                  if (isDragging || isSorting || isOver) return;
                   documentBuilderStore.toggleItem(itemId);
                 }}
               >

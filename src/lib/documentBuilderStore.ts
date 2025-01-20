@@ -1,4 +1,4 @@
-import { action, runInAction, makeAutoObservable, observable } from 'mobx';
+import { runInAction, makeAutoObservable } from 'mobx';
 import type { Document, Field, Item, Section } from '@/lib/schema';
 import { db } from '@/lib/db';
 import {
@@ -19,21 +19,7 @@ class DocumentBuilderStore {
   collapsedItemId: number | null = null;
 
   constructor() {
-    makeAutoObservable(this, {
-      document: observable,
-      sections: observable,
-      items: observable,
-      fields: observable,
-      collapsedItemId: observable,
-      initializeStore: action,
-      renameDocument: action,
-      renameSection: action,
-      setFieldValue: action,
-      toggleItem: action,
-      addNewItemEntry: action,
-      removeItem: action,
-      removeSection: action,
-    });
+    makeAutoObservable(this);
   }
   initializeStore = async (documentId: number) => {
     return db.transaction(
@@ -63,20 +49,25 @@ class DocumentBuilderStore {
 
         runInAction(() => {
           this.document = document;
-          this.sections = sections.sort(
+          this.sections = sections.toSorted(
+            (a, b) => a.displayOrder - b.displayOrder,
+          );
+          this.items = items.toSorted(
             (a, b) => a.displayOrder - b.displayOrder,
           );
           this.fields = fields;
-          this.items = items;
         });
       },
     );
   };
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
+    await renameDocument(this.document.id, newValue);
 
-    this.document.title = newValue;
-    await renameDocument(this.document!.id, newValue);
+    runInAction(() => {
+      if (!this.document) return;
+      this.document.title = newValue;
+    });
   };
 
   getSectionById = (sectionId: number) => {
@@ -106,20 +97,25 @@ class DocumentBuilderStore {
     value: string,
     shouldSaveToStore = true,
   ) => {
-    const field = this.fields.find((field) => field.id === fieldId);
-    if (!field) return;
-    field.value = value;
-    // TODO: Debouncing this might be a good idea
-    if (!shouldSaveToStore) return;
-    await updateField(field.id, value);
+    if (shouldSaveToStore) {
+      await updateField(fieldId, value);
+    }
+    runInAction(() => {
+      const field = this.fields.find((field) => field.id === fieldId);
+      if (!field) return;
+      field.value = value;
+    });
   };
 
   renameSection = async (sectionId: number, value: string) => {
-    const section = this.sections.find((section) => section.id === sectionId);
-    if (!section) return;
-    section.title = value;
-    await updateSection(section.id, {
+    await updateSection(sectionId, {
       title: value,
+    });
+
+    runInAction(() => {
+      const section = this.sections.find((section) => section.id === sectionId);
+      if (!section) return;
+      section.title = value;
     });
   };
 
@@ -129,22 +125,28 @@ class DocumentBuilderStore {
 
   removeItem = async (itemId: number) => {
     await deleteItem(itemId);
-    this.items = this.items.filter((item) => item.id !== itemId);
-    this.fields = this.fields.filter((field) => field.itemId !== itemId);
+    runInAction(() => {
+      this.items = this.items.filter((item) => item.id !== itemId);
+      this.fields = this.fields.filter((field) => field.itemId !== itemId);
+    });
   };
 
   removeSection = async (sectionId: number) => {
     await deleteSection(sectionId);
 
-    const itemIdsToKeep = this.items
-      .filter((item) => item.sectionId !== sectionId)
-      .map((item) => item.id);
+    runInAction(() => {
+      const itemIdsToKeep = this.items
+        .filter((item) => item.sectionId !== sectionId)
+        .map((item) => item.id);
 
-    this.sections = this.sections.filter((section) => section.id !== sectionId);
-    this.items = this.items.filter((item) => item.sectionId !== sectionId);
-    this.fields = this.fields.filter((field) =>
-      itemIdsToKeep.includes(field.itemId),
-    );
+      this.sections = this.sections.filter(
+        (section) => section.id !== sectionId,
+      );
+      this.items = this.items.filter((item) => item.sectionId !== sectionId);
+      this.fields = this.fields.filter((field) =>
+        itemIdsToKeep.includes(field.itemId),
+      );
+    });
   };
 
   addNewItemEntry = async (sectionId: number) => {
@@ -162,18 +164,49 @@ class DocumentBuilderStore {
           currentItem.displayOrder > displayOrder
             ? currentItem.displayOrder
             : displayOrder,
-        0,
+        1,
       ),
     });
 
-    const { fields, item } = result;
+    runInAction(() => {
+      const { fields, item } = result;
 
-    this.items.push(item);
-    this.fields.push(...fields);
+      this.items.push(item);
+      this.fields.push(...fields);
 
-    setTimeout(() => {
-      this.toggleItem(item.id);
-    }, 100);
+      setTimeout(() => {
+        this.toggleItem(item.id);
+      }, 100);
+    });
+  };
+
+  reOrderSectionItems = async (items: Item[]) => {
+    await db.items.bulkUpdate(
+      items
+        .map((item, index) => ({
+          key: item.id,
+          changes: { displayOrder: index + 1 },
+        }))
+        .filter(({ key, changes }) =>
+          this.items.some(
+            (existingItem) =>
+              existingItem.id === key &&
+              existingItem.displayOrder !== changes.displayOrder,
+          ),
+        ),
+    );
+
+    runInAction(() => {
+      const updatedDisplayOrders = new Map(
+        items.map((item, index) => [item.id, index + 1]),
+      );
+
+      this.items.forEach((item) => {
+        if (updatedDisplayOrders.has(item.id)) {
+          item.displayOrder = updatedDisplayOrders.get(item.id)!;
+        }
+      });
+    });
   };
 }
 
