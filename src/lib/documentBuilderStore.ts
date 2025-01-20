@@ -216,7 +216,7 @@ class DocumentBuilderStore {
       }));
     });
 
-    await db.items.bulkUpdate(
+    await db.sections.bulkUpdate(
       sections.map((section, index) => ({
         key: section.id,
         changes: {
