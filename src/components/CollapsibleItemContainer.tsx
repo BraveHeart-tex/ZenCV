@@ -46,7 +46,6 @@ import {
 } from '@/lib/userSettings';
 
 interface CollapsibleSectionItemContainerProps {
-  // id: `${FIELD_DND_INDEX_PREFIX}-${number}`;
   triggerTitle?: string;
   triggerDescription?: string;
   children: React.ReactNode;
@@ -109,7 +108,7 @@ const CollapsibleSectionItemContainer = observer(
 
     return (
       <div
-        className="group relative w-full mt-4"
+        className="group relative w-full"
         ref={setNodeRef}
         style={{
           transition,

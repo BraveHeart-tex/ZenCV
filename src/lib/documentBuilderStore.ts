@@ -181,6 +181,18 @@ class DocumentBuilderStore {
   };
 
   reOrderSectionItems = async (items: Item[]) => {
+    runInAction(() => {
+      const updatedDisplayOrders = new Map(
+        items.map((item, index) => [item.id, index + 1]),
+      );
+
+      this.items.forEach((item) => {
+        if (updatedDisplayOrders.has(item.id)) {
+          item.displayOrder = updatedDisplayOrders.get(item.id)!;
+        }
+      });
+    });
+
     await db.items.bulkUpdate(
       items
         .map((item, index) => ({
@@ -195,20 +207,15 @@ class DocumentBuilderStore {
           ),
         ),
     );
-
-    runInAction(() => {
-      const updatedDisplayOrders = new Map(
-        items.map((item, index) => [item.id, index + 1]),
-      );
-
-      this.items.forEach((item) => {
-        if (updatedDisplayOrders.has(item.id)) {
-          item.displayOrder = updatedDisplayOrders.get(item.id)!;
-        }
-      });
-    });
   };
   reOrderSections = async (sections: Section[]) => {
+    runInAction(() => {
+      this.sections = sections.map((section, index) => ({
+        ...section,
+        displayOrder: index + 1,
+      }));
+    });
+
     await db.items.bulkUpdate(
       sections.map((section, index) => ({
         key: section.id,
@@ -217,13 +224,6 @@ class DocumentBuilderStore {
         },
       })),
     );
-
-    runInAction(() => {
-      this.sections = sections.map((section, index) => ({
-        ...section,
-        displayOrder: index + 1,
-      }));
-    });
   };
 }
 
