@@ -38,9 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
           <ConfirmDialog />
         </ThemeProvider>
-        <Toaster />
       </body>
     </html>
   );
