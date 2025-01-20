@@ -344,6 +344,36 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
         } as Field,
       ],
     },
+    [INTERNAL_SECTION_TYPES.LANGUAGES]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Language',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+        {
+          name: 'Level',
+          type: FIELD_TYPES.SELECT,
+          selectType: SELECT_TYPES.BASIC,
+          options: [
+            'Native Speaker',
+            'Highly Proficient',
+            'Very good command',
+            'Good working knowledge',
+            'Working knowledge',
+            'C2',
+            'C1',
+            'B2',
+            'B1',
+            'A2',
+            'A1',
+          ],
+          value: '',
+        } as Field,
+      ],
+    },
   };
 
   return templateMap[sectionType];

@@ -15,8 +15,9 @@ import { CONTAINER_TYPES, Item, Section } from '@/lib/schema';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { action } from 'mobx';
 
-interface OtherSectionOption
+export interface OtherSectionOption
   extends Omit<Section, 'id' | 'documentId' | 'displayOrder' | 'defaultName'> {
   icon: LucideIcon;
   containerType: Item['containerType'];
@@ -75,6 +76,10 @@ const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
 }));
 
 const AddSectionWidget = observer(() => {
+  const handleAddSection = action(async (option: OtherSectionOption) => {
+    await documentBuilderStore.addNewSection(option);
+  });
+
   return (
     <article className="space-y-2">
       <h3 className={cn(builderSectionTitleClassNames, 'text-2xl')}>
@@ -90,6 +95,7 @@ const AddSectionWidget = observer(() => {
                 (section) => section.type === option.type,
               )
             }
+            onClick={() => handleAddSection(option)}
             key={option.type}
             className="flex items-center justify-start gap-2 px-0 text-base"
           >

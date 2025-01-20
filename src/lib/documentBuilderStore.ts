@@ -10,6 +10,7 @@ import {
   updateSection,
 } from '@/lib/service';
 import { getItemInsertTemplate } from '@/lib/helpers';
+import { OtherSectionOption } from '@/components/AddSectionWidget';
 
 class DocumentBuilderStore {
   document: Document | null = null;
@@ -224,6 +225,36 @@ class DocumentBuilderStore {
         },
       })),
     );
+  };
+
+  addNewSection = async (option: OtherSectionOption) => {
+    const template = getItemInsertTemplate(option.type);
+    if (!template) return;
+
+    await db.transaction('rw', [db.sections, db.fields, db.items], async () => {
+      const sectionDto = {
+        displayOrder: documentBuilderStore.sections.reduce(
+          (acc, curr) => Math.max(acc, curr.displayOrder),
+          1,
+        ),
+        title: option.title,
+        defaultTitle: option.defaultTitle,
+        type: option.type,
+        metadata: option?.metadata,
+        documentId: documentBuilderStore.document!.id,
+      };
+
+      const sectionId = await db.sections.add(sectionDto);
+
+      runInAction(() => {
+        this.sections.push({
+          ...sectionDto,
+          id: sectionId,
+        });
+      });
+
+      await this.addNewItemEntry(sectionId);
+    });
   };
 }
 
