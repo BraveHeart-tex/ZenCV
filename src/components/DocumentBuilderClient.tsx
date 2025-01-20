@@ -17,6 +17,7 @@ import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
 import DocumentBuilderHeader from '@/components/DocumentBuilderHeader';
 import DocumentSections from '@/components/DocumentSections';
+import AddSectionWidget from '@/components/AddSectionWidget';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: Document['id'] }) => {
@@ -67,8 +68,9 @@ const DocumentBuilderClient = observer(
           <div className="max-w-screen-2xl flex items-center justify-center mx-auto">
             <DocumentBuilderHeader />
           </div>
-          <div className="max-w-screen-2xl grid gap-6 mx-auto mt-4">
+          <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
             <DocumentSections />
+            <AddSectionWidget />
           </div>
         </div>
       </TooltipProvider>

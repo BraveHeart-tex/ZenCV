@@ -1,5 +1,5 @@
 'use client';
-import { builderSectionTitleClassNames } from '@/lib/utils';
+import { builderSectionTitleClassNames, cn } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
 import {
   BookOpenTextIcon,
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { CONTAINER_TYPES, Item, Section } from '@/lib/schema';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
+import { Button } from '@/components/ui/button';
+import { documentBuilderStore } from '@/lib/documentBuilderStore';
 
 interface OtherSectionOption
   extends Omit<Section, 'id' | 'documentId' | 'displayOrder' | 'defaultName'> {
@@ -20,7 +22,6 @@ interface OtherSectionOption
   containerType: Item['containerType'];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   {
     icon: SlidersHorizontalIcon,
@@ -73,12 +74,32 @@ const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   defaultTitle: item.title,
 }));
 
-const AddSection = observer(() => {
+const AddSectionWidget = observer(() => {
   return (
-    <article>
-      <h3 className={builderSectionTitleClassNames}>Add Section</h3>
+    <article className="space-y-2">
+      <h3 className={cn(builderSectionTitleClassNames, 'text-2xl')}>
+        Add New Section
+      </h3>
+      <div className="md:grid-cols-2 grid gap-2">
+        {OTHER_SECTION_OPTIONS.map((option) => (
+          <Button
+            variant="ghost"
+            disabled={
+              option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
+              documentBuilderStore.sections.some(
+                (section) => section.type === option.type,
+              )
+            }
+            key={option.type}
+            className="flex items-center justify-start gap-2 px-0 text-base"
+          >
+            <option.icon />
+            {option.title}
+          </Button>
+        ))}
+      </div>
     </article>
   );
 });
 
-export default AddSection;
+export default AddSectionWidget;
