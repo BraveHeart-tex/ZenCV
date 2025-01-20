@@ -208,6 +208,23 @@ class DocumentBuilderStore {
       });
     });
   };
+  reOrderSections = async (sections: Section[]) => {
+    await db.items.bulkUpdate(
+      sections.map((section, index) => ({
+        key: section.id,
+        changes: {
+          displayOrder: index + 1,
+        },
+      })),
+    );
+
+    runInAction(() => {
+      this.sections = sections.map((section, index) => ({
+        ...section,
+        displayOrder: index + 1,
+      }));
+    });
+  };
 }
 
 export const documentBuilderStore = new DocumentBuilderStore();

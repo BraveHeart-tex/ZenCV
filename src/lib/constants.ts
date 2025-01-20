@@ -40,21 +40,6 @@ export const SECTION_DESCRIPTIONS_BY_TYPE = {
     'Select five key skills that demonstrate your suitability for the position. Ensure they align with the essential skills listed in the job description. (Particularly when applying through an online system.)',
 } as const;
 
-export const FIELDS_DND_INDEX_PREFIXES = {
-  EMPLOYMENT: 'employment',
-  EDUCATION: 'education',
-  WEBSITES_AND_LINKS: 'websitesAndLinks',
-  SKILLS: 'skills',
-  CUSTOM: 'custom',
-  INTERNSHIPS: 'internships',
-  EXTRA_CURRICULAR_ACTIVITIES: 'extraCurricularActivities',
-  REFERENCES: 'references',
-  COURSES: 'courses',
-  LANGUAGES: 'languages',
-} as const;
-
-export type FieldDndIndexPrefix = keyof typeof FIELDS_DND_INDEX_PREFIXES;
-
 export const MONTHS = [
   'Jan',
   'Feb',
@@ -75,3 +60,8 @@ export const SELECT_TYPES = {
 } as const;
 
 export type SelectType = (typeof SELECT_TYPES)[keyof typeof SELECT_TYPES];
+
+export const FIXED_SECTIONS = [
+  INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+  INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
+];
