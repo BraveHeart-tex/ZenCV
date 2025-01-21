@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { ModeToggle } from './mode-toggle';
-import Link from 'next/link';
+import { Link } from 'react-router';
 import { Icons } from './icons';
 import { APP_NAME } from '@/lib/appConfig';
 
@@ -41,7 +41,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link href="/">
+              <Link to="/">
                 <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
                   <Icons.logo />
                 </div>
@@ -59,7 +59,7 @@ const AppSidebar = () => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

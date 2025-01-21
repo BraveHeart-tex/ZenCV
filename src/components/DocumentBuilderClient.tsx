@@ -1,6 +1,4 @@
 'use client';
-import { DEX_Document } from '@/lib/schema';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -8,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import Link from 'next/link';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { buttonVariants } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
@@ -20,10 +18,11 @@ import DocumentSections from '@/components/DocumentSections';
 import AddSectionWidget from '@/components/AddSectionWidget';
 
 const DocumentBuilderClient = observer(
-  ({ documentId }: { documentId: DEX_Document['id'] }) => {
-    const router = useRouter();
+  ({ documentId }: { documentId: number }) => {
+    const navigate = useNavigate();
+
     const [, startTransition] = useTransition();
-    const searchParams = useSearchParams();
+    const [searchParams] = useSearchParams();
     const view =
       (searchParams.get('view') as 'builder' | 'preview') || 'builder';
 
@@ -33,10 +32,10 @@ const DocumentBuilderClient = observer(
         const result = await documentBuilderStore.initializeStore(documentId);
         if (result?.error) {
           showErrorToast(result.error);
-          router.push('/documents');
+          navigate('/documents');
         }
       });
-    }, [documentId, router]);
+    }, [documentId, navigate]);
 
     return (
       <TooltipProvider>
@@ -50,7 +49,7 @@ const DocumentBuilderClient = observer(
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href={'/documents'}
+                to={'/documents'}
                 className={cn(
                   buttonVariants({
                     variant: 'outline',
