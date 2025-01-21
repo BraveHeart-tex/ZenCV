@@ -16,13 +16,13 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import type { Section } from '@/lib/schema';
+import type { DEX_Section } from '@/lib/schema';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
-  sections: Section[];
+  sections: DEX_Section[];
 }
 
 const SectionsDndContext = ({

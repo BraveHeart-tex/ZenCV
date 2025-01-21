@@ -17,13 +17,13 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import type { Item } from '@/lib/schema';
+import type { DEX_Item } from '@/lib/schema';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
 
 interface ItemsDndContextProps {
   children: React.ReactNode;
-  items: Item[];
+  items: DEX_Item[];
 }
 
 const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {

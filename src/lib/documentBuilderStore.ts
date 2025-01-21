@@ -1,6 +1,11 @@
 import { runInAction, makeAutoObservable } from 'mobx';
-import type { Document, Field, Item, Section } from '@/lib/schema';
-import { db } from '@/lib/db';
+import type {
+  DEX_Document,
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/schema';
+import { dxDb } from '@/lib/dxDb';
 import {
   addItemFromTemplate,
   deleteItem,
@@ -13,40 +18,43 @@ import { getItemInsertTemplate } from '@/lib/helpers';
 import { OtherSectionOption } from '@/components/AddSectionWidget';
 
 class DocumentBuilderStore {
-  document: Document | null = null;
-  sections: Section[] = [];
-  items: Item[] = [];
-  fields: Field[] = [];
+  document: DEX_Document | null = null;
+  sections: DEX_Section[] = [];
+  items: DEX_Item[] = [];
+  fields: DEX_Field[] = [];
   collapsedItemId: number | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
   initializeStore = async (documentId: number) => {
-    return db.transaction(
+    return dxDb.transaction(
       'r',
-      [db.documents, db.sections, db.items, db.fields],
+      [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
       async () => {
-        const document = await db.documents.get(documentId);
+        const document = await dxDb.documents.get(documentId);
         if (!document) {
           return {
             error: 'Document not found.',
           };
         }
 
-        const sections = await db.sections
+        const sections = await dxDb.sections
           .where('documentId')
           .equals(documentId)
           .toArray();
         const sectionIds = sections.map((section) => section.id);
 
-        const items = await db.items
+        const items = await dxDb.items
           .where('sectionId')
           .anyOf(sectionIds)
           .toArray();
         const itemIds = items.map((item) => item.id);
 
-        const fields = await db.fields.where('itemId').anyOf(itemIds).toArray();
+        const fields = await dxDb.fields
+          .where('itemId')
+          .anyOf(itemIds)
+          .toArray();
 
         runInAction(() => {
           this.document = document;
@@ -181,7 +189,7 @@ class DocumentBuilderStore {
     });
   };
 
-  reOrderSectionItems = async (items: Item[]) => {
+  reOrderSectionItems = async (items: DEX_Item[]) => {
     runInAction(() => {
       const updatedDisplayOrders = new Map(
         items.map((item, index) => [item.id, index + 1]),
@@ -194,7 +202,7 @@ class DocumentBuilderStore {
       });
     });
 
-    await db.items.bulkUpdate(
+    await dxDb.items.bulkUpdate(
       items
         .map((item, index) => ({
           key: item.id,
@@ -209,7 +217,7 @@ class DocumentBuilderStore {
         ),
     );
   };
-  reOrderSections = async (sections: Section[]) => {
+  reOrderSections = async (sections: DEX_Section[]) => {
     runInAction(() => {
       this.sections = sections.map((section, index) => ({
         ...section,
@@ -217,7 +225,7 @@ class DocumentBuilderStore {
       }));
     });
 
-    await db.sections.bulkUpdate(
+    await dxDb.sections.bulkUpdate(
       sections.map((section, index) => ({
         key: section.id,
         changes: {
@@ -231,30 +239,34 @@ class DocumentBuilderStore {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
 
-    await db.transaction('rw', [db.sections, db.fields, db.items], async () => {
-      const sectionDto = {
-        displayOrder: documentBuilderStore.sections.reduce(
-          (acc, curr) => Math.max(acc, curr.displayOrder),
-          1,
-        ),
-        title: option.title,
-        defaultTitle: option.defaultTitle,
-        type: option.type,
-        metadata: option?.metadata,
-        documentId: documentBuilderStore.document!.id,
-      };
+    await dxDb.transaction(
+      'rw',
+      [dxDb.sections, dxDb.fields, dxDb.items],
+      async () => {
+        const sectionDto = {
+          displayOrder: documentBuilderStore.sections.reduce(
+            (acc, curr) => Math.max(acc, curr.displayOrder),
+            1,
+          ),
+          title: option.title,
+          defaultTitle: option.defaultTitle,
+          type: option.type,
+          metadata: option?.metadata,
+          documentId: documentBuilderStore.document!.id,
+        };
 
-      const sectionId = await db.sections.add(sectionDto);
+        const sectionId = await dxDb.sections.add(sectionDto);
 
-      runInAction(() => {
-        this.sections.push({
-          ...sectionDto,
-          id: sectionId,
+        runInAction(() => {
+          this.sections.push({
+            ...sectionDto,
+            id: sectionId,
+          });
         });
-      });
 
-      await this.addNewItemEntry(sectionId);
-    });
+        await this.addNewItemEntry(sectionId);
+      },
+    );
   };
 }
 

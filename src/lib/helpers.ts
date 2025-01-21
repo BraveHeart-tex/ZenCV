@@ -5,18 +5,18 @@ import {
 } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
-  Field,
+  DEX_Field,
   FIELD_TYPES,
-  Item,
-  Section,
+  DEX_Item,
+  DEX_Section,
   SelectField,
 } from '@/lib/schema';
 
-interface ItemWithFields extends Omit<Item, 'id' | 'sectionId'> {
-  fields: Omit<Field, 'id' | 'itemId'>[];
+interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
+  fields: Omit<DEX_Field, 'id' | 'itemId'>[];
 }
 
-interface SectionWithFields extends Omit<Section, 'id'> {
+interface SectionWithFields extends Omit<DEX_Section, 'id'> {
   items: ItemWithFields[];
 }
 
@@ -236,12 +236,12 @@ export const isSelectField = (obj: { type: string }): obj is SelectField => {
   return obj?.type === FIELD_TYPES.SELECT;
 };
 
-export const getFieldHtmlId = (field: Field) => {
+export const getFieldHtmlId = (field: DEX_Field) => {
   return `${field.itemId}-${field.name}`;
 };
 
-export type ItemTemplateType = Omit<Item, 'id' | 'sectionId'> & {
-  fields: Omit<Field, 'id' | 'itemId'>[];
+export type ItemTemplateType = Omit<DEX_Item, 'id' | 'sectionId'> & {
+  fields: Omit<DEX_Field, 'id' | 'itemId'>[];
 };
 
 export const getItemInsertTemplate = (sectionType: SectionType) => {
@@ -341,7 +341,7 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
           selectType: SELECT_TYPES.BASIC,
           options: ['Beginner', 'Competent', 'Proficient', 'Expert'],
           value: '',
-        } as Field,
+        } as DEX_Field,
       ],
     },
     [INTERNAL_SECTION_TYPES.LANGUAGES]: {
@@ -371,7 +371,7 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
             'A1',
           ],
           value: '',
-        } as Field,
+        } as DEX_Field,
       ],
     },
   };

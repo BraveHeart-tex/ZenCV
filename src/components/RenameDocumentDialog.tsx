@@ -1,5 +1,5 @@
 'use client';
-import { Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/schema';
 import { useRef, useState } from 'react';
 import {
   Dialog,
@@ -21,7 +21,7 @@ const RenameDocumentDialog = ({
   onOpenChange,
   document,
 }: {
-  document: Document;
+  document: DEX_Document;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
 }) => {

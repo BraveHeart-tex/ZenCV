@@ -2,26 +2,24 @@ import type { SectionType, SelectType } from './constants';
 
 type IdType = number;
 
-export interface Document {
+export interface DEX_Document {
   id: IdType;
   title: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Section {
+export interface DEX_Section {
   id: IdType;
   documentId: IdType;
   title: string;
-
   defaultTitle: string;
   type: SectionType;
   displayOrder: number;
-
   metadata?: string;
 }
 
-export interface Item {
+export interface DEX_Item {
   id: IdType;
   sectionId: IdType;
   containerType: 'collapsible' | 'static';
@@ -61,6 +59,7 @@ export const FIELD_TYPES = {
   RICH_TEXT: 'rich-text',
   DATE_MONTH: 'date-month',
   SELECT: 'select',
+  TEXTAREA: 'textarea',
 } as const;
 
 export const CONTAINER_TYPES = {
@@ -68,4 +67,8 @@ export const CONTAINER_TYPES = {
   COLLAPSIBLE: 'collapsible',
 } as const;
 
-export type Field = StringField | DateMonthField | SelectField | RichTextField;
+export type DEX_Field =
+  | StringField
+  | DateMonthField
+  | SelectField
+  | RichTextField;

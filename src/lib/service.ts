@@ -1,18 +1,24 @@
-import { db } from './db';
-import { Document, Field, Item, Section, SelectField } from './schema';
+import { dxDb } from './dxDb';
+import {
+  DEX_Document,
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+  SelectField,
+} from './schema';
 import {
   getInitialDocumentInsertBoilerplate,
   isSelectField,
 } from '@/lib/helpers';
 
 export const createDocument = async (
-  data: Omit<Document, 'id' | 'createdAt' | 'updatedAt'>,
+  data: Omit<DEX_Document, 'id' | 'createdAt' | 'updatedAt'>,
 ) => {
-  return db.transaction(
+  return dxDb.transaction(
     'rw',
-    [db.documents, db.sections, db.items, db.fields],
+    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
     async () => {
-      const documentId = await db.documents.add(data as Document);
+      const documentId = await dxDb.documents.add(data as DEX_Document);
 
       const sectionTemplates = getInitialDocumentInsertBoilerplate(documentId);
 
@@ -26,12 +32,12 @@ export const createDocument = async (
           type: section.type,
         }));
 
-      const sectionInsertIds = await db.sections.bulkAdd(prepareSections(), {
+      const sectionInsertIds = await dxDb.sections.bulkAdd(prepareSections(), {
         allKeys: true,
       });
 
-      const itemInsertDtos: Omit<Item, 'id'>[] = [];
-      const fieldInsertDtos: Omit<Field, 'id'>[] = [];
+      const itemInsertDtos: Omit<DEX_Item, 'id'>[] = [];
+      const fieldInsertDtos: Omit<DEX_Field, 'id'>[] = [];
 
       sectionTemplates.forEach((sectionTemplate, sectionIndex) => {
         const sectionId = sectionInsertIds[sectionIndex];
@@ -66,7 +72,7 @@ export const createDocument = async (
         });
       });
 
-      const itemInsertIds = await db.items.bulkAdd(itemInsertDtos, {
+      const itemInsertIds = await dxDb.items.bulkAdd(itemInsertDtos, {
         allKeys: true,
       });
 
@@ -75,7 +81,7 @@ export const createDocument = async (
         itemId: itemInsertIds[field.itemId],
       }));
 
-      await db.fields.bulkAdd(resolvedFieldDtos);
+      await dxDb.fields.bulkAdd(resolvedFieldDtos);
 
       return documentId;
     },
@@ -83,66 +89,68 @@ export const createDocument = async (
 };
 
 export const renameDocument = async (
-  documentId: Document['id'],
+  documentId: DEX_Document['id'],
   title: string,
 ) => {
-  return db.documents.update(documentId, { title });
+  return dxDb.documents.update(documentId, { title });
 };
 
 export const updateSection = async (
   sectionId: number,
-  data: Partial<Omit<Section, 'id'>>,
+  data: Partial<Omit<DEX_Section, 'id'>>,
 ) => {
-  return db.sections.update(sectionId, data);
+  return dxDb.sections.update(sectionId, data);
 };
 
 export const updateField = async (fieldId: number, value: string) => {
-  return db.fields.update(fieldId, {
+  return dxDb.fields.update(fieldId, {
     value,
   });
 };
 
-export const deleteDocument = async (documentId: Document['id']) => {
-  return db.transaction(
+export const deleteDocument = async (documentId: DEX_Document['id']) => {
+  return dxDb.transaction(
     'rw',
-    [db.documents, db.sections, db.items, db.fields],
+    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
     async () => {
-      await db.documents.delete(documentId);
+      await dxDb.documents.delete(documentId);
 
-      const sectionIds = await db.sections
+      const sectionIds = await dxDb.sections
         .where('documentId')
         .equals(documentId)
         .primaryKeys();
 
-      await db.sections.bulkDelete(sectionIds);
+      await dxDb.sections.bulkDelete(sectionIds);
 
-      const itemIds = await db.items
+      const itemIds = await dxDb.items
         .where('sectionId')
         .anyOf(sectionIds)
         .primaryKeys();
-      await db.items.bulkDelete(itemIds);
+      await dxDb.items.bulkDelete(itemIds);
 
-      const fieldIds = await db.fields
+      const fieldIds = await dxDb.fields
         .where('itemId')
         .anyOf(itemIds)
         .primaryKeys();
-      await db.fields.bulkDelete(fieldIds);
+      await dxDb.fields.bulkDelete(fieldIds);
     },
   );
 };
 
 export const deleteItem = async (itemId: number) => {
-  return db.transaction('rw', [db.items, db.fields], async () => {
-    await db.items.delete(itemId);
-    await db.fields.where('itemId').equals(itemId).delete();
+  return dxDb.transaction('rw', [dxDb.items, dxDb.fields], async () => {
+    await dxDb.items.delete(itemId);
+    await dxDb.fields.where('itemId').equals(itemId).delete();
   });
 };
 
 export const addItemFromTemplate = async (
-  template: Omit<Item, 'id'> & { fields: Omit<Field, 'id' | 'itemId'>[] },
-): Promise<{ item: Item; fields: Field[] }> => {
-  return db.transaction('rw', [db.items, db.fields], async () => {
-    const itemId = await db.items.add({
+  template: Omit<DEX_Item, 'id'> & {
+    fields: Omit<DEX_Field, 'id' | 'itemId'>[];
+  },
+): Promise<{ item: DEX_Item; fields: DEX_Field[] }> => {
+  return dxDb.transaction('rw', [dxDb.items, dxDb.fields], async () => {
+    const itemId = await dxDb.items.add({
       sectionId: template.sectionId,
       containerType: template.containerType,
       displayOrder: template.displayOrder,
@@ -153,7 +161,7 @@ export const addItemFromTemplate = async (
       itemId,
     }));
 
-    const fieldIds = await db.fields.bulkAdd(fieldsPayload, {
+    const fieldIds = await dxDb.fields.bulkAdd(fieldsPayload, {
       allKeys: true,
     });
 
@@ -168,20 +176,24 @@ export const addItemFromTemplate = async (
         ...field,
         id: fieldIds[index],
         itemId,
-      })) as Field[],
+      })) as DEX_Field[],
     };
   });
 };
 
 export const deleteSection = (sectionId: number) => {
-  return db.transaction('rw', [db.sections, db.items, db.fields], async () => {
-    await db.sections.delete(sectionId);
-    const itemIds = await db.items
-      .where('sectionId')
-      .equals(sectionId)
-      .primaryKeys();
+  return dxDb.transaction(
+    'rw',
+    [dxDb.sections, dxDb.items, dxDb.fields],
+    async () => {
+      await dxDb.sections.delete(sectionId);
+      const itemIds = await dxDb.items
+        .where('sectionId')
+        .equals(sectionId)
+        .primaryKeys();
 
-    await db.items.bulkDelete(itemIds);
-    await db.fields.where('itemId').anyOf(itemIds).delete();
-  });
+      await dxDb.items.bulkDelete(itemIds);
+      await dxDb.fields.where('itemId').anyOf(itemIds).delete();
+    },
+  );
 };

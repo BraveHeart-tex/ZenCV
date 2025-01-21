@@ -1,5 +1,5 @@
 'use client';
-import { Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/schema';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
   DropdownMenu,
@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { action } from 'mobx';
 
-const DocumentCard = ({ document }: { document: Document }) => {
+const DocumentCard = ({ document }: { document: DEX_Document }) => {
   const router = useRouter();
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

@@ -11,16 +11,19 @@ import {
   type LucideIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react';
-import { CONTAINER_TYPES, Item, Section } from '@/lib/schema';
+import { CONTAINER_TYPES, DEX_Item, DEX_Section } from '@/lib/schema';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
 
 export interface OtherSectionOption
-  extends Omit<Section, 'id' | 'documentId' | 'displayOrder' | 'defaultName'> {
+  extends Omit<
+    DEX_Section,
+    'id' | 'documentId' | 'displayOrder' | 'defaultName'
+  > {
   icon: LucideIcon;
-  containerType: Item['containerType'];
+  containerType: DEX_Item['containerType'];
 }
 
 const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [

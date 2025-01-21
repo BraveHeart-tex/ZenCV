@@ -1,14 +1,14 @@
 import Dexie, { EntityTable } from 'dexie';
-import { Document, Field, Item, Section } from './schema';
+import { DEX_Document, DEX_Field, DEX_Item, DEX_Section } from './schema';
 
-export const db = new Dexie('cv-builder-db') as Dexie & {
-  documents: EntityTable<Document, 'id'>;
-  sections: EntityTable<Section, 'id'>;
-  items: EntityTable<Item, 'id'>;
-  fields: EntityTable<Field, 'id'>;
+export const dxDb = new Dexie('cv-builder-db') as Dexie & {
+  documents: EntityTable<DEX_Document, 'id'>;
+  sections: EntityTable<DEX_Section, 'id'>;
+  items: EntityTable<DEX_Item, 'id'>;
+  fields: EntityTable<DEX_Field, 'id'>;
 };
 
-db.version(1).stores({
+dxDb.version(1).stores({
   documents: '++id, title, createdAt, updatedAt',
   sections:
     '++id, documentId, title, defaultTitle, type, displayOrder, metadata',
@@ -16,7 +16,7 @@ db.version(1).stores({
   fields: '++id, itemId, name, type, value, selectType, options',
 });
 
-db.documents.hook('updating', (modifications, _primKey, object) => {
+dxDb.documents.hook('updating', (modifications, _primKey, object) => {
   return {
     ...object,
     ...modifications,
@@ -24,7 +24,7 @@ db.documents.hook('updating', (modifications, _primKey, object) => {
   };
 });
 
-db.documents.hook('creating', (_, obj) => {
+dxDb.documents.hook('creating', (_, obj) => {
   obj.createdAt = new Date().toISOString();
   obj.updatedAt = new Date().toISOString();
 });

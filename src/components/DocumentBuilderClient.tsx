@@ -1,5 +1,5 @@
 'use client';
-import { Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/schema';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
@@ -20,7 +20,7 @@ import DocumentSections from '@/components/DocumentSections';
 import AddSectionWidget from '@/components/AddSectionWidget';
 
 const DocumentBuilderClient = observer(
-  ({ documentId }: { documentId: Document['id'] }) => {
+  ({ documentId }: { documentId: DEX_Document['id'] }) => {
     const router = useRouter();
     const [, startTransition] = useTransition();
     const searchParams = useSearchParams();
