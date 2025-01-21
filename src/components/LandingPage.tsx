@@ -1,11 +1,11 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import Features from '@/components/Features';
 import Templates from '@/components/Templates';
 import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
-import Features from '@/components/Features';
 
-export default function Home() {
+const LandingPage = () => {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Header />
@@ -18,4 +18,6 @@ export default function Home() {
       <Footer />
     </div>
   );
-}
+};
+
+export default LandingPage;

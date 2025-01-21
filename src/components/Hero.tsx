@@ -1,5 +1,5 @@
 import { buttonVariants } from '@/components/ui/button';
-import Link from 'next/link';
+import { Link } from 'react-router';
 
 export default function Hero() {
   return (
@@ -17,7 +17,7 @@ export default function Hero() {
           </div>
           <div className="space-x-4">
             <Link
-              href="/documents"
+              to="/documents"
               className={buttonVariants({
                 variant: 'default',
                 size: 'lg',
@@ -26,7 +26,7 @@ export default function Hero() {
               Start Building
             </Link>
             <Link
-              href="/#features"
+              to="/#features"
               className={buttonVariants({
                 variant: 'outline',
                 size: 'lg',

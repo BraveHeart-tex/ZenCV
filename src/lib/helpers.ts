@@ -378,3 +378,13 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
 
   return templateMap[sectionType];
 };
+
+export const getCookieValue = (cookieName: string) => {
+  try {
+    const cookies = document.cookie.split('; ');
+    const cookie = cookies.find((row) => row.startsWith(`${cookieName}=`));
+    return cookie ? cookie.split('=')[1] : null;
+  } catch {
+    // next.js throws an error
+  }
+};

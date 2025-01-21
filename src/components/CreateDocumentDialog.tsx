@@ -1,5 +1,5 @@
 import { Button } from './ui/button';
-import { useRef, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
@@ -13,16 +13,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
-import { useRouter } from 'next/navigation';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useNavigate } from 'react-router';
 
 const CreateDocumentDialog = () => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const input = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     if (!name.replaceAll(' ', '')) {
       showErrorToast('Please enter a name for the document.');
@@ -41,7 +41,7 @@ const CreateDocumentDialog = () => {
         return;
       }
 
-      router.push(`/builder/${documentId}`);
+      navigate(`/builder/${documentId}`);
       showSuccessToast('Document created successfully.');
       setName('');
       setOpen(false);

@@ -14,15 +14,16 @@ import { deleteDocument } from '@/lib/service';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { action } from 'mobx';
+import { useNavigate } from 'react-router';
 
 const DocumentCard = ({ document }: { document: DEX_Document }) => {
-  const router = useRouter();
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDelete = () => {
+  const handleDelete = (event: Event) => {
+    event.stopImmediatePropagation();
     confirmDialogStore.showDialog({
       title: 'Delete Document',
       message: 'Are you sure you want to delete this document?',
@@ -45,7 +46,7 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
         className="bg-background border-border hover:border-border-hover w-full max-w-md transition-colors border cursor-pointer"
         onClick={() => {
           if (isOpen) return;
-          router.push(`/builder/${document.id}`);
+          navigate(`/builder/${document.id}`);
         }}
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
@@ -64,7 +65,7 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onSelect={() => router.push(`/builder/${document.id}`)}
+                onSelect={() => navigate(`/builder/${document.id}`)}
               >
                 <FileSymlink className="w-4 h-4 mr-2" />
                 Edit in CV Builder

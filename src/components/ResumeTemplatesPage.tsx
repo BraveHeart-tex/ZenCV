@@ -1,3 +1,4 @@
+'use client';
 const ResumeTemplatesPage = () => {
   return <div>ResumeTemplatesPage</div>;
 };
