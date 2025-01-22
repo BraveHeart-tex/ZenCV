@@ -7,8 +7,17 @@ import ApplicationLayoutWithSidebar from '@/components/ApplicationLayoutWithSide
 import SettingsPage from '@/components/SettingsPage';
 import ResumeTemplatesPage from '@/components/ResumeTemplatesPage';
 import DocumentBuilderPage from '@/components/DocumentBuilderPage';
+import { useEffect, useState } from 'react';
 
 const App = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <BrowserRouter>
       <Routes>

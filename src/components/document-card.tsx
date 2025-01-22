@@ -51,7 +51,7 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
       <Card
         onMouseEnter={prefetchDocumentData}
         className="bg-background border-border hover:border-border-hover w-full max-w-md transition-colors border cursor-pointer"
-        onClick={() => {
+        onMouseDown={() => {
           if (isOpen) return;
           navigate(`/builder/${document.id}`);
         }}
