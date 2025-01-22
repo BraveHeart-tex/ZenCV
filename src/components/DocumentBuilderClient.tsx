@@ -6,8 +6,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Link, useNavigate, useSearchParams } from 'react-router';
-import { buttonVariants } from '@/components/ui/button';
+import { useNavigate, useSearchParams } from 'react-router';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
@@ -51,17 +51,18 @@ const DocumentBuilderClient = observer(
         >
           <Tooltip>
             <TooltipTrigger asChild>
-              <Link
-                to={'/documents'}
-                className={cn(
-                  buttonVariants({
-                    variant: 'outline',
-                    className: 'absolute top-2 left-2',
-                  }),
-                )}
+              <Button
+                onClick={() => {
+                  navigate('/documents');
+                  setTimeout(() => {
+                    documentBuilderStore.resetState();
+                  }, 100);
+                }}
+                variant="outline"
+                className="top-2 left-2 absolute"
               >
                 <ArrowLeft />
-              </Link>
+              </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Documents page</p>

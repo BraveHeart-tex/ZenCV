@@ -32,6 +32,9 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
         try {
           await deleteDocument(document.id);
           showSuccessToast('Document deleted successfully.');
+          if (documentBuilderStore?.document?.id === document.id) {
+            documentBuilderStore.resetState();
+          }
         } catch (error) {
           console.error(error);
           showErrorToast('An error occurred while deleting the document.');

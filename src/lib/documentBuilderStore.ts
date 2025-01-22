@@ -268,6 +268,13 @@ class DocumentBuilderStore {
       },
     );
   };
+  resetState = () => {
+    this.document = null;
+    this.sections = [];
+    this.items = [];
+    this.fields = [];
+    this.collapsedItemId = null;
+  };
 }
 
 export const documentBuilderStore = new DocumentBuilderStore();

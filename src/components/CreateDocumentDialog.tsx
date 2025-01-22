@@ -15,6 +15,7 @@ import {
 } from './ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router';
+import { documentBuilderStore } from '@/lib/documentBuilderStore';
 
 const CreateDocumentDialog = () => {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const CreateDocumentDialog = () => {
         return;
       }
 
+      await documentBuilderStore.initializeStore(documentId);
       navigate(`/builder/${documentId}`);
       showSuccessToast('Document created successfully.');
       setName('');
