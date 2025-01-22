@@ -20,6 +20,33 @@ interface SectionWithFields extends Omit<DEX_Section, 'id'> {
   items: ItemWithFields[];
 }
 
+const employmentHistoryFields = [
+  {
+    name: 'Job Title',
+    type: FIELD_TYPES.STRING,
+  },
+  {
+    name: 'Employer',
+    type: FIELD_TYPES.STRING,
+  },
+  {
+    name: 'Start Date',
+    type: FIELD_TYPES.DATE_MONTH,
+  },
+  {
+    name: 'End Date',
+    type: FIELD_TYPES.DATE_MONTH,
+  },
+  {
+    name: 'City',
+    type: FIELD_TYPES.STRING,
+  },
+  {
+    name: 'Description',
+    type: FIELD_TYPES.RICH_TEXT,
+  },
+].map((item) => ({ ...item, value: '' }));
+
 export const getInitialDocumentInsertBoilerplate = (
   documentId: number,
 ): SectionWithFields[] => {
@@ -250,32 +277,7 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
     [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Job Title',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Employer',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Start Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'End Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'City',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Description',
-          type: FIELD_TYPES.RICH_TEXT,
-        },
-      ].map((item) => ({ ...item, value: '' })),
+      fields: employmentHistoryFields,
     },
     [INTERNAL_SECTION_TYPES.EDUCATION]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -384,6 +386,37 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
           value: '',
         },
       ],
+    },
+    [INTERNAL_SECTION_TYPES.COURSES]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Course',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+        {
+          name: 'Institution',
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+        {
+          name: 'Start Date',
+          type: FIELD_TYPES.DATE_MONTH,
+          value: '',
+        },
+        {
+          name: 'End Date',
+          type: FIELD_TYPES.DATE_MONTH,
+          value: '',
+        },
+      ],
+    },
+    [INTERNAL_SECTION_TYPES.INTERNSHIPS]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: employmentHistoryFields,
     },
   };
 
