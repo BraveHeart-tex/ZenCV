@@ -16,6 +16,7 @@ import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
 import { useNavigate } from 'react-router';
+import { documentBuilderStore } from '@/lib/documentBuilderStore';
 
 const DocumentCard = ({ document }: { document: DEX_Document }) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
@@ -40,9 +41,15 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
     });
   };
 
+  // would be a good idea to implement a stale time here
+  const prefetchDocumentData = action(async () => {
+    await documentBuilderStore.initializeStore(document.id);
+  });
+
   return (
     <>
       <Card
+        onMouseEnter={prefetchDocumentData}
         className="bg-background border-border hover:border-border-hover w-full max-w-md transition-colors border cursor-pointer"
         onClick={() => {
           if (isOpen) return;

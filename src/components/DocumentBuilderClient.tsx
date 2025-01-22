@@ -27,7 +27,10 @@ const DocumentBuilderClient = observer(
       (searchParams.get('view') as 'builder' | 'preview') || 'builder';
 
     useEffect(() => {
-      if (!documentId) return;
+      if (!documentId || documentBuilderStore.document?.id === documentId) {
+        return;
+      }
+
       startTransition(async () => {
         const result = await documentBuilderStore.initializeStore(documentId);
         if (result?.error) {
