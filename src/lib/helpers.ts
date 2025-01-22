@@ -374,17 +374,24 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
         } as DEX_Field,
       ],
     },
+    [INTERNAL_SECTION_TYPES.HOBBIES]: {
+      containerType: CONTAINER_TYPES.STATIC,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'What do you like?',
+          type: FIELD_TYPES.TEXTAREA,
+          value: '',
+        },
+      ],
+    },
   };
 
   return templateMap[sectionType];
 };
 
 export const getCookieValue = (cookieName: string) => {
-  try {
-    const cookies = document.cookie.split('; ');
-    const cookie = cookies.find((row) => row.startsWith(`${cookieName}=`));
-    return cookie ? cookie.split('=')[1] : null;
-  } catch {
-    // next.js throws an error
-  }
+  const cookies = document.cookie.split('; ');
+  const cookie = cookies.find((row) => row.startsWith(`${cookieName}=`));
+  return cookie ? cookie.split('=')[1] : null;
 };

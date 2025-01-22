@@ -10,6 +10,7 @@ import { getFieldHtmlId } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import DocumentBuilderSelectInput from '@/components/DocumentBuilderSelectInput';
 import { SELECT_TYPES } from '@/lib/constants';
+import { Textarea } from '@/components/ui/textarea';
 
 interface SectionFieldProps {
   fieldId: number;
@@ -58,13 +59,34 @@ const SectionField = observer(
       if (field.type === FIELD_TYPES.RICH_TEXT) {
         return 'rich-text';
       }
+
+      if (field.type === FIELD_TYPES.TEXTAREA) {
+        return (
+          <>
+            <Label htmlFor={htmlInputId}>{field.name}</Label>
+            <Textarea
+              autoFocus
+              id={htmlInputId}
+              value={field.value}
+              onChange={action(async (e) => {
+                await documentBuilderStore.setFieldValue(
+                  field.id,
+                  e.target.value,
+                );
+              })}
+            />
+          </>
+        );
+      }
     };
 
     return (
       <div
         className={cn(
           'flex flex-col gap-2',
-          field.type === FIELD_TYPES.RICH_TEXT && 'col-span-2',
+          (field.type === FIELD_TYPES.RICH_TEXT ||
+            field.type === FIELD_TYPES.TEXTAREA) &&
+            'col-span-2',
         )}
       >
         {renderInput()}

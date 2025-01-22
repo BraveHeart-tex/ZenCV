@@ -37,6 +37,11 @@ interface StringField extends BaseFieldProps {
   value: string;
 }
 
+interface TextareaField extends BaseFieldProps {
+  type: 'textarea';
+  value: string;
+}
+
 interface RichTextField extends BaseFieldProps {
   type: 'rich-text';
   value: 'string';
@@ -71,4 +76,5 @@ export type DEX_Field =
   | StringField
   | DateMonthField
   | SelectField
-  | RichTextField;
+  | RichTextField
+  | TextareaField;

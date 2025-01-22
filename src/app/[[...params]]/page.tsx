@@ -1,7 +1,12 @@
 import App from '@/components/App';
+import ClientOnly from '@/components/ClientOnly';
 
 const Page = () => {
-  return <App />;
+  return (
+    <ClientOnly>
+      <App />
+    </ClientOnly>
+  );
 };
 
 export default Page;
