@@ -7,7 +7,6 @@ export const INTERNAL_SECTION_TYPES = {
   SKILLS: 'skills',
   CUSTOM: 'custom',
   INTERNSHIPS: 'internships',
-  EXTRA_CURRICULAR_ACTIVITIES: 'extra-curricular-activities',
   HOBBIES: 'hobbies',
   REFERENCES: 'references',
   COURSES: 'courses',

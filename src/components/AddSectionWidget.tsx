@@ -5,7 +5,6 @@ import {
   BookOpenTextIcon,
   BriefcaseBusinessIcon,
   ContactIcon,
-  Flower2Icon,
   GuitarIcon,
   LanguagesIcon,
   type LucideIcon,
@@ -31,12 +30,6 @@ const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
     icon: SlidersHorizontalIcon,
     title: 'Custom Section',
     type: INTERNAL_SECTION_TYPES.CUSTOM,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-  },
-  {
-    icon: Flower2Icon,
-    title: 'Extra-curricular Activities',
-    type: INTERNAL_SECTION_TYPES.EXTRA_CURRICULAR_ACTIVITIES,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
