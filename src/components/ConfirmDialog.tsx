@@ -27,7 +27,7 @@ const ConfirmDialog = observer(() => {
 
   return (
     <Dialog open={isOpen} onOpenChange={action(() => onClose())}>
-      <DialogContent className="sm:max-w-[425px] bg-background border-border">
+      <DialogContent className="bg-background border-border">
         <DialogHeader>
           <DialogTitle className="text-foreground text-xl font-semibold">
             {confirmDialogStore.title}
