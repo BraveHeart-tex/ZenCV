@@ -44,22 +44,18 @@ import {
   getItemDeleteConfirmationPreference,
   setItemDeleteConfirmationPreference,
 } from '@/lib/userSettings';
+import { getTriggerContent } from '@/lib/helpers';
 
 interface CollapsibleSectionItemContainerProps {
-  triggerTitle?: string;
-  triggerDescription?: string;
   children: React.ReactNode;
   itemId: number;
 }
 
 const CollapsibleSectionItemContainer = observer(
-  ({
-    triggerTitle,
-    triggerDescription,
-    children,
-    itemId,
-  }: CollapsibleSectionItemContainerProps) => {
+  ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const open = itemId === documentBuilderStore.collapsedItemId;
+
+    const { title, description } = getTriggerContent(itemId);
 
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
     const {
@@ -152,17 +148,17 @@ const CollapsibleSectionItemContainer = observer(
                 <div
                   className={cn(
                     'flex flex-col min-h-9',
-                    !triggerDescription && 'justify-center',
+                    !description && 'justify-center',
                   )}
                 >
-                  <span className="max-w-full truncate">{triggerTitle}</span>
+                  <span className="max-w-full truncate">{title}</span>
                   <span
                     className={cn(
                       'text-xs text-muted-foreground opacity-100 transition-all ease-in',
-                      !triggerDescription && 'opacity-0',
+                      !description && 'opacity-0',
                     )}
                   >
-                    {triggerDescription}
+                    {description}
                   </span>
                 </div>
               </Button>
@@ -269,10 +265,10 @@ const CollapsibleSectionItemContainer = observer(
                   >
                     <ArrowLeftIcon />
                   </Button>
-                  {triggerTitle}
+                  {title}
                 </SheetTitle>
                 <SheetDescription>
-                  {triggerDescription || '(Not Specified)'}
+                  {description || '(Not Specified)'}
                 </SheetDescription>
               </SheetHeader>
               <div className={'mt-4 space-y-4'}>{children}</div>

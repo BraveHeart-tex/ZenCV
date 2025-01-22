@@ -18,11 +18,7 @@ const SectionItem = observer(({ itemId }: { itemId: number }) => {
   const ContainerElement = ({ children }: { children: ReactNode }) => {
     if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
       return (
-        <CollapsibleItemContainer
-          triggerTitle={'Testing'}
-          triggerDescription={'testing description'}
-          itemId={item.id}
-        >
+        <CollapsibleItemContainer itemId={item.id}>
           {children}
         </CollapsibleItemContainer>
       );
