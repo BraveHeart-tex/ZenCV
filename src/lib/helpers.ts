@@ -418,6 +418,35 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
       displayOrder: 1,
       fields: employmentHistoryFields,
     },
+    [INTERNAL_SECTION_TYPES.CUSTOM]: {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: 'Activity name, job, book title etc.',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'City',
+          type: FIELD_TYPES.STRING,
+        },
+        {
+          name: 'Start Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'End Date',
+          type: FIELD_TYPES.DATE_MONTH,
+        },
+        {
+          name: 'Description',
+          type: FIELD_TYPES.RICH_TEXT,
+        },
+      ].map((field) => ({
+        ...field,
+        value: '',
+      })),
+    },
   };
 
   return templateMap[sectionType];
