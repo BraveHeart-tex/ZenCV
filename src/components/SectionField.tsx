@@ -65,7 +65,6 @@ const SectionField = observer(
           <>
             <Label htmlFor={htmlInputId}>{field.name}</Label>
             <Textarea
-              autoFocus
               id={htmlInputId}
               value={field.value}
               onChange={action(async (e) => {
