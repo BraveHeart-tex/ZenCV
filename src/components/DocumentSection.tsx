@@ -10,6 +10,7 @@ import ItemsDndContext from '@/components/ItemsDndContext';
 import DraggableSectionContainer from '@/components/DraggableSectionContainer';
 import { FIXED_SECTIONS } from '@/lib/constants';
 import { ReactNode } from 'react';
+import SectionMetadataOptions from '@/components/SectionMetadataOptions';
 
 const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
@@ -37,6 +38,7 @@ const DocumentSection = observer(
         <div className="flex flex-col gap-1">
           <EditableSectionTitle sectionId={sectionId} />
           <SectionDescription sectionId={sectionId} />
+          <SectionMetadataOptions sectionId={sectionId} />
         </div>
         <ItemsDndContext items={items}>
           {items

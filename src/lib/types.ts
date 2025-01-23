@@ -1,9 +1,10 @@
-import { DEX_Field } from '@/lib/schema';
+import { DEX_Field, DEX_Section } from '@/lib/schema';
 import {
   FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
   NOT_TEMPLATED_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
   SELECT_TYPES,
 } from '@/lib/constants';
 
@@ -34,3 +35,16 @@ export type CollapsibleSectionType = Exclude<
 
 export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
   (typeof FIELD_NAMES)[K][keyof (typeof FIELD_NAMES)[K]];
+
+export type SectionMetadataKey = NestedValues<typeof SECTION_METADATA_KEYS>;
+
+export interface ParsedSectionMetadata {
+  label: string;
+  value: string;
+  key: SectionMetadataKey;
+}
+
+export interface SectionWithParsedMetadata
+  extends Omit<DEX_Section, 'metadata'> {
+  metadata: ParsedSectionMetadata[];
+}

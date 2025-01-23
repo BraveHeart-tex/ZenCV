@@ -16,12 +16,16 @@ import {
 } from '@/lib/service';
 import { getItemInsertTemplate } from '@/lib/helpers';
 import { OtherSectionOption } from '@/components/AddSectionWidget';
-
-import { TemplatedSectionType } from '@/lib/types';
+import {
+  ParsedSectionMetadata,
+  SectionMetadataKey,
+  SectionWithParsedMetadata,
+  TemplatedSectionType,
+} from '@/lib/types';
 
 class DocumentBuilderStore {
   document: DEX_Document | null = null;
-  sections: DEX_Section[] = [];
+  sections: SectionWithParsedMetadata[] = [];
   items: DEX_Item[] = [];
   fields: DEX_Field[] = [];
   collapsedItemId: DEX_Item['id'] | null = null;
@@ -60,9 +64,12 @@ class DocumentBuilderStore {
 
         runInAction(() => {
           this.document = document;
-          this.sections = sections.toSorted(
-            (a, b) => a.displayOrder - b.displayOrder,
-          );
+          this.sections = sections
+            .toSorted((a, b) => a.displayOrder - b.displayOrder)
+            .map((section) => ({
+              ...section,
+              metadata: JSON.parse(section?.metadata || '[]'),
+            }));
           this.items = items.toSorted(
             (a, b) => a.displayOrder - b.displayOrder,
           );
@@ -223,7 +230,7 @@ class DocumentBuilderStore {
         ),
     );
   };
-  reOrderSections = async (sections: DEX_Section[]) => {
+  reOrderSections = async (sections: SectionWithParsedMetadata[]) => {
     runInAction(() => {
       this.sections = sections.map((section, index) => ({
         ...section,
@@ -267,6 +274,7 @@ class DocumentBuilderStore {
           this.sections.push({
             ...sectionDto,
             id: sectionId,
+            metadata: option?.metadata ? JSON.parse(option?.metadata) : [],
           });
         });
 
@@ -280,6 +288,30 @@ class DocumentBuilderStore {
     this.items = [];
     this.fields = [];
     this.collapsedItemId = null;
+  };
+  getSectionMetadataOptions = (
+    sectionId: DEX_Section['id'],
+  ): ParsedSectionMetadata[] => {
+    const section = this.getSectionById(sectionId);
+    if (!section || !section?.metadata) return [];
+    return section?.metadata || [];
+  };
+  updateSectionMetadata = (
+    sectionId: DEX_Section['id'],
+    data: {
+      key: SectionMetadataKey;
+      value: string;
+    },
+  ) => {
+    const section = this.getSectionById(sectionId);
+    if (!section) return;
+
+    const metadata = section.metadata.find(
+      (metadata) => metadata.key === data.key,
+    );
+    if (metadata) {
+      metadata.value = data.value;
+    }
   };
 }
 

@@ -1,4 +1,8 @@
-import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '@/lib/constants';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '@/lib/constants';
 import {
   CONTAINER_TYPES,
   DEX_Document,
@@ -13,6 +17,7 @@ import {
   CollapsibleSectionType,
   FieldInsertTemplate,
   FieldValuesForKey,
+  ParsedSectionMetadata,
   TemplatedSectionType,
 } from '@/lib/types';
 import {
@@ -101,9 +106,13 @@ export const getInitialDocumentInsertBoilerplate = (
       documentId,
       title: 'Skills',
       type: INTERNAL_SECTION_TYPES.SKILLS,
-      metadata: JSON.stringify({
-        showExperienceLevel: true,
-      }),
+      metadata: generateSectionMetadata([
+        {
+          label: 'Show Experience Level',
+          key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+          value: '',
+        },
+      ]),
       items: [
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -459,4 +468,8 @@ const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
     title: referentFullName,
     description: company || '',
   };
+};
+
+export const generateSectionMetadata = (data: ParsedSectionMetadata[]) => {
+  return JSON.stringify(data);
 };

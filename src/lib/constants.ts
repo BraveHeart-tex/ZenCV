@@ -142,3 +142,12 @@ export const FIELD_NAMES = {
     REFERENT_EMAIL: "Referent's Email",
   },
 } as const;
+
+export const SECTION_METADATA_KEYS = {
+  SKILLS: {
+    SHOW_EXPERIENCE_LEVEL: 'showExperienceLevel',
+  },
+  REFERENCES: {
+    HIDE_REFERENCES: 'hideReferences',
+  },
+} as const;

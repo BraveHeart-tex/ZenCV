@@ -11,11 +11,12 @@ import {
   SlidersHorizontalIcon,
 } from 'lucide-react';
 import { CONTAINER_TYPES, DEX_Item, DEX_Section } from '@/lib/schema';
-import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
+import { INTERNAL_SECTION_TYPES, SECTION_METADATA_KEYS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
 import { TemplatedSectionType } from '@/lib/types';
+import { generateSectionMetadata } from '@/lib/helpers';
 
 export interface OtherSectionOption
   extends Omit<
@@ -44,9 +45,14 @@ const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
     icon: ContactIcon,
     title: 'References',
     type: INTERNAL_SECTION_TYPES.REFERENCES,
-    metadata: JSON.stringify({
-      hideReferences: true,
-    }),
+    metadata: generateSectionMetadata([
+      {
+        label:
+          'I would like to hide references and make them available upon request',
+        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+        value: '',
+      },
+    ]),
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
