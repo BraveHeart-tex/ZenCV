@@ -45,10 +45,11 @@ import {
   setItemDeleteConfirmationPreference,
 } from '@/lib/userSettings';
 import { getTriggerContent } from '@/lib/helpers';
+import { DEX_Item } from '@/lib/schema';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
-  itemId: number;
+  itemId: DEX_Item['id'];
 }
 
 const CollapsibleSectionItemContainer = observer(

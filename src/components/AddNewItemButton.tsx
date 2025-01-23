@@ -4,9 +4,10 @@ import { PlusIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
+import { DEX_Section } from '@/lib/schema';
 
 interface AddNewItemButtonProps {
-  sectionId: number;
+  sectionId: DEX_Section['id'];
 }
 
 const AddNewItemButton = observer(({ sectionId }: AddNewItemButtonProps) => {

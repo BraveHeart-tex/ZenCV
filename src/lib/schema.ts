@@ -1,4 +1,9 @@
-import { FieldName, SectionType, SelectType } from '@/lib/types';
+import {
+  FieldInsertTemplate,
+  FieldName,
+  SectionType,
+  SelectType,
+} from '@/lib/types';
 
 type IdType = number;
 
@@ -78,3 +83,19 @@ export type DEX_Field =
   | SelectField
   | RichTextField
   | TextareaField;
+
+export interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
+  fields: FieldInsertTemplate[];
+}
+
+export interface SectionWithFields extends Omit<DEX_Section, 'id'> {
+  items: ItemWithFields[];
+}
+
+export type DEX_InsertDocumentModel = Omit<
+  DEX_Document,
+  'id' | 'createdAt' | 'updatedAt'
+>;
+
+export type DEX_InsertItemModel = Omit<DEX_Item, 'id'>;
+export type DEX_InsertFieldModel = Omit<DEX_Field, 'id'>;

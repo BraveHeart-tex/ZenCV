@@ -2,9 +2,10 @@
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { builderSectionTitleClassNames, cn } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
+import { DEX_Section } from '@/lib/schema';
 
 interface BuilderSectionTitleProps {
-  sectionId: number;
+  sectionId: DEX_Section['id'];
   className?: string;
 }
 

@@ -16,9 +16,10 @@ import { showErrorToast } from '@/components/ui/sonner';
 import DocumentBuilderHeader from '@/components/DocumentBuilderHeader';
 import DocumentSections from '@/components/DocumentSections';
 import AddSectionWidget from '@/components/AddSectionWidget';
+import { DEX_Document } from '@/lib/schema';
 
 const DocumentBuilderClient = observer(
-  ({ documentId }: { documentId: number }) => {
+  ({ documentId }: { documentId: DEX_Document['id'] }) => {
     const navigate = useNavigate();
 
     const [, startTransition] = useTransition();

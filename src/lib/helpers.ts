@@ -1,10 +1,11 @@
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
-  FIELD_TYPES,
+  DEX_Document,
   type DEX_Field,
   type DEX_Item,
-  type DEX_Section,
+  FIELD_TYPES,
+  SectionWithFields,
   type SelectField,
 } from '@/lib/schema';
 import { documentBuilderStore } from './documentBuilderStore';
@@ -26,16 +27,8 @@ import {
   websitesAndLinkFields,
 } from '@/lib/fieldTemplates';
 
-interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
-  fields: FieldInsertTemplate[];
-}
-
-interface SectionWithFields extends Omit<DEX_Section, 'id'> {
-  items: ItemWithFields[];
-}
-
 export const getInitialDocumentInsertBoilerplate = (
-  documentId: number,
+  documentId: DEX_Document['id'],
 ): SectionWithFields[] => {
   return [
     {

@@ -24,12 +24,12 @@ class DocumentBuilderStore {
   sections: DEX_Section[] = [];
   items: DEX_Item[] = [];
   fields: DEX_Field[] = [];
-  collapsedItemId: number | null = null;
+  collapsedItemId: DEX_Item['id'] | null = null;
 
   constructor() {
     makeAutoObservable(this);
   }
-  initializeStore = async (documentId: number) => {
+  initializeStore = async (documentId: DEX_Document['id']) => {
     return dxDb.transaction(
       'r',
       [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
@@ -81,30 +81,30 @@ class DocumentBuilderStore {
     });
   };
 
-  getSectionById = (sectionId: number) => {
+  getSectionById = (sectionId: DEX_Section['id']) => {
     return this.sections.find((section) => section.id === sectionId);
   };
 
-  getItemsBySectionId = (sectionId: number) => {
+  getItemsBySectionId = (sectionId: DEX_Section['id']) => {
     return this.items
       .filter((item) => item.sectionId === sectionId)
       .sort((a, b) => a.displayOrder - b.displayOrder);
   };
 
-  getFieldsByItemId = (itemId: number) => {
+  getFieldsByItemId = (itemId: DEX_Item['id']) => {
     return this.fields.filter((field) => field.itemId === itemId);
   };
 
-  getFieldById = (fieldId: number) => {
+  getFieldById = (fieldId: DEX_Field['id']) => {
     return this.fields.find((field) => field.id === fieldId);
   };
 
-  getItemById = (itemId: number) => {
+  getItemById = (itemId: DEX_Item['id']) => {
     return this.items.find((item) => item.id === itemId);
   };
 
   setFieldValue = async (
-    fieldId: number,
+    fieldId: DEX_Field['id'],
     value: string,
     shouldSaveToStore = true,
   ) => {
@@ -119,7 +119,7 @@ class DocumentBuilderStore {
     }
   };
 
-  renameSection = async (sectionId: number, value: string) => {
+  renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     runInAction(() => {
       const section = this.sections.find((section) => section.id === sectionId);
       if (!section) return;
@@ -131,11 +131,11 @@ class DocumentBuilderStore {
     });
   };
 
-  toggleItem = (itemId: number) => {
+  toggleItem = (itemId: DEX_Item['id']) => {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
   };
 
-  removeItem = async (itemId: number) => {
+  removeItem = async (itemId: DEX_Item['id']) => {
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.fields = this.fields.filter((field) => field.itemId !== itemId);
@@ -144,7 +144,7 @@ class DocumentBuilderStore {
     await deleteItem(itemId);
   };
 
-  removeSection = async (sectionId: number) => {
+  removeSection = async (sectionId: DEX_Section['id']) => {
     runInAction(() => {
       const itemIdsToKeep = this.items
         .filter((item) => item.sectionId !== sectionId)
@@ -162,7 +162,7 @@ class DocumentBuilderStore {
     await deleteSection(sectionId);
   };
 
-  addNewItemEntry = async (sectionId: number) => {
+  addNewItemEntry = async (sectionId: DEX_Section['id']) => {
     const section = this.getSectionById(sectionId);
     if (!section) return;
 

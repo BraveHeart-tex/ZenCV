@@ -4,12 +4,12 @@ import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import SectionField from '@/components/SectionField';
 import { cn } from '@/lib/utils';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
-import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/schema';
+import { CONTAINER_TYPES, DEX_Item, FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
 import CollapsibleItemContainer from '@/components/CollapsibleItemContainer';
 import type { ReactNode } from 'react';
 
-const SectionItem = observer(({ itemId }: { itemId: number }) => {
+const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
   const item = documentBuilderStore.getItemById(itemId)!;
   const fields = documentBuilderStore.getFieldsByItemId(itemId);
 

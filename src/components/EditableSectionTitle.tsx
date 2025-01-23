@@ -30,9 +30,10 @@ import {
   getSectionDeleteConfirmationPreference,
   setSectionDeleteConfirmationPreference,
 } from '@/lib/userSettings';
+import { DEX_Section } from '@/lib/schema';
 
 const EditableSectionTitle = observer(
-  ({ sectionId }: { sectionId: number }) => {
+  ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const section = documentBuilderStore.getSectionById(sectionId)!;
 
     const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.includes(
@@ -97,103 +98,105 @@ const EditableSectionTitle = observer(
   },
 );
 
-const RenameSectionDialog = observer(({ sectionId }: { sectionId: number }) => {
-  const [open, setOpen] = useState(false);
-  const section = documentBuilderStore.getSectionById(sectionId)!;
-  const [enteredTitle, setEnteredTitle] = useState(section.title || '');
-  const inputRef = useRef<HTMLInputElement>(null);
+const RenameSectionDialog = observer(
+  ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
+    const [open, setOpen] = useState(false);
+    const section = documentBuilderStore.getSectionById(sectionId)!;
+    const [enteredTitle, setEnteredTitle] = useState(section.title || '');
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleRenameSectionSubmit = action(async (event: FormEvent) => {
-    event.preventDefault();
-    if (!enteredTitle.replaceAll(' ', '').trim()) {
-      showErrorToast('New section title cannot be empty.');
-      inputRef?.current?.focus();
-      return;
-    }
+    const handleRenameSectionSubmit = action(async (event: FormEvent) => {
+      event.preventDefault();
+      if (!enteredTitle.replaceAll(' ', '').trim()) {
+        showErrorToast('New section title cannot be empty.');
+        inputRef?.current?.focus();
+        return;
+      }
 
-    await documentBuilderStore.renameSection(sectionId, enteredTitle);
-    showSuccessToast('Section renamed successfully');
-    setOpen(false);
-  });
+      await documentBuilderStore.renameSection(sectionId, enteredTitle);
+      showSuccessToast('Section renamed successfully');
+      setOpen(false);
+    });
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => {
-                setEnteredTitle(section.title);
-                setOpen(true);
-              }}
-            >
-              <PencilIcon />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Rename {`"${section.title}"`}</TooltipContent>
-        </Tooltip>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Rename {`"${section.title}"`}</DialogTitle>
-          <VisuallyHidden>
-            <DialogDescription>
-              Use the form below to rename the {`"${section.title}"`}{' '}
-              {!section.title.includes('section') && 'section'}
-            </DialogDescription>
-          </VisuallyHidden>
-        </DialogHeader>
-        <form onSubmit={handleRenameSectionSubmit} className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="newSectionTitle">New Section Title</Label>
-            <div className="relative">
-              <Input
-                ref={inputRef}
-                id="newSectionTitle"
-                type="text"
-                minLength={1}
-                required
-                aria-invalid={enteredTitle ? 'false' : 'true'}
-                value={enteredTitle}
-                onChange={(event) => setEnteredTitle(event.target.value)}
-                className={cn(
-                  'pr-10',
-                  !enteredTitle &&
-                    'border-destructive focus-visible:ring-destructive',
-                )}
-              />
-              <CornerDownLeftIcon className="top-1/2 right-2 bg-muted text-muted-foreground absolute p-1 -translate-y-1/2 rounded-md" />
-            </div>
-            {!enteredTitle && (
-              <p className="text-destructive text-sm font-medium">
-                New section title cannot be empty
-              </p>
-            )}
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <DialogClose asChild>
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <Button
-                type="button"
-                aria-label="Close rename dialog"
-                variant="outline"
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  setEnteredTitle(section.title);
+                  setOpen(true);
+                }}
               >
-                Cancel
+                <PencilIcon />
               </Button>
-            </DialogClose>
-            <Button
-              type="submit"
-              aria-label="Rename section"
-              disabled={!enteredTitle}
-            >
-              Rename
-            </Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-});
+            </TooltipTrigger>
+            <TooltipContent>Rename {`"${section.title}"`}</TooltipContent>
+          </Tooltip>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename {`"${section.title}"`}</DialogTitle>
+            <VisuallyHidden>
+              <DialogDescription>
+                Use the form below to rename the {`"${section.title}"`}{' '}
+                {!section.title.includes('section') && 'section'}
+              </DialogDescription>
+            </VisuallyHidden>
+          </DialogHeader>
+          <form onSubmit={handleRenameSectionSubmit} className="space-y-4">
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="newSectionTitle">New Section Title</Label>
+              <div className="relative">
+                <Input
+                  ref={inputRef}
+                  id="newSectionTitle"
+                  type="text"
+                  minLength={1}
+                  required
+                  aria-invalid={enteredTitle ? 'false' : 'true'}
+                  value={enteredTitle}
+                  onChange={(event) => setEnteredTitle(event.target.value)}
+                  className={cn(
+                    'pr-10',
+                    !enteredTitle &&
+                      'border-destructive focus-visible:ring-destructive',
+                  )}
+                />
+                <CornerDownLeftIcon className="top-1/2 right-2 bg-muted text-muted-foreground absolute p-1 -translate-y-1/2 rounded-md" />
+              </div>
+              {!enteredTitle && (
+                <p className="text-destructive text-sm font-medium">
+                  New section title cannot be empty
+                </p>
+              )}
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  aria-label="Close rename dialog"
+                  variant="outline"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                aria-label="Rename section"
+                disabled={!enteredTitle}
+              >
+                Rename
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  },
+);
 
 export default EditableSectionTitle;

@@ -11,9 +11,10 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
+import { DEX_Section } from '@/lib/schema';
 
 interface DraggableSectionContainerProps {
-  sectionId: number;
+  sectionId: DEX_Section['id'];
   children?: React.ReactNode;
   className?: string;
 }

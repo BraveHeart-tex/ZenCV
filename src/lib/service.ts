@@ -2,6 +2,9 @@ import { dxDb } from './dxDb';
 import {
   DEX_Document,
   DEX_Field,
+  DEX_InsertDocumentModel,
+  DEX_InsertFieldModel,
+  DEX_InsertItemModel,
   DEX_Item,
   DEX_Section,
   SelectField,
@@ -11,9 +14,7 @@ import {
   isSelectField,
 } from '@/lib/helpers';
 
-export const createDocument = async (
-  data: Omit<DEX_Document, 'id' | 'createdAt' | 'updatedAt'>,
-) => {
+export const createDocument = async (data: DEX_InsertDocumentModel) => {
   return dxDb.transaction(
     'rw',
     [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
@@ -36,8 +37,8 @@ export const createDocument = async (
         allKeys: true,
       });
 
-      const itemInsertDtos: Omit<DEX_Item, 'id'>[] = [];
-      const fieldInsertDtos: Omit<DEX_Field, 'id'>[] = [];
+      const itemInsertDtos: DEX_InsertItemModel[] = [];
+      const fieldInsertDtos: DEX_InsertFieldModel[] = [];
 
       sectionTemplates.forEach((sectionTemplate, sectionIndex) => {
         const sectionId = sectionInsertIds[sectionIndex];
@@ -96,13 +97,13 @@ export const renameDocument = async (
 };
 
 export const updateSection = async (
-  sectionId: number,
+  sectionId: DEX_Section['id'],
   data: Partial<Omit<DEX_Section, 'id'>>,
 ) => {
   return dxDb.sections.update(sectionId, data);
 };
 
-export const updateField = async (fieldId: number, value: string) => {
+export const updateField = async (fieldId: DEX_Field['id'], value: string) => {
   return dxDb.fields.update(fieldId, {
     value,
   });
@@ -137,7 +138,7 @@ export const deleteDocument = async (documentId: DEX_Document['id']) => {
   );
 };
 
-export const deleteItem = async (itemId: number) => {
+export const deleteItem = async (itemId: DEX_Item['id']) => {
   return dxDb.transaction('rw', [dxDb.items, dxDb.fields], async () => {
     await dxDb.items.delete(itemId);
     await dxDb.fields.where('itemId').equals(itemId).delete();
@@ -145,7 +146,7 @@ export const deleteItem = async (itemId: number) => {
 };
 
 export const addItemFromTemplate = async (
-  template: Omit<DEX_Item, 'id'> & {
+  template: DEX_InsertItemModel & {
     fields: Omit<DEX_Field, 'id' | 'itemId'>[];
   },
 ): Promise<{ item: DEX_Item; fields: DEX_Field[] }> => {
@@ -181,7 +182,7 @@ export const addItemFromTemplate = async (
   });
 };
 
-export const deleteSection = (sectionId: number) => {
+export const deleteSection = (sectionId: DEX_Section['id']) => {
   return dxDb.transaction(
     'rw',
     [dxDb.sections, dxDb.items, dxDb.fields],

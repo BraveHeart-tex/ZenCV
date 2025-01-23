@@ -35,10 +35,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { getFieldHtmlId } from '@/lib/helpers';
+import { DEX_Field } from '@/lib/schema';
 
 const PRESENT = 'Present';
 
-const DateFieldInput = observer(({ fieldId }: { fieldId: number }) => {
+const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
   const field = documentBuilderStore.getFieldById(fieldId)!;
   const htmlInputId = getFieldHtmlId(field);
 

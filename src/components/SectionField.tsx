@@ -4,7 +4,7 @@ import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
-import { FIELD_TYPES } from '@/lib/schema';
+import { DEX_Field, FIELD_TYPES } from '@/lib/schema';
 import DateFieldInput from '@/components/DateFieldInput';
 import { getFieldHtmlId } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ import { SELECT_TYPES } from '@/lib/constants';
 import { Textarea } from '@/components/ui/textarea';
 
 interface SectionFieldProps {
-  fieldId: number;
+  fieldId: DEX_Field['id'];
 }
 
 const SectionField = observer(({ fieldId }: SectionFieldProps) => {
