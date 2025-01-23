@@ -1,6 +1,7 @@
 import { DEX_Field } from '@/lib/schema';
 import {
   FIELD_NAMES,
+  FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
   NOT_TEMPLATED_SECTION_TYPES,
   SELECT_TYPES,
@@ -25,3 +26,11 @@ export type TemplatedSectionType = Exclude<
 export type SelectType = (typeof SELECT_TYPES)[keyof typeof SELECT_TYPES];
 
 export type FieldName = NestedValues<typeof FIELD_NAMES>;
+
+export type CollapsibleSectionType = Exclude<
+  SectionType,
+  (typeof FIXED_SECTIONS)[number]
+>;
+
+export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
+  (typeof FIELD_NAMES)[K][keyof (typeof FIELD_NAMES)[K]];

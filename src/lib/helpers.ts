@@ -1,16 +1,17 @@
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
-  DEX_Field,
   FIELD_TYPES,
-  DEX_Item,
-  DEX_Section,
-  SelectField,
+  type DEX_Field,
+  type DEX_Item,
+  type DEX_Section,
+  type SelectField,
 } from '@/lib/schema';
 import { documentBuilderStore } from './documentBuilderStore';
 import {
+  CollapsibleSectionType,
   FieldInsertTemplate,
-  SectionType,
+  FieldValuesForKey,
   TemplatedSectionType,
 } from '@/lib/types';
 import {
@@ -207,7 +208,7 @@ export const getCookieValue = (cookieName: string) => {
 };
 
 export const getTriggerContent = (
-  itemId: number,
+  itemId: DEX_Item['id'],
 ): {
   title: string;
   description: string;
@@ -220,7 +221,8 @@ export const getTriggerContent = (
     };
   }
 
-  const sectionType = documentBuilderStore.getSectionById(item.sectionId)?.type;
+  const sectionType = documentBuilderStore.getSectionById(item.sectionId)
+    ?.type as CollapsibleSectionType;
   if (!sectionType) {
     return {
       description: '',
@@ -228,9 +230,8 @@ export const getTriggerContent = (
     };
   }
 
-  // @ts-expect-error TODO: implement the remaining section types
   const sectionTypeToTitle: Record<
-    SectionType,
+    CollapsibleSectionType,
     { title: string; description: string }
   > = {
     [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]:
@@ -256,20 +257,27 @@ export const getTriggerContent = (
   );
 };
 
-const getEmploymentHistoryTitle = (itemId: number) => {
+const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const jobTitleField = itemFields.find((field) => field.name === 'Job Title');
-  const startDateField = itemFields.find(
-    (field) => field.name === 'Start Date',
-  );
-  const endDateField = itemFields.find((field) => field.name === 'End Date');
-  const employerField = itemFields.find((field) => field.name === 'Employer');
+  const getEmploymentHistoryFieldValue = (
+    fieldName: FieldValuesForKey<'EMPLOYMENT_HISTORY'>,
+  ) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const jobTitle = jobTitleField?.value || '';
-  const startDate = startDateField?.value || '';
-  const endDate = endDateField?.value || '';
-  const employer = employerField?.value || '';
+  const jobTitle = getEmploymentHistoryFieldValue(
+    FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+  );
+  const startDate = getEmploymentHistoryFieldValue(
+    FIELD_NAMES.EMPLOYMENT_HISTORY.START_DATE,
+  );
+  const endDate = getEmploymentHistoryFieldValue(
+    FIELD_NAMES.EMPLOYMENT_HISTORY.END_DATE,
+  );
+  const employer = getEmploymentHistoryFieldValue(
+    FIELD_NAMES.EMPLOYMENT_HISTORY.EMPLOYER,
+  );
 
   let triggerTitle = jobTitle
     ? `${employer ? `${jobTitle} at ${employer}` : jobTitle}`
@@ -286,20 +294,19 @@ const getEmploymentHistoryTitle = (itemId: number) => {
   };
 };
 
-const getEducationSectionTitle = (itemId: number) => {
+const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const schoolField = itemFields.find((field) => field.name === 'School');
-  const degreeField = itemFields.find((field) => field.name === 'Degree');
-  const startDateField = itemFields.find(
-    (field) => field.name === 'Start Date',
-  );
-  const endDateField = itemFields.find((field) => field.name === 'End Date');
+  const getEducationFieldValue = (
+    fieldName: FieldValuesForKey<'EDUCATION'>,
+  ) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const schoolTitle = schoolField?.value || '';
-  const startDate = startDateField?.value || '';
-  const endDate = endDateField?.value || '';
-  const degree = degreeField?.value || '';
+  const schoolTitle = getEducationFieldValue(FIELD_NAMES.EDUCATION.SCHOOL);
+  const degree = getEducationFieldValue(FIELD_NAMES.EDUCATION.DEGREE);
+  const startDate = getEducationFieldValue(FIELD_NAMES.EDUCATION.START_DATE);
+  const endDate = getEducationFieldValue(FIELD_NAMES.EDUCATION.END_DATE);
 
   let triggerTitle =
     degree && schoolTitle
@@ -319,14 +326,21 @@ const getEducationSectionTitle = (itemId: number) => {
   };
 };
 
-const getWebsitesSocialLinksTitle = (itemId: number) => {
+const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const labelField = itemFields.find((field) => field.name === 'Label');
-  const linkField = itemFields.find((field) => field.name === 'Link');
+  const getWebsiteFieldValue = (
+    fieldName: FieldValuesForKey<'WEBSITES_SOCIAL_LINKS'>,
+  ) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const labelValue = labelField?.value || '';
-  const linkValue = linkField?.value || '';
+  const labelValue = getWebsiteFieldValue(
+    FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL,
+  );
+  const linkValue = getWebsiteFieldValue(
+    FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK,
+  );
 
   const triggerTitle = labelValue || '(Untitled)';
   const description = linkValue || '';
@@ -337,15 +351,15 @@ const getWebsitesSocialLinksTitle = (itemId: number) => {
   };
 };
 
-const getSkillsSectionTitle = (itemId: number) => {
+const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
-  const skillField = itemFields.find((field) => field.name === 'Skill');
-  const levelField = itemFields.find(
-    (field) => field.name === 'Experience Level',
-  );
 
-  const skillValue = skillField?.value;
-  const levelValue = levelField?.value;
+  const getSkillFieldValue = (fieldName: FieldValuesForKey<'SKILLS'>) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
+
+  const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
+  const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
 
   const triggerTitle = skillValue || '(Untitled)';
   const description = levelValue || '';
@@ -356,14 +370,15 @@ const getSkillsSectionTitle = (itemId: number) => {
   };
 };
 
-const getLanguagesSectionTitle = (itemId: number) => {
+const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const languageField = itemFields.find((field) => field.name === 'Language');
-  const levelField = itemFields.find((field) => field.name === 'Level');
+  const getLanguageFieldValue = (fieldName: FieldValuesForKey<'LANGUAGES'>) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const language = languageField?.value;
-  const level = levelField?.value;
+  const language = getLanguageFieldValue(FIELD_NAMES.LANGUAGES.LANGUAGE);
+  const level = getLanguageFieldValue(FIELD_NAMES.LANGUAGES.LEVEL);
 
   return {
     title: language || '(Untitled)',
@@ -371,21 +386,17 @@ const getLanguagesSectionTitle = (itemId: number) => {
   };
 };
 
-const getCoursesSectionTitle = (itemId: number) => {
+const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
-  const courseField = itemFields.find((field) => field.name === 'Course');
-  const institutionField = itemFields.find(
-    (field) => field.name === 'Institution',
-  );
-  const startDateField = itemFields.find(
-    (field) => field.name === 'Start Date',
-  );
-  const endDateField = itemFields.find((field) => field.name === 'End Date');
 
-  const course = courseField?.value;
-  const institution = institutionField?.value;
-  const startDate = startDateField?.value;
-  const endDate = endDateField?.value;
+  const getCourseFieldValue = (fieldName: FieldValuesForKey<'COURSES'>) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
+
+  const course = getCourseFieldValue(FIELD_NAMES.COURSES.COURSE);
+  const institution = getCourseFieldValue(FIELD_NAMES.COURSES.INSTITUTION);
+  const startDate = getCourseFieldValue(FIELD_NAMES.COURSES.START_DATE);
+  const endDate = getCourseFieldValue(FIELD_NAMES.COURSES.END_DATE);
 
   const triggerTitle = course
     ? institution
@@ -406,22 +417,17 @@ const getCoursesSectionTitle = (itemId: number) => {
   };
 };
 
-const getCustomSectionTitle = (itemId: number) => {
+const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const nameField = itemFields.find(
-    (field) => field.name === 'Activity name, job, book title etc.',
-  );
-  const cityField = itemFields.find((field) => field.name === 'City');
-  const startDateField = itemFields.find(
-    (field) => field.name === 'Start Date',
-  );
-  const endDateField = itemFields.find((field) => field.name === 'End Date');
+  const getCustomFieldValue = (fieldName: FieldValuesForKey<'CUSTOM'>) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const name = nameField?.value;
-  const city = cityField?.value;
-  const startDate = startDateField?.value;
-  const endDate = endDateField?.value;
+  const name = getCustomFieldValue(FIELD_NAMES.CUSTOM.ACTIVITY_NAME);
+  const city = getCustomFieldValue(FIELD_NAMES.CUSTOM.CITY);
+  const startDate = getCustomFieldValue(FIELD_NAMES.CUSTOM.START_DATE);
+  const endDate = getCustomFieldValue(FIELD_NAMES.CUSTOM.END_DATE);
 
   const triggerTitle = name
     ? city
@@ -442,16 +448,19 @@ const getCustomSectionTitle = (itemId: number) => {
   };
 };
 
-const getReferencesSectionTitle = (itemId: number) => {
+const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
-  const referentFullNameField = itemFields.find(
-    (field) => field.name === "Referent's Full Name",
-  );
-  const companyField = itemFields.find((field) => field.name === 'Company');
+  const getReferenceFieldValue = (
+    fieldName: FieldValuesForKey<'REFERENCES'>,
+  ) => {
+    return itemFields.find((field) => field.name === fieldName)?.value || '';
+  };
 
-  const referentFullName = referentFullNameField?.value || '(Not Specified)';
-  const company = companyField?.value;
+  const referentFullName =
+    getReferenceFieldValue(FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME) ||
+    '(Not Specified)';
+  const company = getReferenceFieldValue(FIELD_NAMES.REFERENCES.COMPANY);
 
   return {
     title: referentFullName,
