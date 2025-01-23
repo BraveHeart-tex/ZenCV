@@ -198,3 +198,52 @@ export const deleteSection = (sectionId: DEX_Section['id']) => {
     },
   );
 };
+
+export const getFullDocumentStructure = (
+  documentId: DEX_Document['id'],
+): Promise<
+  | { success: false; error: string }
+  | {
+      success: true;
+      document: DEX_Document;
+      sections: DEX_Section[];
+      items: DEX_Item[];
+      fields: DEX_Field[];
+    }
+> => {
+  return dxDb.transaction(
+    'r',
+    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
+    async () => {
+      const document = await dxDb.documents.get(documentId);
+      if (!document) {
+        return {
+          success: false,
+          error: 'Document not found.',
+        };
+      }
+
+      const sections = await dxDb.sections
+        .where('documentId')
+        .equals(documentId)
+        .toArray();
+      const sectionIds = sections.map((section) => section.id);
+
+      const items = await dxDb.items
+        .where('sectionId')
+        .anyOf(sectionIds)
+        .toArray();
+      const itemIds = items.map((item) => item.id);
+
+      const fields = await dxDb.fields.where('itemId').anyOf(itemIds).toArray();
+
+      return {
+        success: true,
+        document,
+        sections,
+        items,
+        fields,
+      };
+    },
+  );
+};

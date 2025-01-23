@@ -10,6 +10,7 @@ import {
   addItemFromTemplate,
   deleteItem,
   deleteSection,
+  getFullDocumentStructure,
   renameDocument,
   updateField,
   updateSection,
@@ -34,49 +35,26 @@ class DocumentBuilderStore {
     makeAutoObservable(this);
   }
   initializeStore = async (documentId: DEX_Document['id']) => {
-    return dxDb.transaction(
-      'r',
-      [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
-      async () => {
-        const document = await dxDb.documents.get(documentId);
-        if (!document) {
-          return {
-            error: 'Document not found.',
-          };
-        }
+    const result = await getFullDocumentStructure(documentId);
+    if (!result?.success) {
+      return {
+        error: result?.error,
+      };
+    }
 
-        const sections = await dxDb.sections
-          .where('documentId')
-          .equals(documentId)
-          .toArray();
-        const sectionIds = sections.map((section) => section.id);
+    const { document, sections, items, fields } = result;
 
-        const items = await dxDb.items
-          .where('sectionId')
-          .anyOf(sectionIds)
-          .toArray();
-        const itemIds = items.map((item) => item.id);
-
-        const fields = await dxDb.fields
-          .where('itemId')
-          .anyOf(itemIds)
-          .toArray();
-
-        runInAction(() => {
-          this.document = document;
-          this.sections = sections
-            .toSorted((a, b) => a.displayOrder - b.displayOrder)
-            .map((section) => ({
-              ...section,
-              metadata: JSON.parse(section?.metadata || '[]'),
-            }));
-          this.items = items.toSorted(
-            (a, b) => a.displayOrder - b.displayOrder,
-          );
-          this.fields = fields;
-        });
-      },
-    );
+    runInAction(() => {
+      this.document = document;
+      this.sections = sections
+        .toSorted((a, b) => a.displayOrder - b.displayOrder)
+        .map((section) => ({
+          ...section,
+          metadata: JSON.parse(section?.metadata || '[]'),
+        }));
+      this.items = items.toSorted((a, b) => a.displayOrder - b.displayOrder);
+      this.fields = fields;
+    });
   };
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
@@ -95,7 +73,7 @@ class DocumentBuilderStore {
   getItemsBySectionId = (sectionId: DEX_Section['id']) => {
     return this.items
       .filter((item) => item.sectionId === sectionId)
-      .sort((a, b) => a.displayOrder - b.displayOrder);
+      .toSorted((a, b) => a.displayOrder - b.displayOrder);
   };
 
   getFieldsByItemId = (itemId: DEX_Item['id']) => {
