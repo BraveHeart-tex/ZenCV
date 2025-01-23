@@ -1,10 +1,4 @@
-// TODO: Implement FIELD_NAMES constant for all sections
-// hard-coded strings should be removed for preventing typos
-import {
-  INTERNAL_SECTION_TYPES,
-  SectionType,
-  SELECT_TYPES,
-} from '@/lib/constants';
+import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
   DEX_Field,
@@ -14,41 +8,30 @@ import {
   SelectField,
 } from '@/lib/schema';
 import { documentBuilderStore } from './documentBuilderStore';
+import {
+  FieldInsertTemplate,
+  SectionType,
+  TemplatedSectionType,
+} from '@/lib/types';
+import {
+  coursesSectionFields,
+  customSectionFields,
+  educationFields,
+  employmentHistoryFields,
+  languagesSectionFields,
+  personalDetailsSectionFields,
+  referencesSectionFields,
+  skillsSectionFields,
+  websitesAndLinkFields,
+} from '@/lib/fieldTemplates';
 
 interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
-  fields: Omit<DEX_Field, 'id' | 'itemId'>[];
+  fields: FieldInsertTemplate[];
 }
 
 interface SectionWithFields extends Omit<DEX_Section, 'id'> {
   items: ItemWithFields[];
 }
-
-const employmentHistoryFields = [
-  {
-    name: 'Job Title',
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: 'Employer',
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: 'Start Date',
-    type: FIELD_TYPES.DATE_MONTH,
-  },
-  {
-    name: 'End Date',
-    type: FIELD_TYPES.DATE_MONTH,
-  },
-  {
-    name: 'City',
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: 'Description',
-    type: FIELD_TYPES.RICH_TEXT,
-  },
-].map((item) => ({ ...item, value: '' }));
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: number,
@@ -62,56 +45,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.STATIC,
           displayOrder: 1,
-          fields: [
-            {
-              name: 'Wanted Job Title',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'First Name',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Last Name',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Email',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Phone',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Country',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'City',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Address',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Postal Code',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Driving License',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Place of Birth',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Date of Birth',
-              type: FIELD_TYPES.STRING,
-            },
-          ].map((item) => ({ ...item, value: '' })),
+          fields: personalDetailsSectionFields,
         },
       ],
     },
@@ -123,7 +57,13 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.STATIC,
           displayOrder: 1,
-          fields: [{ name: '', type: FIELD_TYPES.RICH_TEXT, value: '' }],
+          fields: [
+            {
+              name: FIELD_NAMES.PROFESSIONAL_SUMMARY.PROFESSIONAL_SUMMARY,
+              type: FIELD_TYPES.RICH_TEXT,
+              value: '',
+            },
+          ],
         },
       ],
     },
@@ -135,32 +75,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
           displayOrder: 1,
-          fields: [
-            {
-              name: 'Job Title',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Employer',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Start Date',
-              type: FIELD_TYPES.DATE_MONTH,
-            },
-            {
-              name: 'End Date',
-              type: FIELD_TYPES.DATE_MONTH,
-            },
-            {
-              name: 'City',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Description',
-              type: FIELD_TYPES.RICH_TEXT,
-            },
-          ].map((item) => ({ ...item, value: '' })),
+          fields: employmentHistoryFields,
         },
       ],
     },
@@ -172,35 +87,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
           displayOrder: 1,
-          fields: [
-            {
-              name: 'School',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Degree',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Start Date',
-              type: FIELD_TYPES.DATE_MONTH,
-            },
-            {
-              name: 'End Date',
-              type: FIELD_TYPES.DATE_MONTH,
-            },
-            {
-              name: 'City',
-              type: FIELD_TYPES.STRING,
-            },
-            {
-              name: 'Description',
-              type: FIELD_TYPES.RICH_TEXT,
-            },
-          ].map((item) => ({
-            ...item,
-            value: '',
-          })),
+          fields: educationFields,
         },
       ],
     },
@@ -212,18 +99,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
           displayOrder: 1,
-          fields: [
-            {
-              name: 'Label',
-              type: FIELD_TYPES.STRING,
-              value: '',
-            },
-            {
-              name: 'Link',
-              type: FIELD_TYPES.STRING,
-              value: '',
-            },
-          ],
+          fields: websitesAndLinkFields,
         },
       ],
     },
@@ -238,20 +114,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
           displayOrder: 1,
-          fields: [
-            {
-              name: 'Skill',
-              type: FIELD_TYPES.STRING,
-              value: '',
-            },
-            {
-              name: 'Experience Level',
-              type: FIELD_TYPES.SELECT,
-              selectType: SELECT_TYPES.BASIC,
-              options: ['Beginner', 'Competent', 'Proficient', 'Expert'],
-              value: '',
-            },
-          ],
+          fields: skillsSectionFields,
         },
       ],
     },
@@ -271,12 +134,11 @@ export const getFieldHtmlId = (field: DEX_Field) => {
 };
 
 export type ItemTemplateType = Omit<DEX_Item, 'id' | 'sectionId'> & {
-  fields: Omit<DEX_Field, 'id' | 'itemId'>[];
+  fields: FieldInsertTemplate[];
 };
 
-export const getItemInsertTemplate = (sectionType: SectionType) => {
-  // @ts-expect-error Other section types will be implemented as well
-  const templateMap: Record<SectionType, ItemTemplateType> = {
+export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
+  const templateMap: Record<TemplatedSectionType, ItemTemplateType> = {
     [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
@@ -285,106 +147,29 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
     [INTERNAL_SECTION_TYPES.EDUCATION]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'School',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Degree',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Start Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'End Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'City',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Description',
-          type: FIELD_TYPES.RICH_TEXT,
-        },
-      ].map((item) => ({
-        ...item,
-        value: '',
-      })),
+      fields: educationFields,
     },
     [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Label',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-        {
-          name: 'Link',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-      ],
+      fields: websitesAndLinkFields,
     },
     [INTERNAL_SECTION_TYPES.SKILLS]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Skill',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-        {
-          name: 'Experience Level',
-          type: FIELD_TYPES.SELECT,
-          selectType: SELECT_TYPES.BASIC,
-          options: ['Beginner', 'Competent', 'Proficient', 'Expert'],
-          value: '',
-        } as DEX_Field,
-      ],
+      fields: skillsSectionFields,
     },
     [INTERNAL_SECTION_TYPES.LANGUAGES]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Language',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-        {
-          name: 'Level',
-          type: FIELD_TYPES.SELECT,
-          selectType: SELECT_TYPES.BASIC,
-          options: [
-            'Native Speaker',
-            'Highly Proficient',
-            'Very good command',
-            'Good working knowledge',
-            'Working knowledge',
-            'C2',
-            'C1',
-            'B2',
-            'B1',
-            'A2',
-            'A1',
-          ],
-          value: '',
-        } as DEX_Field,
-      ],
+      fields: languagesSectionFields,
     },
     [INTERNAL_SECTION_TYPES.HOBBIES]: {
       containerType: CONTAINER_TYPES.STATIC,
       displayOrder: 1,
       fields: [
         {
-          name: 'What do you like?',
+          name: FIELD_NAMES.HOBBIES.WHAT_DO_YOU_LIKE,
           type: FIELD_TYPES.TEXTAREA,
           value: '',
         },
@@ -393,28 +178,7 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
     [INTERNAL_SECTION_TYPES.COURSES]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Course',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-        {
-          name: 'Institution',
-          type: FIELD_TYPES.STRING,
-          value: '',
-        },
-        {
-          name: 'Start Date',
-          type: FIELD_TYPES.DATE_MONTH,
-          value: '',
-        },
-        {
-          name: 'End Date',
-          type: FIELD_TYPES.DATE_MONTH,
-          value: '',
-        },
-      ],
+      fields: coursesSectionFields,
     },
     [INTERNAL_SECTION_TYPES.INTERNSHIPS]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -424,56 +188,12 @@ export const getItemInsertTemplate = (sectionType: SectionType) => {
     [INTERNAL_SECTION_TYPES.CUSTOM]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: 'Activity name, job, book title etc.',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'City',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Start Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'End Date',
-          type: FIELD_TYPES.DATE_MONTH,
-        },
-        {
-          name: 'Description',
-          type: FIELD_TYPES.RICH_TEXT,
-        },
-      ].map((field) => ({
-        ...field,
-        value: '',
-      })),
+      fields: customSectionFields,
     },
     [INTERNAL_SECTION_TYPES.REFERENCES]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
-      fields: [
-        {
-          name: "Referent's Full Name",
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Company',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: 'Phone',
-          type: FIELD_TYPES.STRING,
-        },
-        {
-          name: "Referent's Email",
-          type: FIELD_TYPES.STRING,
-        },
-      ].map((field) => ({
-        ...field,
-        value: '',
-      })),
+      fields: referencesSectionFields,
     },
   };
 

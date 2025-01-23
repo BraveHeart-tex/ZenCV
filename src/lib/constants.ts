@@ -13,8 +13,10 @@ export const INTERNAL_SECTION_TYPES = {
   LANGUAGES: 'languages',
 } as const;
 
-export type SectionType =
-  (typeof INTERNAL_SECTION_TYPES)[keyof typeof INTERNAL_SECTION_TYPES];
+export const NOT_TEMPLATED_SECTION_TYPES = [
+  INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+  INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
+] as const;
 
 export const DELETABLE_INTERNAL_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.CUSTOM,
@@ -23,7 +25,7 @@ export const DELETABLE_INTERNAL_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.COURSES,
   INTERNAL_SECTION_TYPES.LANGUAGES,
   INTERNAL_SECTION_TYPES.INTERNSHIPS,
-];
+] as const;
 
 export const SECTION_DESCRIPTIONS_BY_TYPE = {
   [INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY]:
@@ -57,9 +59,85 @@ export const SELECT_TYPES = {
   BASIC: 'basic',
 } as const;
 
-export type SelectType = (typeof SELECT_TYPES)[keyof typeof SELECT_TYPES];
-
 export const FIXED_SECTIONS = [
   INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
   INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
-];
+] as const;
+
+export const FIELD_NAMES = {
+  PERSONAL_DETAILS: {
+    WANTED_JOB_TITLE: 'Wanted Job Title',
+    FIRST_NAME: 'First Name',
+    LAST_NAME: 'Last Name',
+    EMAIL: 'Email',
+    PHONE: 'Phone',
+    COUNTRY: 'Country',
+    CITY: 'City',
+    ADDRESS: 'Address',
+    POSTAL_CODE: 'Postal Code',
+    DRIVING_LICENSE: 'Driving License',
+    PLACE_OF_BIRTH: 'Place of Birth',
+    DATE_OF_BIRTH: 'Date of Birth',
+  },
+  PROFESSIONAL_SUMMARY: {
+    PROFESSIONAL_SUMMARY: 'Professional Summary',
+  },
+  EMPLOYMENT_HISTORY: {
+    JOB_TITLE: 'Job Title',
+    EMPLOYER: 'Employer',
+    START_DATE: 'Start Date',
+    END_DATE: 'End Date',
+    CITY: 'City',
+    DESCRIPTION: 'Description',
+  },
+  EDUCATION: {
+    SCHOOL: 'School',
+    DEGREE: 'Degree',
+    START_DATE: 'Start Date',
+    END_DATE: 'End Date',
+    CITY: 'City',
+    DESCRIPTION: 'Description',
+  },
+  WEBSITES_SOCIAL_LINKS: {
+    LABEL: 'Label',
+    LINK: 'Link',
+  },
+  SKILLS: {
+    SKILL: 'Skill',
+    EXPERIENCE_LEVEL: 'Experience Level',
+  },
+  LANGUAGES: {
+    LANGUAGE: 'Language',
+    LEVEL: 'Level',
+  },
+  HOBBIES: {
+    WHAT_DO_YOU_LIKE: 'What do you like?',
+  },
+  COURSES: {
+    COURSE: 'Course',
+    INSTITUTION: 'Institution',
+    START_DATE: 'Start Date',
+    END_DATE: 'End Date',
+  },
+  INTERNSHIPS: {
+    JOB_TITLE: 'Job Title',
+    EMPLOYER: 'Employer',
+    START_DATE: 'Start Date',
+    END_DATE: 'End Date',
+    CITY: 'City',
+    DESCRIPTION: 'Description',
+  },
+  CUSTOM: {
+    ACTIVITY_NAME: 'Activity name, job, book title etc.',
+    CITY: 'City',
+    START_DATE: 'Start Date',
+    END_DATE: 'End Date',
+    DESCRIPTION: 'Description',
+  },
+  REFERENCES: {
+    REFERENT_FULL_NAME: "Referent's Full Name",
+    COMPANY: 'Company',
+    PHONE: 'Phone',
+    REFERENT_EMAIL: "Referent's Email",
+  },
+} as const;

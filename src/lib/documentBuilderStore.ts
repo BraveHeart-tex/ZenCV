@@ -17,6 +17,8 @@ import {
 import { getItemInsertTemplate } from '@/lib/helpers';
 import { OtherSectionOption } from '@/components/AddSectionWidget';
 
+import { TemplatedSectionType } from '@/lib/types';
+
 class DocumentBuilderStore {
   document: DEX_Document | null = null;
   sections: DEX_Section[] = [];
@@ -162,7 +164,9 @@ class DocumentBuilderStore {
     const section = this.getSectionById(sectionId);
     if (!section) return;
 
-    const template = getItemInsertTemplate(section.type);
+    const template = getItemInsertTemplate(
+      section.type as TemplatedSectionType,
+    );
     if (!template) return;
 
     const result = await addItemFromTemplate({

@@ -15,12 +15,14 @@ import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
 import { action } from 'mobx';
+import { TemplatedSectionType } from '@/lib/types';
 
 export interface OtherSectionOption
   extends Omit<
     DEX_Section,
     'id' | 'documentId' | 'displayOrder' | 'defaultName'
   > {
+  type: TemplatedSectionType;
   icon: LucideIcon;
   containerType: DEX_Item['containerType'];
 }

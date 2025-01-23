@@ -1,4 +1,4 @@
-import type { SectionType, SelectType } from './constants';
+import { FieldName, SectionType, SelectType } from '@/lib/types';
 
 type IdType = number;
 
@@ -29,7 +29,7 @@ export interface DEX_Item {
 interface BaseFieldProps {
   id: IdType;
   itemId: IdType;
-  name: string;
+  name: FieldName;
 }
 
 interface StringField extends BaseFieldProps {
