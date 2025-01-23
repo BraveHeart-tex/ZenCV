@@ -20,8 +20,8 @@ const SectionMetadataOptions = observer(
               id={option.key}
               value={option.value}
               checked={Number.parseInt(option.value) === 1}
-              onCheckedChange={action((checked) => {
-                documentBuilderStore.updateSectionMetadata(sectionId, {
+              onCheckedChange={action(async (checked) => {
+                await documentBuilderStore.updateSectionMetadata(sectionId, {
                   key: option.key,
                   value: (checked ? 1 : 0).toString(),
                 });

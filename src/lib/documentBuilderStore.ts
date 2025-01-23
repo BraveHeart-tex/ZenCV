@@ -296,7 +296,7 @@ class DocumentBuilderStore {
     if (!section || !section?.metadata) return [];
     return section?.metadata || [];
   };
-  updateSectionMetadata = (
+  updateSectionMetadata = async (
     sectionId: DEX_Section['id'],
     data: {
       key: SectionMetadataKey;
@@ -306,12 +306,23 @@ class DocumentBuilderStore {
     const section = this.getSectionById(sectionId);
     if (!section) return;
 
-    const metadata = section.metadata.find(
-      (metadata) => metadata.key === data.key,
-    );
-    if (metadata) {
-      metadata.value = data.value;
-    }
+    runInAction(() => {
+      const metadata = section.metadata.find(
+        (metadata) => metadata.key === data.key,
+      );
+      if (metadata) {
+        metadata.value = data.value;
+      }
+    });
+
+    await dxDb.sections.update(sectionId, {
+      metadata: JSON.stringify(
+        section.metadata.map((metadata) => ({
+          ...metadata,
+          value: metadata.key === data.key ? data.value : metadata.value,
+        })),
+      ),
+    });
   };
 }
 

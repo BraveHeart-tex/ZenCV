@@ -108,7 +108,7 @@ export const getInitialDocumentInsertBoilerplate = (
       type: INTERNAL_SECTION_TYPES.SKILLS,
       metadata: generateSectionMetadata([
         {
-          label: 'Show Experience Level',
+          label: 'Show experience level',
           key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
           value: '',
         },
