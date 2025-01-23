@@ -108,25 +108,26 @@ class DocumentBuilderStore {
     value: string,
     shouldSaveToStore = true,
   ) => {
-    if (shouldSaveToStore) {
-      await updateField(fieldId, value);
-    }
     runInAction(() => {
       const field = this.fields.find((field) => field.id === fieldId);
       if (!field) return;
       field.value = value;
     });
+
+    if (shouldSaveToStore) {
+      await updateField(fieldId, value);
+    }
   };
 
   renameSection = async (sectionId: number, value: string) => {
-    await updateSection(sectionId, {
-      title: value,
-    });
-
     runInAction(() => {
       const section = this.sections.find((section) => section.id === sectionId);
       if (!section) return;
       section.title = value;
+    });
+
+    await updateSection(sectionId, {
+      title: value,
     });
   };
 
@@ -135,16 +136,15 @@ class DocumentBuilderStore {
   };
 
   removeItem = async (itemId: number) => {
-    await deleteItem(itemId);
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.fields = this.fields.filter((field) => field.itemId !== itemId);
     });
+
+    await deleteItem(itemId);
   };
 
   removeSection = async (sectionId: number) => {
-    await deleteSection(sectionId);
-
     runInAction(() => {
       const itemIdsToKeep = this.items
         .filter((item) => item.sectionId !== sectionId)
@@ -158,6 +158,8 @@ class DocumentBuilderStore {
         itemIdsToKeep.includes(field.itemId),
       );
     });
+
+    await deleteSection(sectionId);
   };
 
   addNewItemEntry = async (sectionId: number) => {
