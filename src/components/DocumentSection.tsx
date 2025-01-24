@@ -42,7 +42,8 @@ const DocumentSection = observer(
         </div>
         <ItemsDndContext items={items}>
           {items
-            .toSorted((a, b) => a.displayOrder - b.displayOrder)
+            .slice()
+            .sort((a, b) => a.displayOrder - b.displayOrder)
             .map((item) => (
               <SectionItem itemId={item.id} key={item.id} />
             ))}

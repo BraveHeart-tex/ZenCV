@@ -47,12 +47,15 @@ export class DocumentBuilderStore {
     runInAction(() => {
       this.document = document;
       this.sections = sections
-        .toSorted((a, b) => a.displayOrder - b.displayOrder)
+        .slice()
+        .sort((a, b) => a.displayOrder - b.displayOrder)
         .map((section) => ({
           ...section,
           metadata: JSON.parse(section?.metadata || '[]'),
         }));
-      this.items = items.toSorted((a, b) => a.displayOrder - b.displayOrder);
+      this.items = items
+        .slice()
+        .sort((a, b) => a.displayOrder - b.displayOrder);
       this.fields = fields;
     });
   };
@@ -73,7 +76,8 @@ export class DocumentBuilderStore {
   getItemsBySectionId = (sectionId: DEX_Section['id']) => {
     return this.items
       .filter((item) => item.sectionId === sectionId)
-      .toSorted((a, b) => a.displayOrder - b.displayOrder);
+      .slice()
+      .sort((a, b) => a.displayOrder - b.displayOrder);
   };
 
   getFieldsByItemId = (itemId: DEX_Item['id']) => {
