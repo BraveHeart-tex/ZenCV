@@ -1,4 +1,4 @@
-name: Test
+name: Run Tests
 
 on:
   push:
@@ -22,14 +22,15 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false # We'll run install separately
+          run_install: false
 
+      # Cache the pnpm store
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Setup pnpm store cache
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
@@ -37,8 +38,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      # Cache node_modules
+      - name: Setup node_modules cache
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-modules-
+
       - name: Install dependencies
-        run: pnpm install # Remove --frozen-lockfile for first run
+        run: pnpm install
 
       - name: Run tests
-        run: pnpm run test
+        run: pnpm test
