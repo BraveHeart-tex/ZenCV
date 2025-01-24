@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { DocumentBuilderStore } from '../documentBuilderStore';
 import {
+  DocumentBuilderStore,
+  TOGGLE_ITEM_WAIT_MS,
+} from '../documentBuilderStore';
+import {
+  addItemFromTemplate,
   deleteItem,
   deleteSection,
   getFullDocumentStructure,
@@ -10,6 +14,7 @@ import {
 } from '@/lib/service';
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
+import { getItemInsertTemplate } from '../helpers';
 
 // Mock external services
 vi.mock('@/lib/service');
@@ -336,6 +341,98 @@ describe('DocumentBuilderStore', () => {
       expect(store.items).toEqual([]);
       expect(store.fields).toEqual([]);
       expect(mockedDeleteItem).not.toHaveBeenCalled();
+    });
+  });
+  describe('addNewItemEntry', () => {
+    const mockTemplate = {
+      containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      displayOrder: 1,
+      fields: [
+        {
+          name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+          type: FIELD_TYPES.STRING,
+          value: '',
+        },
+      ],
+    };
+
+    const mockAddItemResult = {
+      item: {
+        id: 3,
+        sectionId: 1,
+        displayOrder: 3,
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+      },
+      fields: [
+        {
+          id: 2,
+          itemId: 3,
+          value: '',
+          name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+          type: FIELD_TYPES.STRING,
+        },
+      ],
+    };
+
+    beforeEach(() => {
+      store.sections = mockSections.map((section) => ({
+        ...section,
+        metadata: [],
+      }));
+      store.items = mockItems;
+      store.fields = mockFields;
+
+      vi.mocked(getItemInsertTemplate).mockReturnValue(mockTemplate);
+      vi.mocked(addItemFromTemplate).mockResolvedValue(mockAddItemResult);
+    });
+
+    it('should add a new item and its fields to the store', async () => {
+      const sectionId = mockSections[0].id;
+      await store.addNewItemEntry(sectionId);
+
+      expect(store.items.map((item) => item.id)).toContain(
+        mockAddItemResult.item.id,
+      );
+      expect(store.fields).toContainEqual(mockAddItemResult.fields[0]);
+      setTimeout(() => {
+        expect(store.collapsedItemId).toBe(mockAddItemResult.item.id);
+      }, TOGGLE_ITEM_WAIT_MS);
+    });
+
+    it('should handle non-existent section ID gracefully', async () => {
+      const result = await store.addNewItemEntry(999);
+
+      expect(result).toBeUndefined();
+      expect(store.items).toHaveLength(mockItems.length);
+      expect(store.fields).toHaveLength(mockFields.length);
+      expect(vi.mocked(getItemInsertTemplate)).not.toHaveBeenCalled();
+      expect(vi.mocked(addItemFromTemplate)).not.toHaveBeenCalled();
+    });
+
+    it('should handle template retrieval failure gracefully', async () => {
+      vi.mocked(getItemInsertTemplate).mockReturnValue(null as never);
+
+      const result = await store.addNewItemEntry(mockSections[0].id);
+
+      expect(result).toBeUndefined();
+      expect(store.items).toHaveLength(mockItems.length);
+      expect(store.fields).toHaveLength(mockFields.length);
+      expect(vi.mocked(addItemFromTemplate)).not.toHaveBeenCalled();
+    });
+
+    it('should calculate correct display order for new item', async () => {
+      const sectionId = mockSections[0].id;
+      const highestDisplayOrder = Math.max(
+        ...mockItems.map((item) => item.displayOrder),
+      );
+
+      await store.addNewItemEntry(sectionId);
+
+      expect(vi.mocked(addItemFromTemplate)).toHaveBeenCalledWith(
+        expect.objectContaining({
+          displayOrder: highestDisplayOrder,
+        }),
+      );
     });
   });
 });

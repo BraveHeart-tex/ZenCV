@@ -24,6 +24,8 @@ import {
   TemplatedSectionType,
 } from '@/lib/types';
 
+export const TOGGLE_ITEM_WAIT_MS = 100 as const;
+
 export class DocumentBuilderStore {
   document: DEX_Document | null = null;
   sections: SectionWithParsedMetadata[] = [];
@@ -139,6 +141,9 @@ export class DocumentBuilderStore {
   };
 
   removeSection = async (sectionId: DEX_Section['id']) => {
+    const section = this.sections.find((section) => section.id === sectionId);
+    if (!section) return;
+
     runInAction(() => {
       const itemIdsToKeep = this.items
         .filter((item) => item.sectionId !== sectionId)
@@ -185,7 +190,7 @@ export class DocumentBuilderStore {
 
       setTimeout(() => {
         this.toggleItem(item.id);
-      }, 100);
+      }, TOGGLE_ITEM_WAIT_MS);
     });
   };
 
