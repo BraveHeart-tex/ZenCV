@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DocumentBuilderStore } from '../documentBuilderStore';
-import { getFullDocumentStructure, renameDocument } from '@/lib/service';
+import {
+  deleteItem,
+  deleteSection,
+  getFullDocumentStructure,
+  renameDocument,
+  updateField,
+  updateSection,
+} from '@/lib/service';
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
 
@@ -15,7 +22,10 @@ const mockedGetFullDocumentStructure = vi.mocked(
 );
 
 const mockedRenameDocument = vi.mocked(renameDocument);
-// const mockedUpdateField = vi.mocked(updateField);
+const mockedUpdateField = vi.mocked(updateField);
+const mockedUpdateSection = vi.mocked(updateSection);
+const mockedDeleteSection = vi.mocked(deleteSection);
+const mockedDeleteItem = vi.mocked(deleteItem);
 
 let store: DocumentBuilderStore;
 
@@ -172,6 +182,160 @@ describe('DocumentBuilderStore', () => {
       // Assert
       expect(mockedRenameDocument).toHaveBeenCalledWith(1, newTitle);
       expect(store.document.title).toBe(newTitle);
+    });
+  });
+  describe('setFieldValue', async () => {
+    beforeEach(() => {
+      store.fields = mockFields;
+    });
+    it('should update the field value in state', async () => {
+      const newValue = 'new value';
+      const fieldId = 1;
+      await store.setFieldValue(fieldId, newValue, false);
+
+      expect(store.fields.find((field) => field.id === fieldId)?.value).toBe(
+        newValue,
+      );
+
+      expect(mockedUpdateField).not.toHaveBeenCalled();
+    });
+    it('should not update a non-existent field', async () => {
+      const initialFields = [...store.fields];
+
+      await store.setFieldValue(999, 'New Value', false);
+
+      expect(store.fields).toEqual(initialFields);
+      expect(mockedUpdateField).not.toHaveBeenCalled();
+    });
+    it('should handle invalid fieldId gracefully', async () => {
+      const result = await store.setFieldValue(
+        null as never,
+        'New Value',
+        true,
+      );
+
+      expect(result).toBeUndefined();
+      expect(mockedUpdateField).not.toHaveBeenCalled();
+    });
+  });
+  describe('removeSection', () => {
+    beforeEach(() => {
+      store.sections = mockSections.map((section) => ({
+        ...section,
+        metadata: [],
+      }));
+      store.items = mockItems;
+      store.fields = mockFields;
+    });
+    it('should remove the section, its items, and associated fields', async () => {
+      const sectionIdToDelete = mockSections[0]?.id;
+      // Act
+      await store.removeSection(sectionIdToDelete);
+
+      const newSections = store.sections.filter(
+        (section) => section.id !== sectionIdToDelete,
+      );
+      const newItems = store.items.filter(
+        (item) => item.sectionId !== sectionIdToDelete,
+      );
+      const newItemIds = newItems.map((item) => item.id);
+      const newFields = store.fields.filter((field) =>
+        newItemIds.includes(field.itemId),
+      );
+
+      // Assert
+      expect(store.sections).toEqual(newSections);
+      expect(store.items).toEqual(newItems);
+      expect(store.fields).toEqual(newFields);
+      expect(mockedDeleteSection).toHaveBeenCalledTimes(1);
+      expect(mockedDeleteSection).toHaveBeenCalledWith(sectionIdToDelete);
+    });
+  });
+  describe('renameSection', () => {
+    beforeEach(() => {
+      store.sections = mockSections.map((section) => ({
+        ...section,
+        metadata: [],
+      }));
+    });
+    it('should update the section title', async () => {
+      const newTitle = 'New Title';
+      const sectionId = mockSections[0].id;
+
+      await store.renameSection(sectionId, newTitle);
+      expect(
+        store.sections.find((section) => section.id === sectionId)?.title,
+      ).toBe(newTitle);
+      expect(mockedUpdateSection).toHaveBeenCalledWith(sectionId, {
+        title: newTitle,
+      });
+    });
+    it('should handle invalid sectionId gracefully', async () => {
+      const newTitle = 'New Title';
+      const invalidSectionId = 999;
+      const initialSections = [...store.sections];
+
+      await store.renameSection(invalidSectionId, newTitle);
+
+      expect(store.sections).toEqual(initialSections);
+      expect(mockedUpdateSection).not.toHaveBeenCalled();
+    });
+  });
+  describe('toggleItem', () => {
+    beforeEach(() => {
+      store.collapsedItemId = null;
+    });
+    it('should toggle the collapsedItemId', () => {
+      const itemId = 1;
+      store.toggleItem(itemId);
+      expect(store.collapsedItemId).toBe(itemId);
+      store.toggleItem(itemId);
+      expect(store.collapsedItemId).toBeNull();
+    });
+  });
+  describe('removeItem', () => {
+    beforeEach(() => {
+      store.items = mockItems;
+      store.fields = mockFields;
+    });
+    it('should remove the item and its associated fields', async () => {
+      const itemIdToDelete = mockItems[0].id;
+
+      await store.removeItem(itemIdToDelete);
+
+      const newItems = store.items.filter((item) => item.id !== itemIdToDelete);
+      const newFields = store.fields.filter(
+        (field) => field.itemId !== itemIdToDelete,
+      );
+
+      expect(store.items).toEqual(newItems);
+      expect(store.fields).toEqual(newFields);
+    });
+    it('should call deleteItem with the correct itemId', async () => {
+      const itemIdToDelete = mockItems[0].id;
+      await store.removeItem(itemIdToDelete);
+
+      expect(mockedDeleteItem).toHaveBeenCalledTimes(1);
+      expect(mockedDeleteItem).toHaveBeenCalledWith(itemIdToDelete);
+    });
+    it('should handle non-existent itemId gracefully', async () => {
+      const result = await store.removeItem(999);
+
+      expect(result).toBe(undefined);
+      expect(store.items).toHaveLength(mockItems.length);
+      expect(store.fields).toHaveLength(mockFields.length);
+      expect(mockedDeleteItem).not.toHaveBeenCalled();
+    });
+    it('should handle an empty store gracefully', async () => {
+      store.items = [];
+      store.fields = [];
+
+      const result = await store.removeItem(1);
+
+      expect(result).toBe(undefined);
+      expect(store.items).toEqual([]);
+      expect(store.fields).toEqual([]);
+      expect(mockedDeleteItem).not.toHaveBeenCalled();
     });
   });
 });

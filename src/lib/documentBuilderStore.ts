@@ -97,9 +97,10 @@ export class DocumentBuilderStore {
     value: string,
     shouldSaveToStore = true,
   ) => {
+    const field = this.fields.find((field) => field.id === fieldId);
+    if (!field) return;
+
     runInAction(() => {
-      const field = this.fields.find((field) => field.id === fieldId);
-      if (!field) return;
       field.value = value;
     });
 
@@ -109,9 +110,10 @@ export class DocumentBuilderStore {
   };
 
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
+    const section = this.sections.find((section) => section.id === sectionId);
+    if (!section) return;
+
     runInAction(() => {
-      const section = this.sections.find((section) => section.id === sectionId);
-      if (!section) return;
       section.title = value;
     });
 
@@ -125,6 +127,9 @@ export class DocumentBuilderStore {
   };
 
   removeItem = async (itemId: DEX_Item['id']) => {
+    const item = this.items.find((item) => item.id === itemId);
+    if (!item) return;
+
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.fields = this.fields.filter((field) => field.itemId !== itemId);
