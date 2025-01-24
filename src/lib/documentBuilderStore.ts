@@ -24,7 +24,7 @@ import {
   TemplatedSectionType,
 } from '@/lib/types';
 
-class DocumentBuilderStore {
+export class DocumentBuilderStore {
   document: DEX_Document | null = null;
   sections: SectionWithParsedMetadata[] = [];
   items: DEX_Item[] = [];
