@@ -1,4 +1,4 @@
-name: Run Tests
+name: Test
 
 on:
   push:
@@ -22,6 +22,7 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
+          run_install: false # We'll run install separately
 
       - name: Get pnpm store directory
         shell: bash
@@ -37,11 +38,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install # Remove --frozen-lockfile for first run
 
       - name: Run tests
-        run: pnpm test
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        if: always()
+        run: pnpm run test
