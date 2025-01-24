@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DocumentBuilderStore } from '../documentBuilderStore';
-import { getFullDocumentStructure } from '@/lib/service';
+import { getFullDocumentStructure, renameDocument } from '@/lib/service';
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
 
@@ -14,7 +14,7 @@ const mockedGetFullDocumentStructure = vi.mocked(
   true,
 );
 
-// const mockedRenameDocument = vi.mocked(renameDocument);
+const mockedRenameDocument = vi.mocked(renameDocument);
 // const mockedUpdateField = vi.mocked(updateField);
 
 let store: DocumentBuilderStore;
@@ -97,6 +97,7 @@ const expectStoreToMatchMockData = () => {
 };
 
 beforeEach(() => {
+  vi.clearAllMocks();
   store = new DocumentBuilderStore();
 });
 
@@ -123,6 +124,54 @@ describe('DocumentBuilderStore', () => {
       expect(store.sections).toHaveLength(0);
       expect(store.items).toHaveLength(0);
       expect(store.fields).toHaveLength(0);
+    });
+  });
+  describe('renameDocument', () => {
+    it('should rename the document title', async () => {
+      // Arrange
+      store.document = {
+        id: 1,
+        title: 'Old Title',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const newTitle = 'New Title';
+
+      // Act
+      await store.renameDocument(newTitle);
+
+      // Assert
+      expect(mockedRenameDocument).toHaveBeenCalledWith(1, newTitle);
+      expect(store.document.title).toBe(newTitle);
+    });
+    it('should not call renameDocument service if document is null', async () => {
+      // Arrange
+      store.document = null;
+      const newTitle = 'New Title';
+
+      // Act
+      await store.renameDocument(newTitle);
+
+      // Assert
+      expect(mockedRenameDocument).not.toHaveBeenCalled();
+    });
+    it('should handle empty title gracefully', async () => {
+      // Arrange
+      store.document = {
+        id: 1,
+        title: 'Old Title',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const newTitle = '';
+
+      // Act
+      await store.renameDocument(newTitle);
+
+      // Assert
+      expect(mockedRenameDocument).toHaveBeenCalledWith(1, newTitle);
+      expect(store.document.title).toBe(newTitle);
     });
   });
 });
