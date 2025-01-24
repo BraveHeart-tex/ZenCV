@@ -387,6 +387,8 @@ describe('DocumentBuilderStore', () => {
     });
 
     it('should add a new item and its fields to the store', async () => {
+      vi.useFakeTimers();
+
       const sectionId = mockSections[0].id;
       await store.addNewItemEntry(sectionId);
 
@@ -394,9 +396,8 @@ describe('DocumentBuilderStore', () => {
         mockAddItemResult.item.id,
       );
       expect(store.fields).toContainEqual(mockAddItemResult.fields[0]);
-      setTimeout(() => {
-        expect(store.collapsedItemId).toBe(mockAddItemResult.item.id);
-      }, TOGGLE_ITEM_WAIT_MS);
+      vi.advanceTimersByTime(TOGGLE_ITEM_WAIT_MS);
+      expect(store.collapsedItemId).toBe(mockAddItemResult.item.id);
     });
 
     it('should handle non-existent section ID gracefully', async () => {
