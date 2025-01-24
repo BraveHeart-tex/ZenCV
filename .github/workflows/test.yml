@@ -52,3 +52,9 @@ jobs:
 
       - name: Run tests
         run: pnpm test
+
+      - name: Create Deployment Status
+      if: success()
+      run: |
+        echo "Tests passed successfully" >> $GITHUB_STEP_SUMMARY
+        echo "::set-output name=status::success"
