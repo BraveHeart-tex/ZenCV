@@ -1,5 +1,5 @@
 import { UpdateSpec } from 'dexie';
-import { dxDb } from './dxDb';
+import { clientDb } from './clientDb';
 import {
   DEX_Document,
   DEX_Field,
@@ -9,18 +9,18 @@ import {
   DEX_Item,
   DEX_Section,
   SelectField,
-} from './schema';
+} from './clientDbSchema';
 import {
   getInitialDocumentInsertBoilerplate,
   isSelectField,
-} from '@/lib/helpers';
+} from '@/lib/helpers/documentBuilderHelpers';
 
 export const createDocument = async (data: DEX_InsertDocumentModel) => {
-  return dxDb.transaction(
+  return clientDb.transaction(
     'rw',
-    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
+    [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
-      const documentId = await dxDb.documents.add(data as DEX_Document);
+      const documentId = await clientDb.documents.add(data as DEX_Document);
 
       const sectionTemplates = getInitialDocumentInsertBoilerplate(documentId);
 
@@ -34,9 +34,12 @@ export const createDocument = async (data: DEX_InsertDocumentModel) => {
           type: section.type,
         }));
 
-      const sectionInsertIds = await dxDb.sections.bulkAdd(prepareSections(), {
-        allKeys: true,
-      });
+      const sectionInsertIds = await clientDb.sections.bulkAdd(
+        prepareSections(),
+        {
+          allKeys: true,
+        },
+      );
 
       const itemInsertDtos: DEX_InsertItemModel[] = [];
       const fieldInsertDtos: DEX_InsertFieldModel[] = [];
@@ -74,7 +77,7 @@ export const createDocument = async (data: DEX_InsertDocumentModel) => {
         });
       });
 
-      const itemInsertIds = await dxDb.items.bulkAdd(itemInsertDtos, {
+      const itemInsertIds = await clientDb.items.bulkAdd(itemInsertDtos, {
         allKeys: true,
       });
 
@@ -83,7 +86,7 @@ export const createDocument = async (data: DEX_InsertDocumentModel) => {
         itemId: itemInsertIds[field.itemId],
       }));
 
-      await dxDb.fields.bulkAdd(resolvedFieldDtos);
+      await clientDb.fields.bulkAdd(resolvedFieldDtos);
 
       return documentId;
     },
@@ -94,56 +97,60 @@ export const renameDocument = async (
   documentId: DEX_Document['id'],
   title: string,
 ) => {
-  return dxDb.documents.update(documentId, { title });
+  return clientDb.documents.update(documentId, { title });
 };
 
 export const updateSection = async (
   sectionId: DEX_Section['id'],
   data: UpdateSpec<DEX_Section>,
 ) => {
-  return dxDb.sections.update(sectionId, data);
+  return clientDb.sections.update(sectionId, data);
 };
 
 export const updateField = async (fieldId: DEX_Field['id'], value: string) => {
-  return dxDb.fields.update(fieldId, {
+  return clientDb.fields.update(fieldId, {
     value,
   });
 };
 
 export const deleteDocument = async (documentId: DEX_Document['id']) => {
-  return dxDb.transaction(
+  return clientDb.transaction(
     'rw',
-    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
+    [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
-      await dxDb.documents.delete(documentId);
+      await clientDb.documents.delete(documentId);
 
-      const sectionIds = await dxDb.sections
+      const sectionIds = await clientDb.sections
         .where('documentId')
         .equals(documentId)
         .primaryKeys();
 
-      await dxDb.sections.bulkDelete(sectionIds);
+      await clientDb.sections.bulkDelete(sectionIds);
 
-      const itemIds = await dxDb.items
+      const itemIds = await clientDb.items
         .where('sectionId')
         .anyOf(sectionIds)
         .primaryKeys();
-      await dxDb.items.bulkDelete(itemIds);
+      await clientDb.items.bulkDelete(itemIds);
 
-      const fieldIds = await dxDb.fields
+      const fieldIds = await clientDb.fields
         .where('itemId')
         .anyOf(itemIds)
         .primaryKeys();
-      await dxDb.fields.bulkDelete(fieldIds);
+      await clientDb.fields.bulkDelete(fieldIds);
     },
   );
 };
 
 export const deleteItem = async (itemId: DEX_Item['id']) => {
-  return dxDb.transaction('rw', [dxDb.items, dxDb.fields], async () => {
-    await dxDb.items.delete(itemId);
-    await dxDb.fields.where('itemId').equals(itemId).delete();
-  });
+  return clientDb.transaction(
+    'rw',
+    [clientDb.items, clientDb.fields],
+    async () => {
+      await clientDb.items.delete(itemId);
+      await clientDb.fields.where('itemId').equals(itemId).delete();
+    },
+  );
 };
 
 export const addItemFromTemplate = async (
@@ -151,51 +158,55 @@ export const addItemFromTemplate = async (
     fields: Omit<DEX_Field, 'id' | 'itemId'>[];
   },
 ): Promise<{ item: DEX_Item; fields: DEX_Field[] }> => {
-  return dxDb.transaction('rw', [dxDb.items, dxDb.fields], async () => {
-    const itemId = await dxDb.items.add({
-      sectionId: template.sectionId,
-      containerType: template.containerType,
-      displayOrder: template.displayOrder,
-    });
-
-    const fieldsPayload = template.fields.map((field) => ({
-      ...field,
-      itemId,
-    }));
-
-    const fieldIds = await dxDb.fields.bulkAdd(fieldsPayload, {
-      allKeys: true,
-    });
-
-    return {
-      item: {
-        id: itemId,
+  return clientDb.transaction(
+    'rw',
+    [clientDb.items, clientDb.fields],
+    async () => {
+      const itemId = await clientDb.items.add({
         sectionId: template.sectionId,
         containerType: template.containerType,
         displayOrder: template.displayOrder,
-      },
-      fields: fieldsPayload.map((field, index) => ({
+      });
+
+      const fieldsPayload = template.fields.map((field) => ({
         ...field,
-        id: fieldIds[index],
         itemId,
-      })) as DEX_Field[],
-    };
-  });
+      }));
+
+      const fieldIds = await clientDb.fields.bulkAdd(fieldsPayload, {
+        allKeys: true,
+      });
+
+      return {
+        item: {
+          id: itemId,
+          sectionId: template.sectionId,
+          containerType: template.containerType,
+          displayOrder: template.displayOrder,
+        },
+        fields: fieldsPayload.map((field, index) => ({
+          ...field,
+          id: fieldIds[index],
+          itemId,
+        })) as DEX_Field[],
+      };
+    },
+  );
 };
 
 export const deleteSection = (sectionId: DEX_Section['id']) => {
-  return dxDb.transaction(
+  return clientDb.transaction(
     'rw',
-    [dxDb.sections, dxDb.items, dxDb.fields],
+    [clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
-      await dxDb.sections.delete(sectionId);
-      const itemIds = await dxDb.items
+      await clientDb.sections.delete(sectionId);
+      const itemIds = await clientDb.items
         .where('sectionId')
         .equals(sectionId)
         .primaryKeys();
 
-      await dxDb.items.bulkDelete(itemIds);
-      await dxDb.fields.where('itemId').anyOf(itemIds).delete();
+      await clientDb.items.bulkDelete(itemIds);
+      await clientDb.fields.where('itemId').anyOf(itemIds).delete();
     },
   );
 };
@@ -212,11 +223,11 @@ export const getFullDocumentStructure = (
       fields: DEX_Field[];
     }
 > => {
-  return dxDb.transaction(
+  return clientDb.transaction(
     'r',
-    [dxDb.documents, dxDb.sections, dxDb.items, dxDb.fields],
+    [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
-      const document = await dxDb.documents.get(documentId);
+      const document = await clientDb.documents.get(documentId);
       if (!document) {
         return {
           success: false,
@@ -224,19 +235,22 @@ export const getFullDocumentStructure = (
         };
       }
 
-      const sections = await dxDb.sections
+      const sections = await clientDb.sections
         .where('documentId')
         .equals(documentId)
         .toArray();
       const sectionIds = sections.map((section) => section.id);
 
-      const items = await dxDb.items
+      const items = await clientDb.items
         .where('sectionId')
         .anyOf(sectionIds)
         .toArray();
       const itemIds = items.map((item) => item.id);
 
-      const fields = await dxDb.fields.where('itemId').anyOf(itemIds).toArray();
+      const fields = await clientDb.fields
+        .where('itemId')
+        .anyOf(itemIds)
+        .toArray();
 
       return {
         success: true,
@@ -252,7 +266,7 @@ export const getFullDocumentStructure = (
 export const bulkUpdateItems = async (
   keysAndChanges: { key: DEX_Item['id']; changes: UpdateSpec<DEX_Item> }[],
 ) => {
-  return dxDb.items.bulkUpdate(keysAndChanges);
+  return clientDb.items.bulkUpdate(keysAndChanges);
 };
 
 export const bulkUpdateSections = async (
@@ -261,5 +275,5 @@ export const bulkUpdateSections = async (
     changes: UpdateSpec<DEX_Section>;
   }[],
 ) => {
-  return dxDb.sections.bulkUpdate(keysAndChanges);
+  return clientDb.sections.bulkUpdate(keysAndChanges);
 };

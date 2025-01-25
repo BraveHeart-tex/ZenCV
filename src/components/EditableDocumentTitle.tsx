@@ -19,10 +19,10 @@ import { Label } from '@/components/ui/label';
 import { action } from 'mobx';
 import { CornerDownLeftIcon, PencilIcon } from 'lucide-react';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { cn } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils/stringUtils';
 
 const EditableDocumentTitle = observer(() => {
   const documentTitle = documentBuilderStore.document?.title || '';

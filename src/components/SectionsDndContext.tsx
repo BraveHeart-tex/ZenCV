@@ -16,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { action } from 'mobx';
 import { SectionWithParsedMetadata } from '@/lib/types';
 

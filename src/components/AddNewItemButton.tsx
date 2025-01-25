@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { action } from 'mobx';
-import { DEX_Section } from '@/lib/schema';
+import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 
 interface AddNewItemButtonProps {
   sectionId: DEX_Section['id'];

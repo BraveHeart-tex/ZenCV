@@ -17,8 +17,8 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import type { DEX_Item } from '@/lib/schema';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { action } from 'mobx';
 
 interface ItemsDndContextProps {

@@ -1,5 +1,5 @@
 'use client';
-import { DEX_Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import {
   DropdownMenu,
@@ -9,14 +9,14 @@ import {
 } from './ui/dropdown-menu';
 import { FileSymlink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { Button } from './ui/button';
-import { confirmDialogStore } from '@/lib/confirmDialogStore';
-import { deleteDocument } from '@/lib/service';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { deleteDocument } from '@/lib/client-db/clientDbService';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 
 const DocumentCard = ({ document }: { document: DEX_Document }) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);

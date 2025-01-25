@@ -1,7 +1,6 @@
 'use client';
 
-import { pdfViewerStore } from '@/lib/pdfViewerStore';
-import { cn } from '@/lib/utils';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
 import type { ReactElement } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
@@ -11,6 +10,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import * as motion from 'motion/react-m';
 import { AnimatePresence } from 'motion/react';
+import { cn } from '@/lib/utils/stringUtils';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 

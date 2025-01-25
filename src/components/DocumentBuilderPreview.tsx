@@ -2,11 +2,11 @@ import {
   DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
   useDocumentBuilderSearchParams,
 } from '@/hooks/useDocumentBuilderSearchParams';
-import { cn } from '@/lib/utils';
 import DocumentBuilderPreviewHeader from './DocumentBuilderPreviewHeader';
 import DocumentBuilderPreviewFooter from './DocumentBuilderPreviewFooter';
 import { observer } from 'mobx-react-lite';
 import DocumentBuilderPreviewContent from './DocumentBuilderPreviewContent';
+import { cn } from '@/lib/utils/stringUtils';
 
 const DocumentBuilderPreview = observer(() => {
   const { view } = useDocumentBuilderSearchParams();

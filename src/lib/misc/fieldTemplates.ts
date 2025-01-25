@@ -1,6 +1,6 @@
 import { FieldInsertTemplate } from '@/lib/types';
 import { FIELD_NAMES, SELECT_TYPES } from '@/lib/constants';
-import { DEX_Field, FIELD_TYPES } from '@/lib/schema';
+import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [
   {

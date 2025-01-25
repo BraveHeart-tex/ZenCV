@@ -1,6 +1,6 @@
 import DateFieldInput from '@/components/DateFieldInput';
 import SectionField from '@/components/SectionField';
-import { DEX_Field, FIELD_TYPES } from '@/lib/schema';
+import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 
 export const useFieldMapper = () => {
   const renderFields = (fields: DEX_Field[]) => {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   DocumentBuilderStore,
   TOGGLE_ITEM_WAIT_MS,
-} from '../documentBuilderStore';
+} from '@/lib/stores/documentBuilderStore';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
@@ -13,19 +13,19 @@ import {
   renameDocument,
   updateField,
   updateSection,
-} from '@/lib/service';
+} from '@/lib/client-db/clientDbService';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
-} from '../constants';
-import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
-import { getItemInsertTemplate } from '../helpers';
-import { ParsedSectionMetadata, SectionMetadataKey } from '../types';
+} from '@/lib/constants';
+import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
+import { ParsedSectionMetadata, SectionMetadataKey } from '@/lib/types';
 
 // Mock external services
-vi.mock('@/lib/service');
-vi.mock('@/lib/helpers');
+vi.mock('@/lib/client-db/clientDbService');
+vi.mock('@/lib/helpers/documentBuilderHelpers');
 
 // Alias for mocked service functions
 const mockedGetFullDocumentStructure = vi.mocked(

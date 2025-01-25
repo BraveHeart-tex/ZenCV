@@ -1,11 +1,11 @@
 'use client';
-import { dxDb } from '@/lib/dxDb';
+import { clientDb } from '@/lib/client-db/clientDb';
 import { useLiveQuery } from 'dexie-react-hooks';
 import CreateDocumentDialog from './CreateDocumentDialog';
 import DocumentCard from './document-card';
 
 const DocumentsPageClient = () => {
-  const documentsObservable = useLiveQuery(() => dxDb.documents.toArray());
+  const documentsObservable = useLiveQuery(() => clientDb.documents.toArray());
 
   if (documentsObservable && documentsObservable.length === 0) {
     return (

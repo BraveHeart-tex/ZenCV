@@ -1,9 +1,9 @@
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
-import { pdfViewerStore } from '@/lib/pdfViewerStore';
-import { cn } from '@/lib/utils';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils/stringUtils';
 
 const DocumentBuilderPreviewHeader = () => {
   const { view, setView } = useDocumentBuilderSearchParams();

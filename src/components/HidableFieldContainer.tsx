@@ -1,13 +1,14 @@
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { MAX_VISIBLE_FIELDS } from '@/lib/constants';
-import { DEX_Field } from '@/lib/schema';
+import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
+
+import { cn } from '@/lib/utils/stringUtils';
 
 const ARE_EXTRA_FIELDS_HIDDEN_KEY = 'areExtraFieldsHidden';
 

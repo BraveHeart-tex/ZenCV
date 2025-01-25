@@ -6,12 +6,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
-import { DEX_Section } from '@/lib/schema';
+import { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface DraggableSectionContainerProps {
   sectionId: DEX_Section['id'];

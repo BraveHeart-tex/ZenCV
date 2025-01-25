@@ -153,3 +153,5 @@ export const SECTION_METADATA_KEYS = {
 } as const;
 
 export const MAX_VISIBLE_FIELDS = 6 as const;
+export const builderSectionTitleClassNames =
+  'scroll-m-20 text-2xl font-semibold tracking-tight';

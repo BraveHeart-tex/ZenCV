@@ -3,7 +3,7 @@ import { type FormEvent, useRef, useState } from 'react';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
-import { createDocument } from '@/lib/service';
+import { createDocument } from '@/lib/client-db/clientDbService';
 import {
   Dialog,
   DialogClose,
@@ -15,7 +15,7 @@ import {
 } from './ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 
 const CreateDocumentDialog = () => {
   const navigate = useNavigate();

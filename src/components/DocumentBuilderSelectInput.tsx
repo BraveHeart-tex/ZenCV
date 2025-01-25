@@ -1,10 +1,10 @@
 'use client';
 
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
-import { getFieldHtmlId } from '@/lib/helpers';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { Label } from '@/components/ui/label';
-import { DEX_Field, SelectField } from '@/lib/schema';
+import { DEX_Field, SelectField } from '@/lib/client-db/clientDbSchema';
 import {
   Select,
   SelectContent,

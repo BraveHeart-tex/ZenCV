@@ -1,5 +1,5 @@
 'use client';
-import { DEX_Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useRef, useState } from 'react';
 import {
   Dialog,
@@ -11,7 +11,7 @@ import {
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { showErrorToast, showSuccessToast } from './ui/sonner';
-import { renameDocument } from '@/lib/service';
+import { renameDocument } from '@/lib/client-db/clientDbService';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { CornerDownLeftIcon } from 'lucide-react';
 import { Button } from './ui/button';

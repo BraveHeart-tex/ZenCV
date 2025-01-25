@@ -1,5 +1,4 @@
 'use client';
-import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
@@ -10,14 +9,15 @@ import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
 import DocumentBuilderHeader from '@/components/DocumentBuilderHeader';
 import DocumentSections from '@/components/DocumentSections';
 import AddSectionWidget from '@/components/AddSectionWidget';
-import { DEX_Document } from '@/lib/schema';
+import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
+import { cn } from '@/lib/utils/stringUtils';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {

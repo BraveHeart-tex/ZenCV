@@ -1,5 +1,5 @@
 'use client';
-import { confirmDialogStore } from '@/lib/confirmDialogStore';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { observer } from 'mobx-react-lite';
 import {
   Dialog,

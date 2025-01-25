@@ -1,4 +1,4 @@
-import { DEX_Field, DEX_Section } from '@/lib/schema';
+import { DEX_Field, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
   FIELD_NAMES,
   FIXED_SECTIONS,

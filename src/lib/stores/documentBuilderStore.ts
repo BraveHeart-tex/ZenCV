@@ -4,8 +4,8 @@ import type {
   DEX_Field,
   DEX_Item,
   DEX_Section,
-} from '@/lib/schema';
-import { dxDb } from '@/lib/dxDb';
+} from '@/lib/client-db/clientDbSchema';
+import { clientDb } from '@/lib/client-db/clientDb';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
@@ -16,8 +16,8 @@ import {
   renameDocument,
   updateField,
   updateSection,
-} from '@/lib/service';
-import { getItemInsertTemplate } from '@/lib/helpers';
+} from '@/lib/client-db/clientDbService';
+import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { OtherSectionOption } from '@/components/AddSectionWidget';
 import {
   ParsedSectionMetadata,
@@ -275,9 +275,9 @@ export class DocumentBuilderStore {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
 
-    await dxDb.transaction(
+    await clientDb.transaction(
       'rw',
-      [dxDb.sections, dxDb.fields, dxDb.items],
+      [clientDb.sections, clientDb.fields, clientDb.items],
       async () => {
         const sectionDto = {
           displayOrder: documentBuilderStore.sections.reduce(
@@ -291,7 +291,7 @@ export class DocumentBuilderStore {
           documentId: documentBuilderStore.document!.id,
         };
 
-        const sectionId = await dxDb.sections.add(sectionDto);
+        const sectionId = await clientDb.sections.add(sectionDto);
 
         runInAction(() => {
           this.sections.push({

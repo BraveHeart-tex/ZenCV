@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import { DEX_Section } from '@/lib/schema';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { action } from 'mobx';

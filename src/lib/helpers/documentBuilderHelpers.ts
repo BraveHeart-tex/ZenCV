@@ -11,8 +11,8 @@ import {
   FIELD_TYPES,
   SectionWithFields,
   type SelectField,
-} from '@/lib/schema';
-import { documentBuilderStore } from './documentBuilderStore';
+} from '@/lib/client-db/clientDbSchema';
+import { documentBuilderStore } from '../stores/documentBuilderStore';
 import {
   CollapsibleSectionType,
   FieldInsertTemplate,
@@ -30,7 +30,7 @@ import {
   referencesSectionFields,
   skillsSectionFields,
   websitesAndLinkFields,
-} from '@/lib/fieldTemplates';
+} from '@/lib/misc/fieldTemplates';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],

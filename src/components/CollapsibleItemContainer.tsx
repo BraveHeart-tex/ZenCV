@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/tooltip';
 import * as motion from 'motion/react-m';
 import { AnimatePresence } from 'motion/react';
-import { cn } from '@/lib/utils';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { PopoverClose } from '@radix-ui/react-popover';
@@ -35,17 +34,18 @@ import {
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { useMedia } from 'react-use';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
-import { confirmDialogStore } from '@/lib/confirmDialogStore';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { action } from 'mobx';
 import { showSuccessToast } from '@/components/ui/sonner';
 import {
   getItemDeleteConfirmationPreference,
   setItemDeleteConfirmationPreference,
-} from '@/lib/userSettings';
-import { getTriggerContent } from '@/lib/helpers';
-import { DEX_Item } from '@/lib/schema';
+} from '@/lib/helpers/userSettingsHelpers';
+import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
+import { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;

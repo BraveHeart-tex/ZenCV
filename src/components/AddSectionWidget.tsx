@@ -1,5 +1,4 @@
 'use client';
-import { builderSectionTitleClassNames, cn } from '@/lib/utils';
 import { observer } from 'mobx-react-lite';
 import {
   BookOpenTextIcon,
@@ -10,13 +9,22 @@ import {
   type LucideIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react';
-import { CONTAINER_TYPES, DEX_Item, DEX_Section } from '@/lib/schema';
-import { INTERNAL_SECTION_TYPES, SECTION_METADATA_KEYS } from '@/lib/constants';
+import {
+  CONTAINER_TYPES,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
+import {
+  builderSectionTitleClassNames,
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { action } from 'mobx';
 import { TemplatedSectionType } from '@/lib/types';
-import { generateSectionMetadata } from '@/lib/helpers';
+import { generateSectionMetadata } from '@/lib/helpers/documentBuilderHelpers';
+import { cn } from '@/lib/utils/stringUtils';
 
 export interface OtherSectionOption
   extends Omit<

@@ -1,8 +1,9 @@
 'use client';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
-import { builderSectionTitleClassNames, cn } from '@/lib/utils';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
-import { DEX_Section } from '@/lib/schema';
+import { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { cn } from '@/lib/utils/stringUtils';
+import { builderSectionTitleClassNames } from '@/lib/constants';
 
 interface BuilderSectionTitleProps {
   sectionId: DEX_Section['id'];

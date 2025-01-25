@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
 import {
@@ -27,15 +27,15 @@ import {
   getMonthFromFieldValue,
   getYearFromFieldValue,
   isValidDateFormat,
-} from '@/lib/dateInputHelpers';
-import { cn } from '@/lib/utils';
+} from '@/lib/helpers/dateInputHelpers';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { getFieldHtmlId } from '@/lib/helpers';
-import { DEX_Field } from '@/lib/schema';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
+import { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { cn } from '@/lib/utils/stringUtils';
 
 const PRESENT = 'Present';
 
