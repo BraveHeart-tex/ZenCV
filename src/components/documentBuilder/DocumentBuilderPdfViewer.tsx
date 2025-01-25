@@ -41,13 +41,15 @@ const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
   const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
   return (
-    <div className="relative z-10 h-full overflow-hidden transition-all">
+    <div className="relative z-10 h-full transition-all">
       <AnimatePresence>
         {shouldShowPreviousDocument && previousRenderValue ? (
           <motion.div
             key={previousRenderValue}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <Document
               key={previousRenderValue}
