@@ -9,6 +9,8 @@ import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import * as motion from 'motion/react-m';
+import { AnimatePresence } from 'motion/react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -40,24 +42,34 @@ const PdfViewer = ({ children }: { children: ReactElement }) => {
 
   return (
     <div className="relative z-10 h-full transition-all bg-white">
-      {shouldShowPreviousDocument && previousRenderValue ? (
-        <Document
-          key={previousRenderValue}
-          className={'previous-document h-full w-full'}
-          file={previousRenderValue}
-          loading={null}
-        >
-          <Page
-            key={currentPage}
-            pageNumber={currentPage}
-            renderAnnotationLayer={false}
-            renderTextLayer={false}
-            width={width < 768 ? 0.7 * width : 0.4 * width}
-            height={width < 768 ? 0.7 * height : 0.4 * height}
-            loading={null}
-          />
-        </Document>
-      ) : null}
+      <AnimatePresence>
+        {shouldShowPreviousDocument && previousRenderValue ? (
+          <motion.div
+            key={previousRenderValue}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Document
+              key={previousRenderValue}
+              className={'previous-document h-full w-full'}
+              file={previousRenderValue}
+              loading={null}
+            >
+              <Page
+                key={currentPage}
+                pageNumber={currentPage}
+                renderAnnotationLayer={false}
+                renderTextLayer={false}
+                width={width < 768 ? 0.7 * width : 0.4 * width}
+                height={width < 768 ? 0.7 * height : 0.4 * height}
+                loading={null}
+              />
+            </Document>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       {render.value && (
         <Document

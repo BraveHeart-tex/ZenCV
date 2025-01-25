@@ -103,7 +103,7 @@ importers:
         specifier: ^9.1.0
         version: 9.2.1(@types/react@19.0.4)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-pdf-html:
-        specifier: ^2.0.4
+        specifier: ^2.1.2
         version: 2.1.2(@react-pdf/renderer@4.1.6(react@19.0.0))(react@19.0.0)
       react-router:
         specifier: ^7.1.3

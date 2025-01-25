@@ -106,6 +106,7 @@ html > body[data-scroll-locked] {
   &.previous-document {
     canvas {
       opacity: 0.5;
+      transition: all 0.3s ease-in;
     }
   }
 
@@ -115,4 +116,13 @@ html > body[data-scroll-locked] {
       box-shadow: none;
     }
   }
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

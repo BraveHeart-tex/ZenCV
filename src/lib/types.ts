@@ -7,12 +7,15 @@ import {
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
 } from '@/lib/constants';
+import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
 
 type Values<T> = T[keyof T];
 
 export type NestedValues<T> = T extends object
   ? Values<{ [K in keyof T]: NestedValues<T[K]> }>
   : T;
+
+export type ValueOfNestedObject<T, K extends keyof T> = T[K][keyof T[K]];
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
@@ -34,7 +37,7 @@ export type CollapsibleSectionType = Exclude<
 >;
 
 export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
-  (typeof FIELD_NAMES)[K][keyof (typeof FIELD_NAMES)[K]];
+  ValueOfNestedObject<typeof FIELD_NAMES, K>;
 
 export type SectionMetadataKey = NestedValues<typeof SECTION_METADATA_KEYS>;
 
@@ -48,3 +51,8 @@ export interface SectionWithParsedMetadata
   extends Omit<DEX_Section, 'metadata'> {
   metadata: ParsedSectionMetadata[];
 }
+
+export type BuilderViewSearchParamValue = ValueOfNestedObject<
+  typeof DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
+  'VIEW'
+>;

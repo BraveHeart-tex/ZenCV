@@ -6,7 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
@@ -17,15 +17,14 @@ import DocumentBuilderHeader from '@/components/DocumentBuilderHeader';
 import DocumentSections from '@/components/DocumentSections';
 import AddSectionWidget from '@/components/AddSectionWidget';
 import { DEX_Document } from '@/lib/schema';
+import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
     const navigate = useNavigate();
+    const { view } = useDocumentBuilderSearchParams();
 
     const [, startTransition] = useTransition();
-    const [searchParams] = useSearchParams();
-    const view =
-      (searchParams.get('view') as 'builder' | 'preview') || 'builder';
 
     useEffect(() => {
       if (!documentId || documentBuilderStore.document?.id === documentId) {
