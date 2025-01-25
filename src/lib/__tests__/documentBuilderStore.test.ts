@@ -528,4 +528,28 @@ describe('DocumentBuilderStore', () => {
       expect(vi.mocked(bulkUpdateSections)).not.toHaveBeenCalled();
     });
   });
+  describe('resetState', () => {
+    it('should reset the store to its initial state', () => {
+      store.document = {
+        id: 1,
+        title: 'Test Document',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      store.sections = mockSections.map((section) => ({
+        ...section,
+        metadata: [],
+      }));
+      store.items = mockItems;
+      store.fields = mockFields;
+      store.collapsedItemId = 1;
+      store.resetState();
+
+      expect(store.document).toBeNull();
+      expect(store.sections).toEqual([]);
+      expect(store.items).toEqual([]);
+      expect(store.fields).toEqual([]);
+      expect(store.collapsedItemId).toEqual(null);
+    });
+  });
 });
