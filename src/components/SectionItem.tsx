@@ -1,15 +1,16 @@
 'use client';
 import { observer } from 'mobx-react-lite';
 import { documentBuilderStore } from '@/lib/documentBuilderStore';
-import SectionField from '@/components/SectionField';
 import { cn } from '@/lib/utils';
-import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
-import { CONTAINER_TYPES, DEX_Item, FIELD_TYPES } from '@/lib/schema';
-import DateFieldInput from '@/components/DateFieldInput';
+import { INTERNAL_SECTION_TYPES, MAX_VISIBLE_FIELDS } from '@/lib/constants';
+import { CONTAINER_TYPES, DEX_Item } from '@/lib/schema';
 import CollapsibleItemContainer from '@/components/CollapsibleItemContainer';
 import type { ReactNode } from 'react';
+import HidableFieldContainer from './HidableFieldContainer';
+import { useFieldMapper } from '@/hooks/useFieldMapper';
 
 const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
+  const { renderFields } = useFieldMapper();
   const item = documentBuilderStore.getItemById(itemId)!;
   const fields = documentBuilderStore.getFieldsByItemId(itemId);
 
@@ -30,7 +31,7 @@ const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
           'p-4 px-0 grid grid-cols-2 gap-4',
           documentBuilderStore.getSectionById(item.sectionId)?.type ===
             INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
-            'grid md:grid-cols-2 gap-x-4 gap-y-6',
+            'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6',
           fields.length === 2 && 'grid grid-cols-2 gap-4',
         )}
       >
@@ -39,32 +40,11 @@ const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
     );
   };
 
-  return (
-    <ContainerElement>
-      {fields.map((field, index) => {
-        const isDateField = field.type === FIELD_TYPES.DATE_MONTH;
-        const nextFieldIsDate =
-          fields[index + 1]?.type === FIELD_TYPES.DATE_MONTH;
+  if (fields.length > MAX_VISIBLE_FIELDS) {
+    return <HidableFieldContainer fields={fields} />;
+  }
 
-        if (isDateField && nextFieldIsDate) {
-          return (
-            <div key={field.id} className="w-full">
-              <div className="flex items-center gap-4">
-                <DateFieldInput fieldId={field.id} />
-                <DateFieldInput fieldId={fields[index + 1].id} />
-              </div>
-            </div>
-          );
-        }
-
-        if (isDateField) {
-          return null;
-        }
-
-        return <SectionField fieldId={field.id} key={field.id} />;
-      })}
-    </ContainerElement>
-  );
+  return <ContainerElement>{renderFields(fields)}</ContainerElement>;
 });
 
 export default SectionItem;

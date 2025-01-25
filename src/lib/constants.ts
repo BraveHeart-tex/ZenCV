@@ -151,3 +151,5 @@ export const SECTION_METADATA_KEYS = {
     HIDE_REFERENCES: 'hideReferences',
   },
 } as const;
+
+export const MAX_VISIBLE_FIELDS = 6 as const;
