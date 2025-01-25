@@ -99,7 +99,7 @@ export const renameDocument = async (
 
 export const updateSection = async (
   sectionId: DEX_Section['id'],
-  data: Partial<Omit<DEX_Section, 'id'>>,
+  data: UpdateSpec<DEX_Section>,
 ) => {
   return dxDb.sections.update(sectionId, data);
 };

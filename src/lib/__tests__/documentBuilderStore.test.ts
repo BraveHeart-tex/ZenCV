@@ -21,7 +21,7 @@ import {
 } from '../constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
 import { getItemInsertTemplate } from '../helpers';
-import { ParsedSectionMetadata } from '../types';
+import { ParsedSectionMetadata, SectionMetadataKey } from '../types';
 
 // Mock external services
 vi.mock('@/lib/service');
@@ -624,6 +624,68 @@ describe('DocumentBuilderStore', () => {
       const result = store.getSectionMetadataOptions(mockSections[0].id);
 
       expect(result).toEqual([]);
+    });
+  });
+  describe('updateSectionMetadata', () => {
+    beforeEach(() => {
+      store.sections = sectionsWithMockMetadata;
+    });
+
+    it('should update metadata value and call updateSection', async () => {
+      const sectionId = sectionsWithMockMetadata[0].id;
+      const data = {
+        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+        value: '1',
+      };
+
+      await store.updateSectionMetadata(sectionId, data);
+
+      const section = store.sections.find(
+        (section) => section.id === sectionId,
+      );
+      const updatedMetadata = section?.metadata.find(
+        (metadata) => metadata.key === data.key,
+      );
+
+      expect(updatedMetadata?.value).toBe(data.value);
+      expect(mockedUpdateSection).toHaveBeenCalledWith(sectionId, {
+        metadata: JSON.stringify(
+          section?.metadata.map((metadata) => ({
+            ...metadata,
+            value: metadata.key === data.key ? data.value : metadata.value,
+          })),
+        ),
+      });
+    });
+
+    it('should handle non-existent section gracefully', async () => {
+      const data = {
+        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+        value: '1',
+      };
+
+      const result = await store.updateSectionMetadata(999, data);
+
+      expect(result).toBeUndefined();
+      expect(mockedUpdateSection).not.toHaveBeenCalled();
+    });
+
+    it('should handle non-existent metadata key gracefully', async () => {
+      const sectionId = sectionsWithMockMetadata[0].id;
+      const data = {
+        key: 'non-existent-key' as SectionMetadataKey,
+        value: '1',
+      };
+
+      await store.updateSectionMetadata(sectionId, data);
+
+      const section = store.sections.find(
+        (section) => section.id === sectionId,
+      );
+      expect(section?.metadata).toEqual(sectionsWithMockMetadata[0].metadata);
+      expect(mockedUpdateSection).toHaveBeenCalledWith(sectionId, {
+        metadata: JSON.stringify(section?.metadata),
+      });
     });
   });
 });

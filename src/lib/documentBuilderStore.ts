@@ -338,7 +338,7 @@ export class DocumentBuilderStore {
       }
     });
 
-    await dxDb.sections.update(sectionId, {
+    await updateSection(sectionId, {
       metadata: JSON.stringify(
         section.metadata.map((metadata) => ({
           ...metadata,
