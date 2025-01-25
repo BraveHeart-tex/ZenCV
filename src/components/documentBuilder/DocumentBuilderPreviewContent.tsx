@@ -1,12 +1,25 @@
 import { observer } from 'mobx-react-lite';
-import { useNetworkState } from 'react-use';
+import { useDebounce, useNetworkState } from 'react-use';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { getFormattedTemplateData } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { useState } from 'react';
+import { PdfTemplateData } from '@/lib/types';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
+  const templateData = getFormattedTemplateData();
+  const [debouncedData, setDebouncedData] = useState<PdfTemplateData | null>(
+    null,
+  );
+  useDebounce(
+    () => {
+      setDebouncedData(templateData);
+    },
+    300,
+    [templateData],
+  );
 
   // This was how it was done before, just here for references
   //   useEffect(() => {
@@ -23,7 +36,7 @@ const DocumentBuilderPreviewContent = observer(() => {
   //     });
   //   }, []);
 
-  const templateData = getFormattedTemplateData();
+  if (!debouncedData) return;
 
   return (
     <div className="hide-scrollbar w-full h-full overflow-auto rounded-md">
@@ -35,8 +48,8 @@ const DocumentBuilderPreviewContent = observer(() => {
           </p>
         </div>
       ) : (
-        <DocumentBuilderPdfViewer>
-          <LondonTemplate templateData={templateData} />
+        <DocumentBuilderPdfViewer key={JSON.stringify(debouncedData)}>
+          <LondonTemplate templateData={debouncedData} />
         </DocumentBuilderPdfViewer>
       )}
     </div>

@@ -44,11 +44,11 @@ const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
   return (
     <div className="relative z-10 h-full transition-all">
       <AnimatePresence>
-        {shouldShowPreviousDocument && previousRenderValue ? (
+        {previousRenderValue ? (
           <motion.div key={previousRenderValue}>
             <Document
               key={previousRenderValue}
-              className={'previous-document h-full w-full'}
+              className={'h-full w-full'}
               file={previousRenderValue}
               loading={null}
             >
