@@ -30,10 +30,13 @@ import {
 import { useCallback, useRef } from 'react';
 import { HEADING_OPTIONS } from '@/components/richTextEditor/constants';
 import { cn } from '@/lib/utils/stringUtils';
+import { Toggle } from '@/components/ui/toggle';
 
 interface RichTextEditorMenubarProps {
   editor: Editor | null;
 }
+
+const menuButtonClassNames = 'w-4 h-4';
 
 const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
   const linkRef = useRef<HTMLInputElement>(null);
@@ -90,65 +93,45 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button
+      <Toggle
         variant="outline"
-        type="button"
-        size="icon"
         onClick={() => editor.chain().focus().setParagraph().run()}
-        className={
-          editor.isActive('paragraph') ? ' bg-gray-200 dark:bg-gray-700' : ''
-        }
+        pressed={editor.isActive('paragraph')}
       >
-        <PilcrowIcon className="w-4 h-4" />
-      </Button>
-      <Button
+        <PilcrowIcon className={menuButtonClassNames} />
+      </Toggle>
+      <Toggle
         variant="outline"
-        type="button"
-        size="icon"
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
-        className={
-          editor.isActive('bold') ? ' bg-gray-200 dark:bg-gray-700' : ''
-        }
+        pressed={editor.isActive('bold')}
       >
-        <Bold className="w-4 h-4" />
-      </Button>
-      <Button
+        <Bold className={menuButtonClassNames} />
+      </Toggle>
+      <Toggle
         variant="outline"
-        type="button"
-        size="icon"
         onClick={() => editor.chain().focus().toggleItalic().run()}
         disabled={!editor.can().chain().focus().toggleItalic().run()}
-        className={
-          editor.isActive('italic') ? ' bg-gray-200 dark:bg-gray-700' : ''
-        }
+        pressed={editor.isActive('italic')}
       >
-        <Italic className="w-4 h-4" />
-      </Button>
-      <Button
+        <Italic className={menuButtonClassNames} />
+      </Toggle>
+      <Toggle
         variant="outline"
-        type="button"
-        size="icon"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
         disabled={!editor.can().chain().focus().toggleBulletList().run()}
-        className={
-          editor.isActive('bulletList') ? ' bg-gray-200 dark:bg-gray-700' : ''
-        }
+        pressed={editor.isActive('bulletList')}
       >
-        <List className="w-4 h-4" />
-      </Button>
-      <Button
+        <List className={menuButtonClassNames} />
+      </Toggle>
+      <Toggle
         variant="outline"
-        type="button"
-        size="icon"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
         disabled={!editor.can().chain().focus().toggleOrderedList().run()}
-        className={
-          editor.isActive('orderedList') ? ' bg-gray-200 dark:bg-gray-700' : ''
-        }
+        pressed={editor.isActive('orderedList')}
       >
-        <ListOrdered className="w-4 h-4" />
-      </Button>
+        <ListOrdered className={menuButtonClassNames} />
+      </Toggle>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -168,7 +151,7 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
               });
             }}
           >
-            <LinkIcon className="w-4 h-4" />
+            <LinkIcon className={menuButtonClassNames} />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="grid gap-2">
@@ -203,7 +186,7 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
           size="icon"
           onClick={() => editor?.chain().focus().unsetLink().run()}
         >
-          <UnlinkIcon className="w-4 h-4" />
+          <UnlinkIcon className={menuButtonClassNames} />
         </Button>
       ) : null}
       <Button
@@ -213,7 +196,7 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
         onClick={() => editor.chain().focus().undo().run()}
         disabled={!editor.can().chain().focus().undo().run()}
       >
-        <Undo className="w-4 h-4" />
+        <Undo className={menuButtonClassNames} />
       </Button>
       <Button
         variant="outline"
@@ -222,7 +205,7 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
         onClick={() => editor.chain().focus().redo().run()}
         disabled={!editor.can().chain().focus().redo().run()}
       >
-        <Redo className="w-4 h-4" />
+        <Redo className={menuButtonClassNames} />
       </Button>
     </div>
   );

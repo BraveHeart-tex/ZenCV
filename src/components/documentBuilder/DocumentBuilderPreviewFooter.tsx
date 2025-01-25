@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 
 const DocumentBuilderPreviewFooter = observer(() => {
   const currentPage = pdfViewerStore.currentPage;
-
   const numberOfPages = pdfViewerStore.numberOfPages;
 
   return (
@@ -14,20 +13,20 @@ const DocumentBuilderPreviewFooter = observer(() => {
         disabled={currentPage === 1}
         onClick={() => pdfViewerStore.setCurrentPage(currentPage - 1)}
         size="icon"
-        variant="ghost"
-        className="hover:bg-secondary text-muted rounded-full size-[30px] dark:bg-muted-foreground"
+        variant="outline"
+        className="rounded-full size-[1.875rem]"
       >
         <ChevronLeftIcon size={24} />
       </Button>
-      <span className="text-muted dark:text-muted-foreground tabular-nums text-xs">
+      <span className="text-muted-foreground tabular-nums text-xs">
         {currentPage} of {numberOfPages}
       </span>
       <Button
         disabled={currentPage === numberOfPages}
         onClick={() => pdfViewerStore.setCurrentPage(currentPage + 1)}
         size="icon"
-        variant="ghost"
-        className="hover:bg-secondary text-muted rounded-full size-[30px] dark:bg-muted-foreground"
+        variant="outline"
+        className="rounded-full size-[1.875rem]"
       >
         <ChevronRightIcon size={24} />
       </Button>
