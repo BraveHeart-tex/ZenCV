@@ -270,6 +270,7 @@ export class DocumentBuilderStore {
     }
   };
 
+  // TODO: add test cases for this
   addNewSection = async (option: OtherSectionOption) => {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;

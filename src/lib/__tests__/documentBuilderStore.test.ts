@@ -14,9 +14,14 @@ import {
   updateField,
   updateSection,
 } from '@/lib/service';
-import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '../constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '../schema';
 import { getItemInsertTemplate } from '../helpers';
+import { ParsedSectionMetadata } from '../types';
 
 // Mock external services
 vi.mock('@/lib/service');
@@ -87,6 +92,28 @@ const mockFields = [
     value: 'Test Field',
     name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
     type: FIELD_TYPES.STRING,
+  },
+];
+
+const sectionsWithMockMetadata = [
+  {
+    ...mockSections[0],
+    metadata: [
+      {
+        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+        value: 'test-value-1',
+        label: 'Test Label 1',
+      },
+      {
+        key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+        value: 'test-value-2',
+        label: 'Test Label 2',
+      },
+    ],
+  },
+  {
+    ...mockSections[1],
+    metadata: [],
   },
 ];
 
@@ -550,6 +577,53 @@ describe('DocumentBuilderStore', () => {
       expect(store.items).toEqual([]);
       expect(store.fields).toEqual([]);
       expect(store.collapsedItemId).toEqual(null);
+    });
+  });
+  describe('getSectionMetadataOptions', () => {
+    beforeEach(() => {
+      store.sections = sectionsWithMockMetadata;
+    });
+
+    it('should return metadata options for a section with metadata', () => {
+      const sectionId = sectionsWithMockMetadata[0].id;
+      const result = store.getSectionMetadataOptions(sectionId);
+
+      expect(result).toHaveLength(2);
+      expect(result).toEqual(sectionsWithMockMetadata[0]?.metadata);
+      expect(result).toSatisfy((result: ParsedSectionMetadata[]) =>
+        result.every(
+          (option) =>
+            typeof option.key === 'string' &&
+            typeof option.value === 'string' &&
+            typeof option.label === 'string',
+        ),
+      );
+    });
+
+    it('should return empty array for a section without metadata', () => {
+      const sectionId = mockSections[1].id;
+      const result = store.getSectionMetadataOptions(sectionId);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array for a non-existent section', () => {
+      const result = store.getSectionMetadataOptions(999);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should handle null metadata gracefully', () => {
+      store.sections = [
+        {
+          ...mockSections[0],
+          metadata: null as never,
+        },
+      ];
+
+      const result = store.getSectionMetadataOptions(mockSections[0].id);
+
+      expect(result).toEqual([]);
     });
   });
 });
