@@ -50,15 +50,15 @@ export const getInitialDocumentInsertBoilerplate = (
     },
     {
       documentId,
-      title: 'Professional Summary',
-      type: INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
+      title: 'Summary',
+      type: INTERNAL_SECTION_TYPES.SUMMARY,
       items: [
         {
           containerType: CONTAINER_TYPES.STATIC,
           displayOrder: 1,
           fields: [
             {
-              name: FIELD_NAMES.PROFESSIONAL_SUMMARY.PROFESSIONAL_SUMMARY,
+              name: FIELD_NAMES.SUMMARY.SUMMARY,
               type: FIELD_TYPES.RICH_TEXT,
               value: '',
             },
@@ -68,8 +68,8 @@ export const getInitialDocumentInsertBoilerplate = (
     },
     {
       documentId,
-      title: 'Employment History',
-      type: INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY,
+      title: 'Work Experience',
+      type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
       items: [
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -142,7 +142,7 @@ export type ItemTemplateType = Omit<DEX_Item, 'id' | 'sectionId'> & {
 
 export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
   const templateMap: Record<TemplatedSectionType, ItemTemplateType> = {
-    [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]: {
+    [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
       displayOrder: 1,
       fields: employmentHistoryFields,
@@ -236,8 +236,7 @@ export const getTriggerContent = (
     CollapsibleSectionType,
     { title: string; description: string }
   > = {
-    [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]:
-      getEmploymentHistoryTitle(itemId),
+    [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]: getEmploymentHistoryTitle(itemId),
     [INTERNAL_SECTION_TYPES.EDUCATION]: getEducationSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
       getWebsitesSocialLinksTitle(itemId),
@@ -263,22 +262,22 @@ const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
   const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
 
   const getEmploymentHistoryFieldValue = (
-    fieldName: FieldValuesForKey<'EMPLOYMENT_HISTORY'>,
+    fieldName: FieldValuesForKey<'WORK_EXPERIENCE'>,
   ) => {
     return itemFields.find((field) => field.name === fieldName)?.value || '';
   };
 
   const jobTitle = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+    FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
   );
   const startDate = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.EMPLOYMENT_HISTORY.START_DATE,
+    FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
   );
   const endDate = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.EMPLOYMENT_HISTORY.END_DATE,
+    FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
   );
   const employer = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.EMPLOYMENT_HISTORY.EMPLOYER,
+    FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
   );
 
   let triggerTitle = jobTitle

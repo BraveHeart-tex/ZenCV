@@ -64,7 +64,7 @@ const mockSections = [
     displayOrder: 2,
     metadata: '[]',
     documentId: 1,
-    type: INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY,
+    type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     defaultTitle: 'Section 1',
     title: 'Section 1',
   },
@@ -90,7 +90,7 @@ const mockFields = [
     id: 1,
     itemId: 1,
     value: 'Test Field',
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+    name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
     type: FIELD_TYPES.STRING,
   },
 ];
@@ -378,7 +378,7 @@ describe('DocumentBuilderStore', () => {
       displayOrder: 1,
       fields: [
         {
-          name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+          name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
           type: FIELD_TYPES.STRING,
           value: '',
         },
@@ -397,7 +397,7 @@ describe('DocumentBuilderStore', () => {
           id: 2,
           itemId: 3,
           value: '',
-          name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+          name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
           type: FIELD_TYPES.STRING,
         },
       ],

@@ -55,27 +55,27 @@ export const personalDetailsSectionFields: FieldInsertTemplate[] = [
 
 export const employmentHistoryFields: FieldInsertTemplate[] = [
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.JOB_TITLE,
+    name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
     type: FIELD_TYPES.STRING,
   },
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.EMPLOYER,
+    name: FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
     type: FIELD_TYPES.STRING,
   },
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.START_DATE,
+    name: FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
     type: FIELD_TYPES.DATE_MONTH,
   },
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.END_DATE,
+    name: FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
     type: FIELD_TYPES.DATE_MONTH,
   },
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.CITY,
+    name: FIELD_NAMES.WORK_EXPERIENCE.CITY,
     type: FIELD_TYPES.STRING,
   },
   {
-    name: FIELD_NAMES.EMPLOYMENT_HISTORY.DESCRIPTION,
+    name: FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
     type: FIELD_TYPES.RICH_TEXT,
   },
 ].map((field) => ({ ...field, value: '' }));

@@ -1,7 +1,7 @@
 export const INTERNAL_SECTION_TYPES = {
   PERSONAL_DETAILS: 'personal-details',
-  PROFESSIONAL_SUMMARY: 'professional-summary',
-  EMPLOYMENT_HISTORY: 'employment-history',
+  SUMMARY: 'summary',
+  WORK_EXPERIENCE: 'work-experience',
   EDUCATION: 'education',
   WEBSITES_SOCIAL_LINKS: 'websites-social-links',
   SKILLS: 'skills',
@@ -15,7 +15,7 @@ export const INTERNAL_SECTION_TYPES = {
 
 export const NOT_TEMPLATED_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-  INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
+  INTERNAL_SECTION_TYPES.SUMMARY,
 ] as const;
 
 export const DELETABLE_INTERNAL_SECTION_TYPES = [
@@ -28,9 +28,9 @@ export const DELETABLE_INTERNAL_SECTION_TYPES = [
 ] as const;
 
 export const SECTION_DESCRIPTIONS_BY_TYPE = {
-  [INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY]:
+  [INTERNAL_SECTION_TYPES.SUMMARY]:
     "Grab the reader's attention with 2-4 snappy lines showcasing your role, top wins, best traits, and key skills.",
-  [INTERNAL_SECTION_TYPES.EMPLOYMENT_HISTORY]:
+  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]:
     "List your key accomplishments from the past decade. Use bullet points and include specific metrics where possible (e.g., 'Increased X by Y% through Z initiative').",
   [INTERNAL_SECTION_TYPES.EDUCATION]:
     "Your diverse educational background highlights the unique value and skills you'll bring to the role.",
@@ -61,7 +61,7 @@ export const SELECT_TYPES = {
 
 export const FIXED_SECTIONS = [
   INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-  INTERNAL_SECTION_TYPES.PROFESSIONAL_SUMMARY,
+  INTERNAL_SECTION_TYPES.SUMMARY,
   INTERNAL_SECTION_TYPES.HOBBIES,
 ] as const;
 
@@ -80,10 +80,10 @@ export const FIELD_NAMES = {
     PLACE_OF_BIRTH: 'Place of Birth',
     DATE_OF_BIRTH: 'Date of Birth',
   },
-  PROFESSIONAL_SUMMARY: {
-    PROFESSIONAL_SUMMARY: 'Professional Summary',
+  SUMMARY: {
+    SUMMARY: 'Summary',
   },
-  EMPLOYMENT_HISTORY: {
+  WORK_EXPERIENCE: {
     JOB_TITLE: 'Job Title',
     EMPLOYER: 'Employer',
     START_DATE: 'Start Date',
