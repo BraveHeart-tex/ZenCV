@@ -362,8 +362,18 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
   const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
   const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
 
+  const item = documentBuilderStore.getItemById(itemId);
+  const metadata = documentBuilderStore.sections.find(
+    (section) => section.id === item?.sectionId,
+  )?.metadata;
+  const shouldShowSkillLevel =
+    metadata?.find(
+      (metadata) =>
+        metadata.key === SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+    )?.value === '1';
+
   const triggerTitle = skillValue || '(Untitled)';
-  const description = levelValue || '';
+  const description = shouldShowSkillLevel ? levelValue : '';
 
   return {
     title: triggerTitle,

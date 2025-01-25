@@ -271,7 +271,7 @@ export class DocumentBuilderStore {
   };
 
   // TODO: add test cases for this
-  addNewSection = async (option: OtherSectionOption) => {
+  addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
 
