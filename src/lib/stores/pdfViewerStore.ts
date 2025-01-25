@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 
 interface PdfViewerState {
   numberOfPages: number;
@@ -17,14 +17,7 @@ class PdfViewerStore implements PdfViewerState {
   previousRenderValue: string | null = null;
 
   constructor() {
-    makeAutoObservable(this, {
-      currentPage: observable,
-      numberOfPages: observable,
-      previousRenderValue: observable,
-      setCurrentPage: action,
-      setPreviousRenderValue: action,
-      setNumberOfPages: action,
-    });
+    makeAutoObservable(this);
   }
 
   setCurrentPage = (currentPage: number) => {
@@ -37,6 +30,12 @@ class PdfViewerStore implements PdfViewerState {
 
   setNumberOfPages = (numberOfPages: number) => {
     this.numberOfPages = numberOfPages;
+  };
+
+  resetState = () => {
+    this.numberOfPages = 0;
+    this.currentPage = 1;
+    this.previousRenderValue = null;
   };
 }
 

@@ -18,6 +18,7 @@ import AddSectionWidget from '@/components/documentBuilder/AddSectionWidget';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 import { cn } from '@/lib/utils/stringUtils';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
@@ -25,6 +26,13 @@ const DocumentBuilderClient = observer(
     const { view } = useDocumentBuilderSearchParams();
 
     const [, startTransition] = useTransition();
+
+    useEffect(() => {
+      return () => {
+        documentBuilderStore.resetState();
+        pdfViewerStore.resetState();
+      };
+    }, []);
 
     useEffect(() => {
       if (!documentId || documentBuilderStore.document?.id === documentId) {
