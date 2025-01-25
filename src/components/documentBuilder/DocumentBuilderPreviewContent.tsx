@@ -1,5 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';
+import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
+import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
+import { getFormattedTemplateData } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
@@ -20,6 +23,8 @@ const DocumentBuilderPreviewContent = observer(() => {
   //     });
   //   }, []);
 
+  const templateData = getFormattedTemplateData();
+
   return (
     <div className="hide-scrollbar w-full h-full overflow-auto rounded-md">
       {userLostConnection ? (
@@ -29,8 +34,11 @@ const DocumentBuilderPreviewContent = observer(() => {
             You can still edit your resume.
           </p>
         </div>
-      ) : // <DocumentBuilderPdfViewer></DocumentBuilderPdfViewer>
-      null}
+      ) : (
+        <DocumentBuilderPdfViewer>
+          <LondonTemplate templateData={templateData} />
+        </DocumentBuilderPdfViewer>
+      )}
     </div>
   );
 });

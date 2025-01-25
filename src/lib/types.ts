@@ -56,3 +56,19 @@ export type BuilderViewSearchParamValue = ValueOfNestedObject<
   typeof DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
   'VIEW'
 >;
+
+export interface PdfTemplateData {
+  personalDetails: {
+    firstName: string;
+    lastName: string;
+    jobTitle: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    placeOfBirth: string;
+    phone: string;
+    email: string;
+    dateOfBirth: string;
+    driversLicense: string;
+  };
+}

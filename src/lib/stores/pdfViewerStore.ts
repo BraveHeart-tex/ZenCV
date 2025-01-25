@@ -24,12 +24,12 @@ class PdfViewerStore implements PdfViewerState {
     this.currentPage = currentPage;
   };
 
-  setPreviousRenderValue = (previousRenderValue: string | null) => {
-    this.previousRenderValue = previousRenderValue;
-  };
-
   setNumberOfPages = (numberOfPages: number) => {
     this.numberOfPages = numberOfPages;
+  };
+
+  setPreviousRenderValue = (previousRenderValue: string | null) => {
+    this.previousRenderValue = previousRenderValue;
   };
 
   resetState = () => {

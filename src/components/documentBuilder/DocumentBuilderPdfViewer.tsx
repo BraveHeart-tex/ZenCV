@@ -16,22 +16,23 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
   const currentPage = pdfViewerStore.currentPage;
-  const setCurrentPage = pdfViewerStore.setCurrentPage;
   const previousRenderValue = pdfViewerStore.previousRenderValue;
-  const setPreviousRenderValue = pdfViewerStore.setPreviousRenderValue;
-  const setNumberOfPages = pdfViewerStore.setNumberOfPages;
   const { width, height } = useViewportSize();
 
   const render = useAsync(async () => {
-    if (!children) return null;
+    try {
+      if (!children) return null;
 
-    const blob = await pdf(children as ReactElement<DocumentProps>).toBlob();
-    return URL.createObjectURL(blob);
+      const blob = await pdf(children as ReactElement<DocumentProps>).toBlob();
+      return URL.createObjectURL(blob);
+    } catch (error) {
+      console.error('DocumentBuilderPdfViewer rendering error', error);
+    }
   }, []);
 
   const onDocumentLoad = (d: { numPages: number }) => {
-    setNumberOfPages(d.numPages);
-    setCurrentPage(Math.min(currentPage, d.numPages));
+    pdfViewerStore.setNumberOfPages(d.numPages);
+    pdfViewerStore.setCurrentPage(Math.min(currentPage, d.numPages));
   };
 
   const isFirstRendering = !previousRenderValue;
@@ -44,13 +45,7 @@ const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
     <div className="relative z-10 h-full transition-all">
       <AnimatePresence>
         {shouldShowPreviousDocument && previousRenderValue ? (
-          <motion.div
-            key={previousRenderValue}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-          >
+          <motion.div key={previousRenderValue}>
             <Document
               key={previousRenderValue}
               className={'previous-document h-full w-full'}
@@ -91,7 +86,7 @@ const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
             loading={null}
             onRenderSuccess={() => {
               if (render.value !== undefined) {
-                setPreviousRenderValue(render.value);
+                pdfViewerStore.setPreviousRenderValue(render.value);
               }
             }}
           />

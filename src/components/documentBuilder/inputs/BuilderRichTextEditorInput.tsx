@@ -1,5 +1,5 @@
 'use client';
-import RichTextEditor from '@/components/RichTextEditor';
+import RichTextEditor from '@/components/richTextEditor/RichTextEditor';
 import { observer } from 'mobx-react-lite';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
