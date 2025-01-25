@@ -43,10 +43,10 @@ const CreateDocumentDialog = () => {
       }
 
       await documentBuilderStore.initializeStore(documentId);
-      navigate(`/builder/${documentId}`);
       showSuccessToast('Document created successfully.');
       setName('');
       setOpen(false);
+      navigate(`/builder/${documentId}`);
     } catch (error) {
       showErrorToast('An error occurred while creating the document.');
       console.error(error);

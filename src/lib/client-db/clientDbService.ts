@@ -71,6 +71,7 @@ export const createDocument = async (data: DEX_InsertDocumentModel) => {
                 name: field.name,
                 type: field.type,
                 value: field.value,
+                placeholder: field?.placeholder || '',
               });
             }
           });

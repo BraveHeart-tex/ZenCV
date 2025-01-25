@@ -4,13 +4,18 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
-import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
-import DateFieldInput from '@/components/documentBuilder/DateFieldInput';
+import {
+  CONTAINER_TYPES,
+  DEX_Field,
+  FIELD_TYPES,
+} from '@/lib/client-db/clientDbSchema';
+import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { SELECT_TYPES } from '@/lib/constants';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
+import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -38,6 +43,7 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
                 e.target.value,
               );
             })}
+            placeholder={field?.placeholder}
           />
         </>
       );
@@ -54,7 +60,15 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     }
 
     if (field.type === FIELD_TYPES.RICH_TEXT) {
-      return 'rich-text';
+      return (
+        <>
+          {documentBuilderStore.getItemById(field.itemId)?.containerType ===
+          CONTAINER_TYPES.COLLAPSIBLE ? (
+            <Label htmlFor={htmlInputId}>{field.name}</Label>
+          ) : null}
+          <BuilderRichTextEditorInput fieldId={fieldId} />
+        </>
+      );
     }
 
     if (field.type === FIELD_TYPES.TEXTAREA) {
@@ -70,6 +84,7 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
                 e.target.value,
               );
             })}
+            placeholder={field?.placeholder}
           />
         </>
       );

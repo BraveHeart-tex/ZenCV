@@ -1,6 +1,7 @@
+import './globals.css';
+import './tiptap.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';

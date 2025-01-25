@@ -1,6 +1,7 @@
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
+  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
 } from '@/lib/constants';
 import {
@@ -61,6 +62,8 @@ export const getInitialDocumentInsertBoilerplate = (
               name: FIELD_NAMES.SUMMARY.SUMMARY,
               type: FIELD_TYPES.RICH_TEXT,
               value: '',
+              placeholder:
+                RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.SUMMARY],
             },
           ],
         },
@@ -175,6 +178,8 @@ export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
           name: FIELD_NAMES.HOBBIES.WHAT_DO_YOU_LIKE,
           type: FIELD_TYPES.TEXTAREA,
           value: '',
+          placeholder:
+            RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.HOBBIES],
         },
       ],
     },

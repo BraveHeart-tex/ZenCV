@@ -35,6 +35,7 @@ interface BaseFieldProps {
   id: IdType;
   itemId: IdType;
   name: FieldName;
+  placeholder?: string;
 }
 
 interface StringField extends BaseFieldProps {

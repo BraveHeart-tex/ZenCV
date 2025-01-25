@@ -40,6 +40,15 @@ export const SECTION_DESCRIPTIONS_BY_TYPE = {
     'Select five key skills that demonstrate your suitability for the position. Ensure they align with the essential skills listed in the job description. (Particularly when applying through an online system.)',
 } as const;
 
+export const RICH_TEXT_PLACEHOLDERS_BY_TYPE = {
+  [INTERNAL_SECTION_TYPES.SUMMARY]:
+    'Example: Seasoned software developer with over 8 years of experience and a proven track record of...',
+  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]:
+    'Example: Designed and developed software solutions based on user needs and feedback.',
+  [INTERNAL_SECTION_TYPES.EDUCATION]: 'Example: Graduated with High Honors',
+  [INTERNAL_SECTION_TYPES.HOBBIES]: 'Example: Hiking, Cooking, Painting',
+} as const;
+
 export const MONTHS = [
   'Jan',
   'Feb',

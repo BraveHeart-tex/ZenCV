@@ -1,4 +1,4 @@
-import DateFieldInput from '@/components/documentBuilder/DateFieldInput';
+import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
 import SectionField from '@/components/documentBuilder/SectionField';
 import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 

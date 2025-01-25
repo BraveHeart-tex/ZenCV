@@ -1,5 +1,10 @@
 import { FieldInsertTemplate } from '@/lib/types';
-import { FIELD_NAMES, SELECT_TYPES } from '@/lib/constants';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
+  SELECT_TYPES,
+} from '@/lib/constants';
 import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [
@@ -77,6 +82,8 @@ export const employmentHistoryFields: FieldInsertTemplate[] = [
   {
     name: FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
     type: FIELD_TYPES.RICH_TEXT,
+    placeholder:
+      RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.WORK_EXPERIENCE],
   },
 ].map((field) => ({ ...field, value: '' }));
 
@@ -104,6 +111,8 @@ export const educationFields: FieldInsertTemplate[] = [
   {
     name: FIELD_NAMES.EDUCATION.DESCRIPTION,
     type: FIELD_TYPES.RICH_TEXT,
+    placeholder:
+      RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.EDUCATION],
   },
 ].map((field) => ({
   ...field,
