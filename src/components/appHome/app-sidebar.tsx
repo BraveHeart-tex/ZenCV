@@ -11,9 +11,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ModeToggle } from './mode-toggle';
+import { ModeToggle } from '../ui/mode-toggle';
 import { Link } from 'react-router';
-import { Icons } from './icons';
+import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
 
 const items = [
@@ -41,7 +41,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link to="/">
+              <Link to="/public">
                 <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
                   <Icons.logo />
                 </div>

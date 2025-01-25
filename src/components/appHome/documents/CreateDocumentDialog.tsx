@@ -1,8 +1,8 @@
-import { Button } from './ui/button';
+import { Button } from '../../ui/button';
 import { type FormEvent, useRef, useState } from 'react';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { showErrorToast, showSuccessToast } from './ui/sonner';
+import { Label } from '../../ui/label';
+import { Input } from '../../ui/input';
+import { showErrorToast, showSuccessToast } from '../../ui/sonner';
 import { createDocument } from '@/lib/client-db/clientDbService';
 import {
   Dialog,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
+} from '../../ui/dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';

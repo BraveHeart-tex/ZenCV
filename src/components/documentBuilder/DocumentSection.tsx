@@ -1,16 +1,16 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import EditableSectionTitle from '@/components/EditableSectionTitle';
+import EditableSectionTitle from '@/components/documentBuilder/EditableSectionTitle';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
-import SectionItem from '@/components/SectionItem';
-import SectionDescription from '@/components/SectionDescription';
+import SectionItem from '@/components/documentBuilder/SectionItem';
+import SectionDescription from '@/components/documentBuilder/SectionDescription';
 import { CONTAINER_TYPES, DEX_Section } from '@/lib/client-db/clientDbSchema';
-import AddNewItemButton from '@/components/AddNewItemButton';
-import ItemsDndContext from '@/components/ItemsDndContext';
-import DraggableSectionContainer from '@/components/DraggableSectionContainer';
+import AddNewItemButton from '@/components/documentBuilder/AddNewItemButton';
+import ItemsDndContext from '@/components/documentBuilder/ItemsDndContext';
+import DraggableSectionContainer from '@/components/documentBuilder/DraggableSectionContainer';
 import { FIXED_SECTIONS } from '@/lib/constants';
 import { ReactNode } from 'react';
-import SectionMetadataOptions from '@/components/SectionMetadataOptions';
+import SectionMetadataOptions from '@/components/documentBuilder/SectionMetadataOptions';
 
 const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {

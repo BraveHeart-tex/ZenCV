@@ -1,5 +1,5 @@
 'use client';
-import AppSidebar from '@/components/app-sidebar';
+import AppSidebar from '@/components/appHome/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { getCookieValue } from '@/lib/helpers/documentBuilderHelpers';
 import { Outlet } from 'react-router';

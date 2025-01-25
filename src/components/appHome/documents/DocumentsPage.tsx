@@ -1,5 +1,5 @@
 'use client';
-import DocumentsPageClient from '@/components/DocumentsPageClient';
+import DocumentsPageClient from '@/components/appHome/documents/DocumentsPageClient';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 

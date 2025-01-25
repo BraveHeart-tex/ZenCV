@@ -8,8 +8,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
-import { Button } from './ui/button';
+} from './dialog';
+import { Button } from './button';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { action } from 'mobx';
 import { Label } from '@/components/ui/label';

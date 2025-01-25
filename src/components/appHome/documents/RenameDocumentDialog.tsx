@@ -8,13 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { showErrorToast, showSuccessToast } from './ui/sonner';
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+import { showErrorToast, showSuccessToast } from '../../ui/sonner';
 import { renameDocument } from '@/lib/client-db/clientDbService';
 import { DialogDescription } from '@radix-ui/react-dialog';
 import { CornerDownLeftIcon } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../../ui/button';
 
 const RenameDocumentDialog = ({
   isOpen,

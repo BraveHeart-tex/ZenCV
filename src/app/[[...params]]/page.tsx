@@ -1,5 +1,5 @@
 import App from '@/components/App';
-import ClientOnly from '@/components/ClientOnly';
+import ClientOnly from '@/components/misc/ClientOnly';
 
 const Page = () => {
   return (

@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/ui/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
-import ConfirmDialog from '@/components/ConfirmDialog';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { APP_NAME } from '@/lib/appConfig';
 
 const inter = Inter({

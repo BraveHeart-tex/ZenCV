@@ -18,7 +18,7 @@ import {
   updateSection,
 } from '@/lib/client-db/clientDbService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
-import { OtherSectionOption } from '@/components/AddSectionWidget';
+import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import {
   ParsedSectionMetadata,
   SectionMetadataKey,

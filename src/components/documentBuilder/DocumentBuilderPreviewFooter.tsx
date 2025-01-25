@@ -1,5 +1,5 @@
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 

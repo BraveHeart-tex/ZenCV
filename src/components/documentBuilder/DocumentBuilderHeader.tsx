@@ -1,4 +1,4 @@
-import EditableDocumentTitle from '@/components/EditableDocumentTitle';
+import EditableDocumentTitle from '@/components/documentBuilder/EditableDocumentTitle';
 import { observer } from 'mobx-react-lite';
 
 const DocumentBuilderHeader = observer(() => {

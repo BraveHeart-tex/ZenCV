@@ -2,7 +2,7 @@ import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearch
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { ArrowLeftIcon } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 
 const DocumentBuilderPreviewHeader = () => {

@@ -2,7 +2,7 @@
 import { clientDb } from '@/lib/client-db/clientDb';
 import { useLiveQuery } from 'dexie-react-hooks';
 import CreateDocumentDialog from './CreateDocumentDialog';
-import DocumentCard from './document-card';
+import DocumentCard from './DocumentCard';
 
 const DocumentsPageClient = () => {
   const documentsObservable = useLiveQuery(() => clientDb.documents.toArray());

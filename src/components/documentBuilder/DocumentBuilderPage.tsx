@@ -1,8 +1,8 @@
 'use client';
-import DocumentBuilderClient from '@/components/DocumentBuilderClient';
+import DocumentBuilderClient from '@/components/documentBuilder/DocumentBuilderClient';
 import { LazyMotion, domAnimation } from 'motion/react';
 import { useParams } from 'react-router';
-import ClientOnly from './ClientOnly';
+import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
 
 const DocumentBuilderPage = () => {

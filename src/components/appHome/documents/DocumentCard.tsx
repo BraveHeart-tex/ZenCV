@@ -1,17 +1,17 @@
 'use client';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '../../ui/dropdown-menu';
 import { FileSymlink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '../../ui/button';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { deleteDocument } from '@/lib/client-db/clientDbService';
-import { showErrorToast, showSuccessToast } from './ui/sonner';
+import { showErrorToast, showSuccessToast } from '../../ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';

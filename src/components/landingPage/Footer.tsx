@@ -1,5 +1,5 @@
 import { APP_NAME } from '@/lib/appConfig';
-import { Icons } from './icons';
+import { Icons } from '../misc/icons';
 
 export default function Footer() {
   return (

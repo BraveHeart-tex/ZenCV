@@ -1,12 +1,12 @@
 'use client';
 
 import { BrowserRouter, Route, Routes } from 'react-router';
-import LandingPage from '@/components/LandingPage';
-import DocumentsPage from '@/components/DocumentsPage';
-import ApplicationLayoutWithSidebar from '@/components/ApplicationLayoutWithSidebar';
-import SettingsPage from '@/components/SettingsPage';
-import ResumeTemplatesPage from '@/components/ResumeTemplatesPage';
-import DocumentBuilderPage from '@/components/DocumentBuilderPage';
+import LandingPage from '@/components/landingPage/LandingPage';
+import DocumentsPage from '@/components/appHome/documents/DocumentsPage';
+import ApplicationLayoutWithSidebar from '@/components/appHome/ApplicationLayoutWithSidebar';
+import SettingsPage from '@/components/appHome/settings/SettingsPage';
+import ResumeTemplatesPage from '@/components/appHome/resumeTemplates/ResumeTemplatesPage';
+import DocumentBuilderPage from '@/components/documentBuilder/DocumentBuilderPage';
 
 const App = () => {
   return (

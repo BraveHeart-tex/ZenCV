@@ -1,5 +1,5 @@
-import DateFieldInput from '@/components/DateFieldInput';
-import SectionField from '@/components/SectionField';
+import DateFieldInput from '@/components/documentBuilder/DateFieldInput';
+import SectionField from '@/components/documentBuilder/SectionField';
 import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 
 export const useFieldMapper = () => {

@@ -6,7 +6,7 @@ import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 import { cn } from '@/lib/utils/stringUtils';
 
