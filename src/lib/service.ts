@@ -252,5 +252,14 @@ export const getFullDocumentStructure = (
 export const bulkUpdateItems = async (
   keysAndChanges: { key: DEX_Item['id']; changes: UpdateSpec<DEX_Item> }[],
 ) => {
-  await dxDb.items.bulkUpdate(keysAndChanges);
+  return dxDb.items.bulkUpdate(keysAndChanges);
+};
+
+export const bulkUpdateSections = async (
+  keysAndChanges: {
+    key: DEX_Section['id'];
+    changes: UpdateSpec<DEX_Section>;
+  }[],
+) => {
+  return dxDb.sections.bulkUpdate(keysAndChanges);
 };

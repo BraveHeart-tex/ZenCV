@@ -6,6 +6,7 @@ import {
 import {
   addItemFromTemplate,
   bulkUpdateItems,
+  bulkUpdateSections,
   deleteItem,
   deleteSection,
   getFullDocumentStructure,
@@ -482,8 +483,49 @@ describe('DocumentBuilderStore', () => {
 
       const firstItem = store.items.find((item) => item.id === newOrder[0].id);
 
-      // Assert
       expect(firstItem?.displayOrder).toBe(1);
+    });
+  });
+  describe('reOrderSections', () => {
+    beforeEach(() => {
+      store.sections = mockSections.map((section) => ({
+        ...section,
+        metadata: [],
+      }));
+    });
+
+    it('should update section display orders and call bulkUpdateSections', async () => {
+      const newOrder = store.sections.slice().reverse();
+
+      await store.reOrderSections(newOrder);
+
+      const firstSection = store.sections.find(
+        (section) => section.id === newOrder[0].id,
+      );
+      expect(firstSection?.displayOrder).toBe(1);
+      expect(vi.mocked(bulkUpdateSections)).toHaveBeenCalledWith(
+        newOrder.map((section, index) => ({
+          key: section.id,
+          changes: { displayOrder: index + 1 },
+        })),
+      );
+    });
+
+    it('should not update sections with unchanged display orders', async () => {
+      const originalOrder = store.sections;
+      const newOrder = [...originalOrder];
+
+      await store.reOrderSections(newOrder);
+
+      expect(vi.mocked(bulkUpdateSections)).not.toHaveBeenCalled();
+      expect(store.sections).toEqual(originalOrder);
+    });
+
+    it('should handle an empty input array gracefully', async () => {
+      await store.reOrderSections([]);
+
+      expect(store.sections).toHaveLength(mockSections.length);
+      expect(vi.mocked(bulkUpdateSections)).not.toHaveBeenCalled();
     });
   });
 });

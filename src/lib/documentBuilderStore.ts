@@ -9,6 +9,7 @@ import { dxDb } from '@/lib/dxDb';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
+  bulkUpdateSections,
   deleteItem,
   deleteSection,
   getFullDocumentStructure,
@@ -196,6 +197,7 @@ export class DocumentBuilderStore {
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {
+    if (items.length === 0) return;
     const newDisplayOrders = items.map((item, index) => ({
       id: item.id,
       displayOrder: index + 1,
@@ -229,21 +231,43 @@ export class DocumentBuilderStore {
     }
   };
   reOrderSections = async (sections: SectionWithParsedMetadata[]) => {
-    runInAction(() => {
-      this.sections = sections.map((section, index) => ({
-        ...section,
-        displayOrder: index + 1,
-      }));
+    if (sections.length === 0) return;
+
+    const newDisplayOrders = sections.map((section, index) => ({
+      id: section.id,
+      displayOrder: index + 1,
+    }));
+
+    const changedSections = newDisplayOrders.filter((newOrder) => {
+      const prevItem = this.sections.find(
+        (section) => section.id === newOrder.id,
+      );
+      return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
 
-    await dxDb.sections.bulkUpdate(
-      sections.map((section, index) => ({
-        key: section.id,
-        changes: {
-          displayOrder: index + 1,
-        },
-      })),
-    );
+    runInAction(() => {
+      this.sections.forEach((section) => {
+        const newOrder = newDisplayOrders.find((o) => o.id === section.id);
+        if (newOrder && newOrder?.displayOrder !== section.displayOrder) {
+          section.displayOrder = newOrder.displayOrder;
+        }
+      });
+    });
+
+    if (changedSections.length) {
+      try {
+        await bulkUpdateSections(
+          changedSections.map((section) => ({
+            key: section.id,
+            changes: {
+              displayOrder: section.displayOrder,
+            },
+          })),
+        );
+      } catch (error) {
+        console.error('bulkUpdateSections error', error);
+      }
+    }
   };
 
   addNewSection = async (option: OtherSectionOption) => {
