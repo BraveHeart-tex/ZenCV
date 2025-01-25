@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils/stringUtils';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const PdfViewer = ({ children }: { children: ReactElement }) => {
+const DocumentBuilderPdfViewer = ({ children }: { children: ReactElement }) => {
   const currentPage = pdfViewerStore.currentPage;
   const setCurrentPage = pdfViewerStore.setCurrentPage;
   const previousRenderValue = pdfViewerStore.previousRenderValue;
@@ -41,15 +41,13 @@ const PdfViewer = ({ children }: { children: ReactElement }) => {
   const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
   return (
-    <div className="relative z-10 h-full transition-all bg-white">
+    <div className="relative z-10 h-full overflow-hidden transition-all">
       <AnimatePresence>
         {shouldShowPreviousDocument && previousRenderValue ? (
           <motion.div
             key={previousRenderValue}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
           >
             <Document
               key={previousRenderValue}
@@ -100,4 +98,4 @@ const PdfViewer = ({ children }: { children: ReactElement }) => {
     </div>
   );
 };
-export default PdfViewer;
+export default DocumentBuilderPdfViewer;
