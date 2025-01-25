@@ -1,3 +1,4 @@
+import { UpdateSpec } from 'dexie';
 import { dxDb } from './dxDb';
 import {
   DEX_Document,
@@ -246,4 +247,10 @@ export const getFullDocumentStructure = (
       };
     },
   );
+};
+
+export const bulkUpdateItems = async (
+  keysAndChanges: { key: DEX_Item['id']; changes: UpdateSpec<DEX_Item> }[],
+) => {
+  await dxDb.items.bulkUpdate(keysAndChanges);
 };

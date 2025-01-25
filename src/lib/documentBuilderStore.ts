@@ -8,6 +8,7 @@ import type {
 import { dxDb } from '@/lib/dxDb';
 import {
   addItemFromTemplate,
+  bulkUpdateItems,
   deleteItem,
   deleteSection,
   getFullDocumentStructure,
@@ -195,32 +196,37 @@ export class DocumentBuilderStore {
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {
-    runInAction(() => {
-      const updatedDisplayOrders = new Map(
-        items.map((item, index) => [item.id, index + 1]),
-      );
+    const newDisplayOrders = items.map((item, index) => ({
+      id: item.id,
+      displayOrder: index + 1,
+    }));
 
+    const changedItems = newDisplayOrders.filter((newOrder) => {
+      const prevItem = this.items.find((item) => item.id === newOrder.id);
+      return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
+    });
+
+    runInAction(() => {
       this.items.forEach((item) => {
-        if (updatedDisplayOrders.has(item.id)) {
-          item.displayOrder = updatedDisplayOrders.get(item.id)!;
+        const newOrder = newDisplayOrders.find((o) => o.id === item.id);
+        if (newOrder && newOrder?.displayOrder !== item.displayOrder) {
+          item.displayOrder = newOrder.displayOrder;
         }
       });
     });
 
-    await dxDb.items.bulkUpdate(
-      items
-        .map((item, index) => ({
-          key: item.id,
-          changes: { displayOrder: index + 1 },
-        }))
-        .filter(({ key, changes }) =>
-          this.items.some(
-            (existingItem) =>
-              existingItem.id === key &&
-              existingItem.displayOrder !== changes.displayOrder,
-          ),
-        ),
-    );
+    if (changedItems.length) {
+      try {
+        await bulkUpdateItems(
+          changedItems.map((item) => ({
+            key: item.id,
+            changes: { displayOrder: item.displayOrder },
+          })),
+        );
+      } catch (error) {
+        console.error('bulkUpdateItems error', error);
+      }
+    }
   };
   reOrderSections = async (sections: SectionWithParsedMetadata[]) => {
     runInAction(() => {

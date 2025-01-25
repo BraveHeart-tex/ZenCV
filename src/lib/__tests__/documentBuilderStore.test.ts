@@ -5,6 +5,7 @@ import {
 } from '../documentBuilderStore';
 import {
   addItemFromTemplate,
+  bulkUpdateItems,
   deleteItem,
   deleteSection,
   getFullDocumentStructure,
@@ -434,6 +435,55 @@ describe('DocumentBuilderStore', () => {
           displayOrder: highestDisplayOrder,
         }),
       );
+    });
+  });
+  describe('reOrderSectionItems', () => {
+    beforeEach(() => {
+      store.items = mockItems;
+    });
+
+    it('should update item display orders and call bulkUpdateItems', async () => {
+      const newOrder = mockItems.slice().reverse();
+
+      await store.reOrderSectionItems(newOrder);
+
+      const firstItem = store.items.find((item) => item.id === newOrder[0].id);
+
+      expect(firstItem?.displayOrder).toBe(1);
+      expect(vi.mocked(bulkUpdateItems)).toHaveBeenCalledWith(
+        newOrder.map((item, index) => ({
+          key: item.id,
+          changes: { displayOrder: index + 1 },
+        })),
+      );
+    });
+
+    it('should handle an empty input array gracefully', async () => {
+      await store.reOrderSectionItems([]);
+
+      expect(store.items).toHaveLength(mockItems.length);
+      expect(vi.mocked(bulkUpdateItems)).not.toHaveBeenCalled();
+    });
+
+    it('should not call bulkUpdateItems if all displayOrders are unchanged', async () => {
+      await store.reOrderSectionItems(mockItems);
+
+      expect(vi.mocked(bulkUpdateItems)).not.toHaveBeenCalled();
+    });
+
+    it('should not throw an error if bulkUpdateItems fails', async () => {
+      const newOrder = mockItems.slice().reverse();
+
+      vi.mocked(bulkUpdateItems).mockRejectedValue(
+        new Error('Failed to update items'),
+      );
+
+      await store.reOrderSectionItems(newOrder);
+
+      const firstItem = store.items.find((item) => item.id === newOrder[0].id);
+
+      // Assert
+      expect(firstItem?.displayOrder).toBe(1);
     });
   });
 });
