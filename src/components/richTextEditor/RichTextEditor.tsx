@@ -53,14 +53,14 @@ const RichTextEditor = ({
 
   return (
     <div className="w-full">
-      <div className="border-muted-foreground/50 bg-background editor-input-container overflow-hidden border rounded-md">
+      <div className="border-muted-foreground/50 bg-background editor-input-container rounded-md">
         <RichTextEditorMenubar editor={editor} />
         <div className="min-h-[200px] overflow-auto">
           <EditorContent
             id={id}
             ref={ref}
             editor={editor}
-            className="max-w-none focus:outline-none prose"
+            className="max-w-none"
           />
         </div>
       </div>
