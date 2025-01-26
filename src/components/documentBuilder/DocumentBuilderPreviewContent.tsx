@@ -6,6 +6,8 @@ import { getFormattedTemplateData } from '@/components/appHome/resumeTemplates/r
 import { useState } from 'react';
 import { PdfTemplateData } from '@/lib/types';
 
+const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
+
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
@@ -17,24 +19,9 @@ const DocumentBuilderPreviewContent = observer(() => {
     () => {
       setDebouncedData(templateData);
     },
-    300,
+    TEMPLATE_DATA_DEBOUNCE_MS,
     [templateData],
   );
-
-  // This was how it was done before, just here for references
-  //   useEffect(() => {
-  //     const updatePdfProps = () => {
-  //       setReRender((prev) => (prev === 0 ? 1 : 0));
-  //     };
-  //     const debouncedUpdatePdfProps = debounce(
-  //       updatePdfProps,
-  //       UPDATE_PDF_PROPS_DEBOUNCE_DURATION,
-  //     );
-
-  //     useDocumentBuilderStore.setState({
-  //       pdfUpdaterCallback: debouncedUpdatePdfProps,
-  //     });
-  //   }, []);
 
   if (!debouncedData) return;
 
@@ -48,7 +35,7 @@ const DocumentBuilderPreviewContent = observer(() => {
           </p>
         </div>
       ) : (
-        <DocumentBuilderPdfViewer>
+        <DocumentBuilderPdfViewer renderData={JSON.stringify(debouncedData)}>
           <LondonTemplate templateData={debouncedData} />
         </DocumentBuilderPdfViewer>
       )}

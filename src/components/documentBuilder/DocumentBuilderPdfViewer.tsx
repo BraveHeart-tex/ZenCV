@@ -2,7 +2,7 @@
 
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
-import type { ReactElement } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -16,14 +16,28 @@ import { observer } from 'mobx-react-lite';
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const DocumentBuilderPdfViewer = observer(
-  ({ children }: { children: ReactElement }) => {
+  ({
+    children,
+    renderData,
+  }: {
+    children: ReactElement;
+    renderData: string;
+  }) => {
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
     const { width, height } = useViewportSize();
 
+    // TODO: This makes zero sense, should target for a more focused aspect ratio on all devices
+    const pdfDimensions = useMemo(() => {
+      const pdfWidth = width < 768 ? 0.7 * width : 0.4 * width;
+      const pdfHeight = width < 768 ? 0.7 * height : 0.4 * height;
+
+      return { pdfWidth, pdfHeight };
+    }, [width, height]);
+
     const render = useAsync(async () => {
       try {
-        if (!children) return null;
+        if (!children || !renderData) return null;
 
         const blob = await pdf(
           children as ReactElement<DocumentProps>,
@@ -32,7 +46,7 @@ const DocumentBuilderPdfViewer = observer(
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
-    }, []);
+    }, [renderData]);
 
     const onDocumentLoad = (d: { numPages: number }) => {
       pdfViewerStore.setNumberOfPages(d.numPages);
@@ -46,10 +60,15 @@ const DocumentBuilderPdfViewer = observer(
     const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
     return (
-      <div className="relative z-10 h-full transition-all">
+      <div className="relative z-10 h-full overflow-hidden transition-all">
         <AnimatePresence>
-          {previousRenderValue ? (
-            <motion.div key={previousRenderValue}>
+          {previousRenderValue && shouldShowPreviousDocument ? (
+            <motion.div
+              initial={{
+                opacity: 0,
+              }}
+              animate={{ opacity: 1 }}
+            >
               <Document
                 key={previousRenderValue}
                 className={'h-full w-full'}
@@ -61,8 +80,8 @@ const DocumentBuilderPdfViewer = observer(
                   pageNumber={currentPage}
                   renderAnnotationLayer={false}
                   renderTextLayer={false}
-                  width={width < 768 ? 0.7 * width : 0.4 * width}
-                  height={width < 768 ? 0.7 * height : 0.4 * height}
+                  width={pdfDimensions.pdfWidth}
+                  height={pdfDimensions.pdfHeight}
                   loading={null}
                 />
               </Document>
@@ -70,32 +89,36 @@ const DocumentBuilderPdfViewer = observer(
           ) : null}
         </AnimatePresence>
 
-        {render.value && (
-          <Document
-            file={render.value}
-            loading={null}
-            className={cn(
-              'z-10',
-              shouldShowPreviousDocument && 'rendering-document hidden z-0',
-            )}
-            onLoadSuccess={onDocumentLoad}
-          >
-            <Page
-              key={currentPage + 1}
-              renderAnnotationLayer={false}
-              renderTextLayer={false}
-              pageNumber={currentPage}
-              width={width < 768 ? 0.7 * width : 0.4 * width}
-              height={width < 768 ? 0.7 * height : 0.4 * height}
-              loading={null}
-              onRenderSuccess={() => {
-                if (render.value !== undefined) {
-                  pdfViewerStore.setPreviousRenderValue(render.value);
-                }
-              }}
-            />
-          </Document>
-        )}
+        <AnimatePresence>
+          {render.value && (
+            <motion.div>
+              <Document
+                file={render.value}
+                loading={null}
+                className={cn(
+                  'z-10',
+                  shouldShowPreviousDocument && 'rendering-document hidden z-0',
+                )}
+                onLoadSuccess={onDocumentLoad}
+              >
+                <Page
+                  key={currentPage + 1}
+                  renderAnnotationLayer={false}
+                  renderTextLayer={false}
+                  pageNumber={currentPage}
+                  width={pdfDimensions.pdfWidth}
+                  height={pdfDimensions.pdfHeight}
+                  loading={null}
+                  onRenderSuccess={() => {
+                    if (render.value !== undefined) {
+                      pdfViewerStore.setPreviousRenderValue(render.value);
+                    }
+                  }}
+                />
+              </Document>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   },
