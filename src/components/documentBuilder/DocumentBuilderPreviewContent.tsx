@@ -15,6 +15,7 @@ const DocumentBuilderPreviewContent = observer(() => {
   const [debouncedData, setDebouncedData] = useState<PdfTemplateData | null>(
     null,
   );
+
   useDebounce(
     () => {
       setDebouncedData(templateData);

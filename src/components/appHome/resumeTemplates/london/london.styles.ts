@@ -78,9 +78,5 @@ export const londonTemplateStyles = StyleSheet.create({
     fontSize: SECTION_LABEL_FONT_SIZE,
     letterSpacing: 1.1,
     width: '25%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
   },
 });

@@ -4,6 +4,7 @@
   height: 100%;
   padding: 10px;
   overflow: auto;
+  cursor: auto;
 
   &:focus-visible {
     border: none;

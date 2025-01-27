@@ -1,4 +1,8 @@
-import { DEX_Field, DEX_Section } from '@/lib/client-db/clientDbSchema';
+import {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
 import {
   FIELD_NAMES,
   FIXED_SECTIONS,
@@ -75,4 +79,18 @@ export interface PdfTemplateData {
     sectionName: string;
     summary: string;
   };
+  sections: TemplateDataSection[];
 }
+
+export interface TemplateDataSection extends SectionWithParsedMetadata {
+  items: (DEX_Item & { fields: DEX_Field[] })[];
+}
+
+export type DocumentRecordWithDisplayOrder =
+  | DEX_Section
+  | DEX_Item
+  | SectionWithParsedMetadata;
+
+export type WithEntryId<T extends Record<string, unknown>> = T & {
+  entryId: string;
+};
