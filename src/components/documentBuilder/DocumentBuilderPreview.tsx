@@ -21,7 +21,7 @@ const DocumentBuilderPreview = observer(() => {
           'hidden xl:block',
       )}
     >
-      <div className="h-[90vh] w-[75%] mx-auto pt-4">
+      <div className="h-[90vh] mx-auto pt-4">
         <DocumentBuilderPreviewHeader />
         <DocumentBuilderPreviewContent />
         <DocumentBuilderPreviewFooter />

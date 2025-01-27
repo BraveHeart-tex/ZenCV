@@ -4,8 +4,9 @@ import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
+import { observer } from 'mobx-react-lite';
 
-const DocumentBuilderPreviewHeader = () => {
+const DocumentBuilderPreviewHeader = observer(() => {
   const { view, setView } = useDocumentBuilderSearchParams();
   const documentTitle = documentBuilderStore.document?.title || 'Untitled';
   const previousRenderValue = pdfViewerStore.previousRenderValue;
@@ -23,7 +24,7 @@ const DocumentBuilderPreviewHeader = () => {
   return (
     <div
       className={cn(
-        'w-full flex items-center justify-between xl:justify-end mb-2',
+        'flex items-center justify-between xl:justify-end mb-2 mx-auto',
       )}
     >
       <Button
@@ -47,5 +48,6 @@ const DocumentBuilderPreviewHeader = () => {
       </Button>
     </div>
   );
-};
+});
+
 export default DocumentBuilderPreviewHeader;
