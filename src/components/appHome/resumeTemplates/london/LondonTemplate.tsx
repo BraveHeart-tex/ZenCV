@@ -8,6 +8,7 @@ import LondonWorkExperienceSection from '@/components/appHome/resumeTemplates/lo
 import LondonEducationSection from '@/components/appHome/resumeTemplates/london/LondonEducationSection';
 import LondonLinksSection from '@/components/appHome/resumeTemplates/london/LondonLinksSection';
 import LondonLanguagesSection from '@/components/appHome/resumeTemplates/london/LondonLanguagesSection';
+import LondonInternshipsSection from '@/components/appHome/resumeTemplates/london/LondonInternshipsSection';
 
 const LondonTemplate = ({
   templateData,
@@ -34,6 +35,10 @@ const LondonTemplate = ({
 
       if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
         return <LondonLanguagesSection section={section} key={section.id} />;
+      }
+
+      if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
+        return <LondonInternshipsSection section={section} key={section.id} />;
       }
 
       return null;
