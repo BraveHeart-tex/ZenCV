@@ -44,6 +44,7 @@ export const londonTemplateStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20,
     fontFamily: 'EB Garamond',
+    fontWeight: 500,
   },
   documentTitle: {
     fontSize: DOCUMENT_TITLE_FONT_SIZE,
