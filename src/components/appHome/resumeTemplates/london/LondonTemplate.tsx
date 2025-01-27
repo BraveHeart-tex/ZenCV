@@ -5,6 +5,7 @@ import LondonSummarySection from '@/components/appHome/resumeTemplates/london/Lo
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import LondonWorkExperienceSection from '@/components/appHome/resumeTemplates/london/LondonWorkExperienceSection';
+import LondonEducationSection from '@/components/appHome/resumeTemplates/london/LondonEducationSection';
 
 const LondonTemplate = ({
   templateData,
@@ -19,6 +20,10 @@ const LondonTemplate = ({
         return (
           <LondonWorkExperienceSection section={section} key={section.id} />
         );
+      }
+
+      if (section.type == INTERNAL_SECTION_TYPES.EDUCATION) {
+        return <LondonEducationSection section={section} key={section.id} />;
       }
 
       return null;
