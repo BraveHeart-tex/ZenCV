@@ -7,6 +7,7 @@ import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import LondonWorkExperienceSection from '@/components/appHome/resumeTemplates/london/LondonWorkExperienceSection';
 import LondonEducationSection from '@/components/appHome/resumeTemplates/london/LondonEducationSection';
 import LondonLinksSection from '@/components/appHome/resumeTemplates/london/LondonLinksSection';
+import LondonLanguagesSection from '@/components/appHome/resumeTemplates/london/LondonLanguagesSection';
 
 const LondonTemplate = ({
   templateData,
@@ -29,6 +30,10 @@ const LondonTemplate = ({
 
       if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
         return <LondonLinksSection section={section} key={section.id} />;
+      }
+
+      if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
+        return <LondonLanguagesSection section={section} key={section.id} />;
       }
 
       return null;
