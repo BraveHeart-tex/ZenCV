@@ -4,7 +4,9 @@ import {
   DocumentRecordWithDisplayOrder,
   FieldName,
   PdfTemplateData,
+  SectionMetadataKey,
   SectionType,
+  SectionWithParsedMetadata,
   WithEntryId,
 } from '@/lib/types';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
@@ -98,4 +100,11 @@ export const getRenderableEntries = <T extends Record<string, unknown>>(
       keys.filter((key) => key !== 'entryId' && entry[key] !== '').length > 0
     );
   });
+};
+
+export const getSectionMetadata = (
+  section: SectionWithParsedMetadata,
+  key: SectionMetadataKey,
+) => {
+  return section.metadata.find((data) => data.key === key)?.value || null;
 };

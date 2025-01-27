@@ -4,6 +4,10 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { action } from 'mobx';
+import {
+  CHECKED_METADATA_VALUE,
+  UNCHECKED_METADATA_VALUE,
+} from '@/lib/constants';
 
 const SectionMetadataOptions = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
@@ -19,11 +23,13 @@ const SectionMetadataOptions = observer(
             <Switch
               id={option.key}
               value={option.value}
-              checked={Number.parseInt(option.value) === 1}
+              checked={option.value === CHECKED_METADATA_VALUE}
               onCheckedChange={action(async (checked) => {
                 await documentBuilderStore.updateSectionMetadata(sectionId, {
                   key: option.key,
-                  value: (checked ? 1 : 0).toString(),
+                  value: checked
+                    ? CHECKED_METADATA_VALUE
+                    : UNCHECKED_METADATA_VALUE,
                 });
               })}
             />

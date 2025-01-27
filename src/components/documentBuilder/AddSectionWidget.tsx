@@ -18,6 +18,7 @@ import {
   builderSectionTitleClassNames,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
+  UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
@@ -57,7 +58,7 @@ const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
       {
         label: 'Hide references and make them available upon request',
         key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: '',
+        value: UNCHECKED_METADATA_VALUE,
       },
     ]),
     containerType: CONTAINER_TYPES.COLLAPSIBLE,

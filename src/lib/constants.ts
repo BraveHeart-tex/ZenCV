@@ -155,6 +155,7 @@ export const FIELD_NAMES = {
 export const SECTION_METADATA_KEYS = {
   SKILLS: {
     SHOW_EXPERIENCE_LEVEL: 'showExperienceLevel',
+    IS_COMMA_SEPARATED: 'isCommaSeparated',
   },
   REFERENCES: {
     HIDE_REFERENCES: 'hideReferences',
@@ -164,3 +165,6 @@ export const SECTION_METADATA_KEYS = {
 export const MAX_VISIBLE_FIELDS = 6 as const;
 export const builderSectionTitleClassNames =
   'scroll-m-20 text-2xl font-semibold tracking-tight';
+
+export const UNCHECKED_METADATA_VALUE = '0' as const;
+export const CHECKED_METADATA_VALUE = '1' as const;

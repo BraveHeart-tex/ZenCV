@@ -3,6 +3,7 @@ import {
   INTERNAL_SECTION_TYPES,
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
+  UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
@@ -113,7 +114,12 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           label: 'Show experience level',
           key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-          value: '',
+          value: UNCHECKED_METADATA_VALUE,
+        },
+        {
+          label: 'Separate skills with a comma',
+          key: SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+          value: UNCHECKED_METADATA_VALUE,
         },
       ]),
       items: [

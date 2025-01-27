@@ -4,12 +4,14 @@ import {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import {
+  CHECKED_METADATA_VALUE,
   FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
   NOT_TEMPLATED_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
+  UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
 
@@ -47,7 +49,7 @@ export type SectionMetadataKey = NestedValues<typeof SECTION_METADATA_KEYS>;
 
 export interface ParsedSectionMetadata {
   label: string;
-  value: string;
+  value: MetadataValue;
   key: SectionMetadataKey;
 }
 
@@ -94,3 +96,7 @@ export type DocumentRecordWithDisplayOrder =
 export type WithEntryId<T extends Record<string, unknown>> = T & {
   entryId: string;
 };
+
+export type MetadataValue =
+  | typeof UNCHECKED_METADATA_VALUE
+  | typeof CHECKED_METADATA_VALUE;

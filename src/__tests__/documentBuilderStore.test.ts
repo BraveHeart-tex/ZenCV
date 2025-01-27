@@ -15,9 +15,11 @@ import {
   updateSection,
 } from '@/lib/client-db/clientDbService';
 import {
+  CHECKED_METADATA_VALUE,
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
+  UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
@@ -101,12 +103,12 @@ const sectionsWithMockMetadata = [
     metadata: [
       {
         key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: 'test-value-1',
+        value: UNCHECKED_METADATA_VALUE,
         label: 'Test Label 1',
       },
       {
         key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-        value: 'test-value-2',
+        value: UNCHECKED_METADATA_VALUE,
         label: 'Test Label 2',
       },
     ],
@@ -635,7 +637,7 @@ describe('DocumentBuilderStore', () => {
       const sectionId = sectionsWithMockMetadata[0].id;
       const data = {
         key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: '1',
+        value: CHECKED_METADATA_VALUE,
       };
 
       await store.updateSectionMetadata(sectionId, data);
@@ -661,7 +663,7 @@ describe('DocumentBuilderStore', () => {
     it('should handle non-existent section gracefully', async () => {
       const data = {
         key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: '1',
+        value: CHECKED_METADATA_VALUE,
       };
 
       const result = await store.updateSectionMetadata(999, data);
@@ -674,7 +676,7 @@ describe('DocumentBuilderStore', () => {
       const sectionId = sectionsWithMockMetadata[0].id;
       const data = {
         key: 'non-existent-key' as SectionMetadataKey,
-        value: '1',
+        value: CHECKED_METADATA_VALUE,
       };
 
       await store.updateSectionMetadata(sectionId, data);

@@ -20,6 +20,7 @@ import {
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import {
+  MetadataValue,
   ParsedSectionMetadata,
   SectionMetadataKey,
   SectionWithParsedMetadata,
@@ -323,7 +324,7 @@ export class DocumentBuilderStore {
     sectionId: DEX_Section['id'],
     data: {
       key: SectionMetadataKey;
-      value: string;
+      value: MetadataValue;
     },
   ) => {
     const section = this.getSectionById(sectionId);
