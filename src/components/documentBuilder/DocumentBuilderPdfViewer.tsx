@@ -2,12 +2,11 @@
 
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo, useRef, useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { useViewportSize } from '@/hooks/useViewportSize';
 import * as motion from 'motion/react-m';
 import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils/stringUtils';
@@ -25,15 +24,41 @@ const DocumentBuilderPdfViewer = observer(
   }) => {
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
-    const { width, height } = useViewportSize();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [containerDimensions, setContainerDimensions] = useState({
+      width: 0,
+      height: 0,
+    });
 
-    // TODO: This makes zero sense, should target for a more focused aspect ratio on all devices
+    useEffect(() => {
+      const updateDimensions = () => {
+        if (containerRef.current) {
+          const { width, height } =
+            containerRef.current.getBoundingClientRect();
+          setContainerDimensions({ width, height });
+        }
+      };
+
+      updateDimensions();
+      window.addEventListener('resize', updateDimensions);
+      return () => window.removeEventListener('resize', updateDimensions);
+    }, []);
+
     const pdfDimensions = useMemo(() => {
-      const pdfWidth = width < 768 ? 0.7 * width : 0.4 * width;
-      const pdfHeight = width < 768 ? 0.7 * height : 0.4 * height;
+      const aspectRatio = 1.414;
+      const maxWidth = containerDimensions.width;
+      const maxHeight = containerDimensions.height;
 
-      return { pdfWidth, pdfHeight };
-    }, [width, height]);
+      let width = maxWidth;
+      let height = width * aspectRatio;
+
+      if (height > maxHeight) {
+        height = maxHeight;
+        width = height / aspectRatio;
+      }
+
+      return { pdfWidth: width, pdfHeight: height };
+    }, [containerDimensions]);
 
     const render = useAsync(async () => {
       try {
@@ -60,7 +85,10 @@ const DocumentBuilderPdfViewer = observer(
     const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
     return (
-      <div className="relative z-10 h-full overflow-hidden transition-all">
+      <div
+        ref={containerRef}
+        className="relative z-10 w-full h-full overflow-hidden transition-all"
+      >
         <AnimatePresence>
           {previousRenderValue && shouldShowPreviousDocument ? (
             <motion.div
@@ -68,10 +96,11 @@ const DocumentBuilderPdfViewer = observer(
                 opacity: 0,
               }}
               animate={{ opacity: 1 }}
+              className="flex items-center justify-center w-full h-full"
             >
               <Document
                 key={previousRenderValue}
-                className={'h-full w-full'}
+                className="flex items-center justify-center w-full h-full"
                 file={previousRenderValue}
                 loading={null}
               >
@@ -91,12 +120,12 @@ const DocumentBuilderPdfViewer = observer(
 
         <AnimatePresence>
           {render.value && (
-            <motion.div>
+            <motion.div className="flex items-center justify-center w-full h-full">
               <Document
                 file={render.value}
                 loading={null}
                 className={cn(
-                  'z-10',
+                  'z-10 h-full w-full flex items-center justify-center',
                   shouldShowPreviousDocument && 'rendering-document hidden z-0',
                 )}
                 onLoadSuccess={onDocumentLoad}
