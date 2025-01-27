@@ -71,28 +71,30 @@ const EditableSectionTitle = observer(
 
     return (
       <div className="group flex items-center w-full gap-2">
-        <RenameSectionDialog sectionId={sectionId} />
-        <h2 className="scroll-m-20 flex-1 text-xl font-semibold tracking-tight">
+        <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">
           {section.title}
         </h2>
-        {isSectionDeletable && (
-          <div className="lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleDeleteSection}
-                >
-                  <TrashIcon size={18} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete {`"${section.title}"`}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-        )}
+        <div className="flex items-center">
+          <RenameSectionDialog sectionId={sectionId} />
+          {isSectionDeletable && (
+            <div className="lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDeleteSection}
+                  >
+                    <TrashIcon size={18} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete {`"${section.title}"`}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+        </div>
       </div>
     );
   },

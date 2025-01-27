@@ -46,6 +46,9 @@ const EditableDocumentTitle = observer(() => {
 
   return (
     <div className="flex items-center gap-2">
+      <h1 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight">
+        {documentTitle}
+      </h1>
       <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
         <DialogTrigger asChild>
           <Tooltip>
@@ -119,9 +122,6 @@ const EditableDocumentTitle = observer(() => {
           </form>
         </DialogContent>
       </Dialog>
-      <h1 className="scroll-m-20 first:mt-0 flex-1 text-3xl font-semibold tracking-tight">
-        {documentTitle}
-      </h1>
     </div>
   );
 });
