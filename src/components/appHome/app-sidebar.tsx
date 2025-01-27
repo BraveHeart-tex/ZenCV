@@ -41,7 +41,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link to="/public">
+              <Link to="/">
                 <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
                   <Icons.logo />
                 </div>
