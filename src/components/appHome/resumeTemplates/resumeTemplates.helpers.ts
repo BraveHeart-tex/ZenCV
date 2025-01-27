@@ -41,8 +41,18 @@ const getSectionNameByType = (sectionType: SectionType): string => {
 };
 
 export const getFormattedTemplateData = (): PdfTemplateData => {
+  const singleEntrySectionTypes = [
+    INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    INTERNAL_SECTION_TYPES.SUMMARY,
+  ];
   const mappedSections: PdfTemplateData['sections'] =
     documentBuilderStore.sections
+      .filter(
+        (section) =>
+          !singleEntrySectionTypes.includes(
+            section.type as (typeof singleEntrySectionTypes)[number],
+          ),
+      )
       .slice()
       .sort(sortByDisplayOrder)
       .map((section) => {
