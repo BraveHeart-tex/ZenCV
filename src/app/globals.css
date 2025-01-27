@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 html {
   scroll-behavior: smooth !important;
 }
@@ -112,15 +108,14 @@ html > body[data-scroll-locked] {
 
   &.previous-document {
     canvas {
-      opacity: 0.5;
-      transition: all 0.3s ease-in;
+      opacity: 0.5 !important;
     }
   }
 
   &.rendering-document {
     position: absolute !important;
     .react-pdf__Page {
-      box-shadow: none;
+      box-shadow: none !important;
     }
   }
 }

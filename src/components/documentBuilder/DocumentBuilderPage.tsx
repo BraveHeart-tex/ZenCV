@@ -4,8 +4,9 @@ import { LazyMotion, domAnimation } from 'motion/react';
 import { useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
+import { memo } from 'react';
 
-const DocumentBuilderPage = () => {
+const DocumentBuilderPage = memo(() => {
   const params = useParams<{ id: string }>();
   if (!params.id) return null;
   return (
@@ -18,6 +19,8 @@ const DocumentBuilderPage = () => {
       </div>
     </LazyMotion>
   );
-};
+});
+
+DocumentBuilderPage.displayName = 'DocumentBuilderPage';
 
 export default DocumentBuilderPage;

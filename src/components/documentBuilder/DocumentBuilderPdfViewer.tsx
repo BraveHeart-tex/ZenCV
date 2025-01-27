@@ -7,8 +7,6 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import * as motion from 'motion/react-m';
-import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
@@ -99,68 +97,53 @@ const DocumentBuilderPdfViewer = observer(
     return (
       <div
         ref={containerRef}
-        className="relative z-10 w-full h-full overflow-hidden transition-all"
+        className="relative w-full h-full overflow-hidden"
       >
         {isFirstRendering ? <PreviewSkeleton /> : null}
-        <AnimatePresence>
-          {previousRenderValue && shouldShowPreviousDocument ? (
-            <motion.div
-              initial={{
-                opacity: 0,
-              }}
-              animate={{ opacity: 1 }}
-              className="flex items-center justify-center w-full h-full"
-            >
-              <Document
-                key={previousRenderValue}
-                className="flex items-center justify-center w-full h-full"
-                file={previousRenderValue}
-                loading={null}
-              >
-                <Page
-                  key={currentPage}
-                  pageNumber={currentPage}
-                  renderAnnotationLayer={renderAnnotationLayer}
-                  renderTextLayer={renderTextLayer}
-                  width={pdfDimensions.pdfWidth}
-                  height={pdfDimensions.pdfHeight}
-                  loading={null}
-                />
-              </Document>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
+        {previousRenderValue && shouldShowPreviousDocument ? (
+          <Document
+            key={previousRenderValue}
+            className="previous-document z-10 flex items-center justify-center w-full h-full"
+            file={previousRenderValue}
+            loading={null}
+          >
+            <Page
+              key={currentPage}
+              pageNumber={currentPage}
+              renderAnnotationLayer={renderAnnotationLayer}
+              renderTextLayer={renderTextLayer}
+              width={pdfDimensions.pdfWidth}
+              height={pdfDimensions.pdfHeight}
+              loading={null}
+            />
+          </Document>
+        ) : null}
 
-        <AnimatePresence>
-          {render.value && (
-            <motion.div className="flex items-center justify-center w-full h-full">
-              <Document
-                file={render.value}
-                loading={null}
-                className={cn(
-                  'z-10 h-full w-full flex items-center justify-center',
-                  shouldShowPreviousDocument && 'rendering-document hidden z-0',
-                )}
-                onLoadSuccess={onDocumentLoad}
-              >
-                <Page
-                  key={currentPage + 1}
-                  renderAnnotationLayer={renderAnnotationLayer}
-                  renderTextLayer={renderTextLayer}
-                  pageNumber={currentPage}
-                  width={pdfDimensions.pdfWidth}
-                  height={pdfDimensions.pdfHeight}
-                  loading={null}
-                  onRenderSuccess={() => {
-                    if (render.value !== undefined) {
-                      pdfViewerStore.setPreviousRenderValue(render.value);
-                    }
-                  }}
-                />
-              </Document>
-            </motion.div>
+        <Document
+          key={`current-${render.value}`}
+          className={cn(
+            'h-full w-full flex items-center justify-center',
+            shouldShowPreviousDocument && 'rendering-document',
           )}
-        </AnimatePresence>
+          file={render.value}
+          loading={null}
+          onLoadSuccess={onDocumentLoad}
+        >
+          <Page
+            key={currentPage + 1}
+            renderAnnotationLayer={renderAnnotationLayer}
+            renderTextLayer={renderTextLayer}
+            pageNumber={currentPage}
+            width={pdfDimensions.pdfWidth}
+            height={pdfDimensions.pdfHeight}
+            loading={null}
+            onRenderSuccess={() => {
+              if (render.value !== undefined) {
+                pdfViewerStore.setPreviousRenderValue(render.value);
+              }
+            }}
+          />
+        </Document>
       </div>
     );
   },
