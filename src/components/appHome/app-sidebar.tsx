@@ -11,10 +11,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ModeToggle } from '../ui/mode-toggle';
 import { Link } from 'react-router';
 import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
+import ColorModeToggleSidebar from '@/components/appHome/ColorModeToggleSidebar';
 
 const items = [
   {
@@ -73,7 +73,7 @@ const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ModeToggle />
+            <ColorModeToggleSidebar />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
