@@ -11,6 +11,7 @@ import * as motion from 'motion/react-m';
 import { AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
+import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -100,6 +101,7 @@ const DocumentBuilderPdfViewer = observer(
         ref={containerRef}
         className="relative z-10 w-full h-full overflow-hidden transition-all"
       >
+        {isFirstRendering ? <PreviewSkeleton /> : null}
         <AnimatePresence>
           {previousRenderValue && shouldShowPreviousDocument ? (
             <motion.div
