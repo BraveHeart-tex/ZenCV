@@ -71,4 +71,8 @@ export interface PdfTemplateData {
     dateOfBirth: string;
     driversLicense: string;
   };
+  summarySection: {
+    sectionName: string;
+    summary: string;
+  };
 }
