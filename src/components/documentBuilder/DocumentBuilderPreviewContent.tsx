@@ -1,30 +1,35 @@
+'use client';
 import { observer } from 'mobx-react-lite';
-import { useDebounce, useNetworkState } from 'react-use';
+import { useNetworkState } from 'react-use';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { getFormattedTemplateData } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { useState } from 'react';
-import { PdfTemplateData } from '@/lib/types';
-
-const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
+import { useEffect, useState } from 'react';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
   const templateData = getFormattedTemplateData();
-  const [debouncedData, setDebouncedData] = useState<PdfTemplateData | null>(
-    null,
-  );
+  const templateDataString = JSON.stringify(templateData);
+  const [debouncedData, setDebouncedData] = useState(null);
 
-  useDebounce(
-    () => {
-      setDebouncedData(templateData);
+  const handleDataChange = useDebouncedCallback(
+    (templateDataString: string) => {
+      try {
+        setDebouncedData(JSON.parse(templateDataString));
+      } catch {
+        setDebouncedData(null);
+      }
     },
-    TEMPLATE_DATA_DEBOUNCE_MS,
-    [templateData],
   );
 
-  if (!debouncedData) return;
+  useEffect(() => {
+    handleDataChange(templateDataString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [templateDataString]);
+
+  if (!debouncedData) return null;
 
   return (
     <div className="hide-scrollbar w-full h-full overflow-auto rounded-md">
@@ -36,7 +41,7 @@ const DocumentBuilderPreviewContent = observer(() => {
           </p>
         </div>
       ) : (
-        <DocumentBuilderPdfViewer renderData={JSON.stringify(debouncedData)}>
+        <DocumentBuilderPdfViewer renderData={debouncedData}>
           <LondonTemplate templateData={debouncedData} />
         </DocumentBuilderPdfViewer>
       )}
