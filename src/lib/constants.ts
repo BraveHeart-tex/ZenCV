@@ -29,24 +29,26 @@ export const DELETABLE_INTERNAL_SECTION_TYPES = [
 
 export const SECTION_DESCRIPTIONS_BY_TYPE = {
   [INTERNAL_SECTION_TYPES.SUMMARY]:
-    "Grab the reader's attention with 2-4 snappy lines showcasing your role, top wins, best traits, and key skills.",
+    'Write a brief overview of your professional profile and key achievements.',
   [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]:
-    "List your key accomplishments from the past decade. Use bullet points and include specific metrics where possible (e.g., 'Increased X by Y% through Z initiative').",
+    'Highlight your achievements with measurable results. Use action verbs and specific numbers.',
   [INTERNAL_SECTION_TYPES.EDUCATION]:
-    "Your diverse educational background highlights the unique value and skills you'll bring to the role.",
+    'List your relevant education and qualifications that showcase your expertise.',
   [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
-    "Feel free to include links to websites you'd like hiring managers to visit, such as your portfolio, LinkedIn profile, or personal website.",
+    'Add links to your portfolio, LinkedIn, or other professional profiles.',
   [INTERNAL_SECTION_TYPES.SKILLS]:
-    'Select five key skills that demonstrate your suitability for the position. Ensure they align with the essential skills listed in the job description. (Particularly when applying through an online system.)',
+    'List your most relevant skills that match the job requirements.',
 } as const;
 
 export const RICH_TEXT_PLACEHOLDERS_BY_TYPE = {
   [INTERNAL_SECTION_TYPES.SUMMARY]:
-    'Example: Seasoned software developer with over 8 years of experience and a proven track record of...',
+    'E.g., "Full-stack developer with 5+ years of experience in building scalable web applications"',
   [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]:
-    'Example: Designed and developed software solutions based on user needs and feedback.',
-  [INTERNAL_SECTION_TYPES.EDUCATION]: 'Example: Graduated with High Honors',
-  [INTERNAL_SECTION_TYPES.HOBBIES]: 'Example: Hiking, Cooking, Painting',
+    'E.g., "Led a team of 5 to deliver a new feature that increased user engagement by 40%"',
+  [INTERNAL_SECTION_TYPES.EDUCATION]:
+    'E.g., "Computer Science major with Dean\'s List recognition"',
+  [INTERNAL_SECTION_TYPES.HOBBIES]:
+    'E.g., "Photography, Rock Climbing, Learning Languages"',
 } as const;
 
 export const MONTHS = [
