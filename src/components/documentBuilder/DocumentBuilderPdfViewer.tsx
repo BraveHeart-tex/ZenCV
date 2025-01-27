@@ -18,9 +18,13 @@ const DocumentBuilderPdfViewer = observer(
   ({
     children,
     renderData,
+    renderTextLayer = false,
+    renderAnnotationLayer = false,
   }: {
     children: ReactElement;
     renderData: string;
+    renderTextLayer?: boolean;
+    renderAnnotationLayer?: boolean;
   }) => {
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
@@ -45,8 +49,8 @@ const DocumentBuilderPdfViewer = observer(
     }, []);
 
     const pdfDimensions = useMemo(() => {
-      const aspectRatio = 1.414;
-      const maxWidth = containerDimensions.width;
+      const aspectRatio = 1.414; // A4 Page Aspect Ratio
+      const maxWidth = containerDimensions.width * 0.98; // 98 % of the container width
       const maxHeight = containerDimensions.height;
 
       let width = maxWidth;
@@ -59,6 +63,13 @@ const DocumentBuilderPdfViewer = observer(
 
       return { pdfWidth: width, pdfHeight: height };
     }, [containerDimensions]);
+
+    useEffect(() => {
+      pdfViewerStore.setPdfDimensions({
+        height: pdfDimensions.pdfHeight,
+        width: pdfDimensions.pdfWidth,
+      });
+    }, [pdfDimensions]);
 
     const render = useAsync(async () => {
       try {
@@ -107,8 +118,8 @@ const DocumentBuilderPdfViewer = observer(
                 <Page
                   key={currentPage}
                   pageNumber={currentPage}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
+                  renderAnnotationLayer={renderAnnotationLayer}
+                  renderTextLayer={renderTextLayer}
                   width={pdfDimensions.pdfWidth}
                   height={pdfDimensions.pdfHeight}
                   loading={null}
@@ -132,8 +143,8 @@ const DocumentBuilderPdfViewer = observer(
               >
                 <Page
                   key={currentPage + 1}
-                  renderAnnotationLayer={false}
-                  renderTextLayer={false}
+                  renderAnnotationLayer={renderAnnotationLayer}
+                  renderTextLayer={renderTextLayer}
                   pageNumber={currentPage}
                   width={pdfDimensions.pdfWidth}
                   height={pdfDimensions.pdfHeight}

@@ -23,9 +23,12 @@ const DocumentBuilderPreviewHeader = observer(() => {
 
   return (
     <div
-      className={cn(
-        'flex items-center justify-between xl:justify-end mb-2 mx-auto',
-      )}
+      className={
+        'flex items-center justify-between xl:justify-end mb-2 mx-auto w-full'
+      }
+      style={{
+        width: pdfViewerStore.pdfDimensions?.width,
+      }}
     >
       <Button
         className={cn(
