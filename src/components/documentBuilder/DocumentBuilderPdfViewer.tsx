@@ -124,30 +124,30 @@ const DocumentBuilderPdfViewer = observer(
           </Document>
         ) : null}
 
-        <Document
-          key={render.value}
-          className={cn(
-            'h-full w-full flex items-center justify-center',
-            shouldShowPreviousDocument && 'rendering-document',
-            !shouldShowPreviousDocument && 'rendered',
-          )}
-          file={render.value}
-          loading={null}
-          onLoadSuccess={onDocumentLoad}
-        >
-          <Page
-            key={currentPage}
-            renderAnnotationLayer={renderAnnotationLayer}
-            renderTextLayer={renderTextLayer}
-            pageNumber={currentPage}
-            width={pdfDimensions.pdfWidth}
-            height={pdfDimensions.pdfHeight}
+        {render.value && !render.loading && (
+          <Document
+            key={render.value}
+            className={cn(
+              'h-full w-full flex items-center justify-center rendered',
+            )}
+            file={render.value}
             loading={null}
-            onRenderSuccess={() => {
-              pdfViewerStore.setPreviousRenderValue(render.value as string);
-            }}
-          />
-        </Document>
+            onLoadSuccess={onDocumentLoad}
+          >
+            <Page
+              key={currentPage}
+              renderAnnotationLayer={renderAnnotationLayer}
+              renderTextLayer={renderTextLayer}
+              pageNumber={currentPage}
+              width={pdfDimensions.pdfWidth}
+              height={pdfDimensions.pdfHeight}
+              loading={null}
+              onRenderSuccess={() => {
+                pdfViewerStore.setPreviousRenderValue(render.value as string);
+              }}
+            />
+          </Document>
+        )}
       </div>
     );
   },
