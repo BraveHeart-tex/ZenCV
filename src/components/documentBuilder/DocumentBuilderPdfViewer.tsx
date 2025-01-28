@@ -92,9 +92,11 @@ const DocumentBuilderPdfViewer = observer(
     };
 
     const isFirstRendering = !previousRenderValue;
+
     const isLatestValueRendered = previousRenderValue === render.value;
     const isBusy = render.loading || !isLatestValueRendered;
 
+    const shouldShowLoader = isFirstRendering && isBusy;
     const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
     return (
@@ -102,10 +104,10 @@ const DocumentBuilderPdfViewer = observer(
         ref={containerRef}
         className="relative w-full h-full overflow-hidden"
       >
-        {isFirstRendering ? <PreviewSkeleton /> : null}
+        {shouldShowLoader ? <PreviewSkeleton /> : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
-            key={`-${previousRenderValue}`}
+            key={previousRenderValue}
             className="previous-document flex items-center justify-center w-full h-full"
             file={previousRenderValue}
             loading={null}
@@ -134,7 +136,7 @@ const DocumentBuilderPdfViewer = observer(
           onLoadSuccess={onDocumentLoad}
         >
           <Page
-            key={currentPage + 1}
+            key={currentPage}
             renderAnnotationLayer={renderAnnotationLayer}
             renderTextLayer={renderTextLayer}
             pageNumber={currentPage}
@@ -142,9 +144,7 @@ const DocumentBuilderPdfViewer = observer(
             height={pdfDimensions.pdfHeight}
             loading={null}
             onRenderSuccess={() => {
-              if (render.value !== undefined) {
-                pdfViewerStore.setPreviousRenderValue(render.value);
-              }
+              pdfViewerStore.setPreviousRenderValue(render.value as string);
             }}
           />
         </Document>
