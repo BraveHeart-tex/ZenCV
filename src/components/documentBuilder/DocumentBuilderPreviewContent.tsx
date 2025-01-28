@@ -23,7 +23,7 @@ const DocumentBuilderPreviewContent = observer(() => {
           </p>
         </div>
       ) : (
-        <DocumentBuilderPdfViewer renderData={JSON.stringify(debouncedData)}>
+        <DocumentBuilderPdfViewer>
           <LondonTemplate templateData={debouncedData} />
         </DocumentBuilderPdfViewer>
       )}

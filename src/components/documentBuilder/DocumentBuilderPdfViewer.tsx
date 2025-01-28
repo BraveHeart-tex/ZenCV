@@ -10,18 +10,17 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const DocumentBuilderPdfViewer = observer(
   ({
     children,
-    renderData,
     renderTextLayer = false,
     renderAnnotationLayer = false,
   }: {
     children: ReactElement;
-    renderData: string;
     renderTextLayer?: boolean;
     renderAnnotationLayer?: boolean;
   }) => {
@@ -69,6 +68,10 @@ const DocumentBuilderPdfViewer = observer(
         width: pdfDimensions.pdfWidth,
       });
     }, [pdfDimensions]);
+
+    const renderData = JSON.stringify(
+      documentBuilderStore.debouncedTemplateResult,
+    );
 
     const render = useAsync(async () => {
       try {
@@ -124,6 +127,7 @@ const DocumentBuilderPdfViewer = observer(
           className={cn(
             'h-full w-full flex items-center justify-center',
             shouldShowPreviousDocument && 'rendering-document',
+            !shouldShowPreviousDocument && 'rendered',
           )}
           file={render.value}
           loading={null}

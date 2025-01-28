@@ -78,7 +78,7 @@ const DocumentsPageClient = () => {
             Your Documents
           </h2>
         </div>
-        <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
+        <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid w-full grid-cols-1 gap-4">
           {filteredDocuments?.map((document) => (
             <DocumentCard key={document.id} document={document} />
           ))}
