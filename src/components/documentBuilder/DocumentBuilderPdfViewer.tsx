@@ -6,7 +6,6 @@ import { ReactElement, useMemo, useRef, useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
@@ -108,7 +107,7 @@ const DocumentBuilderPdfViewer = observer(
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className="previous-document flex items-center justify-center w-full h-full"
+            className="previous-document absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out opacity-50"
             file={previousRenderValue}
             loading={null}
           >
@@ -127,9 +126,9 @@ const DocumentBuilderPdfViewer = observer(
         {render.value && !render.loading && (
           <Document
             key={render.value}
-            className={cn(
-              'h-full w-full flex items-center justify-center rendered',
-            )}
+            className={
+              'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
+            }
             file={render.value}
             loading={null}
             onLoadSuccess={onDocumentLoad}
