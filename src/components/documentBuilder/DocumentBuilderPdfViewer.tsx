@@ -4,13 +4,12 @@ import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
 import { ReactElement, useMemo, useRef, useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { useAsync } from 'react-use';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -92,9 +91,11 @@ const DocumentBuilderPdfViewer = observer(
     };
 
     const isFirstRendering = !previousRenderValue;
+
     const isLatestValueRendered = previousRenderValue === render.value;
     const isBusy = render.loading || !isLatestValueRendered;
 
+    const shouldShowLoader = isFirstRendering && isBusy;
     const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
     return (
@@ -102,11 +103,11 @@ const DocumentBuilderPdfViewer = observer(
         ref={containerRef}
         className="relative w-full h-full overflow-hidden"
       >
-        {isFirstRendering ? <PreviewSkeleton /> : null}
+        {shouldShowLoader ? <PreviewSkeleton /> : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className="previous-document z-10 flex items-center justify-center w-full h-full"
+            className="previous-document absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out opacity-50"
             file={previousRenderValue}
             loading={null}
           >
@@ -122,32 +123,30 @@ const DocumentBuilderPdfViewer = observer(
           </Document>
         ) : null}
 
-        <Document
-          key={`current-${render.value}`}
-          className={cn(
-            'h-full w-full flex items-center justify-center',
-            shouldShowPreviousDocument && 'rendering-document',
-            !shouldShowPreviousDocument && 'rendered',
-          )}
-          file={render.value}
-          loading={null}
-          onLoadSuccess={onDocumentLoad}
-        >
-          <Page
-            key={currentPage + 1}
-            renderAnnotationLayer={renderAnnotationLayer}
-            renderTextLayer={renderTextLayer}
-            pageNumber={currentPage}
-            width={pdfDimensions.pdfWidth}
-            height={pdfDimensions.pdfHeight}
+        {render.value && !render.loading && (
+          <Document
+            key={render.value}
+            className={
+              'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
+            }
+            file={render.value}
             loading={null}
-            onRenderSuccess={() => {
-              if (render.value !== undefined) {
-                pdfViewerStore.setPreviousRenderValue(render.value);
-              }
-            }}
-          />
-        </Document>
+            onLoadSuccess={onDocumentLoad}
+          >
+            <Page
+              key={currentPage}
+              renderAnnotationLayer={renderAnnotationLayer}
+              renderTextLayer={renderTextLayer}
+              pageNumber={currentPage}
+              width={pdfDimensions.pdfWidth}
+              height={pdfDimensions.pdfHeight}
+              loading={null}
+              onRenderSuccess={() => {
+                pdfViewerStore.setPreviousRenderValue(render.value as string);
+              }}
+            />
+          </Document>
+        )}
       </div>
     );
   },
