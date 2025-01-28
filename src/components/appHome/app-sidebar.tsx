@@ -15,6 +15,7 @@ import { Link } from 'react-router';
 import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
 import ColorModeToggleSidebar from '@/components/appHome/ColorModeToggleSidebar';
+import CreateDocumentDialog from './documents/CreateDocumentDialog';
 
 const items = [
   {
@@ -52,6 +53,16 @@ const AppSidebar = () => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Shortcuts</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <CreateDocumentDialog triggerVariant="sidebar" />
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>

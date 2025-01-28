@@ -44,36 +44,45 @@ const DocumentsPageClient = () => {
     );
   }
 
-  const renderDocuments = () => {
-    if (filteredDocuments?.length === 0) {
-      if (searchQuery) {
-        return (
-          <div className="text-muted-foreground text-center">
-            No documents found matching your search.
-          </div>
-        );
-      }
+  const noDocumentsCreated = filteredDocuments?.length === 0 && !searchQuery;
+  if (noDocumentsCreated) {
+    return (
+      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min flex flex-col justify-center items-center gap-4">
+        <div className="flex flex-col gap-2">
+          <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
+            You don’t have any documents yet!
+          </h2>
+          <p className="text-muted-foreground">
+            Ready to get started? Click below to create your first document.
+          </p>
+        </div>
+        <CreateDocumentDialog />
+      </div>
+    );
+  }
 
+  const renderDocuments = () => {
+    if (filteredDocuments?.length === 0 && searchQuery) {
       return (
-        <div className="rounded-xl flex flex-col items-center justify-center flex-1 min-h-[50vh] gap-4">
-          <div className="flex flex-col gap-2">
-            <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
-              You don&apos;t have any documents yet!
-            </h2>
-            <p className="text-muted-foreground">
-              Ready to get started? Click below to create your first document.
-            </p>
-          </div>
-          <CreateDocumentDialog />
+        <div className="text-muted-foreground text-center">
+          No documents found matching your search.
         </div>
       );
     }
 
     return (
-      <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
-        {filteredDocuments?.map((document) => (
-          <DocumentCard key={document.id} document={document} />
-        ))}
+      <div className="flex flex-col gap-4">
+        <div className=" flex items-center gap-2">
+          <CreateDocumentDialog triggerVariant="icon" />
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Your Documents
+          </h2>
+        </div>
+        <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
+          {filteredDocuments?.map((document) => (
+            <DocumentCard key={document.id} document={document} />
+          ))}
+        </div>
       </div>
     );
   };
@@ -93,4 +102,5 @@ const DocumentsPageClient = () => {
     </div>
   );
 };
+
 export default DocumentsPageClient;

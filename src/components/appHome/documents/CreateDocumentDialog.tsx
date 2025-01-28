@@ -16,8 +16,16 @@ import {
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { FilePlusIcon } from 'lucide-react';
 
-const CreateDocumentDialog = () => {
+interface CreateDocumentDialogProps {
+  triggerVariant?: 'default' | 'sidebar' | 'icon';
+}
+
+const CreateDocumentDialog = ({
+  triggerVariant = 'default',
+}: CreateDocumentDialogProps) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
@@ -53,6 +61,32 @@ const CreateDocumentDialog = () => {
     }
   };
 
+  const renderTrigger = () => {
+    if (triggerVariant === 'default') {
+      return (
+        <Button variant={open ? 'outline' : 'default'}>
+          Create New Document
+        </Button>
+      );
+    }
+
+    if (triggerVariant === 'sidebar') {
+      return (
+        <SidebarMenuButton variant="outline">
+          <FilePlusIcon /> Create Document
+        </SidebarMenuButton>
+      );
+    }
+
+    if (triggerVariant === 'icon') {
+      return (
+        <Button variant="outline" size="icon">
+          <FilePlusIcon />
+        </Button>
+      );
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -63,11 +97,7 @@ const CreateDocumentDialog = () => {
         setOpen(isOpen);
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant={open ? 'outline' : 'default'}>
-          Create New Document
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{renderTrigger()}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new document</DialogTitle>
