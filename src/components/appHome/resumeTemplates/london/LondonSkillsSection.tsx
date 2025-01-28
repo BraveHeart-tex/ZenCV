@@ -28,15 +28,17 @@ const LondonSkillsSection = ({ section }: { section: TemplateDataSection }) => {
     }),
   );
 
-  const showExperienceLevel = getSectionMetadata(
-    section,
-    SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-  );
+  const showExperienceLevel =
+    getSectionMetadata(
+      section,
+      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+    ) === CHECKED_METADATA_VALUE;
 
-  const isCommaSeparated = getSectionMetadata(
-    section,
-    SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
-  );
+  const isCommaSeparated =
+    getSectionMetadata(
+      section,
+      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+    ) === CHECKED_METADATA_VALUE;
 
   const renderSkills = () => {
     if (isCommaSeparated) {
@@ -64,9 +66,7 @@ const LondonSkillsSection = ({ section }: { section: TemplateDataSection }) => {
         }}
       >
         <Text>{entry.name}</Text>
-        {showExperienceLevel === CHECKED_METADATA_VALUE ? (
-          <Text>{entry.level}</Text>
-        ) : null}
+        {showExperienceLevel ? <Text>{entry.level}</Text> : null}
       </View>
     ));
   };
