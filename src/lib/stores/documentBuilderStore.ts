@@ -1,4 +1,4 @@
-import { runInAction, makeAutoObservable } from 'mobx';
+import { runInAction, makeAutoObservable, reaction } from 'mobx';
 import type {
   DEX_Document,
   DEX_Field,
@@ -20,14 +20,21 @@ import {
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import {
+  FieldName,
   MetadataValue,
   ParsedSectionMetadata,
+  PdfTemplateData,
   SectionMetadataKey,
+  SectionType,
   SectionWithParsedMetadata,
   TemplatedSectionType,
 } from '@/lib/types';
+import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
+import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
+
+export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
 
 export class DocumentBuilderStore {
   document: DEX_Document | null = null;
@@ -35,9 +42,18 @@ export class DocumentBuilderStore {
   items: DEX_Item[] = [];
   fields: DEX_Field[] = [];
   collapsedItemId: DEX_Item['id'] | null = null;
+  debounceTimer: NodeJS.Timeout | null = null;
+  debouncedTemplateResult: PdfTemplateData | null = null;
 
   constructor() {
     makeAutoObservable(this);
+
+    reaction(
+      () => this.pdfTemplateData,
+      (pdfTemplateData) => {
+        this.debounce(pdfTemplateData);
+      },
+    );
   }
   initializeStore = async (documentId: DEX_Document['id']) => {
     const result = await getFullDocumentStructure(documentId);
@@ -271,7 +287,6 @@ export class DocumentBuilderStore {
     }
   };
 
-  // TODO: add test cases for this
   addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
@@ -347,6 +362,90 @@ export class DocumentBuilderStore {
         })),
       ),
     });
+  };
+
+  getFieldValueByName = (fieldName: FieldName): string => {
+    return this.fields.find((field) => field.name === fieldName)?.value || '';
+  };
+
+  getSectionNameByType = (sectionType: SectionType): string => {
+    return (
+      this.sections.find((section) => section.type === sectionType)?.title || ''
+    );
+  };
+
+  get pdfTemplateData() {
+    const singleEntrySectionTypes = [
+      INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+      INTERNAL_SECTION_TYPES.SUMMARY,
+    ];
+    const mappedSections: PdfTemplateData['sections'] = this.sections
+      .filter(
+        (section) =>
+          !singleEntrySectionTypes.includes(
+            section.type as (typeof singleEntrySectionTypes)[number],
+          ),
+      )
+      .slice()
+      .sort(sortByDisplayOrder)
+      .map((section) => {
+        return {
+          ...section,
+          items: this.items
+            .slice()
+            .sort(sortByDisplayOrder)
+            .filter((item) => item.sectionId === section.id)
+            .map((item) => ({
+              ...item,
+              fields: this.fields.filter((field) => field.itemId === item.id),
+            })),
+        };
+      });
+
+    return {
+      personalDetails: {
+        firstName: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME,
+        ),
+        lastName: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME,
+        ),
+        jobTitle: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+        ),
+        address: this.getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.ADDRESS),
+        city: this.getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.CITY),
+        postalCode: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.POSTAL_CODE,
+        ),
+        placeOfBirth: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.PLACE_OF_BIRTH,
+        ),
+        phone: this.getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.PHONE),
+        email: this.getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.EMAIL),
+        dateOfBirth: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.DATE_OF_BIRTH,
+        ),
+        driversLicense: this.getFieldValueByName(
+          FIELD_NAMES.PERSONAL_DETAILS.DRIVING_LICENSE,
+        ),
+      },
+      summarySection: {
+        sectionName: this.getSectionNameByType(INTERNAL_SECTION_TYPES.SUMMARY),
+        summary: this.getFieldValueByName(FIELD_NAMES.SUMMARY.SUMMARY),
+      },
+      sections: mappedSections,
+    };
+  }
+
+  debounce = (value: PdfTemplateData) => {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      this.debouncedTemplateResult = value;
+    }, TEMPLATE_DATA_DEBOUNCE_MS);
   };
 }
 

@@ -3,31 +3,13 @@ import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
-import { getFormattedTemplateData } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { useEffect, useState } from 'react';
-import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
+import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
-  const templateData = getFormattedTemplateData();
-  const templateDataString = JSON.stringify(templateData);
-  const [debouncedData, setDebouncedData] = useState(null);
 
-  const handleDataChange = useDebouncedCallback(
-    (templateDataString: string) => {
-      try {
-        setDebouncedData(JSON.parse(templateDataString));
-      } catch {
-        setDebouncedData(null);
-      }
-    },
-  );
-
-  useEffect(() => {
-    handleDataChange(templateDataString);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [templateDataString]);
+  const debouncedData = documentBuilderStore.debouncedTemplateResult;
 
   if (!debouncedData) return null;
 
@@ -41,7 +23,7 @@ const DocumentBuilderPreviewContent = observer(() => {
           </p>
         </div>
       ) : (
-        <DocumentBuilderPdfViewer renderData={debouncedData}>
+        <DocumentBuilderPdfViewer renderData={JSON.stringify(debouncedData)}>
           <LondonTemplate templateData={debouncedData} />
         </DocumentBuilderPdfViewer>
       )}

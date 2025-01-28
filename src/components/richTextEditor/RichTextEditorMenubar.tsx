@@ -27,7 +27,7 @@ import {
   Undo,
   UnlinkIcon,
 } from 'lucide-react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, memo } from 'react';
 import { Heading1Icon, Heading2Icon, Heading3Icon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 import { Toggle } from '@/components/ui/toggle';
@@ -53,7 +53,7 @@ const HEADING_OPTIONS = [
 
 const menuButtonClassNames = 'w-4 h-4';
 
-const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
+const RichTextEditorMenubar = memo(({ editor }: RichTextEditorMenubarProps) => {
   const linkRef = useRef<HTMLInputElement>(null);
 
   const setLink = useCallback(() => {
@@ -224,6 +224,8 @@ const RichTextEditorMenubar = ({ editor }: RichTextEditorMenubarProps) => {
       </Button>
     </div>
   );
-};
+});
+
+RichTextEditorMenubar.displayName = 'RichTextEditorMenubar';
 
 export default RichTextEditorMenubar;
