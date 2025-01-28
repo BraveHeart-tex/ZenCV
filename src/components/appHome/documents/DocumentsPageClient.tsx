@@ -3,31 +3,93 @@ import { clientDb } from '@/lib/client-db/clientDb';
 import { useLiveQuery } from 'dexie-react-hooks';
 import CreateDocumentDialog from './CreateDocumentDialog';
 import DocumentCard from './DocumentCard';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 const DocumentsPageClient = () => {
-  const documentsObservable = useLiveQuery(() => clientDb.documents.toArray());
+  const [searchQuery, setSearchQuery] = useState('');
 
-  if (documentsObservable && documentsObservable.length === 0) {
+  const documents = useLiveQuery(
+    async () => {
+      return await clientDb.documents.toArray();
+    },
+    [],
+    null,
+  );
+
+  const filteredDocuments = useMemo(() => {
+    if (!documents) return null;
+    if (!searchQuery) return documents;
+
+    return documents.filter((doc) =>
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [documents, searchQuery]);
+
+  if (!documents) {
     return (
-      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min flex flex-col justify-center items-center gap-4">
-        <div className="flex flex-col gap-2">
-          <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
-            You don’t have any documents yet!
-          </h2>
-          <p className="text-muted-foreground">
-            Ready to get started? Click below to create your first document.
-          </p>
+      <div className="flex flex-col gap-6">
+        <div className="md:max-w-lg relative w-full">
+          <Search className="text-muted-foreground left-2 top-2 absolute w-5 h-5" />
+          <Input
+            placeholder="Search documents..."
+            className="w-full pl-8"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-        <CreateDocumentDialog />
+        <div className="text-muted-foreground text-center">Loading...</div>
       </div>
     );
   }
 
+  const renderDocuments = () => {
+    if (filteredDocuments?.length === 0) {
+      if (searchQuery) {
+        return (
+          <div className="text-muted-foreground text-center">
+            No documents found matching your search.
+          </div>
+        );
+      }
+
+      return (
+        <div className="rounded-xl flex flex-col items-center justify-center flex-1 min-h-[50vh] gap-4">
+          <div className="flex flex-col gap-2">
+            <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
+              You don&apos;t have any documents yet!
+            </h2>
+            <p className="text-muted-foreground">
+              Ready to get started? Click below to create your first document.
+            </p>
+          </div>
+          <CreateDocumentDialog />
+        </div>
+      );
+    }
+
+    return (
+      <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
+        {filteredDocuments?.map((document) => (
+          <DocumentCard key={document.id} document={document} />
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="md:grid-cols-2 lg:grid-cols-3 grid grid-cols-1 gap-4">
-      {documentsObservable?.map((document) => (
-        <DocumentCard key={document.id} document={document} />
-      ))}
+    <div className="flex flex-col gap-6">
+      <div className="md:max-w-lg relative w-full">
+        <Search className="text-muted-foreground left-2 top-2 absolute w-5 h-5" />
+        <Input
+          placeholder="Search documents..."
+          className="w-full pl-8"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+      {renderDocuments()}
     </div>
   );
 };
