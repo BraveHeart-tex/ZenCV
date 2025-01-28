@@ -4,13 +4,13 @@ import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
 import { ReactElement, useMemo, useRef, useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { useAsync } from 'react-use';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { useAsync } from 'react-use';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -105,8 +105,8 @@ const DocumentBuilderPdfViewer = observer(
         {isFirstRendering ? <PreviewSkeleton /> : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
-            key={previousRenderValue}
-            className="previous-document z-10 flex items-center justify-center w-full h-full"
+            key={`-${previousRenderValue}`}
+            className="previous-document flex items-center justify-center w-full h-full"
             file={previousRenderValue}
             loading={null}
           >
@@ -123,7 +123,7 @@ const DocumentBuilderPdfViewer = observer(
         ) : null}
 
         <Document
-          key={`current-${render.value}`}
+          key={render.value}
           className={cn(
             'h-full w-full flex items-center justify-center',
             shouldShowPreviousDocument && 'rendering-document',
