@@ -17,7 +17,7 @@ const SectionMetadataOptions = observer(
     if (sectionMetadataOptions?.length === 0) return null;
 
     return (
-      <div className="my-2">
+      <div className="my-2 space-y-2">
         {sectionMetadataOptions.map((option) => (
           <div key={option.key} className="flex items-center gap-2">
             <Switch
