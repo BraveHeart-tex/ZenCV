@@ -5,8 +5,17 @@ import { useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';
 import ResumeOverviewTrigger from './ResumeOverviewTrigger';
 
+export interface FocusState {
+  sectionId: string | null;
+  itemId: string | null;
+}
+
 const ResumeOverview = observer(() => {
   const [visible, setVisible] = useState(false);
+  const [focusState, setFocusState] = useState<FocusState>({
+    sectionId: null,
+    itemId: null,
+  });
 
   const sectionsWithItems = documentBuilderStore.sections.map((section) => {
     return {
@@ -26,10 +35,13 @@ const ResumeOverview = observer(() => {
       }}
     >
       <ResumeOverviewTrigger
+        focusState={focusState}
+        setFocusState={setFocusState}
         visible={visible}
         sectionsWithItems={sectionsWithItems}
       />
       <ResumeOverViewContent
+        focusState={focusState}
         visible={visible}
         sectionsWithItems={sectionsWithItems}
       />

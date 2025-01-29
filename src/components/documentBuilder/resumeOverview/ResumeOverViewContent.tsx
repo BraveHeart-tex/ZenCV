@@ -14,9 +14,11 @@ import { SectionWithItems } from '@/lib/types';
 import {
   getSectionContainerId,
   getItemContainerId,
+  cn,
 } from '@/lib/utils/stringUtils';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
+import { FocusState } from './ResumeOverview';
 
 const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
 
@@ -25,11 +27,13 @@ const highlightedElementClassName = 'highlighted-element';
 interface ResumeOverViewContentProps {
   visible: boolean;
   sectionsWithItems: SectionWithItems[];
+  focusState: FocusState;
 }
 
 const ResumeOverViewContent = ({
   visible,
   sectionsWithItems,
+  focusState,
 }: ResumeOverViewContentProps) => {
   const handleScrollToSection = (sectionId: DEX_Section['id']) => {
     const container = document.getElementById(getSectionContainerId(sectionId));
@@ -121,7 +125,12 @@ const ResumeOverViewContent = ({
                             }}
                           >
                             <Button
-                              className="hover:bg-muted/70 w-full justify-start px-1.5 text-xs font-normal text-muted-foreground"
+                              className={cn(
+                                'hover:bg-muted/70 w-full justify-start px-1.5 text-xs font-normal text-muted-foreground',
+                                focusState.itemId ===
+                                  getItemContainerId(item.id) &&
+                                  'text-blue-500 hover:text-blue-500',
+                              )}
                               variant="ghost"
                               onClick={() => {
                                 handleScrollToItem(item.id);
