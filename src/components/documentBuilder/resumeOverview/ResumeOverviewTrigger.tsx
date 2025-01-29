@@ -16,22 +16,19 @@ const ResumeOverviewTrigger = ({
   return (
     <AnimatePresence>
       {!visible && (
-        <motion.div className="fixed right-0 flex flex-col gap-2">
+        <motion.div className="fixed right-5 top-[25%] flex flex-col gap-2">
           {sectionsWithItems.map((section) => {
             return (
-              <motion.div
-                key={`trigger-${section.id}`}
-                className="w-full h-12 transition-all"
-              >
+              <motion.div key={`trigger-${section.id}`} className="space-y-2">
+                <div className="bg-muted-foreground w-6 h-[3.5px] rounded-sm" />
                 {section.items.filter(
                   (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE,
                 ).length > 0 && (
-                  <div className="flex flex-col gap-0.5 pl-2 h-5 bg-muted w-10">
+                  <div className="flex flex-col gap-2 pl-2">
                     {section.items.map((item) => (
                       <motion.div
                         key={`trigger-${item.id}`}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        className="bg-muted-foreground w-4 h-[3.5px] rounded-sm"
                       />
                     ))}
                   </div>
