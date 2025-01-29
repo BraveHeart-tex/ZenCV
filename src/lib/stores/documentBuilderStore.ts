@@ -444,9 +444,20 @@ export class DocumentBuilderStore {
     }
 
     this.debounceTimer = setTimeout(() => {
-      this.debouncedTemplateResult = value;
+      runInAction(() => {
+        this.debouncedTemplateResult = value;
+      });
     }, TEMPLATE_DATA_DEBOUNCE_MS);
   };
+
+  get sectionsWithItems() {
+    return this.sections.map((section) => {
+      return {
+        ...section,
+        items: this.getItemsBySectionId(section.id),
+      };
+    });
+  }
 }
 
 export const documentBuilderStore = new DocumentBuilderStore();

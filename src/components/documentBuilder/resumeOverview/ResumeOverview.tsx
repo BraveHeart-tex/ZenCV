@@ -10,7 +10,6 @@ import {
   ITEM_ID_PREFIX,
   SECTION_ID_PREFIX,
 } from '@/lib/utils/stringUtils';
-import { autorun } from 'mobx';
 
 export interface FocusState {
   sectionId: string | null;
@@ -25,71 +24,66 @@ const ResumeOverview = observer(() => {
     itemId: null,
   });
 
-  const sectionsWithItems = documentBuilderStore.sections.map((section) => {
-    return {
-      ...section,
-      items: documentBuilderStore.getItemsBySectionId(section.id),
-    };
-  });
+  const sectionsWithItems = documentBuilderStore.sectionsWithItems;
 
   useEffect(() => {
-    const disposeAutorun = autorun(() => {
-      const sectionsWithItems = documentBuilderStore.sections.map(
-        (section) => ({
-          ...section,
-          items: documentBuilderStore.getItemsBySectionId(section.id),
-        }),
-      );
+    const sectionsWithItems = documentBuilderStore.sections.map((section) => ({
+      ...section,
+      items: documentBuilderStore.getItemsBySectionId(section.id),
+    }));
 
-      // Cleanup previous observer if exists
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+    // Cleanup previous observer if exists
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const elementId = entry.target.id;
+
+          setFocusState((prev) => ({
+            ...prev,
+            sectionId: elementId.startsWith(SECTION_ID_PREFIX)
+              ? elementId
+              : prev.sectionId,
+            itemId: elementId.startsWith(ITEM_ID_PREFIX)
+              ? elementId
+              : prev.itemId,
+          }));
+        }
+      });
+    };
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5,
+    };
+
+    observerRef.current = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
+
+    sectionsWithItems.forEach((section) => {
+      const sectionElement = document.getElementById(
+        getSectionContainerId(section.id),
+      );
+      if (sectionElement) {
+        observerRef?.current?.observe(sectionElement);
       }
 
-      const observerCallback: IntersectionObserverCallback = (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const elementId = entry.target.id;
-            setFocusState((prev) => ({
-              ...prev,
-              sectionId: elementId.startsWith(SECTION_ID_PREFIX)
-                ? elementId
-                : prev.sectionId,
-              itemId: elementId.startsWith(ITEM_ID_PREFIX)
-                ? elementId
-                : prev.itemId,
-            }));
-          }
-        });
-      };
-
-      const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.5,
-      };
-
-      observerRef.current = new IntersectionObserver(
-        observerCallback,
-        observerOptions,
-      );
-
-      sectionsWithItems.forEach((section) => {
-        const sectionElement = document.getElementById(
-          getSectionContainerId(section.id),
+      section.items.forEach((item) => {
+        const itemElement = document.getElementById(
+          getItemContainerId(item.id),
         );
-        if (sectionElement) {
-          observerRef?.current?.observe(sectionElement);
-        }
 
-        section.items.forEach((item) => {
-          const itemElement = document.getElementById(
-            getItemContainerId(item.id),
-          );
-          if (itemElement) {
-            observerRef?.current?.observe(itemElement);
-          }
-        });
+        if (itemElement) {
+          console.log('observe item with', item.id);
+
+          observerRef?.current?.observe(itemElement);
+        }
       });
     });
 
@@ -97,9 +91,8 @@ const ResumeOverview = observer(() => {
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
-      disposeAutorun();
     };
-  }, []);
+  }, [sectionsWithItems]);
 
   return (
     <div
