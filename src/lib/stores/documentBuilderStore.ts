@@ -1,4 +1,10 @@
-import { runInAction, makeAutoObservable, reaction } from 'mobx';
+import {
+  runInAction,
+  makeAutoObservable,
+  reaction,
+  observable,
+  ObservableMap,
+} from 'mobx';
 import type {
   DEX_Document,
   DEX_Field,
@@ -45,6 +51,8 @@ export class DocumentBuilderStore {
   debounceTimer: NodeJS.Timeout | null = null;
   debouncedTemplateResult: PdfTemplateData | null = null;
 
+  refs: ObservableMap<string, Element | null> = observable.map();
+
   constructor() {
     makeAutoObservable(this);
 
@@ -55,6 +63,10 @@ export class DocumentBuilderStore {
       },
     );
   }
+
+  setElementRef = (key: string, value: Element | null) => {
+    this.refs.set(key, value);
+  };
   initializeStore = async (documentId: DEX_Document['id']) => {
     const result = await getFullDocumentStructure(documentId);
     if (!result?.success) {
@@ -327,6 +339,7 @@ export class DocumentBuilderStore {
     this.items = [];
     this.fields = [];
     this.collapsedItemId = null;
+    this.refs = observable.map();
   };
   getSectionMetadataOptions = (
     sectionId: DEX_Section['id'],

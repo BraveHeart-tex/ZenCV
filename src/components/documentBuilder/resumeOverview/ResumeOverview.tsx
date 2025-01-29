@@ -7,9 +7,8 @@ import ResumeOverviewTrigger from './ResumeOverviewTrigger';
 import {
   getItemContainerId,
   getSectionContainerId,
-  ITEM_ID_PREFIX,
-  SECTION_ID_PREFIX,
 } from '@/lib/utils/stringUtils';
+import { autorun } from 'mobx';
 
 export interface FocusState {
   sectionId: string | null;
@@ -24,68 +23,66 @@ const ResumeOverview = observer(() => {
     itemId: null,
   });
 
-  const sectionsWithItems = documentBuilderStore.sectionsWithItems;
-
-  useEffect(() => {
-    // Cleanup previous observer if exists
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
-
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const elementId = entry.target.id;
-
-          setFocusState((prev) => ({
-            ...prev,
-            sectionId: elementId.startsWith(SECTION_ID_PREFIX)
-              ? elementId
-              : prev.sectionId,
-            itemId: elementId.startsWith(ITEM_ID_PREFIX)
-              ? elementId
-              : prev.itemId,
-          }));
+  useEffect(
+    () =>
+      autorun(() => {
+        if (observerRef.current) {
+          observerRef.current.disconnect();
         }
-      });
-    };
 
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1,
-    };
+        const items = documentBuilderStore.items;
 
-    observerRef.current = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
+        const observerCallback: IntersectionObserverCallback = (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const elementId = entry.target.id;
 
-    sectionsWithItems.forEach((section) => {
-      const sectionElement = document.getElementById(
-        getSectionContainerId(section.id),
-      );
-      if (sectionElement) {
-        observerRef?.current?.observe(sectionElement);
-      }
+              const foundItem = items.find(
+                (item) => getItemContainerId(item.id) === elementId,
+              );
 
-      section.items.forEach((item) => {
-        const itemElement = document.getElementById(
-          getItemContainerId(item.id),
+              if (!foundItem) return;
+
+              setFocusState((prev) => ({
+                ...prev,
+                sectionId: getSectionContainerId(foundItem?.sectionId),
+                itemId: elementId,
+              }));
+            }
+          });
+        };
+
+        const observerOptions = {
+          root: null,
+          rootMargin: '0px',
+          threshold: 0.1,
+        };
+
+        observerRef.current = new IntersectionObserver(
+          observerCallback,
+          observerOptions,
         );
 
-        if (itemElement) {
-          observerRef?.current?.observe(itemElement);
-        }
-      });
-    });
+        items.forEach((item) => {
+          const itemElement = documentBuilderStore.refs.get(
+            getItemContainerId(item.id),
+          );
 
+          if (itemElement) {
+            observerRef?.current?.observe(itemElement);
+          }
+        });
+      }),
+    [],
+  );
+
+  useEffect(() => {
     return () => {
       if (observerRef.current) {
         observerRef.current.disconnect();
       }
     };
-  }, [sectionsWithItems]);
+  }, []);
 
   return (
     <div

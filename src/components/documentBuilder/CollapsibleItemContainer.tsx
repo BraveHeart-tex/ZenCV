@@ -109,7 +109,10 @@ const CollapsibleSectionItemContainer = observer(
           'group relative w-full',
           isDragging && 'max-h-[17rem] overflow-hidden',
         )}
-        ref={setNodeRef}
+        ref={(ref) => {
+          setNodeRef(ref);
+          documentBuilderStore.setElementRef(getItemContainerId(itemId), ref);
+        }}
         style={{
           transition,
           transform: CSS.Translate.toString(transform),
