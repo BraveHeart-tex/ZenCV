@@ -31,11 +31,8 @@ const DocumentBuilderPreviewHeader = observer(() => {
       }}
     >
       <Button
-        className={cn(
-          'xl:hidden text-muted dark:text-secondary-foreground',
-          view === 'preview' && 'flex xl:hidden',
-        )}
-        variant="ghost"
+        className={cn('xl:hidden', view === 'preview' && 'flex xl:hidden')}
+        variant="outline"
         onClick={() => {
           setView('builder');
         }}

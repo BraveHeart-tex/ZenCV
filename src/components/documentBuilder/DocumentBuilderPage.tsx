@@ -6,6 +6,7 @@ import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
 import { memo } from 'react';
 import ResumeOverview from './resumeOverview/ResumeOverview';
+import DocumentBuilderViewToggle from './builderViewOptions/DocumentBuilderViewToggle';
 
 const DocumentBuilderPage = memo(() => {
   const params = useParams<{ id: string }>();
@@ -19,6 +20,7 @@ const DocumentBuilderPage = memo(() => {
           <DocumentBuilderPreview />
         </ClientOnly>
       </div>
+      <DocumentBuilderViewToggle />
     </LazyMotion>
   );
 });

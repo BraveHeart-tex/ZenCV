@@ -24,7 +24,7 @@ const ResumeOverviewTrigger = observer(
     return (
       <AnimatePresence>
         {!visible && (
-          <motion.div className="fixed right-5 top-[25%] flex flex-col gap-2">
+          <motion.div className="fixed right-5 top-[25%] flex-col gap-2 hidden xl:flex">
             {sectionsWithItems.map((section) => {
               return (
                 <motion.div
