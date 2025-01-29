@@ -7,6 +7,8 @@ import ResumeOverviewTrigger from './ResumeOverviewTrigger';
 import {
   getItemContainerId,
   getSectionContainerId,
+  ITEM_ID_PREFIX,
+  SECTION_ID_PREFIX,
 } from '@/lib/utils/stringUtils';
 
 export interface FocusState {
@@ -34,12 +36,12 @@ const ResumeOverview = observer(() => {
         if (entry.isIntersecting) {
           const elementId = entry.target.id;
 
-          if (elementId.startsWith('section-')) {
+          if (elementId.startsWith(SECTION_ID_PREFIX)) {
             setFocusState((prev) => ({
               ...prev,
               sectionId: elementId,
             }));
-          } else if (elementId.startsWith('item-')) {
+          } else if (elementId.startsWith(ITEM_ID_PREFIX)) {
             setFocusState((prev) => ({
               ...prev,
               itemId: elementId,
