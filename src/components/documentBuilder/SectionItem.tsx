@@ -28,7 +28,7 @@ const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
     return (
       <div
         className={cn(
-          'p-4 px-0 grid grid-cols-2 gap-4',
+          'p-4 pt-0 px-0 grid grid-cols-2 gap-4',
           documentBuilderStore.getSectionById(item.sectionId)?.type ===
             INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
             'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6',

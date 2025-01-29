@@ -26,7 +26,7 @@ const SectionMetadataOptions = ({
   sectionId: DEX_Section['id'];
 }) => {
   return (
-    <div className="my-2 space-y-2">
+    <div className="space-y-2">
       <MetadataOptionsList sectionId={sectionId} />
     </div>
   );

@@ -40,7 +40,7 @@ const SectionMetadataOption = ({
   option: ParsedSectionMetadata;
 }) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="first:mt-2 flex items-center gap-2">
       <MetadataSwitch sectionId={sectionId} option={option} />
       <Label htmlFor={option.key}>{option.label}</Label>
     </div>
