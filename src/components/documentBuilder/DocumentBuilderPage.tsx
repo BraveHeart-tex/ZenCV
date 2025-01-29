@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
 import { memo } from 'react';
+import ResumeOverview from './resumeOverview/ResumeOverview';
 
 const DocumentBuilderPage = memo(() => {
   const params = useParams<{ id: string }>();
@@ -12,6 +13,7 @@ const DocumentBuilderPage = memo(() => {
   return (
     <LazyMotion features={domAnimation} strict>
       <div>
+        <ResumeOverview />
         <DocumentBuilderClient documentId={+params.id} />
         <ClientOnly>
           <DocumentBuilderPreview />

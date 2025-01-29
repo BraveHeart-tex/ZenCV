@@ -45,7 +45,7 @@ import {
 } from '@/lib/helpers/userSettingsHelpers';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { cn } from '@/lib/utils/stringUtils';
+import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -109,11 +109,15 @@ const CollapsibleSectionItemContainer = observer(
           'group relative w-full',
           isDragging && 'max-h-[17rem] overflow-hidden',
         )}
-        ref={setNodeRef}
+        ref={(ref) => {
+          setNodeRef(ref);
+          documentBuilderStore.setElementRef(getItemContainerId(itemId), ref);
+        }}
         style={{
           transition,
           transform: CSS.Translate.toString(transform),
         }}
+        id={getItemContainerId(itemId)}
         {...attributes}
       >
         {shouldShowDragButton ? (

@@ -100,3 +100,7 @@ export type WithEntryId<T extends Record<string, unknown>> = T & {
 export type MetadataValue =
   | typeof UNCHECKED_METADATA_VALUE
   | typeof CHECKED_METADATA_VALUE;
+
+export type SectionWithItems = SectionWithParsedMetadata & {
+  items: DEX_Item[];
+};

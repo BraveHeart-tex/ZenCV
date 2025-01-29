@@ -11,6 +11,7 @@ import DraggableSectionContainer from '@/components/documentBuilder/DraggableSec
 import { FIXED_SECTIONS } from '@/lib/constants';
 import { ReactNode } from 'react';
 import SectionMetadataOptions from '@/components/documentBuilder/SectionMetadataOptions';
+import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
@@ -23,7 +24,9 @@ const DocumentSection = observer(
             ?.type as (typeof FIXED_SECTIONS)[number],
         )
       ) {
-        return <section>{children}</section>;
+        return (
+          <section id={getSectionContainerId(sectionId)}>{children}</section>
+        );
       }
 
       return (
