@@ -27,11 +27,6 @@ const ResumeOverview = observer(() => {
   const sectionsWithItems = documentBuilderStore.sectionsWithItems;
 
   useEffect(() => {
-    const sectionsWithItems = documentBuilderStore.sections.map((section) => ({
-      ...section,
-      items: documentBuilderStore.getItemsBySectionId(section.id),
-    }));
-
     // Cleanup previous observer if exists
     if (observerRef.current) {
       observerRef.current.disconnect();
@@ -80,8 +75,6 @@ const ResumeOverview = observer(() => {
         );
 
         if (itemElement) {
-          console.log('observe item with', item.id);
-
           observerRef?.current?.observe(itemElement);
         }
       });
@@ -104,16 +97,8 @@ const ResumeOverview = observer(() => {
         setVisible(false);
       }}
     >
-      <ResumeOverviewTrigger
-        focusState={focusState}
-        visible={visible}
-        sectionsWithItems={sectionsWithItems}
-      />
-      <ResumeOverViewContent
-        focusState={focusState}
-        visible={visible}
-        sectionsWithItems={sectionsWithItems}
-      />
+      <ResumeOverviewTrigger focusState={focusState} visible={visible} />
+      <ResumeOverViewContent focusState={focusState} visible={visible} />
     </div>
   );
 });
