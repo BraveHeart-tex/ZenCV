@@ -12,7 +12,7 @@ const DocumentBuilderPage = memo(() => {
   if (!params.id) return null;
   return (
     <LazyMotion features={domAnimation} strict>
-      <div className="relative">
+      <div>
         <ResumeOverview />
         <DocumentBuilderClient documentId={+params.id} />
         <ClientOnly>

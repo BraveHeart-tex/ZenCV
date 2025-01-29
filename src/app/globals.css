@@ -171,3 +171,7 @@ html > body[data-scroll-locked] {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.highlighted-element {
+  @apply bg-accent transition-all ease-in rounded-md;
+}
