@@ -53,7 +53,7 @@ const ResumeOverview = observer(() => {
     const observerOptions = {
       root: null,
       rootMargin: '0px',
-      threshold: 0.5,
+      threshold: 0.1,
     };
 
     observerRef.current = new IntersectionObserver(
