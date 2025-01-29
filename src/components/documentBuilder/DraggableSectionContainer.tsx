@@ -11,7 +11,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { cn } from '@/lib/utils/stringUtils';
+import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
 
 interface DraggableSectionContainerProps {
   sectionId: DEX_Section['id'];
@@ -45,6 +45,7 @@ const DraggableSectionContainer = ({
         transform: CSS.Translate.toString(transform),
       }}
       {...attributes}
+      id={getSectionContainerId(sectionId)}
       className={cn('grid gap-2 relative group/container', className)}
     >
       {children}
