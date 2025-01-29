@@ -1,7 +1,7 @@
 'use client';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';
 import ResumeOverviewTrigger from './ResumeOverviewTrigger';
 import {
@@ -10,6 +10,7 @@ import {
   ITEM_ID_PREFIX,
   SECTION_ID_PREFIX,
 } from '@/lib/utils/stringUtils';
+import { autorun } from 'mobx';
 
 export interface FocusState {
   sectionId: string | null;
@@ -17,6 +18,7 @@ export interface FocusState {
 }
 
 const ResumeOverview = observer(() => {
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const [visible, setVisible] = useState(false);
   const [focusState, setFocusState] = useState<FocusState>({
     sectionId: null,
@@ -31,59 +33,73 @@ const ResumeOverview = observer(() => {
   });
 
   useEffect(() => {
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const elementId = entry.target.id;
-
-          if (elementId.startsWith(SECTION_ID_PREFIX)) {
-            setFocusState((prev) => ({
-              ...prev,
-              sectionId: elementId,
-            }));
-          } else if (elementId.startsWith(ITEM_ID_PREFIX)) {
-            setFocusState((prev) => ({
-              ...prev,
-              itemId: elementId,
-            }));
-          }
-        }
-      });
-    };
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    sectionsWithItems.forEach((section) => {
-      const sectionElement = document.getElementById(
-        getSectionContainerId(section.id),
+    const disposeAutorun = autorun(() => {
+      const sectionsWithItems = documentBuilderStore.sections.map(
+        (section) => ({
+          ...section,
+          items: documentBuilderStore.getItemsBySectionId(section.id),
+        }),
       );
-      if (sectionElement) {
-        observer.observe(sectionElement);
+
+      // Cleanup previous observer if exists
+      if (observerRef.current) {
+        observerRef.current.disconnect();
       }
 
-      section.items.forEach((item) => {
-        const itemElement = document.getElementById(
-          getItemContainerId(item.id),
+      const observerCallback: IntersectionObserverCallback = (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const elementId = entry.target.id;
+            setFocusState((prev) => ({
+              ...prev,
+              sectionId: elementId.startsWith(SECTION_ID_PREFIX)
+                ? elementId
+                : prev.sectionId,
+              itemId: elementId.startsWith(ITEM_ID_PREFIX)
+                ? elementId
+                : prev.itemId,
+            }));
+          }
+        });
+      };
+
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5,
+      };
+
+      observerRef.current = new IntersectionObserver(
+        observerCallback,
+        observerOptions,
+      );
+
+      sectionsWithItems.forEach((section) => {
+        const sectionElement = document.getElementById(
+          getSectionContainerId(section.id),
         );
-        if (itemElement) {
-          observer.observe(itemElement);
+        if (sectionElement) {
+          observerRef?.current?.observe(sectionElement);
         }
+
+        section.items.forEach((item) => {
+          const itemElement = document.getElementById(
+            getItemContainerId(item.id),
+          );
+          if (itemElement) {
+            observerRef?.current?.observe(itemElement);
+          }
+        });
       });
     });
 
     return () => {
-      observer.disconnect();
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+      disposeAutorun();
     };
-  }, [sectionsWithItems]);
+  }, []);
 
   return (
     <div
