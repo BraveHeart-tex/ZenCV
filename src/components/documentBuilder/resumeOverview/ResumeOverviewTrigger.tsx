@@ -3,7 +3,6 @@ import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
 import { type SectionWithItems } from '@/lib/types';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
 import {
   cn,
   getItemContainerId,
@@ -16,70 +15,13 @@ interface ResumeOverviewTriggerProps {
   sectionsWithItems: SectionWithItems[];
 
   focusState: FocusState;
-  setFocusState: Dispatch<SetStateAction<FocusState>>;
 }
 
 const ResumeOverviewTrigger = ({
   sectionsWithItems,
   visible,
   focusState,
-  setFocusState,
 }: ResumeOverviewTriggerProps) => {
-  useEffect(() => {
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const elementId = entry.target.id;
-
-          if (elementId.startsWith('section-')) {
-            setFocusState((prev) => ({
-              ...prev,
-              sectionId: elementId,
-            }));
-          } else if (elementId.startsWith('item-')) {
-            setFocusState((prev) => ({
-              ...prev,
-              itemId: elementId,
-            }));
-          }
-        }
-      });
-    };
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5,
-    };
-
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions,
-    );
-
-    sectionsWithItems.forEach((section) => {
-      const sectionElement = document.getElementById(
-        getSectionContainerId(section.id),
-      );
-      if (sectionElement) {
-        observer.observe(sectionElement);
-      }
-
-      section.items.forEach((item) => {
-        const itemElement = document.getElementById(
-          getItemContainerId(item.id),
-        );
-        if (itemElement) {
-          observer.observe(itemElement);
-        }
-      });
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [sectionsWithItems]);
-
   return (
     <AnimatePresence>
       {!visible && (

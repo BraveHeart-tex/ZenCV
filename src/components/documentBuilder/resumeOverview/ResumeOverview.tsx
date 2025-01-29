@@ -1,9 +1,13 @@
 'use client';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';
 import ResumeOverviewTrigger from './ResumeOverviewTrigger';
+import {
+  getItemContainerId,
+  getSectionContainerId,
+} from '@/lib/utils/stringUtils';
 
 export interface FocusState {
   sectionId: string | null;
@@ -24,6 +28,61 @@ const ResumeOverview = observer(() => {
     };
   });
 
+  useEffect(() => {
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const elementId = entry.target.id;
+
+          if (elementId.startsWith('section-')) {
+            setFocusState((prev) => ({
+              ...prev,
+              sectionId: elementId,
+            }));
+          } else if (elementId.startsWith('item-')) {
+            setFocusState((prev) => ({
+              ...prev,
+              itemId: elementId,
+            }));
+          }
+        }
+      });
+    };
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5,
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
+
+    sectionsWithItems.forEach((section) => {
+      const sectionElement = document.getElementById(
+        getSectionContainerId(section.id),
+      );
+      if (sectionElement) {
+        observer.observe(sectionElement);
+      }
+
+      section.items.forEach((item) => {
+        const itemElement = document.getElementById(
+          getItemContainerId(item.id),
+        );
+        if (itemElement) {
+          observer.observe(itemElement);
+        }
+      });
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [sectionsWithItems]);
+
   return (
     <div
       className="group fixed right-0 top-0 z-[500] flex items-start"
@@ -36,7 +95,6 @@ const ResumeOverview = observer(() => {
     >
       <ResumeOverviewTrigger
         focusState={focusState}
-        setFocusState={setFocusState}
         visible={visible}
         sectionsWithItems={sectionsWithItems}
       />
