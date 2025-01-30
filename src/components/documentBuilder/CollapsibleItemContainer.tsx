@@ -156,14 +156,16 @@ const CollapsibleSectionItemContainer = observer(
                 >
                   <div
                     className={cn(
-                      'flex flex-col min-h-9',
+                      'flex flex-col min-h-9 max-w-[18rem] sm:max-w-full overflow-hidden',
                       !description && 'justify-center',
                     )}
                   >
-                    <span className="max-w-full truncate">{title}</span>
+                    <span className="max-w-full text-left break-words whitespace-normal">
+                      {title}
+                    </span>
                     <span
                       className={cn(
-                        'text-xs text-muted-foreground opacity-100 transition-all ease-in',
+                        'text-xs text-muted-foreground opacity-100 transition-all ease-in whitespace-normal break-words text-left',
                         !description && 'opacity-0',
                       )}
                     >
