@@ -25,7 +25,7 @@ import {
 } from './drawer';
 
 const ConfirmDialog = observer(() => {
-  const isDesktop = useMediaQuery('(min-width: 1024px)', false);
+  const isDesktop = useMediaQuery('(min-width: 768px)', false);
 
   const isOpen = confirmDialogStore.isOpen;
   const onClose = confirmDialogStore.hideDialog;
