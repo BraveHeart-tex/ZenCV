@@ -28,7 +28,7 @@ const ResumeOverviewTrigger = observer(
             {sectionsWithItems.map((section) => {
               return (
                 <motion.div
-                  key={`trigger-${section.id}`}
+                  key={`section-trigger-${section.id}`}
                   className={cn(
                     'space-y-2 opacity-50',
                     focusState.sectionId ===
@@ -43,7 +43,7 @@ const ResumeOverviewTrigger = observer(
                     <div className="flex flex-col gap-2 pl-2">
                       {section.items.map((item) => (
                         <motion.div
-                          key={`trigger-${item.id}`}
+                          key={`item-trigger-${item.id}`}
                           className={cn(
                             'bg-muted-foreground w-4 h-[3.5px] rounded-sm transition-opacity duration-200',
                             focusState.itemId === getItemContainerId(item.id)

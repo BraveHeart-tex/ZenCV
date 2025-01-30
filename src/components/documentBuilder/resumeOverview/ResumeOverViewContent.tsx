@@ -89,7 +89,7 @@ const ResumeOverViewContent = observer(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.3 }}
-              className="flex flex-col gap-1.5 max-h-[70vh] overflow-auto"
+              className="flex flex-col gap-1.5 max-h-[50vh] overflow-auto"
             >
               {sectionsWithItems.map((section) => {
                 return (
