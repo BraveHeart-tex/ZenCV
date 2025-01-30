@@ -92,6 +92,40 @@ html > body[data-scroll-locked] {
   }
 }
 
+/* Scrollbar Styles */
+@layer utilities {
+  /* Webkit browsers (Chrome, Safari, newer versions of Edge) */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--secondary));
+    border-radius: var(--radius);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.7);
+    border-radius: var(--radius);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.7) hsl(var(--secondary));
+  }
+
+  /* For Internet Explorer and Edge (older versions) */
+  body {
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+}
+
 .react-pdf__Page__canvas {
   margin: 0 auto;
   max-width: 100% !important;
