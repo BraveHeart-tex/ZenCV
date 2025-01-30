@@ -74,7 +74,7 @@ const ResumeOverViewContent = observer(
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="bg-popover group-hover:opacity-100 p-3 ml-2 border rounded-md shadow-sm"
+            className="bg-popover group-hover:opacity-100 max-w-md p-3 ml-2 border rounded-md shadow-sm"
           >
             <motion.div
               initial={{ opacity: 0 }}
@@ -91,16 +91,16 @@ const ResumeOverViewContent = observer(
               transition={{ delay: 0.2, duration: 0.3 }}
               className="flex flex-col gap-1.5 max-h-[70vh] overflow-auto"
             >
-              {sectionsWithItems.map((section, index) => {
+              {sectionsWithItems.map((section) => {
                 return (
                   <motion.div
                     key={section.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * (index + 1), duration: 0.2 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <Button
-                      className="hover:bg-muted/70 w-full justify-start px-1.5 text-sm font-normal"
+                      className="hover:bg-muted/70 justify-start px-1.5 text-sm font-normal text-ellipsis overflow-hidden w-full"
                       variant="ghost"
                       onClick={() => {
                         handleScrollToSection(section.id);
@@ -116,19 +116,18 @@ const ResumeOverViewContent = observer(
                               item.containerType ===
                               CONTAINER_TYPES.COLLAPSIBLE,
                           )
-                          .map((item, itemIndex) => (
+                          .map((item) => (
                             <motion.div
                               key={item.id}
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{
-                                delay: 0.1 * (index + 1) + 0.05 * itemIndex,
                                 duration: 0.2,
                               }}
                             >
                               <Button
                                 className={cn(
-                                  'hover:bg-muted/70 w-full justify-start px-1.5 text-xs font-normal text-muted-foreground',
+                                  'hover:bg-muted/70 justify-start px-1.5 text-xs font-normal text-muted-foreground overflow-hidden truncate w-full',
                                   focusState.itemId ===
                                     getItemContainerId(item.id) &&
                                     'text-blue-500 hover:text-blue-500',
