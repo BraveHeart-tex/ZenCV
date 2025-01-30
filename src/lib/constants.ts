@@ -168,5 +168,8 @@ export const MAX_VISIBLE_FIELDS = 6 as const;
 export const builderSectionTitleClassNames =
   'scroll-m-20 text-2xl font-semibold tracking-tight';
 
+export const dialogFooterClassNames =
+  'md:items-center md:flex-row flex flex-col-reverse justify-end gap-2' as const;
+
 export const UNCHECKED_METADATA_VALUE = '0' as const;
 export const CHECKED_METADATA_VALUE = '1' as const;

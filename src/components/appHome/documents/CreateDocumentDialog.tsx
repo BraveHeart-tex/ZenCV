@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
-import FormDialog from '@/components/ui/FormDialog';
+import { dialogFooterClassNames } from '@/lib/constants';
+import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -79,7 +80,7 @@ const CreateDocumentDialog = ({
   };
 
   return (
-    <FormDialog
+    <ResponsiveDialog
       title="Create new document"
       description="Use the form below to create a document"
       trigger={renderTrigger()}
@@ -105,7 +106,7 @@ const CreateDocumentDialog = ({
             required
           />
         </div>
-        <div className="md:items-center md:flex-row flex flex-col-reverse justify-end gap-2">
+        <div className={dialogFooterClassNames}>
           <Button
             variant="outline"
             aria-label="Close create document dialog"
@@ -116,7 +117,7 @@ const CreateDocumentDialog = ({
           <Button type="submit">Create</Button>
         </div>
       </form>
-    </FormDialog>
+    </ResponsiveDialog>
   );
 };
 export default CreateDocumentDialog;

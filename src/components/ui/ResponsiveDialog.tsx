@@ -16,7 +16,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-interface FormDialogProps {
+interface ResponsiveDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
@@ -25,14 +25,14 @@ interface FormDialogProps {
   trigger?: React.ReactNode;
 }
 
-const FormDialog = ({
+const ResponsiveDialog = ({
   open,
   onOpenChange,
   trigger,
   title,
   description,
   children,
-}: FormDialogProps) => {
+}: ResponsiveDialogProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)', false);
 
   if (isDesktop) {
@@ -64,4 +64,4 @@ const FormDialog = ({
   );
 };
 
-export default FormDialog;
+export default ResponsiveDialog;
