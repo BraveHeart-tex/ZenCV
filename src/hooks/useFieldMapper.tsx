@@ -12,7 +12,7 @@ export const useFieldMapper = () => {
       if (isDateField && nextFieldIsDate) {
         return (
           <div key={field.id} className="w-full">
-            <div className="flex items-center gap-4">
+            <div className="lg:flex lg:items-center grid gap-4">
               <DateFieldInput fieldId={field.id} />
               <DateFieldInput fieldId={fields[index + 1].id} />
             </div>
