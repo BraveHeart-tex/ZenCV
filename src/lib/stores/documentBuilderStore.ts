@@ -303,10 +303,14 @@ export class DocumentBuilderStore {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
 
+    if (!documentBuilderStore.document) return;
+
     await clientDb.transaction(
       'rw',
       [clientDb.sections, clientDb.fields, clientDb.items],
       async () => {
+        if (!documentBuilderStore.document) return;
+
         const sectionDto = {
           displayOrder: documentBuilderStore.sections.reduce(
             (acc, curr) => Math.max(acc, curr.displayOrder),
@@ -316,7 +320,7 @@ export class DocumentBuilderStore {
           defaultTitle: option.defaultTitle,
           type: option.type,
           metadata: option?.metadata,
-          documentId: documentBuilderStore.document!.id,
+          documentId: documentBuilderStore.document.id,
         };
 
         const sectionId = await clientDb.sections.add(sectionDto);

@@ -1,7 +1,7 @@
 'use client';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';
 import ResumeOverviewTrigger from './ResumeOverviewTrigger';
 import {
@@ -16,71 +16,55 @@ export interface FocusState {
 }
 
 const ResumeOverview = observer(() => {
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const [visible, setVisible] = useState(false);
   const [focusState, setFocusState] = useState<FocusState>({
     sectionId: null,
     itemId: null,
   });
 
-  useEffect(
-    () =>
-      autorun(() => {
-        if (observerRef.current) {
-          observerRef.current.disconnect();
-        }
+  useEffect(() => {
+    const controller = new AbortController();
 
-        const items = documentBuilderStore.items;
+    const disposeAutorun = autorun(() => {
+      const items = documentBuilderStore.items;
 
-        const observerCallback: IntersectionObserverCallback = (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const elementId = entry.target.id;
+      const handleScroll = () => {
+        const viewportCenter = window.innerHeight / 2;
+        let closestItem: { id: string; distance: number } | null = null;
 
-              const foundItem = items.find(
-                (item) => getItemContainerId(item.id) === elementId,
-              );
+        documentBuilderStore.refs.forEach((el) => {
+          if (!el) return;
+          const rect = el.getBoundingClientRect();
+          const elementCenter = rect.top + rect.height / 2;
+          const distance = Math.abs(viewportCenter - elementCenter);
 
-              if (!foundItem) return;
-
-              setFocusState((prev) => ({
-                ...prev,
-                sectionId: getSectionContainerId(foundItem?.sectionId),
-                itemId: elementId,
-              }));
-            }
-          });
-        };
-
-        const observerOptions = {
-          root: null,
-          rootMargin: '0px',
-          threshold: 0.1,
-        };
-
-        observerRef.current = new IntersectionObserver(
-          observerCallback,
-          observerOptions,
-        );
-
-        items.forEach((item) => {
-          const itemElement = documentBuilderStore.refs.get(
-            getItemContainerId(item.id),
-          );
-
-          if (itemElement) {
-            observerRef?.current?.observe(itemElement);
+          if (!closestItem || distance < closestItem.distance) {
+            closestItem = { id: el.id, distance };
           }
         });
-      }),
-    [],
-  );
 
-  useEffect(() => {
+        if (closestItem) {
+          const foundItem = items.find(
+            (item) => getItemContainerId(item.id) === closestItem!.id,
+          );
+
+          if (foundItem) {
+            setFocusState({
+              sectionId: getSectionContainerId(foundItem?.sectionId),
+              itemId: (closestItem as { id: string }).id,
+            });
+          }
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll, {
+        signal: controller.signal,
+      });
+    });
+
     return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      controller.abort();
+      disposeAutorun();
     };
   }, []);
 
