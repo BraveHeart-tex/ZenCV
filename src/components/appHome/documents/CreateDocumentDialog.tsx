@@ -1,23 +1,14 @@
-import { Button } from '../../ui/button';
+import { Button } from '@/components/ui/button';
 import { type FormEvent, useRef, useState } from 'react';
-import { Label } from '../../ui/label';
-import { Input } from '../../ui/input';
-import { showErrorToast, showSuccessToast } from '../../ui/sonner';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { createDocument } from '@/lib/client-db/clientDbService';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '../../ui/dialog';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { useNavigate } from 'react-router';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
+import FormDialog from '@/components/ui/FormDialog';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -88,7 +79,10 @@ const CreateDocumentDialog = ({
   };
 
   return (
-    <Dialog
+    <FormDialog
+      title="Create new document"
+      description="Use the form below to create a document"
+      trigger={renderTrigger()}
       open={open}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
@@ -97,44 +91,32 @@ const CreateDocumentDialog = ({
         setOpen(isOpen);
       }}
     >
-      <DialogTrigger asChild>{renderTrigger()}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create new document</DialogTitle>
-          <VisuallyHidden>
-            <DialogDescription>
-              Use the form below to create a new document
-            </DialogDescription>
-          </VisuallyHidden>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              ref={input}
-              id="name"
-              value={name}
-              type="text"
-              onChange={(e) => setName(e.target.value)}
-              minLength={1}
-              aria-invalid={name ? 'false' : 'true'}
-              required
-            />
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                aria-label="Close create document dialog"
-              >
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button type="submit">Create</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            ref={input}
+            id="name"
+            value={name}
+            type="text"
+            onChange={(e) => setName(e.target.value)}
+            minLength={1}
+            aria-invalid={name ? 'false' : 'true'}
+            required
+          />
+        </div>
+        <div className="md:items-center md:flex-row flex flex-col-reverse justify-end gap-2">
+          <Button
+            variant="outline"
+            aria-label="Close create document dialog"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button type="submit">Create</Button>
+        </div>
+      </form>
+    </FormDialog>
   );
 };
 export default CreateDocumentDialog;
