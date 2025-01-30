@@ -1,7 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
+import {
+  DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
+  useDocumentBuilderSearchParams,
+} from '@/hooks/useDocumentBuilderSearchParams';
 import { File } from 'lucide-react';
 import { AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';
 import { useState } from 'react';
@@ -29,12 +32,16 @@ const motionConfig = {
 };
 
 const DocumentBuilderViewToggle = () => {
-  const { setView } = useDocumentBuilderSearchParams();
+  const { view, setView } = useDocumentBuilderSearchParams();
   const [shouldShowButtonText, setShouldShowButtonText] = useState(false);
   const { scrollYProgress } = useScroll();
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     setShouldShowButtonText(latest === 1 || latest === 0);
   });
+
+  if (view === DOCUMENT_BUILDER_SEARCH_PARAM_VALUES.VIEW.PREVIEW) {
+    return null;
+  }
 
   return (
     <Button

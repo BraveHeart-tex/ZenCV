@@ -10,6 +10,7 @@ import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { useAsync } from 'react-use';
+import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -23,6 +24,8 @@ const DocumentBuilderPdfViewer = observer(
     renderTextLayer?: boolean;
     renderAnnotationLayer?: boolean;
   }) => {
+    const { view } = useDocumentBuilderSearchParams();
+
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
     const containerRef = useRef<HTMLDivElement>(null);
@@ -43,7 +46,7 @@ const DocumentBuilderPdfViewer = observer(
       updateDimensions();
       window.addEventListener('resize', updateDimensions);
       return () => window.removeEventListener('resize', updateDimensions);
-    }, []);
+    }, [view]);
 
     const pdfDimensions = useMemo(() => {
       const aspectRatio = 1.414; // A4 Page Aspect Ratio
