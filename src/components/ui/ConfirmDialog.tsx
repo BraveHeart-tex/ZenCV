@@ -14,50 +14,92 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { action } from 'mobx';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from './drawer';
 
 const ConfirmDialog = observer(() => {
+  const isDesktop = useMediaQuery('(min-width: 1024px)', false);
+
   const isOpen = confirmDialogStore.isOpen;
   const onClose = confirmDialogStore.hideDialog;
 
-  const descriptionContent = (
+  const descriptionContent = isDesktop ? (
     <DialogDescription className="text-muted-foreground mt-2">
       {confirmDialogStore.message}
     </DialogDescription>
+  ) : (
+    <DrawerDescription className="text-muted-foreground mt-2">
+      {confirmDialogStore.message}
+    </DrawerDescription>
   );
 
+  const actionButtons = (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={action(() => onClose())}
+        className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors"
+      >
+        {confirmDialogStore.cancelText}
+      </Button>
+      <Button
+        type="submit"
+        onClick={action(() => confirmDialogStore.onConfirm())}
+        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+      >
+        {confirmDialogStore.confirmText}
+      </Button>
+    </>
+  );
+
+  if (isDesktop) {
+    return (
+      <Dialog open={isOpen} onOpenChange={action(() => onClose())}>
+        <DialogContent className="bg-background border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground text-xl font-semibold">
+              {confirmDialogStore.title}
+            </DialogTitle>
+            {confirmDialogStore.message ? (
+              descriptionContent
+            ) : (
+              <VisuallyHidden>{descriptionContent}</VisuallyHidden>
+            )}
+          </DialogHeader>
+          <DoNotAskAgainCheckbox />
+          <DialogFooter className="mt-6">{actionButtons}</DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={action(() => onClose())}>
-      <DialogContent className="bg-background border-border">
-        <DialogHeader>
-          <DialogTitle className="text-foreground text-xl font-semibold">
+    <Drawer open={isOpen} onOpenChange={action(() => onClose())}>
+      <DrawerContent className="bg-background border-border">
+        <DrawerHeader>
+          <DrawerTitle className="text-foreground text-xl font-semibold">
             {confirmDialogStore.title}
-          </DialogTitle>
+          </DrawerTitle>
           {confirmDialogStore.message ? (
             descriptionContent
           ) : (
             <VisuallyHidden>{descriptionContent}</VisuallyHidden>
           )}
-        </DialogHeader>
+        </DrawerHeader>
         <DoNotAskAgainCheckbox />
-        <DialogFooter className="mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={action(() => onClose())}
-            className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            {confirmDialogStore.cancelText}
-          </Button>
-          <Button
-            type="submit"
-            onClick={action(() => confirmDialogStore.onConfirm())}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            {confirmDialogStore.confirmText}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <DrawerFooter className="flex-col-reverse mt-6">
+          {actionButtons}
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 });
 
