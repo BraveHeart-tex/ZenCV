@@ -25,7 +25,16 @@ const ResumeOverview = observer(() => {
   useEffect(() => {
     const controller = new AbortController();
 
+    if (window.innerWidth < 768) {
+      controller.abort();
+    }
+
     const disposeAutorun = autorun(() => {
+      if (window.innerWidth < 768) {
+        controller.abort();
+        return;
+      }
+
       const items = documentBuilderStore.items;
 
       const handleScroll = () => {

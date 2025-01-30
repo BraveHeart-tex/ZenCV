@@ -82,8 +82,9 @@ const ResumeOverViewContent = observer(
               transition={{ delay: 0.1, duration: 0.2 }}
               className="text-muted-foreground pb-2 text-sm font-medium"
             >
-              Overview
+              Resume Overview
             </motion.div>
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
