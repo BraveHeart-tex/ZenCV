@@ -1,14 +1,5 @@
 'use client';
 import { FormEvent, useRef, useState } from 'react';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -17,12 +8,14 @@ import {
 } from '@/components/ui/tooltip';
 import { Label } from '@/components/ui/label';
 import { action } from 'mobx';
-import { CornerDownLeftIcon, PencilIcon } from 'lucide-react';
+import { PencilIcon } from 'lucide-react';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { observer } from 'mobx-react-lite';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils/stringUtils';
+import ResponsiveDialog from '../ui/ResponsiveDialog';
+import { dialogFooterClassNames } from '@/lib/constants';
 
 const EditableDocumentTitle = observer(() => {
   const documentTitle = documentBuilderStore.document?.title || '';
@@ -46,11 +39,15 @@ const EditableDocumentTitle = observer(() => {
 
   return (
     <div className="flex items-center gap-2">
-      <h1 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight">
+      <h1 className="scroll-m-20 first:mt-0 md:text-3xl text-2xl font-semibold tracking-tight">
         {documentTitle}
       </h1>
-      <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
-        <DialogTrigger asChild>
+      <ResponsiveDialog
+        title="Rename Document"
+        description={`Enter a new name for '${documentTitle}'`}
+        open={isRenameDialogOpen}
+        onOpenChange={setIsRenameDialogOpen}
+        trigger={
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -66,62 +63,46 @@ const EditableDocumentTitle = observer(() => {
             </TooltipTrigger>
             <TooltipContent>Rename document</TooltipContent>
           </Tooltip>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rename Document</DialogTitle>
-            <DialogDescription>
-              Enter a new name for &quot;{documentTitle}&quot;
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleRename} className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <Label htmlFor="newDocumentTitle">New Document Title</Label>
-              <div className="relative">
-                <Input
-                  id="newDocumentTitle"
-                  type="text"
-                  minLength={1}
-                  required
-                  value={enteredTitle}
-                  onChange={(e) => setEnteredTitle(e.target.value)}
-                  aria-invalid={enteredTitle ? 'false' : 'true'}
-                  ref={inputRef}
-                  className={cn(
-                    'pr-10',
-                    !enteredTitle &&
-                      'border-destructive focus-visible:ring-destructive',
-                  )}
-                />
-                <CornerDownLeftIcon className="top-1/2 right-2 bg-muted text-muted-foreground absolute p-1 -translate-y-1/2 rounded-md" />
-              </div>
-              {!enteredTitle && (
-                <p className="text-destructive text-xs font-medium">
-                  Please enter a document title
-                </p>
+        }
+      >
+        <form onSubmit={handleRename} className="space-y-4">
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="newDocumentTitle">New Document Title</Label>
+            <Input
+              id="newDocumentTitle"
+              type="text"
+              minLength={1}
+              required
+              value={enteredTitle}
+              onChange={(e) => setEnteredTitle(e.target.value)}
+              aria-invalid={enteredTitle ? 'false' : 'true'}
+              ref={inputRef}
+              className={cn(
+                !enteredTitle &&
+                  'border-destructive focus-visible:ring-destructive',
               )}
-            </div>
-            <div className="flex items-center justify-end gap-2">
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  aria-label="Close rename dialog"
-                  variant="outline"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button
-                type="submit"
-                aria-label="Rename"
-                disabled={!enteredTitle}
-              >
-                Rename
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+            />
+            {!enteredTitle && (
+              <p className="text-destructive text-xs font-medium">
+                Please enter a document title
+              </p>
+            )}
+          </div>
+          <div className={dialogFooterClassNames}>
+            <Button
+              type="button"
+              aria-label="Close rename dialog"
+              variant="outline"
+              onClick={() => setIsRenameDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" aria-label="Rename" disabled={!enteredTitle}>
+              Rename
+            </Button>
+          </div>
+        </form>
+      </ResponsiveDialog>
     </div>
   );
 });

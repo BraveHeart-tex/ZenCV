@@ -44,7 +44,6 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
     });
   };
 
-  // would be a good idea to implement a stale time here
   const prefetchDocumentData = action(async () => {
     await documentBuilderStore.initializeStore(document.id);
   });
