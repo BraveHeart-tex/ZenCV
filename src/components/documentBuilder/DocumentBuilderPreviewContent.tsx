@@ -8,7 +8,7 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
-  const pdfTemplateData = documentBuilderStore.pdfTemplateData;
+  const pdfTemplateData = documentBuilderStore.debouncedTemplateData;
 
   if (!pdfTemplateData) return null;
 

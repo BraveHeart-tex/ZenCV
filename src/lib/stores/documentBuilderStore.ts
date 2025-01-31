@@ -4,6 +4,7 @@ import {
   observable,
   ObservableMap,
   computed,
+  reaction,
 } from 'mobx';
 import type {
   DEX_Document,
@@ -37,6 +38,7 @@ import {
 } from '@/lib/types';
 import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import debounce from '../utils/debounce';
 
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
 
@@ -48,6 +50,7 @@ export class DocumentBuilderStore {
   items: DEX_Item[] = [];
   fields: DEX_Field[] = [];
   collapsedItemId: DEX_Item['id'] | null = null;
+  debouncedTemplateData: PdfTemplateData | null = null;
 
   refs: ObservableMap<string, Element | null> = observable.map();
 
@@ -56,6 +59,18 @@ export class DocumentBuilderStore {
       pdfTemplateData: computed,
       resumeScore: computed,
     });
+
+    reaction(
+      () => this.pdfTemplateData,
+      debounce((data: PdfTemplateData | null) => {
+        runInAction(() => {
+          this.debouncedTemplateData = data;
+        });
+      }, TEMPLATE_DATA_DEBOUNCE_MS),
+      {
+        fireImmediately: true,
+      },
+    );
   }
 
   setElementRef = (key: string, value: Element | null) => {
