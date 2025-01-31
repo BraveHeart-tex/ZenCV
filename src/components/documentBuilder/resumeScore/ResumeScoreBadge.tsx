@@ -9,11 +9,11 @@ const ResumeScoreBadge = observer(() => {
         className="w-max h-max bg-primary text-primary-foreground tabular-nums p-1 text-xs font-medium text-white rounded-md"
         style={{
           backgroundColor: getScoreColor(
-            documentBuilderStore.resumeStats.score,
+            documentBuilderStore.debouncedResumeStats.score,
           ),
         }}
       >
-        {documentBuilderStore.resumeStats.score}%
+        {documentBuilderStore.debouncedResumeStats.score}%
       </span>
       <span className="text-muted-foreground text-sm font-medium">
         Your Resume Score

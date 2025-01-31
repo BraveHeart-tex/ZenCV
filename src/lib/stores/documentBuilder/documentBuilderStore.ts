@@ -31,7 +31,8 @@ import {
   MetadataValue,
   ParsedSectionMetadata,
   PdfTemplateData,
-  // ResumeSuggestion,
+  ResumeStats,
+  ResumeSuggestion,
   SectionMetadataKey,
   SectionType,
   SectionWithParsedMetadata,
@@ -44,7 +45,7 @@ import {
   MAX_VISIBLE_SUGGESTIONS,
   // RESUME_SCORE_CONFIG,
   SUGGESTED_SKILLS_COUNT,
-  // SUGGESTION_ACTION_TYPES,
+  SUGGESTION_ACTION_TYPES,
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import debounce from '@/lib/utils/debounce';
@@ -56,6 +57,7 @@ export class DocumentBuilderStore {
   fields: DEX_Field[] = [];
   collapsedItemId: DEX_Item['id'] | null = null;
   debouncedTemplateData: PdfTemplateData | null = null;
+  debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
 
   refs: ObservableMap<string, Element | null> = observable.map();
 
@@ -70,6 +72,18 @@ export class DocumentBuilderStore {
       debounce((data: PdfTemplateData | null) => {
         runInAction(() => {
           this.debouncedTemplateData = data;
+        });
+      }, TEMPLATE_DATA_DEBOUNCE_MS),
+      {
+        fireImmediately: true,
+      },
+    );
+
+    reaction(
+      () => this.resumeStats,
+      debounce((data: ResumeStats) => {
+        runInAction(() => {
+          this.debouncedResumeStats = data;
         });
       }, TEMPLATE_DATA_DEBOUNCE_MS),
       {
@@ -477,12 +491,7 @@ export class DocumentBuilderStore {
 
   get resumeStats() {
     let score = 0;
-    const suggestions: {
-      label: string;
-      type: 'item' | 'field';
-      sectionType: SectionType;
-      scoreValue: number;
-    }[] = [];
+    const suggestions: ResumeSuggestion[] = [];
 
     const SECTION_CONFIG = [
       {
@@ -543,6 +552,9 @@ export class DocumentBuilderStore {
           label,
           type: fieldName ? 'field' : 'item',
           sectionType: type,
+          actionType: fieldName
+            ? SUGGESTION_ACTION_TYPES.FOCUS_FIELD
+            : SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
       }
     });
@@ -559,6 +571,7 @@ export class DocumentBuilderStore {
           label: 'Add skill',
           type: 'item',
           sectionType: INTERNAL_SECTION_TYPES.SKILLS,
+          actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
       }
     }
@@ -575,6 +588,7 @@ export class DocumentBuilderStore {
           label: 'Add language',
           type: 'item',
           sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
+          actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
       }
     }
@@ -589,7 +603,7 @@ export class DocumentBuilderStore {
               .slice(0, MAX_VISIBLE_SUGGESTIONS)
               .map((item) => ({
                 ...item,
-                key: crypto.randomUUID(),
+                key: `${item.type}-${item.label}`,
               })),
     };
   }

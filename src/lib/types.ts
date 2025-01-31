@@ -115,3 +115,8 @@ export interface ResumeSuggestion {
 
 export type SuggestionActionType =
   (typeof SUGGESTION_ACTION_TYPES)[keyof typeof SUGGESTION_ACTION_TYPES];
+
+export interface ResumeStats {
+  score: number;
+  suggestions: (ResumeSuggestion & { key: string })[];
+}
