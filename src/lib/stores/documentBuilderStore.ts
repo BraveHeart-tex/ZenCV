@@ -41,8 +41,9 @@ import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeT
 import debounce from '../utils/debounce';
 
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
-
 export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
+const MAX_VISIBLE_RESUME_SCORE_SUGGESTIONS = 6 as const;
+const SUGGESTED_SKILLS_COUNT = 5 as const;
 
 export class DocumentBuilderStore {
   document: DEX_Document | null = null;
@@ -57,7 +58,7 @@ export class DocumentBuilderStore {
   constructor() {
     makeAutoObservable(this, {
       pdfTemplateData: computed,
-      resumeScore: computed,
+      resumeStats: computed,
     });
 
     reaction(
@@ -470,8 +471,15 @@ export class DocumentBuilderStore {
     });
   }
 
-  get resumeScore() {
+  get resumeStats() {
     let score = 0;
+    const suggestions: {
+      label: string;
+      type: 'item' | 'field';
+      sectionType: SectionType;
+      scoreValue: number;
+    }[] = [];
+
     const employmentHistorySection = this.sections.find(
       (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     );
@@ -487,6 +495,13 @@ export class DocumentBuilderStore {
 
       if (hasAddedWorkExperience) {
         score += 25;
+      } else {
+        suggestions.push({
+          scoreValue: 25,
+          label: 'Add work experience',
+          type: 'item',
+          sectionType: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+        });
       }
     }
 
@@ -505,7 +520,45 @@ export class DocumentBuilderStore {
 
       if (hasAddedEducation) {
         score += 15;
+      } else {
+        suggestions.push({
+          scoreValue: 15,
+          label: 'Add education',
+          type: 'item',
+          sectionType: INTERNAL_SECTION_TYPES.EDUCATION,
+        });
       }
+    }
+
+    const internshipsSection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS,
+    );
+
+    if (internshipsSection) {
+      const hasAddedInternships = this.getItemsBySectionId(
+        internshipsSection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some((field) => field.value);
+      });
+
+      if (hasAddedInternships) {
+        score += 2;
+      } else {
+        suggestions.push({
+          scoreValue: 2,
+          label: 'Add internships',
+          type: 'item',
+          sectionType: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+        });
+      }
+    } else {
+      suggestions.push({
+        scoreValue: 2,
+        label: 'Add internships',
+        type: 'item',
+        sectionType: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+      });
     }
 
     // email => 5 pts
@@ -523,6 +576,7 @@ export class DocumentBuilderStore {
             field.name === FIELD_NAMES.PERSONAL_DETAILS.EMAIL && field.value,
         );
       });
+
       // wanted job title 10 pts
       const hasAddedJobTitle = this.getItemsBySectionId(
         personalDetailsSection.id,
@@ -537,10 +591,24 @@ export class DocumentBuilderStore {
 
       if (hasAddedEmail) {
         score += 5;
+      } else {
+        suggestions.push({
+          scoreValue: 5,
+          label: 'Add email',
+          type: 'field',
+          sectionType: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+        });
       }
 
       if (hasAddedJobTitle) {
         score += 10;
+      } else {
+        suggestions.push({
+          scoreValue: 10,
+          label: 'Add job title',
+          type: 'field',
+          sectionType: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+        });
       }
     }
 
@@ -560,6 +628,13 @@ export class DocumentBuilderStore {
       });
       if (hasAddedSummary) {
         score += 15;
+      } else {
+        suggestions.push({
+          scoreValue: 15,
+          label: 'Add summary',
+          type: 'field',
+          sectionType: INTERNAL_SECTION_TYPES.SUMMARY,
+        });
       }
     }
 
@@ -581,7 +656,21 @@ export class DocumentBuilderStore {
 
       if (addedLanguages.length) {
         score += addedLanguages.length * 3;
+      } else {
+        suggestions.push({
+          scoreValue: 3,
+          label: 'Add language',
+          type: 'item',
+          sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
+        });
       }
+    } else {
+      suggestions.push({
+        scoreValue: 3,
+        label: 'Add language',
+        type: 'item',
+        sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
+      });
     }
 
     // skill => 4 pts (each)
@@ -602,9 +691,27 @@ export class DocumentBuilderStore {
       if (addedSkills.length) {
         score += addedSkills.length * 4;
       }
+
+      if (score < 100 && addedSkills.length < SUGGESTED_SKILLS_COUNT) {
+        suggestions.push({
+          scoreValue: 4,
+          label: 'Add skill',
+          type: 'item',
+          sectionType: INTERNAL_SECTION_TYPES.SKILLS,
+        });
+      }
     }
 
-    return Math.min(score, 100);
+    return {
+      score: Math.min(score, 100),
+      suggestions:
+        score >= 100
+          ? []
+          : suggestions
+              .slice()
+              .sort((a, b) => a.scoreValue - b.scoreValue)
+              .slice(0, MAX_VISIBLE_RESUME_SCORE_SUGGESTIONS),
+    };
   }
 }
 
