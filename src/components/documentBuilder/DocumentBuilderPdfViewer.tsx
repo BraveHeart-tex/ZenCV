@@ -8,9 +8,16 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
-import { useAsync } from 'react-use';
-import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
+import {
+  documentBuilderStore,
+  TEMPLATE_DATA_DEBOUNCE_MS,
+} from '@/lib/stores/documentBuilderStore';
+import { useAsync, useDebounce } from 'react-use';
+import {
+  DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
+  useDocumentBuilderSearchParams,
+} from '@/hooks/useDocumentBuilderSearchParams';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -25,6 +32,7 @@ const DocumentBuilderPdfViewer = observer(
     renderAnnotationLayer?: boolean;
   }) => {
     const { view } = useDocumentBuilderSearchParams();
+    const isMobile = useMediaQuery('(max-width: 768px)', false);
 
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
@@ -33,6 +41,9 @@ const DocumentBuilderPdfViewer = observer(
       width: 0,
       height: 0,
     });
+    // TODO: The data should be debounced in the store but i cant get it to work
+    // local state looks good for now
+    const [debouncedData, setDebouncedData] = useState<string | null>(null);
 
     useEffect(() => {
       const updateDimensions = () => {
@@ -73,9 +84,24 @@ const DocumentBuilderPdfViewer = observer(
 
     const renderData = JSON.stringify(documentBuilderStore.pdfTemplateData);
 
+    useDebounce(
+      () => {
+        setDebouncedData(renderData);
+      },
+      TEMPLATE_DATA_DEBOUNCE_MS,
+      [renderData],
+    );
+
     const render = useAsync(async () => {
       try {
-        if (!children || !renderData) return null;
+        if (
+          !children ||
+          !debouncedData ||
+          (isMobile &&
+            view !== DOCUMENT_BUILDER_SEARCH_PARAM_VALUES.VIEW.PREVIEW)
+        ) {
+          return null;
+        }
 
         const blob = await pdf(
           children as ReactElement<DocumentProps>,
@@ -84,7 +110,7 @@ const DocumentBuilderPdfViewer = observer(
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
-    }, [renderData]);
+    }, [debouncedData, isMobile, view]);
 
     const onDocumentLoad = (d: { numPages: number }) => {
       pdfViewerStore.setNumberOfPages(d.numPages);
