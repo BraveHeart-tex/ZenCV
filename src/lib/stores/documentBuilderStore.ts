@@ -35,12 +35,7 @@ import {
   SectionWithParsedMetadata,
   TemplatedSectionType,
 } from '@/lib/types';
-import {
-  FIELD_NAMES,
-  FIELDS_TO_POINTS,
-  INTERNAL_SECTION_TYPES,
-  SECTION_TYPE_TO_POINTS,
-} from '../constants';
+import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
@@ -59,6 +54,7 @@ export class DocumentBuilderStore {
   constructor() {
     makeAutoObservable(this, {
       pdfTemplateData: computed,
+      resumeScore: computed,
     });
   }
 
@@ -460,106 +456,140 @@ export class DocumentBuilderStore {
   }
 
   get resumeScore() {
-    const getSection = (type: SectionType) =>
-      this.sections.find((section) => section.type === type);
-    const hasFieldWithValue = (item: DEX_Item, fieldName: FieldName | null) => {
-      return this.getFieldsByItemId(item.id).some((field) => {
-        if (fieldName === null) {
-          return field.name === fieldName && field.value !== '';
-        }
-        return field.value !== '';
-      });
-    };
-
-    const getItemsWithFieldValue = (
-      section: SectionWithParsedMetadata,
-      fieldName: FieldName | null,
-    ) =>
-      this.getItemsBySectionId(section.id).filter((item) =>
-        hasFieldWithValue(item, fieldName),
-      );
-
-    const calculateScore = (
-      section: SectionWithParsedMetadata,
-      fieldName: FieldName | null,
-      pointsPerItem = 1,
-    ) => {
-      const items = getItemsWithFieldValue(section, fieldName);
-      return items.length * pointsPerItem;
-    };
-
     let score = 0;
-
-    // Employment History => 25 pts
-    const employmentHistorySection = getSection(
-      INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+    const employmentHistorySection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     );
-    if (
-      employmentHistorySection &&
-      getItemsWithFieldValue(employmentHistorySection, null).length > 0
-    ) {
-      score += SECTION_TYPE_TO_POINTS[INTERNAL_SECTION_TYPES.WORK_EXPERIENCE];
+
+    // employment history => 25 pts
+    if (employmentHistorySection) {
+      const hasAddedWorkExperience = this.getItemsBySectionId(
+        employmentHistorySection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some((field) => field.value);
+      });
+
+      if (hasAddedWorkExperience) {
+        score += 25;
+      }
     }
 
-    // Education => 15 pts
-    const educationSection = getSection(INTERNAL_SECTION_TYPES.EDUCATION);
-    if (
-      educationSection &&
-      getItemsWithFieldValue(educationSection, null).length > 0
-    ) {
-      score += SECTION_TYPE_TO_POINTS[INTERNAL_SECTION_TYPES.EDUCATION];
+    // education => 15 pts
+    const educationSection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.EDUCATION,
+    );
+
+    if (educationSection) {
+      const hasAddedEducation = this.getItemsBySectionId(
+        educationSection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some((field) => field.value);
+      });
+
+      if (hasAddedEducation) {
+        score += 15;
+      }
     }
 
-    // Personal Details (Email and Job Title)
-    const personalDetailsSection = getSection(
-      INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    // email => 5 pts
+    const personalDetailsSection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
     );
+
     if (personalDetailsSection) {
-      score += calculateScore(
-        personalDetailsSection,
-        FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
-        FIELDS_TO_POINTS[FIELD_NAMES.PERSONAL_DETAILS.EMAIL],
-      );
-      score += calculateScore(
-        personalDetailsSection,
-        FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
-        FIELDS_TO_POINTS[FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE],
-      );
+      const hasAddedEmail = this.getItemsBySectionId(
+        personalDetailsSection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some(
+          (field) =>
+            field.name === FIELD_NAMES.PERSONAL_DETAILS.EMAIL && field.value,
+        );
+      });
+      // wanted job title 10 pts
+      const hasAddedJobTitle = this.getItemsBySectionId(
+        personalDetailsSection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some(
+          (field) =>
+            field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
+            field.value,
+        );
+      });
+
+      if (hasAddedEmail) {
+        score += 5;
+      }
+
+      if (hasAddedJobTitle) {
+        score += 10;
+      }
     }
 
-    // Profile Summary => 15 pts
-    const professionalSummarySection = getSection(
-      INTERNAL_SECTION_TYPES.SUMMARY,
+    // profile summary => 15pts
+    const professionalSummarySection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY,
     );
+
     if (professionalSummarySection) {
-      score += calculateScore(
-        professionalSummarySection,
-        FIELD_NAMES.SUMMARY.SUMMARY,
-        SECTION_TYPE_TO_POINTS[INTERNAL_SECTION_TYPES.SUMMARY],
-      );
+      const hasAddedSummary = this.getItemsBySectionId(
+        professionalSummarySection.id,
+      ).some((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some(
+          (field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY && field.value,
+        );
+      });
+      if (hasAddedSummary) {
+        score += 15;
+      }
     }
 
-    // Languages => 3 pts (each)
-    const languagesSection = getSection(INTERNAL_SECTION_TYPES.LANGUAGES);
+    // languages => 3pts (each)
+    const languagesSection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.LANGUAGES,
+    );
+
     if (languagesSection) {
-      score += calculateScore(
-        languagesSection,
-        FIELD_NAMES.LANGUAGES.LANGUAGE,
-        FIELDS_TO_POINTS[FIELD_NAMES.LANGUAGES.LANGUAGE],
-      );
+      const addedLanguages = this.getItemsBySectionId(
+        languagesSection.id,
+      ).filter((item) => {
+        const fields = this.getFieldsByItemId(item.id);
+        return fields.some(
+          (field) =>
+            field.name === FIELD_NAMES.LANGUAGES.LANGUAGE && field.value,
+        );
+      });
+
+      if (addedLanguages.length) {
+        score += addedLanguages.length * 3;
+      }
     }
 
-    // Skills => 4 pts (each)
-    const skillsSection = getSection(INTERNAL_SECTION_TYPES.SKILLS);
+    // skill => 4 pts (each)
+    const skillsSection = this.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.SKILLS,
+    );
+
     if (skillsSection) {
-      score += calculateScore(
-        skillsSection,
-        FIELD_NAMES.SKILLS.SKILL,
-        FIELDS_TO_POINTS[FIELD_NAMES.SKILLS.SKILL],
+      const addedSkills = this.getItemsBySectionId(skillsSection.id).filter(
+        (item) => {
+          const fields = this.getFieldsByItemId(item.id);
+          return fields.some(
+            (field) => field.name === FIELD_NAMES.SKILLS.SKILL && field.value,
+          );
+        },
       );
+
+      if (addedSkills.length) {
+        score += addedSkills.length * 4;
+      }
     }
 
-    return score;
+    return Math.min(score, 100);
   }
 }
 
