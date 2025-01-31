@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
 import { INTERNAL_SECTION_TYPES, MAX_VISIBLE_FIELDS } from '@/lib/constants';
 import { CONTAINER_TYPES, DEX_Item } from '@/lib/client-db/clientDbSchema';
-import CollapsibleItemContainer from '@/components/documentBuilder/CollapsibleItemContainer';
 import type { ReactNode } from 'react';
 import HidableFieldContainer from './HidableFieldContainer';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import { cn } from '@/lib/utils/stringUtils';
+import CollapsibleSectionItemContainer from './collapsibleItemContainer/CollapsibleItemContainer';
 
 const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
   const { renderFields } = useFieldMapper();
@@ -19,9 +19,9 @@ const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
   const ContainerElement = ({ children }: { children: ReactNode }) => {
     if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
       return (
-        <CollapsibleItemContainer itemId={item.id}>
+        <CollapsibleSectionItemContainer itemId={item.id}>
           {children}
-        </CollapsibleItemContainer>
+        </CollapsibleSectionItemContainer>
       );
     }
 

@@ -6,14 +6,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -25,7 +17,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
-  ArrowLeftIcon,
   ChevronDownIcon,
   EllipsisIcon,
   PencilIcon,
@@ -43,9 +34,10 @@ import {
   getItemDeleteConfirmationPreference,
   setItemDeleteConfirmationPreference,
 } from '@/lib/helpers/userSettingsHelpers';
-import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
+import CollapsibleItemHeader from './CollapsibleItemHeader';
+import CollapsibleItemMobileContent from './CollapsibleItemMobileContent';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -54,11 +46,9 @@ interface CollapsibleSectionItemContainerProps {
 
 const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
+    const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
     const open = itemId === documentBuilderStore.collapsedItemId;
 
-    const { title, description } = getTriggerContent(itemId);
-
-    const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
     const {
       attributes,
       listeners,
@@ -154,24 +144,7 @@ const CollapsibleSectionItemContainer = observer(
                     documentBuilderStore.toggleItem(itemId);
                   }}
                 >
-                  <div
-                    className={cn(
-                      'flex flex-col min-h-9 max-w-[18rem] sm:max-w-full overflow-hidden',
-                      !description && 'justify-center',
-                    )}
-                  >
-                    <span className="max-w-full text-left break-words whitespace-normal">
-                      {title}
-                    </span>
-                    <span
-                      className={cn(
-                        'text-xs text-muted-foreground opacity-100 transition-all ease-in whitespace-normal break-words text-left',
-                        !description && 'opacity-0',
-                      )}
-                    >
-                      {description}
-                    </span>
-                  </div>
+                  <CollapsibleItemHeader itemId={itemId} />
                 </Button>
                 {isMobileOrTablet ? (
                   <Popover>
@@ -263,42 +236,9 @@ const CollapsibleSectionItemContainer = observer(
         </div>
 
         {isMobileOrTablet ? (
-          <Sheet
-            open={open}
-            onOpenChange={() => {
-              documentBuilderStore.toggleItem(itemId);
-            }}
-          >
-            <SheetContent className="w-full max-w-full! sm:max-w-full overflow-auto">
-              <SheetHeader className="items-center space-y-1">
-                <SheetTitle>
-                  <Button
-                    className="top-1 left-1 size-8 absolute"
-                    onClick={() => documentBuilderStore.toggleItem(itemId)}
-                    size="icon"
-                    variant="secondary"
-                  >
-                    <ArrowLeftIcon />
-                  </Button>
-                  {title}
-                </SheetTitle>
-                <SheetDescription>
-                  {description || '(Not Specified)'}
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className={'mt-4 space-y-4  overflow-auto'}>
-                {children}
-                <SheetFooter className="mt-4">
-                  <Button
-                    onClick={() => documentBuilderStore.toggleItem(itemId)}
-                  >
-                    Done
-                  </Button>
-                </SheetFooter>
-              </div>
-            </SheetContent>
-          </Sheet>
+          <CollapsibleItemMobileContent itemId={itemId}>
+            {children}
+          </CollapsibleItemMobileContent>
         ) : null}
       </>
     );
