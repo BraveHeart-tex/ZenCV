@@ -1,9 +1,9 @@
 import {
   runInAction,
   makeAutoObservable,
-  reaction,
   observable,
   ObservableMap,
+  computed,
 } from 'mobx';
 import type {
   DEX_Document,
@@ -53,20 +53,13 @@ export class DocumentBuilderStore {
   items: DEX_Item[] = [];
   fields: DEX_Field[] = [];
   collapsedItemId: DEX_Item['id'] | null = null;
-  debounceTimer: NodeJS.Timeout | null = null;
-  debouncedTemplateResult: PdfTemplateData | null = null;
 
   refs: ObservableMap<string, Element | null> = observable.map();
 
   constructor() {
-    makeAutoObservable(this);
-
-    reaction(
-      () => this.pdfTemplateData,
-      (pdfTemplateData) => {
-        this.debounce(pdfTemplateData);
-      },
-    );
+    makeAutoObservable(this, {
+      pdfTemplateData: computed,
+    });
   }
 
   setElementRef = (key: string, value: Element | null) => {
@@ -223,10 +216,7 @@ export class DocumentBuilderStore {
 
       this.items.push(item);
       this.fields.push(...fields);
-
-      setTimeout(() => {
-        this.toggleItem(item.id);
-      }, TOGGLE_ITEM_WAIT_MS);
+      this.toggleItem(item.id);
     });
   };
 
@@ -459,18 +449,6 @@ export class DocumentBuilderStore {
       sections: mappedSections,
     };
   }
-
-  debounce = (value: PdfTemplateData) => {
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-    }
-
-    this.debounceTimer = setTimeout(() => {
-      runInAction(() => {
-        this.debouncedTemplateResult = value;
-      });
-    }, TEMPLATE_DATA_DEBOUNCE_MS);
-  };
 
   get sectionsWithItems() {
     return this.sections.map((section) => {

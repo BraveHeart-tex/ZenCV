@@ -71,9 +71,7 @@ const DocumentBuilderPdfViewer = observer(
       });
     }, [pdfDimensions]);
 
-    const renderData = JSON.stringify(
-      documentBuilderStore.debouncedTemplateResult,
-    );
+    const renderData = JSON.stringify(documentBuilderStore.pdfTemplateData);
 
     const render = useAsync(async () => {
       try {

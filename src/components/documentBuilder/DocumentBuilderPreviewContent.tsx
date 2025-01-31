@@ -9,9 +9,9 @@ const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
 
-  const debouncedData = documentBuilderStore.debouncedTemplateResult;
+  const pdfTemplateData = documentBuilderStore.pdfTemplateData;
 
-  if (!debouncedData) return null;
+  if (!pdfTemplateData) return null;
 
   return (
     <div className="hide-scrollbar w-full h-full overflow-auto rounded-md">
@@ -24,7 +24,7 @@ const DocumentBuilderPreviewContent = observer(() => {
         </div>
       ) : (
         <DocumentBuilderPdfViewer>
-          <LondonTemplate templateData={debouncedData} />
+          <LondonTemplate templateData={pdfTemplateData} />
         </DocumentBuilderPdfViewer>
       )}
     </div>
