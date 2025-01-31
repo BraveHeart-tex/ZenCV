@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  DocumentBuilderStore,
-  TOGGLE_ITEM_WAIT_MS,
-} from '@/lib/stores/documentBuilder/documentBuilderStore';
+import { DocumentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
@@ -25,6 +22,7 @@ import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
+  TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 // Mock external services

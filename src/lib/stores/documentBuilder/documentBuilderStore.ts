@@ -1,10 +1,10 @@
 import {
-  runInAction,
+  computed,
   makeAutoObservable,
   observable,
   ObservableMap,
-  computed,
   reaction,
+  runInAction,
 } from 'mobx';
 import type {
   DEX_Document,
@@ -31,6 +31,7 @@ import {
   MetadataValue,
   ParsedSectionMetadata,
   PdfTemplateData,
+  ResumeSuggestion,
   SectionMetadataKey,
   SectionType,
   SectionWithParsedMetadata,
@@ -40,13 +41,13 @@ import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeT
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
+  MAX_VISIBLE_SUGGESTIONS,
+  RESUME_SCORE_CONFIG,
+  SUGGESTED_SKILLS_COUNT,
+  SUGGESTION_ACTION_TYPES,
+  TEMPLATE_DATA_DEBOUNCE_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import debounce from '@/lib/utils/debounce';
-
-export const TOGGLE_ITEM_WAIT_MS = 100 as const;
-export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
-const MAX_VISIBLE_RESUME_SCORE_SUGGESTIONS = 6 as const;
-const SUGGESTED_SKILLS_COUNT = 5 as const;
 
 export class DocumentBuilderStore {
   document: DEX_Document | null = null;
@@ -476,234 +477,118 @@ export class DocumentBuilderStore {
 
   get resumeStats() {
     let score = 0;
-    const suggestions: {
-      label: string;
-      type: 'item' | 'field';
-      sectionType: SectionType;
-      scoreValue: number;
-    }[] = [];
+    const suggestions: ResumeSuggestion[] = [];
 
-    const employmentHistorySection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-    );
+    const sectionChecks: {
+      type: SectionType;
+      score: number;
+      fieldName?: FieldName;
+    }[] = [
+      {
+        type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+        score: RESUME_SCORE_CONFIG.WORK_EXPERIENCE,
+      },
+      {
+        type: INTERNAL_SECTION_TYPES.EDUCATION,
+        score: RESUME_SCORE_CONFIG.EDUCATION,
+      },
+      {
+        type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+        score: RESUME_SCORE_CONFIG.INTERNSHIPS,
+      },
+      {
+        type: INTERNAL_SECTION_TYPES.SUMMARY,
+        score: RESUME_SCORE_CONFIG.SUMMARY,
+        fieldName: FIELD_NAMES.SUMMARY.SUMMARY,
+      },
+      {
+        type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+        score: RESUME_SCORE_CONFIG.EMAIL,
+        fieldName: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
+      },
+      {
+        type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+        score: RESUME_SCORE_CONFIG.JOB_TITLE,
+        fieldName: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+      },
+    ];
 
-    // employment history => 25 pts
-    if (employmentHistorySection) {
-      const hasAddedWorkExperience = this.getItemsBySectionId(
-        employmentHistorySection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some((field) => field.value);
-      });
+    sectionChecks.forEach(({ type, score: sectionScore, fieldName }) => {
+      const section = this.sections.find((s) => s.type === type);
 
-      if (hasAddedWorkExperience) {
-        score += 25;
-      } else {
-        suggestions.push({
-          scoreValue: 25,
-          label: 'Add work experience',
-          type: 'item',
-          sectionType: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-        });
-      }
-    }
-
-    // education => 15 pts
-    const educationSection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.EDUCATION,
-    );
-
-    if (educationSection) {
-      const hasAddedEducation = this.getItemsBySectionId(
-        educationSection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some((field) => field.value);
-      });
-
-      if (hasAddedEducation) {
-        score += 15;
-      } else {
-        suggestions.push({
-          scoreValue: 15,
-          label: 'Add education',
-          type: 'item',
-          sectionType: INTERNAL_SECTION_TYPES.EDUCATION,
-        });
-      }
-    }
-
-    const internshipsSection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS,
-    );
-
-    if (internshipsSection) {
-      const hasAddedInternships = this.getItemsBySectionId(
-        internshipsSection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some((field) => field.value);
-      });
-
-      if (hasAddedInternships) {
-        score += 2;
-      } else {
-        suggestions.push({
-          scoreValue: 2,
-          label: 'Add internships',
-          type: 'item',
-          sectionType: INTERNAL_SECTION_TYPES.INTERNSHIPS,
-        });
-      }
-    } else {
-      suggestions.push({
-        scoreValue: 2,
-        label: 'Add internships',
-        type: 'item',
-        sectionType: INTERNAL_SECTION_TYPES.INTERNSHIPS,
-      });
-    }
-
-    // email => 5 pts
-    const personalDetailsSection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-    );
-
-    if (personalDetailsSection) {
-      const hasAddedEmail = this.getItemsBySectionId(
-        personalDetailsSection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some(
-          (field) =>
-            field.name === FIELD_NAMES.PERSONAL_DETAILS.EMAIL && field.value,
+      if (section) {
+        const hasEntry = this.getItemsBySectionId(section.id).some((item) =>
+          this.getFieldsByItemId(item.id).some((field) =>
+            fieldName ? field.name === fieldName : field.value,
+          ),
         );
-      });
 
-      // wanted job title 10 pts
-      const hasAddedJobTitle = this.getItemsBySectionId(
-        personalDetailsSection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some(
-          (field) =>
-            field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
-            field.value,
-        );
-      });
-
-      if (hasAddedEmail) {
-        score += 5;
+        if (hasEntry) {
+          score += sectionScore;
+        } else {
+          suggestions.push({
+            scoreValue: sectionScore,
+            label: `Add ${type.replace(/_/g, ' ').toLowerCase()}`,
+            type: fieldName ? 'field' : 'item',
+            sectionType: type,
+            actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
+            fieldName: fieldName,
+          });
+        }
       } else {
         suggestions.push({
-          scoreValue: 5,
-          label: 'Add email',
-          type: 'field',
-          sectionType: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-        });
-      }
-
-      if (hasAddedJobTitle) {
-        score += 10;
-      } else {
-        suggestions.push({
-          scoreValue: 10,
-          label: 'Add job title',
-          type: 'field',
-          sectionType: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-        });
-      }
-    }
-
-    // profile summary => 15pts
-    const professionalSummarySection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY,
-    );
-
-    if (professionalSummarySection) {
-      const hasAddedSummary = this.getItemsBySectionId(
-        professionalSummarySection.id,
-      ).some((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some(
-          (field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY && field.value,
-        );
-      });
-      if (hasAddedSummary) {
-        score += 15;
-      } else {
-        suggestions.push({
-          scoreValue: 15,
-          label: 'Add summary',
-          type: 'field',
-          sectionType: INTERNAL_SECTION_TYPES.SUMMARY,
-        });
-      }
-    }
-
-    // languages => 3pts (each)
-    const languagesSection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.LANGUAGES,
-    );
-
-    if (languagesSection) {
-      const addedLanguages = this.getItemsBySectionId(
-        languagesSection.id,
-      ).filter((item) => {
-        const fields = this.getFieldsByItemId(item.id);
-        return fields.some(
-          (field) =>
-            field.name === FIELD_NAMES.LANGUAGES.LANGUAGE && field.value,
-        );
-      });
-
-      if (addedLanguages.length) {
-        score += addedLanguages.length * 3;
-      } else {
-        suggestions.push({
-          scoreValue: 3,
-          label: 'Add language',
+          scoreValue: sectionScore,
+          label: `Add ${type.replace(/_/g, ' ').toLowerCase()}`,
           type: 'item',
-          sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
+          sectionType: type,
+          actionType: SUGGESTION_ACTION_TYPES.ADD_SECTION,
         });
       }
-    } else {
-      suggestions.push({
-        scoreValue: 3,
-        label: 'Add language',
-        type: 'item',
-        sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
-      });
-    }
+    });
 
-    // skill => 4 pts (each)
-    const skillsSection = this.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.SKILLS,
-    );
+    const dynamicSections = [
+      {
+        type: INTERNAL_SECTION_TYPES.LANGUAGES,
+        score: RESUME_SCORE_CONFIG.LANGUAGE,
+      },
+      { type: INTERNAL_SECTION_TYPES.SKILLS, score: RESUME_SCORE_CONFIG.SKILL },
+    ];
 
-    if (skillsSection) {
-      const addedSkills = this.getItemsBySectionId(skillsSection.id).filter(
-        (item) => {
-          const fields = this.getFieldsByItemId(item.id);
-          return fields.some(
-            (field) => field.name === FIELD_NAMES.SKILLS.SKILL && field.value,
-          );
-        },
-      );
+    dynamicSections.forEach(({ type, score: itemScore }) => {
+      const section = this.sections.find((s) => s.type === type);
 
-      if (addedSkills.length) {
-        score += addedSkills.length * 4;
-      }
+      if (section) {
+        const items = this.getItemsBySectionId(section.id).filter((item) =>
+          this.getFieldsByItemId(item.id).some((field) => field.value),
+        );
 
-      if (score < 100 && addedSkills.length < SUGGESTED_SKILLS_COUNT) {
+        if (items.length) {
+          score += items.length * itemScore;
+        }
+
+        if (
+          score < 100 &&
+          items.length < SUGGESTED_SKILLS_COUNT &&
+          section.type === INTERNAL_SECTION_TYPES.SKILLS
+        ) {
+          suggestions.push({
+            scoreValue: itemScore,
+            label: `Add ${type.replace(/_/g, ' ').toLowerCase()}`,
+            type: 'item',
+            sectionType: type,
+            actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
+          });
+        }
+      } else {
         suggestions.push({
-          scoreValue: 4,
-          label: 'Add skill',
+          scoreValue: itemScore,
+          label: `Add ${type.replace(/_/g, ' ').toLowerCase()}`,
           type: 'item',
-          sectionType: INTERNAL_SECTION_TYPES.SKILLS,
+          sectionType: type,
+          actionType: SUGGESTION_ACTION_TYPES.ADD_SECTION,
         });
       }
-    }
+    });
 
     return {
       score: Math.min(score, 100),
@@ -711,9 +596,12 @@ export class DocumentBuilderStore {
         score >= 100
           ? []
           : suggestions
-              .slice()
               .sort((a, b) => a.scoreValue - b.scoreValue)
-              .slice(0, MAX_VISIBLE_RESUME_SCORE_SUGGESTIONS),
+              .slice(0, MAX_VISIBLE_SUGGESTIONS)
+              .map((item) => ({
+                ...item,
+                key: crypto.randomUUID(),
+              })),
     };
   }
 }

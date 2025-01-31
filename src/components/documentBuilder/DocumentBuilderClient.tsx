@@ -19,6 +19,7 @@ import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 import { cn } from '@/lib/utils/stringUtils';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
+import ImproveResumeWidget from '@/components/documentBuilder/ImproveResumeWidget';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
@@ -76,8 +77,11 @@ const DocumentBuilderClient = observer(
               <p>Documents page</p>
             </TooltipContent>
           </Tooltip>
-          <div className="max-w-screen-2xl flex items-center justify-center mx-auto">
+          <div className="max-w-screen-2xl mx-auto">
             <DocumentBuilderHeader />
+            <div className="flex items-center justify-between">
+              <ImproveResumeWidget />
+            </div>
           </div>
           <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
             <DocumentSections />

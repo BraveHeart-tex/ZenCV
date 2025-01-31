@@ -153,3 +153,28 @@ export const MAX_VISIBLE_FIELDS = 6 as const;
 
 export const builderSectionTitleClassNames =
   'scroll-m-20 text-2xl font-semibold tracking-tight';
+
+export const RESUME_SCORE_CONFIG = {
+  WORK_EXPERIENCE: 25,
+  EDUCATION: 15,
+  INTERNSHIPS: 2,
+  EMAIL: 5,
+  JOB_TITLE: 10,
+  SUMMARY: 15,
+  LANGUAGE: 3,
+  SKILL: 4,
+} as const;
+
+export const SUGGESTED_SKILLS_COUNT = 5;
+
+export const MAX_VISIBLE_SUGGESTIONS = 5;
+
+export const SUGGESTION_ACTION_TYPES = {
+  ADD_SECTION: 'ADD_SECTION',
+  ADD_ITEM: 'ADD_ITEM',
+  FOCUS_FIELD: 'FOCUS_FIELD',
+} as const;
+
+export const TOGGLE_ITEM_WAIT_MS = 100 as const;
+
+export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;

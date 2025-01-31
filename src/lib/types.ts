@@ -15,6 +15,7 @@ import {
   NOT_TEMPLATED_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
+  SUGGESTION_ACTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 type Values<T> = T[keyof T];
@@ -103,6 +104,14 @@ export type MetadataValue =
   | typeof UNCHECKED_METADATA_VALUE
   | typeof CHECKED_METADATA_VALUE;
 
-export type SectionWithItems = SectionWithParsedMetadata & {
-  items: DEX_Item[];
-};
+export interface ResumeSuggestion {
+  label: string;
+  type: 'item' | 'field';
+  sectionType: SectionType;
+  scoreValue: number;
+  actionType: SuggestionActionType;
+  fieldName?: FieldName;
+}
+
+export type SuggestionActionType =
+  (typeof SUGGESTION_ACTION_TYPES)[keyof typeof SUGGESTION_ACTION_TYPES];

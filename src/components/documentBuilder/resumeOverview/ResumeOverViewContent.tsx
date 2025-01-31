@@ -6,10 +6,7 @@ import {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
-import {
-  documentBuilderStore,
-  TOGGLE_ITEM_WAIT_MS,
-} from '@/lib/stores/documentBuilder/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   getSectionContainerId,
   getItemContainerId,
@@ -19,6 +16,7 @@ import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { FocusState } from './ResumeOverview';
 import { observer } from 'mobx-react-lite';
+import { TOGGLE_ITEM_WAIT_MS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
 
