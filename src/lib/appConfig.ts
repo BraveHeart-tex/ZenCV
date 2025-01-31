@@ -1,1 +1,1 @@
-export const APP_NAME = 'OwnYourCV' as const;
+export const APP_NAME = 'ZenCV' as const;

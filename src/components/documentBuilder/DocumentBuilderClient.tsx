@@ -19,7 +19,7 @@ import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 import { cn } from '@/lib/utils/stringUtils';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
-import ImproveResumeWidget from '@/components/documentBuilder/ImproveResumeWidget';
+import ImproveResumeWidget from '@/components/documentBuilder/resumeScore/ImproveResumeWidget';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
