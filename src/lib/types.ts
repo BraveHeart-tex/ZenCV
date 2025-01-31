@@ -5,15 +5,17 @@ import {
 } from '@/lib/client-db/clientDbSchema';
 import {
   CHECKED_METADATA_VALUE,
+  UNCHECKED_METADATA_VALUE,
+} from '@/lib/constants';
+import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
+import {
   FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
   NOT_TEMPLATED_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
-  UNCHECKED_METADATA_VALUE,
-} from '@/lib/constants';
-import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 type Values<T> = T[keyof T];
 

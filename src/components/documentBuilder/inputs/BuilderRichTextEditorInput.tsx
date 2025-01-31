@@ -2,7 +2,7 @@
 import RichTextEditor from '@/components/richTextEditor/RichTextEditor';
 import { observer } from 'mobx-react-lite';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 

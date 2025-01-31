@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();

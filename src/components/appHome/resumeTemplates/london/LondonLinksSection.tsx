@@ -3,10 +3,10 @@ import {
   findValueInItemFields,
   getRenderableEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { FIELD_NAMES } from '@/lib/constants';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { Link, Text, View } from '@react-pdf/renderer';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonLinksSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getRenderableEntries(

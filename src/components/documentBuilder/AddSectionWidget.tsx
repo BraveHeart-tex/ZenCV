@@ -14,18 +14,18 @@ import {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import {
-  builderSectionTitleClassNames,
-  INTERNAL_SECTION_TYPES,
-  SECTION_METADATA_KEYS,
-  UNCHECKED_METADATA_VALUE,
-} from '@/lib/constants';
+import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { TemplatedSectionType } from '@/lib/types';
 import { generateSectionMetadata } from '@/lib/helpers/documentBuilderHelpers';
 import { cn } from '@/lib/utils/stringUtils';
+import {
+  builderSectionTitleClassNames,
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 export interface OtherSectionOption
   extends Omit<

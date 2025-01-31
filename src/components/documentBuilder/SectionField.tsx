@@ -1,6 +1,6 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
@@ -12,10 +12,10 @@ import {
 import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
-import { SELECT_TYPES } from '@/lib/constants';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
+import { SELECT_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];

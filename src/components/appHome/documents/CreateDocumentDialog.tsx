@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { createDocument } from '@/lib/client-db/clientDbService';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
 import { dialogFooterClassNames } from '@/lib/constants';

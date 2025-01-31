@@ -8,7 +8,7 @@ import {
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
 import type { FocusState } from './ResumeOverview';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 
 interface ResumeOverviewTriggerProps {

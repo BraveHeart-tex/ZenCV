@@ -1,10 +1,4 @@
-import {
-  FIELD_NAMES,
-  INTERNAL_SECTION_TYPES,
-  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
-  SECTION_METADATA_KEYS,
-  UNCHECKED_METADATA_VALUE,
-} from '@/lib/constants';
+import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import {
   CONTAINER_TYPES,
   DEX_Document,
@@ -14,7 +8,7 @@ import {
   SectionWithFields,
   type SelectField,
 } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '../stores/documentBuilderStore';
+import { documentBuilderStore } from '../stores/documentBuilder/documentBuilderStore';
 import {
   CollapsibleSectionType,
   FieldInsertTemplate,
@@ -33,6 +27,12 @@ import {
   skillsSectionFields,
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
+  SECTION_METADATA_KEYS,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],

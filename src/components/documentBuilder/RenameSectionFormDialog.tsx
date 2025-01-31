@@ -1,6 +1,6 @@
 'use client';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { FormEvent, useRef, useState } from 'react';

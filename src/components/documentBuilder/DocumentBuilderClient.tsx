@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
 import DocumentBuilderHeader from '@/components/documentBuilder/DocumentBuilderHeader';

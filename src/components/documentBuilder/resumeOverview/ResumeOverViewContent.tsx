@@ -9,7 +9,7 @@ import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import {
   documentBuilderStore,
   TOGGLE_ITEM_WAIT_MS,
-} from '@/lib/stores/documentBuilderStore';
+} from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   getSectionContainerId,
   getItemContainerId,

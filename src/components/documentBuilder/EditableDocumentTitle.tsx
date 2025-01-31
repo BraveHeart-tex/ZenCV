@@ -2,7 +2,7 @@
 import { action } from 'mobx';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import RenameDocumentDialog from '../appHome/documents/RenameDocumentDialog';
 import { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';

@@ -12,7 +12,7 @@ import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 
 interface DraggableSectionContainerProps {
   sectionId: DEX_Section['id'];

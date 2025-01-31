@@ -36,9 +36,12 @@ import {
   SectionWithParsedMetadata,
   TemplatedSectionType,
 } from '@/lib/types';
-import { FIELD_NAMES, INTERNAL_SECTION_TYPES } from '../constants';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import debounce from '../utils/debounce';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import debounce from '@/lib/utils/debounce';
 
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
 export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;

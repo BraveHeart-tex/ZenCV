@@ -19,7 +19,7 @@ import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 
 const DocumentCard = ({ document }: { document: DEX_Document }) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);

@@ -7,11 +7,11 @@ import {
   getRenderableEntries,
   getSectionMetadata,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { CHECKED_METADATA_VALUE } from '@/lib/constants';
 import {
-  CHECKED_METADATA_VALUE,
   FIELD_NAMES,
   SECTION_METADATA_KEYS,
-} from '@/lib/constants';
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonReferencesSection = ({
   section,

@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
 import {

@@ -3,7 +3,6 @@ import {
   findValueInItemFields,
   getRenderableEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { FIELD_NAMES } from '@/lib/constants';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { Text, View } from '@react-pdf/renderer';
 import {
@@ -11,6 +10,7 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
+import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonEducationSection = ({
   section,

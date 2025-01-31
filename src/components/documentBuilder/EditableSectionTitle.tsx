@@ -1,6 +1,6 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -10,7 +10,6 @@ import {
 import { TrashIcon } from 'lucide-react';
 import { showSuccessToast } from '@/components/ui/sonner';
 import { action } from 'mobx';
-import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import {
   getSectionDeleteConfirmationPreference,
@@ -18,6 +17,7 @@ import {
 } from '@/lib/helpers/userSettingsHelpers';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import RenameSectionFormDialog from './RenameSectionFormDialog';
+import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {

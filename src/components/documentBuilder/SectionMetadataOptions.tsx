@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import SectionMetadataOption from './SectionMetadataOption';
 
 const MetadataOptionsList = observer(

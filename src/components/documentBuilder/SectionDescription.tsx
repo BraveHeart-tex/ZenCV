@@ -1,8 +1,8 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
-import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/constants';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const SectionDescription = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {

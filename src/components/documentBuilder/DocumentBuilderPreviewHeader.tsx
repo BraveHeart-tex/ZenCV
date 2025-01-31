@@ -1,5 +1,5 @@
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from '../ui/button';

@@ -1,5 +1,5 @@
 'use client';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';

@@ -1,6 +1,5 @@
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import { MAX_VISIBLE_FIELDS } from '@/lib/constants';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
@@ -9,6 +8,7 @@ import * as motion from 'motion/react-m';
 import { Button } from '../ui/button';
 
 import { cn } from '@/lib/utils/stringUtils';
+import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const ARE_EXTRA_FIELDS_HIDDEN_KEY = 'areExtraFieldsHidden';
 

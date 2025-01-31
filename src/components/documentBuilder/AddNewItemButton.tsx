@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 

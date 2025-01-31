@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   DocumentBuilderStore,
   TOGGLE_ITEM_WAIT_MS,
-} from '@/lib/stores/documentBuilderStore';
+} from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
@@ -16,14 +16,16 @@ import {
 } from '@/lib/client-db/clientDbService';
 import {
   CHECKED_METADATA_VALUE,
-  FIELD_NAMES,
-  INTERNAL_SECTION_TYPES,
-  SECTION_METADATA_KEYS,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { ParsedSectionMetadata, SectionMetadataKey } from '@/lib/types';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 // Mock external services
 vi.mock('@/lib/client-db/clientDbService');

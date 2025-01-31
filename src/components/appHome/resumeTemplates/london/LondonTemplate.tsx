@@ -3,7 +3,6 @@ import { PdfTemplateData } from '@/lib/types';
 import LondonPersonalDetailsSection from '@/components/appHome/resumeTemplates/london/LondonPersonalDetailsSection';
 import LondonSummarySection from '@/components/appHome/resumeTemplates/london/London.SummarySection';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
-import { INTERNAL_SECTION_TYPES } from '@/lib/constants';
 import LondonWorkExperienceSection from '@/components/appHome/resumeTemplates/london/LondonWorkExperienceSection';
 import LondonEducationSection from '@/components/appHome/resumeTemplates/london/LondonEducationSection';
 import LondonLinksSection from '@/components/appHome/resumeTemplates/london/LondonLinksSection';
@@ -14,6 +13,7 @@ import LondonHobbiesSection from '@/components/appHome/resumeTemplates/london/Lo
 import LondonCustomSection from '@/components/appHome/resumeTemplates/london/LondonCustomSection';
 import LondonSkillsSection from '@/components/appHome/resumeTemplates/london/LondonSkillsSection';
 import LondonReferencesSection from '@/components/appHome/resumeTemplates/london/LondonReferencesSection';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonTemplate = ({
   templateData,

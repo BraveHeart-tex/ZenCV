@@ -2,7 +2,7 @@ import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { XIcon } from 'lucide-react';
 import {
   Drawer,

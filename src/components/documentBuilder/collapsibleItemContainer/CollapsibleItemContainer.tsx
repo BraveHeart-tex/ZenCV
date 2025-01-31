@@ -25,7 +25,7 @@ import {
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { useMedia } from 'react-use';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { action } from 'mobx';

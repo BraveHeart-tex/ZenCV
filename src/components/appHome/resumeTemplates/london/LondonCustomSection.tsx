@@ -10,7 +10,8 @@ import {
   findValueInItemFields,
   getRenderableEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { FIELD_NAMES } from '@/lib/constants';
+
+import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonCustomSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getRenderableEntries(

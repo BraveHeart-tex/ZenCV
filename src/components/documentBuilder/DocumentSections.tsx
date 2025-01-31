@@ -1,6 +1,6 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilderStore';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import DocumentSection from '@/components/documentBuilder/DocumentSection';
 import SectionsDndContext from '@/components/documentBuilder/SectionsDndContext';
 
