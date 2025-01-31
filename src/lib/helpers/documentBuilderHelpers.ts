@@ -493,3 +493,12 @@ const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
 export const generateSectionMetadata = (data: ParsedSectionMetadata[]) => {
   return JSON.stringify(data);
 };
+
+export function getScoreColor(score: number): string {
+  if (score <= 24) return '#d32f2f';
+  if (score <= 49) return '#f57c00';
+  if (score <= 74) return '#fbc02d';
+  if (score <= 89) return '#388e3c';
+  if (score <= 99) return '#1976d2';
+  return '#4a148c';
+}

@@ -20,7 +20,9 @@ const ImproveResumeWidget = observer(() => {
         <div className="flex items-center justify-between w-full">
           <ResumeScoreBadge />
           <CollapsibleTrigger asChild>
-            <Button variant="outline">Improve Resume</Button>
+            <Button variant="outline" size="sm">
+              Improve Resume
+            </Button>
           </CollapsibleTrigger>
         </div>
         <ResumeScoreProgressBar />

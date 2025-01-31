@@ -19,8 +19,7 @@ const ResumeScoreSuggestionContent = observer(() => {
         {documentBuilderStore.resumeStats.suggestions.map(
           (suggestion, index) => (
             <motion.div
-              // TODO: FIX THIS!!!
-              key={index}
+              key={suggestion.key}
               className="flex items-center gap-2"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
