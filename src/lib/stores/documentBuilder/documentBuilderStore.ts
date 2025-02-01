@@ -52,6 +52,7 @@ import {
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import debounce from '@/lib/utils/debounce';
 
+// TODO: Waaaaaaay to many things cramped in here
 export class DocumentBuilderStore {
   document: DEX_Document | null = null;
   sections: SectionWithParsedMetadata[] = [];
@@ -61,7 +62,8 @@ export class DocumentBuilderStore {
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
 
-  refs: ObservableMap<string, Element | null> = observable.map();
+  itemRefs: ObservableMap<string, HTMLElement | null> = observable.map();
+  fieldRefs: ObservableMap<string, HTMLElement | null> = observable.map();
 
   constructor() {
     makeAutoObservable(this, {
@@ -94,9 +96,43 @@ export class DocumentBuilderStore {
     );
   }
 
-  setElementRef = (key: string, value: Element | null) => {
-    this.refs.set(key, value);
+  setElementRef = (key: string, value: HTMLElement | null) => {
+    this.itemRefs.set(key, value);
   };
+
+  setFieldRef = (key: string, value: HTMLElement | null) => {
+    this.fieldRefs.set(key, value);
+  };
+
+  getFieldRefByFieldNameAndSection = (
+    fieldName: FieldName,
+    sectionType: SectionType,
+  ) => {
+    const section = this.sections.find(
+      (section) => section.type === sectionType,
+    );
+    if (!section) return;
+
+    const fieldMap = new Map<DEX_Item['id'], DEX_Field[]>();
+    for (const field of this.fields) {
+      if (!fieldMap.has(field.itemId)) {
+        fieldMap.set(field.itemId, []);
+      }
+      fieldMap.get(field.itemId)?.push(field);
+    }
+
+    const sectionFields: DEX_Field[] = [];
+    for (const item of this.items) {
+      if (item.sectionId === section.id && fieldMap.has(item.id)) {
+        sectionFields.push(...(fieldMap.get(item.id) || []));
+      }
+    }
+
+    const field = sectionFields?.find((field) => field.name === fieldName);
+    if (!field) return;
+    return this.fieldRefs.get(field.id.toString());
+  };
+
   initializeStore = async (documentId: DEX_Document['id']) => {
     const result = await getFullDocumentStructure(documentId);
     if (!result?.success) {
@@ -370,7 +406,7 @@ export class DocumentBuilderStore {
     this.items = [];
     this.fields = [];
     this.collapsedItemId = null;
-    this.refs = observable.map();
+    this.itemRefs = observable.map();
   };
   getSectionMetadataOptions = (
     sectionId: DEX_Section['id'],

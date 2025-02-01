@@ -49,6 +49,29 @@ const RichTextEditor = ({
         editor.commands.focus();
       }
     },
+    scrollIntoView: () => {
+      if (editor) {
+        const editorElement = editor.view.dom as HTMLElement;
+        const rect = editorElement.getBoundingClientRect();
+
+        window.scrollTo({
+          top:
+            window.scrollY +
+            rect.top -
+            window.innerHeight / 2 +
+            rect.height / 2,
+          behavior: 'smooth',
+        });
+      }
+    },
+    getBoundingClientRect(): DOMRect {
+      if (editor) {
+        const editorElement = editor.view.dom as HTMLElement;
+        return editorElement.getBoundingClientRect();
+      }
+
+      return new DOMRect(0, 0, 0, 0);
+    },
   }));
 
   return (

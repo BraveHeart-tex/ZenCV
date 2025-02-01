@@ -35,6 +35,9 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <Label htmlFor={htmlInputId}>{field.name}</Label>
           <Input
             id={htmlInputId}
+            ref={(ref) =>
+              documentBuilderStore.setFieldRef(field.id.toString(), ref)
+            }
             type="text"
             value={field.value}
             onChange={action(async (e) => {
@@ -76,6 +79,9 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
         <>
           <Label htmlFor={htmlInputId}>{field.name}</Label>
           <Textarea
+            ref={(ref) =>
+              documentBuilderStore.setFieldRef(field?.id.toString(), ref)
+            }
             id={htmlInputId}
             value={field.value}
             onChange={action(async (e) => {
