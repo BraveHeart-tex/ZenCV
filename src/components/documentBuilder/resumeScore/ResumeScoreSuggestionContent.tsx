@@ -12,7 +12,7 @@ const ResumeScoreSuggestionContent = observer(() => {
       transition={{ duration: 0.2, ease: 'easeInOut' }}
     >
       <motion.div
-        className="grid grid-cols-2 gap-4"
+        className="md:grid-cols-2 grid gap-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}

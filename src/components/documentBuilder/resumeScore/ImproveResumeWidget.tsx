@@ -23,7 +23,9 @@ const ImproveResumeWidget = observer(() => {
           <ResumeScoreBadge />
           <CollapsibleTrigger asChild>
             <Button variant="outline" size="sm">
-              <span>Improve Resume</span>
+              <span>
+                Improve <span className="md:inline-block hidden">Resume</span>
+              </span>
               <ChevronDownIcon
                 className={cn('transition-all', open && 'rotate-180')}
               />
