@@ -3,14 +3,14 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuild
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
 
 const ResumeScoreBadge = observer(() => {
+  const colors = getScoreColor(documentBuilderStore.debouncedResumeStats.score);
   return (
     <div className="flex items-center gap-2">
       <span
-        className="w-max h-max bg-primary text-primary-foreground tabular-nums p-1 text-xs font-medium text-white rounded-md"
+        className="w-max h-max tabular-nums p-1 text-xs font-medium rounded-md"
         style={{
-          backgroundColor: getScoreColor(
-            documentBuilderStore.debouncedResumeStats.score,
-          ),
+          backgroundColor: colors.backgroundColor,
+          color: colors.color,
         }}
       >
         {documentBuilderStore.debouncedResumeStats.score}%

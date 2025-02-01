@@ -4,13 +4,14 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuild
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
 
 const ResumeScoreProgressBar = observer(() => {
+  const colors = getScoreColor(documentBuilderStore.debouncedResumeStats.score);
+
   return (
     <Progress
+      className="h-1"
       value={documentBuilderStore.debouncedResumeStats.score}
       indicatorStyles={{
-        backgroundColor: getScoreColor(
-          documentBuilderStore.debouncedResumeStats.score,
-        ),
+        backgroundColor: colors.backgroundColor,
       }}
     />
   );

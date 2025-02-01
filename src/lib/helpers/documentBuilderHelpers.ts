@@ -33,6 +33,7 @@ import {
   ParsedSectionMetadata,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
+import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -494,11 +495,27 @@ export const generateSectionMetadata = (data: ParsedSectionMetadata[]) => {
   return JSON.stringify(data);
 };
 
-export function getScoreColor(score: number): string {
-  if (score <= 24) return '#d32f2f';
-  if (score <= 49) return '#f57c00';
-  if (score <= 74) return '#fbc02d';
-  if (score <= 89) return '#388e3c';
-  if (score <= 99) return '#1976d2';
-  return '#4a148c';
+export function getScoreColor(score: number): {
+  color: string;
+  backgroundColor: string;
+} {
+  let bgColor: string;
+
+  if (score <= 24)
+    bgColor = '#d32f2f'; // Red
+  else if (score <= 49)
+    bgColor = '#f57c00'; // Orange
+  else if (score <= 74)
+    bgColor = '#fbc02d'; // Yellow
+  else if (score <= 89)
+    bgColor = '#388e3c'; // Green
+  else bgColor = '#4a148c'; // Purple
+
+  const rgb = hexToRgb(bgColor);
+  const luminance = getLuminance(rgb);
+
+  // If the luminance is low (dark background), use light text (white), else use dark text (black)
+  const textColor = luminance < 0.5 ? '#ffffff' : '#000000';
+
+  return { backgroundColor: bgColor, color: textColor };
 }
