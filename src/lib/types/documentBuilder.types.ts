@@ -25,7 +25,9 @@ import {
 } from '@/lib/types/utils.types';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
+
 export type SectionType = ValueOf<typeof INTERNAL_SECTION_TYPES>;
+
 export type TemplatedSectionType = Exclude<
   SectionType,
   (typeof NOT_TEMPLATED_SECTION_TYPES)[number]
