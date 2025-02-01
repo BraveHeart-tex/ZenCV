@@ -178,3 +178,44 @@ export const SUGGESTION_ACTION_TYPES = {
 export const TOGGLE_ITEM_WAIT_MS = 100 as const;
 
 export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
+
+export const SUGGESTION_TYPES = {
+  ITEM: 'ITEM',
+  FIELD: 'FIELD',
+} as const;
+
+export const SECTION_SUGGESTION_CONFIG = [
+  {
+    type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+    scoreValue: RESUME_SCORE_CONFIG.WORK_EXPERIENCE,
+    label: 'Add work experience',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.EDUCATION,
+    scoreValue: RESUME_SCORE_CONFIG.EDUCATION,
+    label: 'Add education',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+    scoreValue: RESUME_SCORE_CONFIG.INTERNSHIPS,
+    label: 'Add internships',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.SUMMARY,
+    scoreValue: RESUME_SCORE_CONFIG.SUMMARY,
+    label: 'Add summary',
+    fieldName: FIELD_NAMES.SUMMARY.SUMMARY,
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    scoreValue: RESUME_SCORE_CONFIG.EMAIL,
+    label: 'Add email',
+    fieldName: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    scoreValue: RESUME_SCORE_CONFIG.JOB_TITLE,
+    label: 'Add job title',
+    fieldName: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+  },
+];

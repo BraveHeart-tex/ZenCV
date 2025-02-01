@@ -43,9 +43,11 @@ import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   MAX_VISIBLE_SUGGESTIONS,
-  // RESUME_SCORE_CONFIG,
+  RESUME_SCORE_CONFIG,
+  SECTION_SUGGESTION_CONFIG,
   SUGGESTED_SKILLS_COUNT,
   SUGGESTION_ACTION_TYPES,
+  SUGGESTION_TYPES,
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import debounce from '@/lib/utils/debounce';
@@ -493,42 +495,6 @@ export class DocumentBuilderStore {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
 
-    const SECTION_CONFIG = [
-      {
-        type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-        scoreValue: 25,
-        label: 'Add work experience',
-      },
-      {
-        type: INTERNAL_SECTION_TYPES.EDUCATION,
-        scoreValue: 15,
-        label: 'Add education',
-      },
-      {
-        type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
-        scoreValue: 2,
-        label: 'Add internships',
-      },
-      {
-        type: INTERNAL_SECTION_TYPES.SUMMARY,
-        scoreValue: 15,
-        label: 'Add summary',
-        fieldName: FIELD_NAMES.SUMMARY.SUMMARY,
-      },
-      {
-        type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-        scoreValue: 5,
-        label: 'Add email',
-        fieldName: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
-      },
-      {
-        type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-        scoreValue: 10,
-        label: 'Add job title',
-        fieldName: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
-      },
-    ];
-
     const getSectionItems = (type: SectionType) => {
       const section = this.sections.find((s) => s.type === type);
       return section ? this.getItemsBySectionId(section.id) : null;
@@ -541,35 +507,38 @@ export class DocumentBuilderStore {
         ),
       );
 
-    SECTION_CONFIG.forEach(({ type, scoreValue, label, fieldName }) => {
-      const items = getSectionItems(type);
+    SECTION_SUGGESTION_CONFIG.forEach(
+      ({ type, scoreValue, label, fieldName }) => {
+        const items = getSectionItems(type);
 
-      if (items && hasFilledFields(items, fieldName)) {
-        score += scoreValue;
-      } else {
-        suggestions.push({
-          scoreValue,
-          label,
-          type: fieldName ? 'field' : 'item',
-          sectionType: type,
-          actionType: fieldName
-            ? SUGGESTION_ACTION_TYPES.FOCUS_FIELD
-            : SUGGESTION_ACTION_TYPES.ADD_ITEM,
-        });
-      }
-    });
+        if (items && hasFilledFields(items, fieldName)) {
+          score += scoreValue;
+        } else {
+          suggestions.push({
+            scoreValue,
+            label,
+            type: fieldName ? SUGGESTION_TYPES.FIELD : SUGGESTION_TYPES.ITEM,
+            sectionType: type,
+            actionType: fieldName
+              ? SUGGESTION_ACTION_TYPES.FOCUS_FIELD
+              : SUGGESTION_ACTION_TYPES.ADD_ITEM,
+            fieldName,
+          });
+        }
+      },
+    );
 
     const skillsItems = getSectionItems(INTERNAL_SECTION_TYPES.SKILLS);
     if (skillsItems) {
       const addedSkills = skillsItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL),
       );
-      score += addedSkills.length * 4;
+      score += addedSkills.length * RESUME_SCORE_CONFIG.SKILL;
       if (score < 100 && addedSkills.length < SUGGESTED_SKILLS_COUNT) {
         suggestions.push({
-          scoreValue: 4,
+          scoreValue: RESUME_SCORE_CONFIG.SKILL,
           label: 'Add skill',
-          type: 'item',
+          type: SUGGESTION_TYPES.ITEM,
           sectionType: INTERNAL_SECTION_TYPES.SKILLS,
           actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
@@ -581,12 +550,12 @@ export class DocumentBuilderStore {
       const addedLanguages = languageItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE),
       );
-      score += addedLanguages.length * 3;
+      score += addedLanguages.length * RESUME_SCORE_CONFIG.LANGUAGE;
       if (!addedLanguages.length) {
         suggestions.push({
-          scoreValue: 3,
+          scoreValue: RESUME_SCORE_CONFIG.LANGUAGE,
           label: 'Add language',
-          type: 'item',
+          type: SUGGESTION_TYPES.ITEM,
           sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
           actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });

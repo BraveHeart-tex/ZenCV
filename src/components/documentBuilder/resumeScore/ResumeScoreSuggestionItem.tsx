@@ -2,11 +2,26 @@
 import * as motion from 'motion/react-m';
 import { observer } from 'mobx-react-lite';
 import { ResumeSuggestion } from '@/lib/types';
+import { SUGGESTION_ACTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const ResumeScoreSuggestionItem = observer(
   ({ suggestion }: { suggestion: ResumeSuggestion }) => {
+    const handleSuggestionClick = () => {
+      if (suggestion.actionType === SUGGESTION_ACTION_TYPES.FOCUS_FIELD) {
+        // TODO:
+      }
+
+      if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
+        // TODO:
+      }
+
+      if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_SECTION) {
+        // TODO:
+      }
+    };
+
     return (
-      <motion.div
+      <motion.button
         className="flex items-center gap-2"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -14,6 +29,7 @@ const ResumeScoreSuggestionItem = observer(
           duration: 0.2,
           ease: 'easeOut',
         }}
+        onClick={handleSuggestionClick}
       >
         <motion.span
           className="w-max h-max tabular-nums p-1 text-xs font-medium text-white bg-green-500 rounded-md"
@@ -29,7 +45,7 @@ const ResumeScoreSuggestionItem = observer(
         >
           {suggestion.label}
         </motion.span>
-      </motion.div>
+      </motion.button>
     );
   },
 );
