@@ -1,5 +1,5 @@
-import { BuilderViewSearchParamValue } from '@/lib/types';
 import { useSearchParams } from 'react-router';
+import { BuilderViewSearchParamValue } from '@/lib/types/documentBuilder.types';
 
 export const DOCUMENT_BUILDER_SEARCH_PARAM_KEYS = {
   VIEW: 'view',

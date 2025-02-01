@@ -2,7 +2,8 @@ import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/londo
 import CommaSeperatedPdfText from '@/components/appHome/resumeTemplates/london/CommaSeperatedPdfText';
 import TwoColumnLayout from '@/components/appHome/resumeTemplates/london/TwoColumnLayout';
 import { Text } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types';
+
+import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 
 const LondonPersonalDetailsSection = ({
   personalDetails,

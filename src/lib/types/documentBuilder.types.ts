@@ -1,13 +1,7 @@
 import {
-  DEX_Field,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
-import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
 import {
   FIELD_NAMES,
   FIXED_SECTIONS,
@@ -18,19 +12,20 @@ import {
   SUGGESTION_ACTION_TYPES,
   SUGGESTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-
-type ValueOf<T> = T[keyof T];
-
-export type NestedValueOf<T> = T extends object
-  ? ValueOf<{ [K in keyof T]: NestedValueOf<T[K]> }>
-  : T;
-
-export type ValueOfNestedObject<T, K extends keyof T> = T[K][keyof T[K]];
+import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
+import {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
+import {
+  NestedValueOf,
+  ValueOf,
+  ValueOfNestedObject,
+} from '@/lib/types/utils.types';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
-
 export type SectionType = ValueOf<typeof INTERNAL_SECTION_TYPES>;
-
 export type TemplatedSectionType = Exclude<
   SectionType,
   (typeof NOT_TEMPLATED_SECTION_TYPES)[number]

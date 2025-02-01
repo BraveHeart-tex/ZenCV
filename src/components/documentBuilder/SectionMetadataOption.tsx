@@ -8,7 +8,8 @@ import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuild
 import { action } from 'mobx';
 import { Label } from '../ui/label';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { ParsedSectionMetadata } from '@/lib/types';
+
+import { ParsedSectionMetadata } from '@/lib/types/documentBuilder.types';
 
 const MetadataSwitch = observer(
   ({

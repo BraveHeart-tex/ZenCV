@@ -1,4 +1,3 @@
-import { FieldInsertTemplate } from '@/lib/types';
 import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import {
   FIELD_NAMES,
@@ -6,6 +5,7 @@ import {
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { FieldInsertTemplate } from '@/lib/types/documentBuilder.types';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [
   {

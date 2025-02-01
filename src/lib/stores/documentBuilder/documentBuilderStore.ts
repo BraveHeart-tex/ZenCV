@@ -26,18 +26,6 @@ import {
 } from '@/lib/client-db/clientDbService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
-import {
-  FieldName,
-  MetadataValue,
-  ParsedSectionMetadata,
-  PdfTemplateData,
-  ResumeStats,
-  ResumeSuggestion,
-  SectionMetadataKey,
-  SectionType,
-  SectionWithParsedMetadata,
-  TemplatedSectionType,
-} from '@/lib/types';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import {
   FIELD_NAMES,
@@ -51,6 +39,18 @@ import {
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import debounce from '@/lib/utils/debounce';
+import {
+  FieldName,
+  MetadataValue,
+  ParsedSectionMetadata,
+  PdfTemplateData,
+  ResumeStats,
+  ResumeSuggestion,
+  SectionMetadataKey,
+  SectionType,
+  SectionWithParsedMetadata,
+  TemplatedSectionType,
+} from '@/lib/types/documentBuilder.types';
 
 // TODO: Waaaaaaay to many things cramped in here
 export class DocumentBuilderStore {

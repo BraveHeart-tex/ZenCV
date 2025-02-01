@@ -18,7 +18,8 @@ import {
 } from '@dnd-kit/sortable';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
-import { SectionWithParsedMetadata } from '@/lib/types';
+
+import { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;

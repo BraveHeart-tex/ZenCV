@@ -5,13 +5,13 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
-import { TemplateDataSection } from '@/lib/types';
 import {
   findValueInItemFields,
   getRenderableEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonCustomSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getRenderableEntries(

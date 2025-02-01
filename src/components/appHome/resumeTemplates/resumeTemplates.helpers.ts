@@ -1,11 +1,11 @@
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import {
   DocumentRecordWithDisplayOrder,
   FieldName,
   SectionMetadataKey,
   SectionWithParsedMetadata,
   WithEntryId,
-} from '@/lib/types';
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+} from '@/lib/types/documentBuilder.types';
 
 export const sortByDisplayOrder = (
   a: DocumentRecordWithDisplayOrder,

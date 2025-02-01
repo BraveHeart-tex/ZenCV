@@ -10,13 +10,6 @@ import {
 } from '@/lib/client-db/clientDbSchema';
 import { documentBuilderStore } from '../stores/documentBuilder/documentBuilderStore';
 import {
-  CollapsibleSectionType,
-  FieldInsertTemplate,
-  FieldValuesForKey,
-  ParsedSectionMetadata,
-  TemplatedSectionType,
-} from '@/lib/types';
-import {
   coursesSectionFields,
   customSectionFields,
   educationFields,
@@ -33,6 +26,13 @@ import {
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  CollapsibleSectionType,
+  FieldInsertTemplate,
+  FieldValuesForKey,
+  ParsedSectionMetadata,
+  TemplatedSectionType,
+} from '@/lib/types/documentBuilder.types';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],

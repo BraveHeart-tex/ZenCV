@@ -1,5 +1,4 @@
 import { Document, Page } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types';
 import LondonPersonalDetailsSection from '@/components/appHome/resumeTemplates/london/LondonPersonalDetailsSection';
 import LondonSummarySection from '@/components/appHome/resumeTemplates/london/London.SummarySection';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
@@ -14,6 +13,7 @@ import LondonCustomSection from '@/components/appHome/resumeTemplates/london/Lon
 import LondonSkillsSection from '@/components/appHome/resumeTemplates/london/LondonSkillsSection';
 import LondonReferencesSection from '@/components/appHome/resumeTemplates/london/LondonReferencesSection';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 
 const LondonTemplate = ({
   templateData,

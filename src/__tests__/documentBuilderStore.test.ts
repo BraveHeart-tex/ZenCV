@@ -17,13 +17,16 @@ import {
 } from '@/lib/constants';
 import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
-import { ParsedSectionMetadata, SectionMetadataKey } from '@/lib/types';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  ParsedSectionMetadata,
+  SectionMetadataKey,
+} from '@/lib/types/documentBuilder.types';
 
 // Mock external services
 vi.mock('@/lib/client-db/clientDbService');

@@ -18,7 +18,6 @@ import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
-import { TemplatedSectionType } from '@/lib/types';
 import { generateSectionMetadata } from '@/lib/helpers/documentBuilderHelpers';
 import { cn } from '@/lib/utils/stringUtils';
 import {
@@ -26,6 +25,7 @@ import {
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
 
 export interface OtherSectionOption
   extends Omit<

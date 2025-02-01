@@ -1,10 +1,10 @@
 'use client';
 import * as motion from 'motion/react-m';
 import { observer } from 'mobx-react-lite';
-import { ResumeSuggestion } from '@/lib/types';
 import { SUGGESTION_ACTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
+import { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
 
 const ResumeScoreSuggestionItem = observer(
   ({ suggestion }: { suggestion: ResumeSuggestion }) => {
