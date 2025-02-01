@@ -1,7 +1,7 @@
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { ChevronDownIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
@@ -56,7 +56,12 @@ const HidableFieldContainer = observer(
             <span>
               {areExtraFieldsHidden ? 'Show' : 'Hide'} additional details
             </span>
-            {areExtraFieldsHidden ? <ChevronDownIcon /> : <ChevronUpIcon />}
+            <ChevronDownIcon
+              className={cn(
+                'transition-all duration-300',
+                !areExtraFieldsHidden && 'rotate-180',
+              )}
+            />
           </Button>
         </div>
       </div>

@@ -10,6 +10,8 @@ import { AnimatePresence } from 'motion/react';
 import ResumeScoreBadge from '@/components/documentBuilder/resumeScore/ResumeScoreBadge';
 import ResumeScoreProgressBar from '@/components/documentBuilder/resumeScore/ResumeScoreProgressBar';
 import ResumeScoreSuggestionContent from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionContent';
+import { ChevronDownIcon } from 'lucide-react';
+import { cn } from '@/lib/utils/stringUtils';
 
 const ImproveResumeWidget = observer(() => {
   const [open, setOpen] = useState(false);
@@ -21,7 +23,10 @@ const ImproveResumeWidget = observer(() => {
           <ResumeScoreBadge />
           <CollapsibleTrigger asChild>
             <Button variant="outline" size="sm">
-              Improve Resume
+              <span>Improve Resume</span>
+              <ChevronDownIcon
+                className={cn('transition-all', open && 'rotate-180')}
+              />
             </Button>
           </CollapsibleTrigger>
         </div>
