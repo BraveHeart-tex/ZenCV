@@ -1,9 +1,10 @@
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const ResumeScoreBadge = observer(() => {
-  const colors = getScoreColor(documentBuilderStore.debouncedResumeStats.score);
+  const score = builderRootStore.templateStore.debouncedResumeStats.score;
+  const colors = getScoreColor(score);
   return (
     <div className="flex items-center gap-2">
       <span
@@ -13,7 +14,7 @@ const ResumeScoreBadge = observer(() => {
           color: colors.color,
         }}
       >
-        {documentBuilderStore.debouncedResumeStats.score}%
+        {score}%
       </span>
       <span className="text-muted-foreground text-sm font-medium">
         Your Resume Score

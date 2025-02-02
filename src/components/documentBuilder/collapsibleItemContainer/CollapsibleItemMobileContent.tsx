@@ -2,7 +2,6 @@ import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { XIcon } from 'lucide-react';
 import {
   Drawer,
@@ -13,6 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface CollapsibleItemMobileContentProps {
   itemId: DEX_Item['id'];
@@ -21,14 +21,14 @@ interface CollapsibleItemMobileContentProps {
 
 const CollapsibleItemMobileContent = observer(
   ({ itemId, children }: CollapsibleItemMobileContentProps) => {
-    const open = itemId === documentBuilderStore.collapsedItemId;
+    const open = itemId === builderRootStore.UIStore.collapsedItemId;
     const { title, description } = getTriggerContent(itemId);
 
     return (
       <Drawer
         open={open}
         onOpenChange={() => {
-          documentBuilderStore.toggleItem(itemId);
+          builderRootStore.UIStore.toggleItem(itemId);
         }}
       >
         <DrawerContent>
@@ -37,7 +37,7 @@ const CollapsibleItemMobileContent = observer(
               <DrawerTitle>
                 <Button
                   className="top-1 left-1 size-8 absolute"
-                  onClick={() => documentBuilderStore.toggleItem(itemId)}
+                  onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
                   size="icon"
                   variant="secondary"
                 >
@@ -53,7 +53,9 @@ const CollapsibleItemMobileContent = observer(
               {children}
             </div>
             <DrawerFooter className="flex-shrink-0">
-              <Button onClick={() => documentBuilderStore.toggleItem(itemId)}>
+              <Button
+                onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
+              >
                 Done
               </Button>
               <DrawerClose asChild>

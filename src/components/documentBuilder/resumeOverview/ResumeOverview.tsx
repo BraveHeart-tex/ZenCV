@@ -1,5 +1,4 @@
 'use client';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import ResumeOverViewContent from './ResumeOverViewContent';
@@ -9,6 +8,7 @@ import {
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
 import { autorun } from 'mobx';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 export interface FocusState {
   sectionId: string | null;
@@ -35,13 +35,13 @@ const ResumeOverview = observer(() => {
         return;
       }
 
-      const items = documentBuilderStore.items;
+      const items = builderRootStore.itemStore.items;
 
       const handleScroll = () => {
         const viewportCenter = window.innerHeight / 2;
         let closestItem: { id: string; distance: number } | null = null;
 
-        documentBuilderStore.itemRefs.forEach((el) => {
+        builderRootStore.UIStore.itemRefs.forEach((el) => {
           if (!el) return;
           const rect = el.getBoundingClientRect();
           const elementCenter = rect.top + rect.height / 2;

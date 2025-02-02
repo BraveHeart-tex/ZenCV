@@ -1,6 +1,5 @@
 'use client';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { FormEvent, useRef, useState } from 'react';
@@ -17,6 +16,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { dialogFooterClassNames } from '@/lib/constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface RenameSectionFormDialogProps {
   sectionId: DEX_Section['id'];
@@ -25,7 +25,7 @@ interface RenameSectionFormDialogProps {
 const RenameSectionFormDialog = observer(
   ({ sectionId }: RenameSectionFormDialogProps) => {
     const [open, setOpen] = useState(false);
-    const section = documentBuilderStore.getSectionById(sectionId)!;
+    const section = builderRootStore.sectionStore.getSectionById(sectionId)!;
 
     const [enteredTitle, setEnteredTitle] = useState(section.title || '');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +38,10 @@ const RenameSectionFormDialog = observer(
         return;
       }
 
-      await documentBuilderStore.renameSection(sectionId, enteredTitle);
+      await builderRootStore.sectionStore.renameSection(
+        sectionId,
+        enteredTitle,
+      );
       showSuccessToast('Section renamed successfully');
       setOpen(false);
     });

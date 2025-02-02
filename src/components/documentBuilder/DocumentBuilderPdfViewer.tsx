@@ -8,13 +8,13 @@ import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { useAsync } from 'react-use';
 import {
   DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
   useDocumentBuilderSearchParams,
 } from '@/hooks/useDocumentBuilderSearchParams';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -77,7 +77,7 @@ const DocumentBuilderPdfViewer = observer(
     }, [pdfDimensions]);
 
     const renderData = JSON.stringify(
-      documentBuilderStore.debouncedTemplateData,
+      builderRootStore.templateStore.debouncedTemplateData,
     );
 
     const render = useAsync(async () => {

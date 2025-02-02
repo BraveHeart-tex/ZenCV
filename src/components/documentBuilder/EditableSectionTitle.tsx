@@ -1,6 +1,5 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -18,10 +17,11 @@ import {
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import RenameSectionFormDialog from './RenameSectionFormDialog';
 import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const section = documentBuilderStore.getSectionById(sectionId)!;
+    const section = builderRootStore.sectionStore.getSectionById(sectionId)!;
 
     const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.includes(
       section.type as (typeof DELETABLE_INTERNAL_SECTION_TYPES)[number],
@@ -32,7 +32,7 @@ const EditableSectionTitle = observer(
         await getSectionDeleteConfirmationPreference();
 
       if (shouldNotAskConfirmation) {
-        await documentBuilderStore.removeSection(sectionId);
+        await builderRootStore.sectionStore.removeSection(sectionId);
         showSuccessToast('Section removed successfully.');
         return;
       }
@@ -44,7 +44,7 @@ const EditableSectionTitle = observer(
         onConfirm: async () => {
           const doNotAskAgain = confirmDialogStore.doNotAskAgainChecked;
 
-          await documentBuilderStore.removeSection(sectionId);
+          await builderRootStore.sectionStore.removeSection(sectionId);
           showSuccessToast('Section removed successfully.');
 
           if (doNotAskAgain) {

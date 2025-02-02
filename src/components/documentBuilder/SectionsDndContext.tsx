@@ -16,10 +16,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 
 import { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
@@ -45,7 +45,7 @@ const SectionsDndContext = ({
 
     const newSections = arrayMove(sections, activeIndex, overIndex);
 
-    await documentBuilderStore.reOrderSections(newSections);
+    await builderRootStore.sectionStore.reOrderSections(newSections);
   });
 
   const sensors = useSensors(

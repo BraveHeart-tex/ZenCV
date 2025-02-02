@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
 import DocumentBuilderHeader from '@/components/documentBuilder/DocumentBuilderHeader';
@@ -20,6 +19,7 @@ import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearch
 import { cn } from '@/lib/utils/stringUtils';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import ImproveResumeWidget from './resumeScore/ImproveResumeWidget';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
@@ -30,18 +30,22 @@ const DocumentBuilderClient = observer(
 
     useEffect(() => {
       return () => {
-        documentBuilderStore.resetState();
+        builderRootStore.resetState();
         pdfViewerStore.resetState();
       };
     }, []);
 
     useEffect(() => {
-      if (!documentId || documentBuilderStore.document?.id === documentId) {
+      if (
+        !documentId ||
+        builderRootStore.documentStore.document?.id === documentId
+      ) {
         return;
       }
 
       startTransition(async () => {
-        const result = await documentBuilderStore.initializeStore(documentId);
+        const result =
+          await builderRootStore.documentStore.initializeStore(documentId);
         if (result?.error) {
           showErrorToast(result.error);
           navigate('/documents');
@@ -64,7 +68,7 @@ const DocumentBuilderClient = observer(
                 onClick={() => {
                   navigate('/documents');
                   setTimeout(() => {
-                    documentBuilderStore.resetState();
+                    builderRootStore.resetState();
                   }, 100);
                 }}
                 variant="outline"

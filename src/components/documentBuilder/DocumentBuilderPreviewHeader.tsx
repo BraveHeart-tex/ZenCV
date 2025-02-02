@@ -1,14 +1,15 @@
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentBuilderPreviewHeader = observer(() => {
   const { view, setView } = useDocumentBuilderSearchParams();
-  const documentTitle = documentBuilderStore.document?.title || 'Untitled';
+  const documentTitle =
+    builderRootStore.documentStore.document?.title || 'Untitled';
   const previousRenderValue = pdfViewerStore.previousRenderValue;
 
   const downloadPDF = () => {

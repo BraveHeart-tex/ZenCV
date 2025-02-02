@@ -2,20 +2,20 @@
 import { action } from 'mobx';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import RenameDocumentDialog from '../appHome/documents/RenameDocumentDialog';
 import { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { Button } from '../ui/button';
 import { PencilIcon } from 'lucide-react';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const EditableDocumentTitle = observer(() => {
   const [open, setOpen] = useState(false);
-  const documentTitle = documentBuilderStore.document?.title || '';
+  const documentTitle = builderRootStore.documentStore.document?.title || '';
 
   const handleRename = action(async (enteredTitle: string) => {
     try {
-      await documentBuilderStore.renameDocument(enteredTitle);
+      await builderRootStore.documentStore.renameDocument(enteredTitle);
       showSuccessToast('Document renamed successfully.');
     } catch (error) {
       console.error(error);

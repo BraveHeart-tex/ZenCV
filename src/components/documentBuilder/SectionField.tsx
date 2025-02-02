@@ -1,6 +1,5 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
@@ -16,13 +15,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import { SELECT_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
 }
 
 const SectionField = observer(({ fieldId }: SectionFieldProps) => {
-  const field = documentBuilderStore.getFieldById(fieldId);
+  const field = builderRootStore.fieldStore.getFieldById(fieldId);
 
   if (!field) return null;
 
@@ -36,12 +36,12 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <Input
             id={htmlInputId}
             ref={(ref) =>
-              documentBuilderStore.setFieldRef(field.id.toString(), ref)
+              builderRootStore.UIStore.setFieldRef(field.id.toString(), ref)
             }
             type="text"
             value={field.value}
             onChange={action(async (e) => {
-              await documentBuilderStore.setFieldValue(
+              await builderRootStore.fieldStore.setFieldValue(
                 field.id,
                 e.target.value,
               );
@@ -65,8 +65,8 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     if (field.type === FIELD_TYPES.RICH_TEXT) {
       return (
         <>
-          {documentBuilderStore.getItemById(field.itemId)?.containerType ===
-          CONTAINER_TYPES.COLLAPSIBLE ? (
+          {builderRootStore.itemStore.getItemById(field.itemId)
+            ?.containerType === CONTAINER_TYPES.COLLAPSIBLE ? (
             <Label htmlFor={htmlInputId}>{field.name}</Label>
           ) : null}
           <BuilderRichTextEditorInput fieldId={fieldId} />
@@ -80,12 +80,12 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <Label htmlFor={htmlInputId}>{field.name}</Label>
           <Textarea
             ref={(ref) =>
-              documentBuilderStore.setFieldRef(field?.id.toString(), ref)
+              builderRootStore.UIStore.setFieldRef(field?.id.toString(), ref)
             }
             id={htmlInputId}
             value={field.value}
             onChange={action(async (e) => {
-              await documentBuilderStore.setFieldValue(
+              await builderRootStore.fieldStore.setFieldValue(
                 field.id,
                 e.target.value,
               );

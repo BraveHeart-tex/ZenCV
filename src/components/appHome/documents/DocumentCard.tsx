@@ -19,7 +19,7 @@ import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentCard = ({ document }: { document: DEX_Document }) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
@@ -35,8 +35,8 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
         try {
           await deleteDocument(document.id);
           showSuccessToast('Document deleted successfully.');
-          if (documentBuilderStore?.document?.id === document.id) {
-            documentBuilderStore.resetState();
+          if (builderRootStore.documentStore?.document?.id === document.id) {
+            builderRootStore.resetState();
           }
         } catch (error) {
           console.error(error);
@@ -48,7 +48,7 @@ const DocumentCard = ({ document }: { document: DEX_Document }) => {
   };
 
   const prefetchDocumentData = action(async () => {
-    await documentBuilderStore.initializeStore(document.id);
+    await builderRootStore.documentStore.initializeStore(document.id);
   });
 
   const handleRenameSubmit = async (enteredTitle: string) => {

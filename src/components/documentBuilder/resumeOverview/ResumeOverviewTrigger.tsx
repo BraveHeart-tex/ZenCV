@@ -8,8 +8,8 @@ import {
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
 import type { FocusState } from './ResumeOverview';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface ResumeOverviewTriggerProps {
   visible: boolean;
@@ -19,7 +19,7 @@ interface ResumeOverviewTriggerProps {
 
 const ResumeOverviewTrigger = observer(
   ({ visible, focusState }: ResumeOverviewTriggerProps) => {
-    const sectionsWithItems = documentBuilderStore.sectionsWithItems;
+    const sectionsWithItems = builderRootStore.sectionStore.sectionsWithItems;
 
     return (
       <AnimatePresence>

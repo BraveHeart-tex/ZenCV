@@ -1,7 +1,6 @@
 'use client';
 import { observer } from 'mobx-react-lite';
 import EditableSectionTitle from '@/components/documentBuilder/EditableSectionTitle';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import SectionItem from '@/components/documentBuilder/SectionItem';
 import SectionDescription from '@/components/documentBuilder/SectionDescription';
 import { CONTAINER_TYPES, DEX_Section } from '@/lib/client-db/clientDbSchema';
@@ -12,15 +11,16 @@ import { ReactNode } from 'react';
 import SectionMetadataOptions from '@/components/documentBuilder/SectionMetadataOptions';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 import { FIXED_SECTIONS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const items = documentBuilderStore.getItemsBySectionId(sectionId);
+    const items = builderRootStore.itemStore.getItemsBySectionId(sectionId);
 
     const ContainerElement = ({ children }: { children: ReactNode }) => {
       if (
         FIXED_SECTIONS.includes(
-          documentBuilderStore.getSectionById(sectionId)
+          builderRootStore.sectionStore.getSectionById(sectionId)
             ?.type as (typeof FIXED_SECTIONS)[number],
         )
       ) {

@@ -8,7 +8,6 @@ import {
   SectionWithFields,
   type SelectField,
 } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '../stores/documentBuilder/documentBuilderStore';
 import {
   coursesSectionFields,
   customSectionFields,
@@ -36,6 +35,7 @@ import {
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
+import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -229,7 +229,7 @@ export const getTriggerContent = (
   title: string;
   description: string;
 } => {
-  const item = documentBuilderStore.getItemById(itemId);
+  const item = builderRootStore.itemStore.getItemById(itemId);
   if (!item) {
     return {
       description: '',
@@ -237,8 +237,9 @@ export const getTriggerContent = (
     };
   }
 
-  const sectionType = documentBuilderStore.getSectionById(item.sectionId)
-    ?.type as CollapsibleSectionType;
+  const sectionType = builderRootStore.sectionStore.getSectionById(
+    item.sectionId,
+  )?.type as CollapsibleSectionType;
   if (!sectionType) {
     return {
       description: '',
@@ -273,7 +274,7 @@ export const getTriggerContent = (
 };
 
 const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getEmploymentHistoryFieldValue = (
     fieldName: FieldValuesForKey<'WORK_EXPERIENCE'>,
@@ -310,7 +311,7 @@ const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getEducationFieldValue = (
     fieldName: FieldValuesForKey<'EDUCATION'>,
@@ -342,7 +343,7 @@ const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getWebsiteFieldValue = (
     fieldName: FieldValuesForKey<'WEBSITES_SOCIAL_LINKS'>,
@@ -367,7 +368,7 @@ const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getSkillFieldValue = (fieldName: FieldValuesForKey<'SKILLS'>) => {
     return itemFields.find((field) => field.name === fieldName)?.value || '';
@@ -376,8 +377,8 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
   const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
   const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
 
-  const item = documentBuilderStore.getItemById(itemId);
-  const metadata = documentBuilderStore.sections.find(
+  const item = builderRootStore.itemStore.getItemById(itemId);
+  const metadata = builderRootStore.sectionStore.sections.find(
     (section) => section.id === item?.sectionId,
   )?.metadata;
   const shouldShowSkillLevel =
@@ -396,7 +397,7 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getLanguageFieldValue = (fieldName: FieldValuesForKey<'LANGUAGES'>) => {
     return itemFields.find((field) => field.name === fieldName)?.value || '';
@@ -412,7 +413,7 @@ const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getCourseFieldValue = (fieldName: FieldValuesForKey<'COURSES'>) => {
     return itemFields.find((field) => field.name === fieldName)?.value || '';
@@ -443,7 +444,7 @@ const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getCustomFieldValue = (fieldName: FieldValuesForKey<'CUSTOM'>) => {
     return itemFields.find((field) => field.name === fieldName)?.value || '';
@@ -474,7 +475,7 @@ const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = documentBuilderStore.getFieldsByItemId(itemId);
+  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
 
   const getReferenceFieldValue = (
     fieldName: FieldValuesForKey<'REFERENCES'>,
@@ -524,11 +525,13 @@ export const getScoreColor = (
 };
 
 export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
-  const element = documentBuilderStore.itemRefs.get(getItemContainerId(itemId));
+  const element = builderRootStore.UIStore.itemRefs.get(
+    getItemContainerId(itemId),
+  );
   if (!element) return;
 
-  if (documentBuilderStore.collapsedItemId !== itemId) {
-    documentBuilderStore.toggleItem(itemId);
+  if (builderRootStore.UIStore.collapsedItemId !== itemId) {
+    builderRootStore.UIStore.toggleItem(itemId);
   }
 
   const scrollAndHighlight = () => {
