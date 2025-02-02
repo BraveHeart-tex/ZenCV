@@ -38,9 +38,16 @@ const ResumeScoreSuggestionItem = observer(
             fieldName,
             sectionType,
           );
-        if (!elementRef) return;
+
+        if (!elementRef) {
+          console.warn(
+            `No element ref found for field ${fieldName} in section ${sectionType}`,
+          );
+          return;
+        }
 
         scrollToCenterAndFocus(elementRef);
+        return;
       }
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
@@ -82,6 +89,7 @@ const ResumeScoreSuggestionItem = observer(
           if (!addedItemId) return;
           scrollItemIntoView(addedItemId);
         }
+        return;
       }
     });
 
