@@ -3,11 +3,11 @@ import {
   findValueInItemFields,
   getRenderableEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { TemplateDataSection } from '@/lib/types';
 import { View, Text } from '@react-pdf/renderer';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 
 import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonLanguagesSection = ({
   section,

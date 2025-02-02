@@ -1,13 +1,7 @@
 import {
-  DEX_Field,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
-import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
 import {
   FIELD_NAMES,
   FIXED_SECTIONS,
@@ -15,29 +9,33 @@ import {
   NOT_TEMPLATED_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
+  SUGGESTION_ACTION_TYPES,
+  SUGGESTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-
-type Values<T> = T[keyof T];
-
-export type NestedValues<T> = T extends object
-  ? Values<{ [K in keyof T]: NestedValues<T[K]> }>
-  : T;
-
-export type ValueOfNestedObject<T, K extends keyof T> = T[K][keyof T[K]];
+import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
+import {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
+import {
+  NestedValueOf,
+  ValueOf,
+  ValueOfNestedObject,
+} from '@/lib/types/utils.types';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
-export type SectionType =
-  (typeof INTERNAL_SECTION_TYPES)[keyof typeof INTERNAL_SECTION_TYPES];
+export type SectionType = ValueOf<typeof INTERNAL_SECTION_TYPES>;
 
 export type TemplatedSectionType = Exclude<
   SectionType,
   (typeof NOT_TEMPLATED_SECTION_TYPES)[number]
 >;
 
-export type SelectType = (typeof SELECT_TYPES)[keyof typeof SELECT_TYPES];
+export type SelectType = ValueOf<typeof SELECT_TYPES>;
 
-export type FieldName = NestedValues<typeof FIELD_NAMES>;
+export type FieldName = NestedValueOf<typeof FIELD_NAMES>;
 
 export type CollapsibleSectionType = Exclude<
   SectionType,
@@ -47,7 +45,7 @@ export type CollapsibleSectionType = Exclude<
 export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
   ValueOfNestedObject<typeof FIELD_NAMES, K>;
 
-export type SectionMetadataKey = NestedValues<typeof SECTION_METADATA_KEYS>;
+export type SectionMetadataKey = NestedValueOf<typeof SECTION_METADATA_KEYS>;
 
 export interface ParsedSectionMetadata {
   label: string;
@@ -103,6 +101,20 @@ export type MetadataValue =
   | typeof UNCHECKED_METADATA_VALUE
   | typeof CHECKED_METADATA_VALUE;
 
-export type SectionWithItems = SectionWithParsedMetadata & {
-  items: DEX_Item[];
-};
+export interface ResumeSuggestion {
+  label: string;
+  type: SuggestionType;
+  sectionType: SectionType;
+  scoreValue: number;
+  actionType: SuggestionActionType;
+  fieldName?: FieldName;
+}
+
+export type SuggestionActionType = ValueOf<typeof SUGGESTION_ACTION_TYPES>;
+
+export interface ResumeStats {
+  score: number;
+  suggestions: (ResumeSuggestion & { key: string })[];
+}
+
+export type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;

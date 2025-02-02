@@ -1,31 +1,17 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import {
-  BookOpenTextIcon,
-  BriefcaseBusinessIcon,
-  ContactIcon,
-  GuitarIcon,
-  LanguagesIcon,
-  type LucideIcon,
-  SlidersHorizontalIcon,
-} from 'lucide-react';
-import {
-  CONTAINER_TYPES,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
-import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
+import { type LucideIcon } from 'lucide-react';
+import { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { Button } from '@/components/ui/button';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
-import { TemplatedSectionType } from '@/lib/types';
-import { generateSectionMetadata } from '@/lib/helpers/documentBuilderHelpers';
 import { cn } from '@/lib/utils/stringUtils';
 import {
   builderSectionTitleClassNames,
   INTERNAL_SECTION_TYPES,
-  SECTION_METADATA_KEYS,
+  OTHER_SECTION_OPTIONS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
 
 export interface OtherSectionOption
   extends Omit<
@@ -36,56 +22,6 @@ export interface OtherSectionOption
   icon: LucideIcon;
   containerType: DEX_Item['containerType'];
 }
-
-const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
-  {
-    icon: SlidersHorizontalIcon,
-    title: 'Custom Section',
-    type: INTERNAL_SECTION_TYPES.CUSTOM,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-  },
-  {
-    icon: GuitarIcon,
-    title: 'Hobbies',
-    type: INTERNAL_SECTION_TYPES.HOBBIES,
-    containerType: CONTAINER_TYPES.STATIC,
-  },
-  {
-    icon: ContactIcon,
-    title: 'References',
-    type: INTERNAL_SECTION_TYPES.REFERENCES,
-    metadata: generateSectionMetadata([
-      {
-        label: 'Hide references and make them available upon request',
-        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: UNCHECKED_METADATA_VALUE,
-      },
-    ]),
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-  },
-  {
-    icon: BookOpenTextIcon,
-    title: 'Courses',
-    type: INTERNAL_SECTION_TYPES.COURSES,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-    itemCountPerContainer: 4,
-  },
-  {
-    icon: BriefcaseBusinessIcon,
-    title: 'Internships',
-    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-  },
-  {
-    icon: LanguagesIcon,
-    title: 'Languages',
-    type: INTERNAL_SECTION_TYPES.LANGUAGES,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-  },
-].map((item) => ({
-  ...item,
-  defaultTitle: item.title,
-}));
 
 const AddSectionWidget = observer(() => {
   const handleAddSection = action(async (option: OtherSectionOption) => {

@@ -1,4 +1,3 @@
-import { TemplateDataSection } from '@/lib/types';
 import {
   findValueInItemFields,
   getRenderableEntries,
@@ -12,6 +11,7 @@ import {
   FIELD_NAMES,
   SECTION_METADATA_KEYS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonSkillsSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getRenderableEntries(

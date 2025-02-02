@@ -1,6 +1,5 @@
 import React from 'react';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
-import { TemplateDataSection } from '@/lib/types';
 import { Text, View } from '@react-pdf/renderer';
 import {
   PDF_BODY_FONT_SIZE,
@@ -13,6 +12,7 @@ import {
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonInternshipsSection = ({
   section,

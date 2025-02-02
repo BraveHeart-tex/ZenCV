@@ -1,4 +1,3 @@
-import { TemplateDataSection } from '@/lib/types';
 import {
   findValueInItemFields,
   getRenderableEntries,
@@ -7,6 +6,7 @@ import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/londo
 import { Link, Text, View } from '@react-pdf/renderer';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonLinksSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getRenderableEntries(

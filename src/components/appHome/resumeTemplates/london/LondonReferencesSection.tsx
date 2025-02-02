@@ -1,7 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
-import { TemplateDataSection } from '@/lib/types';
 import {
   findValueInItemFields,
   getRenderableEntries,
@@ -12,6 +11,7 @@ import {
   FIELD_NAMES,
   SECTION_METADATA_KEYS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonReferencesSection = ({
   section,

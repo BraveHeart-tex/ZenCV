@@ -1,3 +1,15 @@
+import {
+  BookOpenTextIcon,
+  BriefcaseBusinessIcon,
+  ContactIcon,
+  GuitarIcon,
+  LanguagesIcon,
+  SlidersHorizontalIcon,
+} from 'lucide-react';
+import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
+import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
+import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
+
 export const INTERNAL_SECTION_TYPES = {
   PERSONAL_DETAILS: 'personal-details',
   SUMMARY: 'summary',
@@ -153,3 +165,122 @@ export const MAX_VISIBLE_FIELDS = 6 as const;
 
 export const builderSectionTitleClassNames =
   'scroll-m-20 text-2xl font-semibold tracking-tight';
+
+export const highlightedElementClassName = 'highlighted-element';
+
+export const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
+
+export const RESUME_SCORE_CONFIG = {
+  WORK_EXPERIENCE: 25,
+  EDUCATION: 15,
+  INTERNSHIPS: 2,
+  EMAIL: 5,
+  JOB_TITLE: 10,
+  SUMMARY: 15,
+  LANGUAGE: 3,
+  SKILL: 4,
+} as const;
+
+export const SUGGESTED_SKILLS_COUNT = 5;
+
+export const MAX_VISIBLE_SUGGESTIONS = 5;
+
+export const SUGGESTION_ACTION_TYPES = {
+  ADD_ITEM: 'ADD_ITEM',
+  FOCUS_FIELD: 'FOCUS_FIELD',
+} as const;
+
+export const TOGGLE_ITEM_WAIT_MS = 100 as const;
+
+export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
+
+export const SUGGESTION_TYPES = {
+  ITEM: 'ITEM',
+  FIELD: 'FIELD',
+} as const;
+
+export const SECTION_SUGGESTION_CONFIG = [
+  {
+    type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+    scoreValue: RESUME_SCORE_CONFIG.WORK_EXPERIENCE,
+    label: 'Add work experience',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.EDUCATION,
+    scoreValue: RESUME_SCORE_CONFIG.EDUCATION,
+    label: 'Add education',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+    scoreValue: RESUME_SCORE_CONFIG.INTERNSHIPS,
+    label: 'Add internships',
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.SUMMARY,
+    scoreValue: RESUME_SCORE_CONFIG.SUMMARY,
+    label: 'Add summary',
+    fieldName: FIELD_NAMES.SUMMARY.SUMMARY,
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    scoreValue: RESUME_SCORE_CONFIG.EMAIL,
+    label: 'Add email',
+    fieldName: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
+  },
+  {
+    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    scoreValue: RESUME_SCORE_CONFIG.JOB_TITLE,
+    label: 'Add job title',
+    fieldName: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+  },
+];
+
+export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
+  {
+    icon: SlidersHorizontalIcon,
+    title: 'Custom Section',
+    type: INTERNAL_SECTION_TYPES.CUSTOM,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+  {
+    icon: GuitarIcon,
+    title: 'Hobbies',
+    type: INTERNAL_SECTION_TYPES.HOBBIES,
+    containerType: CONTAINER_TYPES.STATIC,
+  },
+  {
+    icon: ContactIcon,
+    title: 'References',
+    type: INTERNAL_SECTION_TYPES.REFERENCES,
+    metadata: JSON.stringify([
+      {
+        label: 'Hide references and make them available upon request',
+        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+    ]),
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+  {
+    icon: BookOpenTextIcon,
+    title: 'Courses',
+    type: INTERNAL_SECTION_TYPES.COURSES,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+    itemCountPerContainer: 4,
+  },
+  {
+    icon: BriefcaseBusinessIcon,
+    title: 'Internships',
+    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+  {
+    icon: LanguagesIcon,
+    title: 'Languages',
+    type: INTERNAL_SECTION_TYPES.LANGUAGES,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+].map((item) => ({
+  ...item,
+  defaultTitle: item.title,
+}));

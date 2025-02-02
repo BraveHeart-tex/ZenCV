@@ -1,4 +1,3 @@
-import { TemplateDataSection } from '@/lib/types';
 import {
   findValueInItemFields,
   getRenderableEntries,
@@ -11,6 +10,7 @@ import {
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
 import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonWorkExperienceSection = ({
   section,

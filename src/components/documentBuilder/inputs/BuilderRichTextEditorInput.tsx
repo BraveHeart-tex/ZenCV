@@ -31,6 +31,9 @@ const BuilderRichTextEditorInput = observer(
           }
         `}</style>
         <RichTextEditor
+          ref={(ref) =>
+            documentBuilderStore.setFieldRef(fieldId.toString(), ref)
+          }
           id={id}
           initialValue={field.value}
           placeholder={field?.placeholder || ''}

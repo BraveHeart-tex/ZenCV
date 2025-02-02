@@ -10,8 +10,8 @@ export const removeHTMLTags = (htmlString: string) => {
   return htmlString.replace(/<[^>]*>/g, '');
 };
 
-export const SECTION_ID_PREFIX = 'section-' as const;
-export const ITEM_ID_PREFIX = 'item-' as const;
+const SECTION_ID_PREFIX = 'section-' as const;
+const ITEM_ID_PREFIX = 'item-' as const;
 
 export const getSectionContainerId = (
   sectionId: DEX_Section['id'],

@@ -41,7 +41,7 @@ const ResumeOverview = observer(() => {
         const viewportCenter = window.innerHeight / 2;
         let closestItem: { id: string; distance: number } | null = null;
 
-        documentBuilderStore.refs.forEach((el) => {
+        documentBuilderStore.itemRefs.forEach((el) => {
           if (!el) return;
           const rect = el.getBoundingClientRect();
           const elementCenter = rect.top + rect.height / 2;
@@ -68,6 +68,7 @@ const ResumeOverview = observer(() => {
 
       window.addEventListener('scroll', handleScroll, {
         signal: controller.signal,
+        passive: true,
       });
     });
 

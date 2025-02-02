@@ -28,7 +28,13 @@ const DocumentBuilderSelectInput = observer(
             await documentBuilderStore.setFieldValue(field.id, newValue);
           })}
         >
-          <SelectTrigger className="w-full" id={htmlInputId}>
+          <SelectTrigger
+            className="w-full"
+            id={htmlInputId}
+            ref={(ref) =>
+              documentBuilderStore.setFieldRef(field.id.toString(), ref)
+            }
+          >
             <SelectValue placeholder={field.name} />
           </SelectTrigger>
           <SelectContent>

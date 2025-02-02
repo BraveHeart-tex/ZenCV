@@ -1,4 +1,3 @@
-import { PdfTemplateData } from '@/lib/types';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
 import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
@@ -7,6 +6,7 @@ import {
   PDF_BODY_FONT_SIZE,
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 
 const LondonSummarySection = ({
   summarySection,

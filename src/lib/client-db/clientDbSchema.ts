@@ -3,7 +3,7 @@ import {
   FieldName,
   SectionType,
   SelectType,
-} from '@/lib/types';
+} from '@/lib/types/documentBuilder.types';
 
 type IdType = number;
 

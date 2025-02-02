@@ -5,11 +5,11 @@ import {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import {
-  documentBuilderStore,
-  TOGGLE_ITEM_WAIT_MS,
-} from '@/lib/stores/documentBuilder/documentBuilderStore';
+  getTriggerContent,
+  scrollItemIntoView,
+} from '@/lib/helpers/documentBuilderHelpers';
+import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   getSectionContainerId,
   getItemContainerId,
@@ -19,10 +19,7 @@ import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { FocusState } from './ResumeOverview';
 import { observer } from 'mobx-react-lite';
-
-const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
-
-const highlightedElementClassName = 'highlighted-element';
+import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 interface ResumeOverViewContentProps {
   visible: boolean;
@@ -37,33 +34,30 @@ const ResumeOverViewContent = observer(
       const container = document.getElementById(
         getSectionContainerId(sectionId),
       );
+      if (!container) return;
 
-      if (container) {
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      container.scrollIntoView({ behavior: 'instant', block: 'center' });
 
-        container.classList.add(highlightedElementClassName);
-        setTimeout(() => {
-          container.classList.remove(highlightedElementClassName);
-        }, CLASSNAME_TOGGLE_WAIT_MS);
-      }
+      const checkScrollCompletion = () => {
+        const rect = container.getBoundingClientRect();
+        const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+        if (isInView) {
+          container.classList.add(highlightedElementClassName);
+
+          setTimeout(() => {
+            container.classList.remove(highlightedElementClassName);
+          }, 500);
+        } else {
+          requestAnimationFrame(checkScrollCompletion);
+        }
+      };
+
+      requestAnimationFrame(checkScrollCompletion);
     };
 
     const handleScrollToItem = (itemId: DEX_Item['id']) => {
-      const container = document.getElementById(getItemContainerId(itemId));
-      if (!container) return;
-
-      if (documentBuilderStore.collapsedItemId !== itemId) {
-        documentBuilderStore.toggleItem(itemId);
-      }
-
-      setTimeout(() => {
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        container.classList.add(highlightedElementClassName);
-      }, TOGGLE_ITEM_WAIT_MS);
-
-      setTimeout(() => {
-        container.classList.remove(highlightedElementClassName);
-      }, CLASSNAME_TOGGLE_WAIT_MS);
+      scrollItemIntoView(itemId);
     };
 
     return (
