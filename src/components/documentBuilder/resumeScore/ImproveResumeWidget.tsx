@@ -61,7 +61,7 @@ const ImproveResumeWidget = observer(() => {
         <AnimatePresence>
           {open && (
             <CollapsibleContent forceMount className={'bg-popover'}>
-              <ResumeScoreSuggestionContent />
+              <ResumeScoreSuggestionContent setOpen={setOpen} />
             </CollapsibleContent>
           )}
         </AnimatePresence>

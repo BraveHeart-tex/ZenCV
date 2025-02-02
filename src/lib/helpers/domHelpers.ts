@@ -23,7 +23,16 @@ export const scrollToCenterAndFocus = (element: HTMLElement) => {
 
   element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-  setTimeout(() => {
-    element.focus();
-  }, 300);
+  const checkIfScrolled = () => {
+    const rect = element.getBoundingClientRect();
+    const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+    if (isInView) {
+      element.focus();
+    } else {
+      requestAnimationFrame(checkIfScrolled);
+    }
+  };
+
+  requestAnimationFrame(checkIfScrolled);
 };

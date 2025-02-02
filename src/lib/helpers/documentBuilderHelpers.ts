@@ -524,6 +524,7 @@ export const getScoreColor = (
   return { backgroundColor: bgColor, color: textColor };
 };
 
+// TODO: Remove setTimeouts from this
 export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
   const element = documentBuilderStore.itemRefs.get(getItemContainerId(itemId));
   if (!element) return;

@@ -19,9 +19,16 @@ import {
 const scoreValueBgColor = '#388e3c'; // Green
 const scoreValueTextColor = getTextColorForBackground(scoreValueBgColor);
 
+interface ResumeScoreSuggestionItemProps {
+  suggestion: ResumeSuggestion;
+
+  setOpen: (open: boolean) => void;
+}
+
 const ResumeScoreSuggestionItem = observer(
-  ({ suggestion }: { suggestion: ResumeSuggestion }) => {
+  ({ suggestion, setOpen }: ResumeScoreSuggestionItemProps) => {
     const handleSuggestionClick = action(async () => {
+      setOpen(false);
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.FOCUS_FIELD) {
         const { fieldName, sectionType } = suggestion;
         if (!fieldName) return;
@@ -69,7 +76,11 @@ const ResumeScoreSuggestionItem = observer(
         if (firstEmptySectionItem) {
           scrollItemIntoView(firstEmptySectionItem.id);
         } else {
-          await documentBuilderStore.addNewItemEntry(section.id);
+          const addedItemId = await documentBuilderStore.addNewItemEntry(
+            section.id,
+          );
+          if (!addedItemId) return;
+          scrollItemIntoView(addedItemId);
         }
       }
     });

@@ -286,6 +286,8 @@ export class DocumentBuilderStore {
       this.fields.push(...fields);
       this.toggleItem(item.id);
     });
+
+    return result.item.id;
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {

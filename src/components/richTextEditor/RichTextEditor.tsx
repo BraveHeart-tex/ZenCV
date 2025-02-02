@@ -3,7 +3,7 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Ref, useImperativeHandle } from 'react';
+import { Ref, useImperativeHandle, useRef } from 'react';
 import RichTextEditorMenubar from '@/components/richTextEditor/RichTextEditorMenubar';
 
 export interface RichTextEditorProps {
@@ -21,6 +21,7 @@ const RichTextEditor = ({
   ref,
   id,
 }: RichTextEditorProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -51,16 +52,12 @@ const RichTextEditor = ({
     },
     scrollIntoView: () => {
       if (editor) {
-        const editorElement = editor.view.dom as HTMLElement;
-        const rect = editorElement.getBoundingClientRect();
+        const editorElement = containerRef.current as HTMLElement;
 
-        window.scrollTo({
-          top:
-            window.scrollY +
-            rect.top -
-            window.innerHeight / 2 +
-            rect.height / 2,
-          behavior: 'smooth',
+        setTimeout(() => {
+          editorElement.scrollIntoView({
+            block: 'center',
+          });
         });
       }
     },
@@ -75,7 +72,7 @@ const RichTextEditor = ({
   }));
 
   return (
-    <div className="w-full">
+    <div className="w-full" ref={containerRef}>
       <div className="border-muted-foreground/50 bg-background editor-input-container rounded-md">
         <RichTextEditorMenubar editor={editor} />
         <div className="min-h-[200px] overflow-auto">
