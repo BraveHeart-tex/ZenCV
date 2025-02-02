@@ -5,7 +5,6 @@ import {
   OTHER_SECTION_OPTIONS,
   SUGGESTION_ACTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ import {
   getTextColorForBackground,
   scrollItemIntoView,
 } from '@/lib/helpers/documentBuilderHelpers';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const scoreValueBgColor = '#388e3c'; // Green
 const scoreValueTextColor = getTextColorForBackground(scoreValueBgColor);
@@ -34,7 +34,7 @@ const ResumeScoreSuggestionItem = observer(
         if (!fieldName) return;
 
         const elementRef =
-          documentBuilderStore.getFieldRefByFieldNameAndSection(
+          builderRootStore.UIStore.getFieldRefByFieldNameAndSection(
             fieldName,
             sectionType,
           );
@@ -51,7 +51,7 @@ const ResumeScoreSuggestionItem = observer(
       }
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
-        const section = documentBuilderStore.sections.find(
+        const section = builderRootStore.sectionStore.sections.find(
           (section) => section.type === suggestion.sectionType,
         );
 
@@ -61,15 +61,17 @@ const ResumeScoreSuggestionItem = observer(
           );
           if (!sectionOption) return;
 
-          await documentBuilderStore.addNewSection(sectionOption);
+          await builderRootStore.sectionStore.addNewSection(sectionOption);
           return;
         }
 
-        const firstEmptySectionItem = documentBuilderStore.items
+        const firstEmptySectionItem = builderRootStore.itemStore.items
           .filter((item) => item.sectionId === section.id)
           .reduce(
             (best, item) => {
-              const fields = documentBuilderStore.getFieldsByItemId(item.id);
+              const fields = builderRootStore.fieldStore.getFieldsByItemId(
+                item.id,
+              );
               if (fields.every((field) => !field.value)) {
                 return !best || item.displayOrder < best?.displayOrder
                   ? item
@@ -83,7 +85,7 @@ const ResumeScoreSuggestionItem = observer(
         if (firstEmptySectionItem) {
           scrollItemIntoView(firstEmptySectionItem.id);
         } else {
-          const addedItemId = await documentBuilderStore.addNewItemEntry(
+          const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
             section.id,
           );
           if (!addedItemId) return;

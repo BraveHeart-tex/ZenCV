@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import SectionMetadataOption from './SectionMetadataOption';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const MetadataOptionsList = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const sectionMetadataOptions =
-      documentBuilderStore.getSectionMetadataOptions(sectionId);
+      builderRootStore.sectionStore.getSectionMetadataOptions(sectionId);
 
     if (!sectionMetadataOptions?.length) return null;
 

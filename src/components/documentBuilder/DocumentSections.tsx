@@ -1,11 +1,11 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import DocumentSection from '@/components/documentBuilder/DocumentSection';
 import SectionsDndContext from '@/components/documentBuilder/SectionsDndContext';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentSections = observer(() => {
-  const sections = documentBuilderStore.sections
+  const sections = builderRootStore.sectionStore.sections
     .slice()
     .sort((a, b) => a.displayOrder - b.displayOrder);
 

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import ResumeScoreSuggestionItem from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
@@ -9,7 +9,10 @@ interface ResumeScoreSuggestionContentProps {
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
-    if (documentBuilderStore.debouncedResumeStats.suggestions.length === 0) {
+    const suggestions =
+      builderRootStore.templateStore.debouncedResumeStats.suggestions;
+
+    if (suggestions.length === 0) {
       return null;
     }
 
@@ -38,15 +41,13 @@ const ResumeScoreSuggestionContent = observer(
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {documentBuilderStore.debouncedResumeStats.suggestions.map(
-              (suggestion) => (
-                <ResumeScoreSuggestionItem
-                  setOpen={setOpen}
-                  suggestion={suggestion}
-                  key={suggestion.key}
-                />
-              ),
-            )}
+            {suggestions.map((suggestion) => (
+              <ResumeScoreSuggestionItem
+                setOpen={setOpen}
+                suggestion={suggestion}
+                key={suggestion.key}
+              />
+            ))}
           </motion.div>
         </div>
       </motion.div>

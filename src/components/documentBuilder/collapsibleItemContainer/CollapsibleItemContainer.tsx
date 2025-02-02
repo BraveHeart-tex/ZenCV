@@ -25,7 +25,6 @@ import {
 import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { useMedia } from 'react-use';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { observer } from 'mobx-react-lite';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { action } from 'mobx';
@@ -38,6 +37,7 @@ import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import CollapsibleItemHeader from './CollapsibleItemHeader';
 import CollapsibleItemMobileContent from './CollapsibleItemMobileContent';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -47,7 +47,7 @@ interface CollapsibleSectionItemContainerProps {
 const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
-    const open = itemId === documentBuilderStore.collapsedItemId;
+    const open = itemId === builderRootStore.UIStore.collapsedItemId;
 
     const {
       attributes,
@@ -68,7 +68,7 @@ const CollapsibleSectionItemContainer = observer(
         await getItemDeleteConfirmationPreference();
 
       if (shouldNotAskForConfirmation) {
-        await documentBuilderStore.removeItem(itemId);
+        await builderRootStore.itemStore.removeItem(itemId);
         showSuccessToast('Entry deleted successfully.');
         return;
       }
@@ -80,7 +80,7 @@ const CollapsibleSectionItemContainer = observer(
         cancelText: 'Cancel',
         onConfirm: async () => {
           const doNotAskAgainChecked = confirmDialogStore.doNotAskAgainChecked;
-          await documentBuilderStore.removeItem(itemId);
+          await builderRootStore.itemStore.removeItem(itemId);
           showSuccessToast('Entry deleted successfully.');
 
           if (doNotAskAgainChecked !== undefined) {
@@ -102,7 +102,10 @@ const CollapsibleSectionItemContainer = observer(
           )}
           ref={(ref) => {
             setNodeRef(ref);
-            documentBuilderStore.setElementRef(getItemContainerId(itemId), ref);
+            builderRootStore.UIStore.setElementRef(
+              getItemContainerId(itemId),
+              ref,
+            );
           }}
           style={{
             transition,
@@ -141,7 +144,7 @@ const CollapsibleSectionItemContainer = observer(
                   className="hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent"
                   onClick={() => {
                     if (isDragging || isSorting || isOver) return;
-                    documentBuilderStore.toggleItem(itemId);
+                    builderRootStore.UIStore.toggleItem(itemId);
                   }}
                 >
                   <CollapsibleItemHeader itemId={itemId} />
@@ -157,7 +160,7 @@ const CollapsibleSectionItemContainer = observer(
                           variant="ghost"
                           className="flex items-center justify-start w-full gap-2 py-6 border-b rounded-none"
                           onClick={() =>
-                            documentBuilderStore.toggleItem(itemId)
+                            builderRootStore.UIStore.toggleItem(itemId)
                           }
                         >
                           <PencilIcon className="text-primary" size={18} />
@@ -179,7 +182,7 @@ const CollapsibleSectionItemContainer = observer(
                   </Popover>
                 ) : (
                   <ChevronDownIcon
-                    onClick={() => documentBuilderStore.toggleItem(itemId)}
+                    onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
                     className={cn(
                       'mr-2 group-hover:text-primary text-muted-foreground transition-all cursor-pointer',
                       open ? 'rotate-180' : 'rotate-0',

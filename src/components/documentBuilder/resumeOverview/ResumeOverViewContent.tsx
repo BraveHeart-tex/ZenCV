@@ -9,7 +9,6 @@ import {
   getTriggerContent,
   scrollItemIntoView,
 } from '@/lib/helpers/documentBuilderHelpers';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   getSectionContainerId,
   getItemContainerId,
@@ -20,6 +19,7 @@ import * as motion from 'motion/react-m';
 import { FocusState } from './ResumeOverview';
 import { observer } from 'mobx-react-lite';
 import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface ResumeOverViewContentProps {
   visible: boolean;
@@ -28,7 +28,7 @@ interface ResumeOverViewContentProps {
 
 const ResumeOverViewContent = observer(
   ({ visible, focusState }: ResumeOverViewContentProps) => {
-    const sectionsWithItems = documentBuilderStore.sectionsWithItems;
+    const sectionsWithItems = builderRootStore.sectionStore.sectionsWithItems;
 
     const handleScrollToSection = (sectionId: DEX_Section['id']) => {
       const container = document.getElementById(

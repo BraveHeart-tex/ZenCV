@@ -3,12 +3,12 @@ import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const { online, previous } = useNetworkState();
   const userLostConnection = (!online && previous) || !online;
-  const pdfTemplateData = documentBuilderStore.debouncedTemplateData;
+  const pdfTemplateData = builderRootStore.templateStore.debouncedTemplateData;
 
   if (!pdfTemplateData) return null;
 

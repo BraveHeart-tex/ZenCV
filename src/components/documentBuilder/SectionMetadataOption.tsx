@@ -4,12 +4,12 @@ import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { Label } from '../ui/label';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 
 import { ParsedSectionMetadata } from '@/lib/types/documentBuilder.types';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const MetadataSwitch = observer(
   ({
@@ -24,7 +24,7 @@ const MetadataSwitch = observer(
       value={option.value}
       checked={option.value === CHECKED_METADATA_VALUE}
       onCheckedChange={action(async (checked) => {
-        await documentBuilderStore.updateSectionMetadata(sectionId, {
+        await builderRootStore.sectionStore.updateSectionMetadata(sectionId, {
           key: option.key,
           value: checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE,
         });

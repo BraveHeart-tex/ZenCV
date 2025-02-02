@@ -18,8 +18,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface ItemsDndContextProps {
   children: React.ReactNode;
@@ -39,7 +39,7 @@ const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     if (activeIndex === -1 || overIndex === -1) return;
 
     const newItems = arrayMove(items, activeIndex, overIndex);
-    await documentBuilderStore.reOrderSectionItems(newItems);
+    await builderRootStore.itemStore.reOrderSectionItems(newItems);
   });
 
   const sensors = useSensors(

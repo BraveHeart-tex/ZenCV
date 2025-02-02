@@ -1,7 +1,6 @@
 'use client';
 import { useMemo, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
 import {
@@ -36,11 +35,12 @@ import {
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { cn } from '@/lib/utils/stringUtils';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const PRESENT = 'Present';
 
 const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
-  const field = documentBuilderStore.getFieldById(fieldId)!;
+  const field = builderRootStore.fieldStore.getFieldById(fieldId)!;
   const htmlInputId = getFieldHtmlId(field);
 
   const month = useMemo(() => {
@@ -64,7 +64,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
 
   const handleBlur = action(async () => {
     const value = field.value;
-    await documentBuilderStore.setFieldValue(
+    await builderRootStore.fieldStore.setFieldValue(
       field.id,
       isValidDateFormat(value) ? value : '',
     );
@@ -106,7 +106,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
           type="text"
           value={field.value || ''}
           onChange={action(async (event) => {
-            await documentBuilderStore.setFieldValue(
+            await builderRootStore.fieldStore.setFieldValue(
               field.id,
               event.target.value,
               false,
@@ -133,7 +133,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
                   variant="ghost"
                   disabled={isPresent}
                   onClick={action(async () => {
-                    await documentBuilderStore.setFieldValue(
+                    await builderRootStore.fieldStore.setFieldValue(
                       field.id,
                       `${month} ${year - 1}`,
                     );
@@ -149,7 +149,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
                   variant="ghost"
                   disabled={isPresent}
                   onClick={action(async () => {
-                    await documentBuilderStore.setFieldValue(
+                    await builderRootStore.fieldStore.setFieldValue(
                       field.id,
                       `${month} ${year + 1}`,
                     );
@@ -166,7 +166,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
                     key={monthItem}
                     disabled={isPresent}
                     onClick={action(async () => {
-                      await documentBuilderStore.setFieldValue(
+                      await builderRootStore.fieldStore.setFieldValue(
                         field?.id,
                         `${monthItem} ${year}`,
                       );
@@ -181,7 +181,7 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
                   <Switch
                     checked={isPresent}
                     onCheckedChange={action(async (checked) => {
-                      await documentBuilderStore.setFieldValue(
+                      await builderRootStore.fieldStore.setFieldValue(
                         field?.id,
                         checked ? PRESENT : '',
                       );

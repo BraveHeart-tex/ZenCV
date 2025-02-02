@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { type LucideIcon } from 'lucide-react';
 import { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { Button } from '@/components/ui/button';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { cn } from '@/lib/utils/stringUtils';
 import {
@@ -12,6 +11,7 @@ import {
   OTHER_SECTION_OPTIONS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 export interface OtherSectionOption
   extends Omit<
@@ -25,7 +25,7 @@ export interface OtherSectionOption
 
 const AddSectionWidget = observer(() => {
   const handleAddSection = action(async (option: OtherSectionOption) => {
-    await documentBuilderStore.addNewSection(option);
+    await builderRootStore.sectionStore.addNewSection(option);
   });
 
   return (
@@ -39,7 +39,7 @@ const AddSectionWidget = observer(() => {
             variant="ghost"
             disabled={
               option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
-              documentBuilderStore.sections.some(
+              builderRootStore.sectionStore.sections.some(
                 (section) => section.type === option.type,
               )
             }

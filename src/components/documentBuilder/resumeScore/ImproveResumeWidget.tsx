@@ -55,7 +55,8 @@ const ImproveResumeWidget = observer(() => {
       <div
         className={cn(
           'transition-all',
-          isSticky && 'px-4 shadow-md rounded-sm',
+          isSticky &&
+            'px-4 shadow-md rounded-sm dark:border-t-0 dark:border dark:rounded-t-none',
         )}
       >
         <AnimatePresence>

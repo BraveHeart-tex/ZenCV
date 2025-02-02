@@ -1,15 +1,16 @@
 import { observer } from 'mobx-react-lite';
 import { Progress } from '@/components/ui/progress';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 const ResumeScoreProgressBar = observer(() => {
-  const colors = getScoreColor(documentBuilderStore.debouncedResumeStats.score);
+  const score = builderRootStore.templateStore.debouncedResumeStats.score;
+  const colors = getScoreColor(score);
 
   return (
     <Progress
       className="h-1"
-      value={documentBuilderStore.debouncedResumeStats.score}
+      value={score}
       indicatorStyles={{
         backgroundColor: colors.backgroundColor,
       }}

@@ -12,7 +12,7 @@ import { GripVertical } from 'lucide-react';
 import type React from 'react';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface DraggableSectionContainerProps {
   sectionId: DEX_Section['id'];
@@ -42,7 +42,7 @@ const DraggableSectionContainer = ({
     <section
       ref={(ref) => {
         setNodeRef(ref);
-        documentBuilderStore.setElementRef(
+        builderRootStore.UIStore.setElementRef(
           getSectionContainerId(sectionId),
           ref,
         );

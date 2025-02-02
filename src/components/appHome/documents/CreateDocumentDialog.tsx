@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { createDocument } from '@/lib/client-db/clientDbService';
 import { useNavigate } from 'react-router';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -42,7 +42,7 @@ const CreateDocumentDialog = ({
         return;
       }
 
-      await documentBuilderStore.initializeStore(documentId);
+      await builderRootStore.documentStore.initializeStore(documentId);
       showSuccessToast('Document created successfully.');
       setName('');
       setOpen(false);

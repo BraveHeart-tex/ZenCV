@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { action } from 'mobx';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface AddNewItemButtonProps {
   sectionId: DEX_Section['id'];
@@ -12,7 +12,7 @@ interface AddNewItemButtonProps {
 
 const AddNewItemButton = observer(({ sectionId }: AddNewItemButtonProps) => {
   const handleAddItem = action(async () => {
-    await documentBuilderStore.addNewItemEntry(sectionId);
+    await builderRootStore.itemStore.addNewItemEntry(sectionId);
   });
 
   return (
