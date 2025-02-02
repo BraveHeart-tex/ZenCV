@@ -21,7 +21,7 @@ const ResumeScoreSuggestionContent = observer(() => {
           Boost Your Resume Score
         </h3>
         <motion.div
-          className="md:grid-cols-2 grid gap-4 py-4"
+          className="md:grid-cols-2 grid gap-2 py-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}

@@ -92,7 +92,7 @@ const ResumeScoreSuggestionItem = observer(
           onClick={handleSuggestionClick}
         >
           <motion.span
-            className="w-[2.5rem] h-max tabular-nums p-1 text-xs font-medium rounded-md"
+            className="w-[2.5rem] h-max p-1 text-xs rounded-md"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             style={{
