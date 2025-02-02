@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,13 +12,31 @@ import ResumeScoreProgressBar from '@/components/documentBuilder/resumeScore/Res
 import ResumeScoreSuggestionContent from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionContent';
 import { ChevronDownIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
+import { useMotionValueEvent, useScroll } from 'motion/react';
 
 const ImproveResumeWidget = observer(() => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
   const [open, setOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    if (containerRef.current) {
+      const parentContainer = containerRef.current.parentElement;
+      if (!parentContainer) return;
+      const { top } = parentContainer.getBoundingClientRect();
+      setIsSticky(latest > top);
+    }
+  });
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="w-full">
-      <div className="w-full space-y-2">
+    <Collapsible
+      ref={containerRef}
+      open={open}
+      onOpenChange={setOpen}
+      className={'w-full py-4 transition-all rounded-md'}
+    >
+      <div className={'w-full space-y-2'}>
         <div className="flex items-center justify-between w-full">
           <ResumeScoreBadge />
           <CollapsibleTrigger asChild>
@@ -34,13 +52,20 @@ const ImproveResumeWidget = observer(() => {
         </div>
         <ResumeScoreProgressBar />
       </div>
-      <AnimatePresence>
-        {open && (
-          <CollapsibleContent forceMount className="bg-popover">
-            <ResumeScoreSuggestionContent />
-          </CollapsibleContent>
+      <div
+        className={cn(
+          'transition-all',
+          isSticky && 'px-1 shadow-md rounded-md',
         )}
-      </AnimatePresence>
+      >
+        <AnimatePresence>
+          {open && (
+            <CollapsibleContent forceMount className={'bg-popover'}>
+              <ResumeScoreSuggestionContent />
+            </CollapsibleContent>
+          )}
+        </AnimatePresence>
+      </div>
     </Collapsible>
   );
 });

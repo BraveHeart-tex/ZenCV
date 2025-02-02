@@ -19,7 +19,7 @@ import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 import { cn } from '@/lib/utils/stringUtils';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
-import ImproveResumeWidget from '@/components/documentBuilder/resumeScore/ImproveResumeWidget';
+import ImproveResumeWidget from './resumeScore/ImproveResumeWidget';
 
 const DocumentBuilderClient = observer(
   ({ documentId }: { documentId: DEX_Document['id'] }) => {
@@ -81,9 +81,14 @@ const DocumentBuilderClient = observer(
           <div className="max-w-screen-2xl mx-auto">
             <DocumentBuilderHeader />
           </div>
-          <div className="max-w-screen-2xl bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto">
+          <div
+            className={
+              'max-w-screen-2xl bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto'
+            }
+          >
             <ImproveResumeWidget />
           </div>
+
           <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
             <DocumentSections />
             <AddSectionWidget />
