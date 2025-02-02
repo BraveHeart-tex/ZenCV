@@ -1,4 +1,4 @@
-import { autorun, computed, makeAutoObservable, runInAction } from 'mobx';
+import { autorun, computed, makeAutoObservable, runInAction, toJS } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import {
   PdfTemplateData,
@@ -60,31 +60,33 @@ export class BuilderTemplateStore {
       INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
       INTERNAL_SECTION_TYPES.SUMMARY,
     ];
-    const mappedSections: PdfTemplateData['sections'] =
-      this.root.sectionStore.sections
-        .filter(
-          (section) =>
-            !singleEntrySectionTypes.includes(
-              section.type as (typeof singleEntrySectionTypes)[number],
-            ),
-        )
-        .slice()
-        .sort(sortByDisplayOrder)
-        .map((section) => {
-          return {
-            ...section,
-            items: this.root.itemStore.items
-              .slice()
-              .sort(sortByDisplayOrder)
-              .filter((item) => item.sectionId === section.id)
-              .map((item) => ({
-                ...item,
-                fields: this.root.fieldStore.fields.filter(
-                  (field) => field.itemId === item.id,
-                ),
-              })),
-          };
-        });
+
+    const sections = toJS(this.root.sectionStore.sections);
+    const items = toJS(this.root.itemStore.items);
+    const fields = toJS(this.root.fieldStore.fields);
+
+    const mappedSections: PdfTemplateData['sections'] = sections
+      .filter(
+        (section) =>
+          !singleEntrySectionTypes.includes(
+            section.type as (typeof singleEntrySectionTypes)[number],
+          ),
+      )
+      .slice()
+      .sort(sortByDisplayOrder)
+      .map((section) => {
+        return {
+          ...section,
+          items: items
+            .slice()
+            .sort(sortByDisplayOrder)
+            .filter((item) => item.sectionId === section.id)
+            .map((item) => ({
+              ...item,
+              fields: fields.filter((field) => field.itemId === item.id),
+            })),
+        };
+      });
 
     const getFieldValueByName = this.root.fieldStore.getFieldValueByName;
 
