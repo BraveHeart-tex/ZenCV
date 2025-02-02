@@ -9,10 +9,10 @@ const ResumeScoreSuggestionContent = observer(() => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      transition={{ duration: 0.2 }}
     >
       <motion.div
-        className="md:grid-cols-2 grid gap-4"
+        className="md:grid-cols-2 grid gap-4 py-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1 }}
