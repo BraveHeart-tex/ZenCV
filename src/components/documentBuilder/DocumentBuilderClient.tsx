@@ -53,7 +53,7 @@ const DocumentBuilderClient = observer(
       <TooltipProvider>
         <div
           className={cn(
-            'bg-background min-h-screen px-6 md:p-12 py-14 h-screen relative w-1/2 hide-scrollbar',
+            'bg-background min-h-screen px-6 md:p-12 py-14 relative w-1/2 hide-scrollbar',
             view === 'builder' && 'w-full xl:w-1/2',
             view === 'preview' && 'hidden xl:block',
           )}
@@ -77,11 +77,12 @@ const DocumentBuilderClient = observer(
               <p>Documents page</p>
             </TooltipContent>
           </Tooltip>
+
           <div className="max-w-screen-2xl mx-auto">
             <DocumentBuilderHeader />
-            <div className="flex items-center justify-between">
-              <ImproveResumeWidget />
-            </div>
+          </div>
+          <div className="max-w-screen-2xl bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto">
+            <ImproveResumeWidget />
           </div>
           <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
             <DocumentSections />
