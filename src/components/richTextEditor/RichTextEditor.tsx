@@ -52,13 +52,9 @@ const RichTextEditor = ({
     },
     scrollIntoView: () => {
       if (editor) {
+        editor.commands.blur();
         const editorElement = containerRef.current as HTMLElement;
-
-        setTimeout(() => {
-          editorElement.scrollIntoView({
-            block: 'center',
-          });
-        });
+        editorElement.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
     },
     getBoundingClientRect(): DOMRect {
