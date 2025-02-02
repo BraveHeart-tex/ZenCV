@@ -5,7 +5,10 @@ import {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
+import {
+  getTriggerContent,
+  scrollItemIntoView,
+} from '@/lib/helpers/documentBuilderHelpers';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import {
   getSectionContainerId,
@@ -16,11 +19,10 @@ import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { FocusState } from './ResumeOverview';
 import { observer } from 'mobx-react-lite';
-import { TOGGLE_ITEM_WAIT_MS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-
-const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
-
-const highlightedElementClassName = 'highlighted-element';
+import {
+  CLASSNAME_TOGGLE_WAIT_MS,
+  highlightedElementClassName,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 interface ResumeOverViewContentProps {
   visible: boolean;
@@ -47,21 +49,7 @@ const ResumeOverViewContent = observer(
     };
 
     const handleScrollToItem = (itemId: DEX_Item['id']) => {
-      const container = document.getElementById(getItemContainerId(itemId));
-      if (!container) return;
-
-      if (documentBuilderStore.collapsedItemId !== itemId) {
-        documentBuilderStore.toggleItem(itemId);
-      }
-
-      setTimeout(() => {
-        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        container.classList.add(highlightedElementClassName);
-      }, TOGGLE_ITEM_WAIT_MS);
-
-      setTimeout(() => {
-        container.classList.remove(highlightedElementClassName);
-      }, CLASSNAME_TOGGLE_WAIT_MS);
+      scrollItemIntoView(itemId);
     };
 
     return (

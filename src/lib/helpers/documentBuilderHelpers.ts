@@ -21,19 +21,22 @@ import {
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
 import {
+  CLASSNAME_TOGGLE_WAIT_MS,
   FIELD_NAMES,
+  highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
+  TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   CollapsibleSectionType,
   FieldInsertTemplate,
   FieldValuesForKey,
-  ParsedSectionMetadata,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
+import { getItemContainerId } from '@/lib/utils/stringUtils';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -111,7 +114,7 @@ export const getInitialDocumentInsertBoilerplate = (
       documentId,
       title: 'Skills',
       type: INTERNAL_SECTION_TYPES.SKILLS,
-      metadata: generateSectionMetadata([
+      metadata: JSON.stringify([
         {
           label: 'Show experience level',
           key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
@@ -491,14 +494,20 @@ const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
   };
 };
 
-export const generateSectionMetadata = (data: ParsedSectionMetadata[]) => {
-  return JSON.stringify(data);
+export const getTextColorForBackground = (bgColor: string) => {
+  const rgb = hexToRgb(bgColor);
+  const luminance = getLuminance(rgb);
+
+  // If the luminance is low (dark background), use light text (white), else use dark text (black)
+  return luminance < 0.5 ? '#ffffff' : '#000000';
 };
 
-export function getScoreColor(score: number): {
+export const getScoreColor = (
+  score: number,
+): {
   color: string;
   backgroundColor: string;
-} {
+} => {
   let bgColor: string;
 
   if (score <= 24)
@@ -511,11 +520,24 @@ export function getScoreColor(score: number): {
     bgColor = '#388e3c'; // Green
   else bgColor = '#4a148c'; // Purple
 
-  const rgb = hexToRgb(bgColor);
-  const luminance = getLuminance(rgb);
-
-  // If the luminance is low (dark background), use light text (white), else use dark text (black)
-  const textColor = luminance < 0.5 ? '#ffffff' : '#000000';
-
+  const textColor = getTextColorForBackground(bgColor);
   return { backgroundColor: bgColor, color: textColor };
-}
+};
+
+export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
+  const element = documentBuilderStore.itemRefs.get(getItemContainerId(itemId));
+  if (!element) return;
+
+  if (documentBuilderStore.collapsedItemId !== itemId) {
+    documentBuilderStore.toggleItem(itemId);
+  }
+
+  setTimeout(() => {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.classList.add(highlightedElementClassName);
+  }, TOGGLE_ITEM_WAIT_MS);
+
+  setTimeout(() => {
+    element.classList.remove(highlightedElementClassName);
+  }, CLASSNAME_TOGGLE_WAIT_MS);
+};

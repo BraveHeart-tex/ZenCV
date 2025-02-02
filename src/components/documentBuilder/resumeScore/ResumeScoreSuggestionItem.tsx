@@ -1,15 +1,27 @@
 'use client';
 import * as motion from 'motion/react-m';
 import { observer } from 'mobx-react-lite';
-import { SUGGESTION_ACTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  OTHER_SECTION_OPTIONS,
+  SUGGESTION_ACTION_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { documentBuilderStore } from '@/lib/stores/documentBuilder/documentBuilderStore';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
 import { Button } from '@/components/ui/button';
+import { action } from 'mobx';
+import { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import {
+  getTextColorForBackground,
+  scrollItemIntoView,
+} from '@/lib/helpers/documentBuilderHelpers';
+
+const scoreValueBgColor = '#388e3c'; // Green
+const scoreValueTextColor = getTextColorForBackground(scoreValueBgColor);
 
 const ResumeScoreSuggestionItem = observer(
   ({ suggestion }: { suggestion: ResumeSuggestion }) => {
-    const handleSuggestionClick = () => {
+    const handleSuggestionClick = action(async () => {
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.FOCUS_FIELD) {
         const { fieldName, sectionType } = suggestion;
         if (!fieldName) return;
@@ -25,13 +37,42 @@ const ResumeScoreSuggestionItem = observer(
       }
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
-        // TODO:
-      }
+        const section = documentBuilderStore.sections.find(
+          (section) => section.type === suggestion.sectionType,
+        );
 
-      if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_SECTION) {
-        // TODO:
+        if (!section) {
+          const sectionOption = OTHER_SECTION_OPTIONS.find(
+            (sectionOption) => sectionOption.type === suggestion.sectionType,
+          );
+          if (!sectionOption) return;
+
+          await documentBuilderStore.addNewSection(sectionOption);
+          return;
+        }
+
+        const firstEmptySectionItem = documentBuilderStore.items
+          .filter((item) => item.sectionId === section.id)
+          .reduce(
+            (best, item) => {
+              const fields = documentBuilderStore.getFieldsByItemId(item.id);
+              if (fields.every((field) => !field.value)) {
+                return !best || item.displayOrder < best?.displayOrder
+                  ? item
+                  : best;
+              }
+              return best;
+            },
+            null as DEX_Item | null,
+          );
+
+        if (firstEmptySectionItem) {
+          scrollItemIntoView(firstEmptySectionItem.id);
+        } else {
+          await documentBuilderStore.addNewItemEntry(section.id);
+        }
       }
-    };
+    });
 
     return (
       <Button
@@ -51,9 +92,13 @@ const ResumeScoreSuggestionItem = observer(
           onClick={handleSuggestionClick}
         >
           <motion.span
-            className="w-[2.5rem] h-max tabular-nums p-1 text-xs font-medium text-white bg-green-500 rounded-md"
+            className="w-[2.5rem] h-max tabular-nums p-1 text-xs font-medium rounded-md"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
+            style={{
+              backgroundColor: scoreValueBgColor,
+              color: scoreValueTextColor,
+            }}
           >
             +{suggestion.scoreValue}%
           </motion.span>
