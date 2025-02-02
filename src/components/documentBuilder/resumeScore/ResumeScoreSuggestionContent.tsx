@@ -13,18 +13,25 @@ const ResumeScoreSuggestionContent = observer(() => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: 0.2 }}
-      className="py-4"
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      className="overflow-hidden"
     >
-      <div>
-        <h3 className="scroll-m-20 text-lg font-semibold tracking-tight">
+      <div className="py-4">
+        <motion.h3
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 0 }}
+          transition={{ duration: 0.2 }}
+          className="scroll-m-20 text-lg font-semibold tracking-tight"
+        >
           Boost Your Resume Score
-        </h3>
+        </motion.h3>
         <motion.div
           className="md:grid-cols-2 grid gap-2 py-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
         >
           {documentBuilderStore.debouncedResumeStats.suggestions.map(
             (suggestion) => (
