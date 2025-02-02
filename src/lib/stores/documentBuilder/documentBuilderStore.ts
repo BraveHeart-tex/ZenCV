@@ -3,7 +3,6 @@ import {
   computed,
   makeAutoObservable,
   observable,
-  ObservableMap,
   runInAction,
 } from 'mobx';
 import type {
@@ -62,8 +61,8 @@ export class DocumentBuilderStore {
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
 
-  itemRefs: ObservableMap<string, HTMLElement | null> = observable.map();
-  fieldRefs: ObservableMap<string, HTMLElement | null> = observable.map();
+  itemRefs: Map<string, HTMLElement | null> = new Map();
+  fieldRefs: Map<string, HTMLElement | null> = new Map();
 
   constructor() {
     makeAutoObservable(this);
