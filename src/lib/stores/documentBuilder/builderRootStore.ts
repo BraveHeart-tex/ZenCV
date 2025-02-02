@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx';
 import { BuilderDocumentStore } from './builderDocumentStore';
 import { BuilderFieldStore } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
@@ -23,13 +24,15 @@ export class BuilderRootStore {
   }
 
   resetState = () => {
-    this.documentStore.document = null;
-    this.sectionStore.sections = [];
-    this.itemStore.items = [];
-    this.fieldStore.fields = [];
-    this.UIStore.collapsedItemId = null;
-    this.UIStore.itemRefs = new Map();
-    this.UIStore.fieldRefs = new Map();
+    runInAction(() => {
+      this.documentStore.document = null;
+      this.sectionStore.sections = [];
+      this.itemStore.items = [];
+      this.fieldStore.fields = [];
+      this.UIStore.collapsedItemId = null;
+      this.UIStore.itemRefs = new Map();
+      this.UIStore.fieldRefs = new Map();
+    });
   };
 }
 

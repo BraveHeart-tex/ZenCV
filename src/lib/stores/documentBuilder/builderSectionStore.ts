@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import {
   MetadataValue,
@@ -29,7 +29,6 @@ export class BuilderSectionStore {
     return this.sections.find((section) => section.id === sectionId);
   };
 
-  @action
   reOrderSections = async (sections: SectionWithParsedMetadata[]) => {
     if (sections.length === 0) return;
 
@@ -45,11 +44,13 @@ export class BuilderSectionStore {
       return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
 
-    this.sections.forEach((section) => {
-      const newOrder = newDisplayOrders.find((o) => o.id === section.id);
-      if (newOrder && newOrder?.displayOrder !== section.displayOrder) {
-        section.displayOrder = newOrder.displayOrder;
-      }
+    runInAction(() => {
+      this.sections.forEach((section) => {
+        const newOrder = newDisplayOrders.find((o) => o.id === section.id);
+        if (newOrder && newOrder?.displayOrder !== section.displayOrder) {
+          section.displayOrder = newOrder.displayOrder;
+        }
+      });
     });
 
     if (changedSections.length) {
@@ -68,7 +69,6 @@ export class BuilderSectionStore {
     }
   };
 
-  @action
   addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
     const template = getItemInsertTemplate(option.type);
     if (!template) return;
@@ -95,10 +95,12 @@ export class BuilderSectionStore {
 
         const sectionId = await clientDb.sections.add(sectionDto);
 
-        this.sections.push({
-          ...sectionDto,
-          id: sectionId,
-          metadata: option?.metadata ? JSON.parse(option?.metadata) : [],
+        runInAction(() => {
+          this.sections.push({
+            ...sectionDto,
+            id: sectionId,
+            metadata: option?.metadata ? JSON.parse(option?.metadata) : [],
+          });
         });
 
         await this.root.itemStore.addNewItemEntry(sectionId);
@@ -106,7 +108,6 @@ export class BuilderSectionStore {
     );
   };
 
-  @action
   removeSection = async (sectionId: DEX_Section['id']) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
@@ -115,26 +116,31 @@ export class BuilderSectionStore {
       .filter((item) => item.sectionId !== sectionId)
       .map((item) => item.id);
 
-    this.sections = this.sections.filter((section) => section.id !== sectionId);
-    this.root.itemStore.items = this.root.itemStore.items.filter(
-      (item) => item.sectionId !== sectionId,
-    );
-    this.root.fieldStore.fields = this.root.fieldStore.fields.filter((field) =>
-      itemIdsToKeep.includes(field.itemId),
-    );
+    runInAction(() => {
+      this.sections = this.sections.filter(
+        (section) => section.id !== sectionId,
+      );
+      this.root.itemStore.items = this.root.itemStore.items.filter(
+        (item) => item.sectionId !== sectionId,
+      );
+      this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
+        (field) => itemIdsToKeep.includes(field.itemId),
+      );
+    });
 
     await deleteSection(sectionId);
   };
 
-  @action
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
 
-    section.title = value;
-
     await updateSection(sectionId, {
       title: value,
+    });
+
+    runInAction(() => {
+      section.title = value;
     });
   };
 
@@ -146,7 +152,6 @@ export class BuilderSectionStore {
     return section?.metadata || [];
   };
 
-  @action
   updateSectionMetadata = async (
     sectionId: DEX_Section['id'],
     data: {
@@ -160,9 +165,12 @@ export class BuilderSectionStore {
     const metadata = section.metadata.find(
       (metadata) => metadata.key === data.key,
     );
-    if (metadata) {
-      metadata.value = data.value;
-    }
+
+    runInAction(() => {
+      if (metadata) {
+        metadata.value = data.value;
+      }
+    });
 
     await updateSection(sectionId, {
       metadata: JSON.stringify(

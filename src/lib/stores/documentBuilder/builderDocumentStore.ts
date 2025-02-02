@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import {
@@ -14,7 +14,6 @@ export class BuilderDocumentStore {
     makeAutoObservable(this);
   }
 
-  @action
   initializeStore = async (documentId: DEX_Document['id']) => {
     try {
       const result = await getFullDocumentStructure(documentId);
@@ -26,18 +25,20 @@ export class BuilderDocumentStore {
 
       const { document, sections, items, fields } = result;
 
-      this.document = document;
-      this.root.sectionStore.sections = sections
-        .slice()
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .map((section) => ({
-          ...section,
-          metadata: JSON.parse(section?.metadata || '[]'),
-        }));
-      this.root.itemStore.items = items
-        .slice()
-        .sort((a, b) => a.displayOrder - b.displayOrder);
-      this.root.fieldStore.fields = fields;
+      runInAction(() => {
+        this.document = document;
+        this.root.sectionStore.sections = sections
+          .slice()
+          .sort((a, b) => a.displayOrder - b.displayOrder)
+          .map((section) => ({
+            ...section,
+            metadata: JSON.parse(section?.metadata || '[]'),
+          }));
+        this.root.itemStore.items = items
+          .slice()
+          .sort((a, b) => a.displayOrder - b.displayOrder);
+        this.root.fieldStore.fields = fields;
+      });
     } catch (error) {
       console.error('initializeStore error', error);
       return {
@@ -46,12 +47,14 @@ export class BuilderDocumentStore {
     }
   };
 
-  @action
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
     try {
       await renameDocument(this.document.id, newValue);
-      this.document.title = newValue;
+      runInAction(() => {
+        if (!this.document) return;
+        this.document.title = newValue;
+      });
     } catch (error) {
       console.error('renameDocument error', error);
       return {

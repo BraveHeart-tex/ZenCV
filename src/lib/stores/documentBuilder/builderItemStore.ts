@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
@@ -30,7 +30,6 @@ export class BuilderItemStore {
       .sort((a, b) => a.displayOrder - b.displayOrder);
   };
 
-  @action
   addNewItemEntry = async (sectionId: DEX_Section['id']) => {
     const section = this.root.sectionStore.getSectionById(sectionId);
     if (!section) return;
@@ -54,27 +53,29 @@ export class BuilderItemStore {
 
     const { fields, item } = result;
 
-    this.items.push(item);
-    this.root.fieldStore.fields.push(...fields);
-    this.root.UIStore.toggleItem(item.id);
+    runInAction(() => {
+      this.items.push(item);
+      this.root.fieldStore.fields.push(...fields);
+      this.root.UIStore.toggleItem(item.id);
+    });
 
     return result.item.id;
   };
 
-  @action
   removeItem = async (itemId: DEX_Item['id']) => {
     const item = this.items.find((item) => item.id === itemId);
     if (!item) return;
 
-    this.items = this.items.filter((item) => item.id !== itemId);
-    this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
-      (field) => field.itemId !== itemId,
-    );
+    runInAction(() => {
+      this.items = this.items.filter((item) => item.id !== itemId);
+      this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
+        (field) => field.itemId !== itemId,
+      );
+    });
 
     await deleteItem(itemId);
   };
 
-  @action
   reOrderSectionItems = async (items: DEX_Item[]) => {
     if (items.length === 0) return;
 
@@ -90,11 +91,13 @@ export class BuilderItemStore {
 
     if (changedItems.length === 0) return;
 
-    this.items.forEach((item) => {
-      const newOrder = newDisplayOrders.find((o) => o.id === item.id);
-      if (newOrder && newOrder?.displayOrder !== item.displayOrder) {
-        item.displayOrder = newOrder.displayOrder;
-      }
+    runInAction(() => {
+      this.items.forEach((item) => {
+        const newOrder = newDisplayOrders.find((o) => o.id === item.id);
+        if (newOrder && newOrder?.displayOrder !== item.displayOrder) {
+          item.displayOrder = newOrder.displayOrder;
+        }
+      });
     });
 
     if (changedItems.length) {
