@@ -21,7 +21,6 @@ import {
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
 import {
-  CLASSNAME_TOGGLE_WAIT_MS,
   FIELD_NAMES,
   highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
@@ -524,7 +523,6 @@ export const getScoreColor = (
   return { backgroundColor: bgColor, color: textColor };
 };
 
-// TODO: Remove setTimeouts from this
 export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
   const element = documentBuilderStore.itemRefs.get(getItemContainerId(itemId));
   if (!element) return;
@@ -533,12 +531,27 @@ export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
     documentBuilderStore.toggleItem(itemId);
   }
 
-  setTimeout(() => {
+  const scrollAndHighlight = () => {
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    element.classList.add(highlightedElementClassName);
-  }, TOGGLE_ITEM_WAIT_MS);
 
-  setTimeout(() => {
-    element.classList.remove(highlightedElementClassName);
-  }, CLASSNAME_TOGGLE_WAIT_MS);
+    const checkScrollCompletion = () => {
+      const rect = element.getBoundingClientRect();
+      const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+      if (isInView) {
+        element.classList.add(highlightedElementClassName);
+        element.focus();
+
+        setTimeout(() => {
+          element.classList.remove(highlightedElementClassName);
+        }, 500);
+      } else {
+        requestAnimationFrame(checkScrollCompletion);
+      }
+    };
+
+    requestAnimationFrame(checkScrollCompletion);
+  };
+
+  setTimeout(scrollAndHighlight, TOGGLE_ITEM_WAIT_MS);
 };
