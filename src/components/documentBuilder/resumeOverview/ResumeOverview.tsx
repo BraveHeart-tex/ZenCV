@@ -68,6 +68,7 @@ const ResumeOverview = observer(() => {
 
       window.addEventListener('scroll', handleScroll, {
         signal: controller.signal,
+        passive: true,
       });
     });
 

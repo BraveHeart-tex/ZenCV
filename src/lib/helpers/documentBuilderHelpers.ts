@@ -532,7 +532,7 @@ export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
   }
 
   const scrollAndHighlight = () => {
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.scrollIntoView({ behavior: 'instant', block: 'center' });
 
     const checkScrollCompletion = () => {
       const rect = element.getBoundingClientRect();

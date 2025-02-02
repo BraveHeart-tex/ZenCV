@@ -21,7 +21,7 @@ export const scrollToCenterAndFocus = (element: HTMLElement) => {
     return;
   }
 
-  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  element.scrollIntoView({ behavior: 'instant', block: 'center' });
 
   const checkIfScrolled = () => {
     const rect = element.getBoundingClientRect();

@@ -36,7 +36,7 @@ const ResumeOverViewContent = observer(
       );
       if (!container) return;
 
-      container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      container.scrollIntoView({ behavior: 'instant', block: 'center' });
 
       const checkScrollCompletion = () => {
         const rect = container.getBoundingClientRect();
