@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: `${APP_NAME}`,
+  title: `${APP_NAME} - CV Builder`,
   description: `${APP_NAME} makes building your CV effortless and stress-free. Design a professional CV in minutes with our intuitive visual editor. Export as PDF with unlimited downloads. Your data stays 100% private and never leaves your device. Job hunting is tough enough. Why pay for tools you only use when you're looking for work?`,
 };
 
