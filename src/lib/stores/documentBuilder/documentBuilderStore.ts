@@ -1,9 +1,9 @@
 import {
+  autorun,
   computed,
   makeAutoObservable,
   observable,
   ObservableMap,
-  reaction,
   runInAction,
 } from 'mobx';
 import type {
@@ -66,35 +66,31 @@ export class DocumentBuilderStore {
   fieldRefs: ObservableMap<string, HTMLElement | null> = observable.map();
 
   constructor() {
-    makeAutoObservable(this, {
-      pdfTemplateData: computed,
-      resumeStats: computed,
+    makeAutoObservable(this);
+    this.setupReactions();
+  }
+
+  private setupReactions = () => {
+    const debouncedTemplateUpdate = debounce((data: PdfTemplateData) => {
+      runInAction(() => {
+        this.debouncedTemplateData = data;
+      });
+    }, TEMPLATE_DATA_DEBOUNCE_MS);
+
+    const debouncedStatsUpdate = debounce((data: ResumeStats) => {
+      runInAction(() => {
+        this.debouncedResumeStats = data;
+      });
+    }, TEMPLATE_DATA_DEBOUNCE_MS);
+
+    autorun(() => {
+      debouncedTemplateUpdate(this.pdfTemplateData);
     });
 
-    reaction(
-      () => this.pdfTemplateData,
-      debounce((data: PdfTemplateData | null) => {
-        runInAction(() => {
-          this.debouncedTemplateData = data;
-        });
-      }, TEMPLATE_DATA_DEBOUNCE_MS),
-      {
-        fireImmediately: true,
-      },
-    );
-
-    reaction(
-      () => this.resumeStats,
-      debounce((data: ResumeStats) => {
-        runInAction(() => {
-          this.debouncedResumeStats = data;
-        });
-      }, TEMPLATE_DATA_DEBOUNCE_MS),
-      {
-        fireImmediately: true,
-      },
-    );
-  }
+    autorun(() => {
+      debouncedStatsUpdate(this.resumeStats);
+    });
+  };
 
   setElementRef = (key: string, value: HTMLElement | null) => {
     this.itemRefs.set(key, value);
@@ -456,6 +452,7 @@ export class DocumentBuilderStore {
     );
   };
 
+  @computed
   get pdfTemplateData() {
     const singleEntrySectionTypes = [
       INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
@@ -529,6 +526,7 @@ export class DocumentBuilderStore {
     });
   }
 
+  @computed
   get resumeStats() {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
