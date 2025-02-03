@@ -1,28 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getLanguagesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 const ManhattanLanguagesSection = ({
   section,
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        language: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LANGUAGE),
-        level: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LEVEL),
-      };
-    }),
-  );
-
+  const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
@@ -50,15 +39,14 @@ const ManhattanLanguagesSection = ({
           >
             <Text
               style={{
-                fontSize: 11,
+                fontSize: MANHATTAN_FONT_SIZE,
               }}
             >
               {entry.language}
             </Text>
             <Text
               style={{
-                fontSize: 11,
-                color: '#666666',
+                fontSize: MANHATTAN_FONT_SIZE,
               }}
             >
               {entry.level}

@@ -164,3 +164,16 @@ export const getInternshipsSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getLanguagesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        language: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LANGUAGE),
+        level: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LEVEL),
+      };
+    }),
+  );
+};
