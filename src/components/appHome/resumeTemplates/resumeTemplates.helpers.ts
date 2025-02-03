@@ -74,3 +74,26 @@ export const getWorkExperienceSectionEntries = (
     }),
   );
 };
+
+export const getEducationSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        school: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.SCHOOL),
+        degree: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.DEGREE),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.EDUCATION.START_DATE,
+        ),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.END_DATE),
+        city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};

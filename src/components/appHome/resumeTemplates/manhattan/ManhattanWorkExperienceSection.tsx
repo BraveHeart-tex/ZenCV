@@ -77,7 +77,7 @@ const ManhattanWorkExperienceSection = ({
               </View>
             </View>
             {entry.description && (
-              <View style={{ marginTop: 2 }}>
+              <View style={{ marginTop: 0 }}>
                 <Html
                   style={{ fontSize: MANHATTAN_FONT_SIZE }}
                   renderers={pdfHtmlRenderers}

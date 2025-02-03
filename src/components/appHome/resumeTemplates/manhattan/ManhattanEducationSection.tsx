@@ -1,11 +1,10 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import Html from 'react-pdf-html';
 import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 
@@ -14,27 +13,7 @@ const ManhattanEducationSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        degree: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.DEGREE),
-        school: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.SCHOOL),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.EDUCATION.START_DATE,
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.END_DATE),
-        city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.EDUCATION.DESCRIPTION,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getEducationSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
@@ -55,12 +34,11 @@ const ManhattanEducationSection = ({
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: MANHATTAN_FONT_SIZE,
                     fontWeight: 'bold',
                   }}
                 >
@@ -68,8 +46,7 @@ const ManhattanEducationSection = ({
                 </Text>
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
                   }}
                 >
                   {entry.school}
@@ -85,16 +62,15 @@ const ManhattanEducationSection = ({
               >
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
+                    fontWeight: 'bold',
                   }}
                 >
                   {entry.startDate} - {entry.endDate}
                 </Text>
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
                   }}
                 >
                   {entry.city}
@@ -102,8 +78,11 @@ const ManhattanEducationSection = ({
               </View>
             </View>
             {entry.description && (
-              <View style={{ marginTop: 4 }}>
-                <Html style={{ fontSize: 11 }} renderers={pdfHtmlRenderers}>
+              <View style={{ marginTop: 0 }}>
+                <Html
+                  style={{ fontSize: MANHATTAN_FONT_SIZE }}
+                  renderers={pdfHtmlRenderers}
+                >
                   {entry.description}
                 </Html>
               </View>
