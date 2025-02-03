@@ -25,6 +25,11 @@ export const INTERNAL_SECTION_TYPES = {
   LANGUAGES: 'languages',
 } as const;
 
+export const INTERNAL_TEMPLATE_TYPES = {
+  LONDON: 'london',
+  MANHATTAN: 'manhattan',
+} as const;
+
 export const NOT_TEMPLATED_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
   INTERNAL_SECTION_TYPES.SUMMARY,

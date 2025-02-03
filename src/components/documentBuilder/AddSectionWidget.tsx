@@ -25,7 +25,10 @@ export interface OtherSectionOption
 
 const AddSectionWidget = observer(() => {
   const handleAddSection = action(async (option: OtherSectionOption) => {
-    await builderRootStore.sectionStore.addNewSection(option);
+    const result = await builderRootStore.sectionStore.addNewSection(option);
+    if (result?.itemId) {
+      builderRootStore.UIStore.focusFirstFieldInItem(result.itemId);
+    }
   });
 
   return (

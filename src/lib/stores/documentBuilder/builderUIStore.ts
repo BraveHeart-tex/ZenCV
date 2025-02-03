@@ -56,4 +56,32 @@ export class BuilderUIStore {
     if (!field) return;
     return this.fieldRefs.get(field.id.toString());
   };
+
+  focusFirstFieldInItem = (itemId: DEX_Item['id']) => {
+    const item = this.root.itemStore.getItemById(itemId);
+
+    if (!item) {
+      console.warn('No item found to focus first field');
+      return;
+    }
+
+    const fields = this.root.fieldStore.getFieldsByItemId(item.id);
+
+    const firstField = fields[0];
+    if (!firstField) {
+      console.warn('No field found to focus');
+      return;
+    }
+
+    const element = this.fieldRefs.get(firstField.id.toString());
+
+    if (!element) {
+      console.warn('No element found to focus');
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      element.focus();
+    });
+  };
 }

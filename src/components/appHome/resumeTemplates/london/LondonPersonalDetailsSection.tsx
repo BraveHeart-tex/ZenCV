@@ -1,9 +1,9 @@
-import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
-import CommaSeperatedPdfText from '@/components/appHome/resumeTemplates/london/CommaSeperatedPdfText';
 import TwoColumnLayout from '@/components/appHome/resumeTemplates/london/TwoColumnLayout';
 import { Text } from '@react-pdf/renderer';
 
 import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import SeparatedPDFText from './SeparatedPdfText';
+import { londonTemplateStyles } from './london.styles';
 
 const LondonPersonalDetailsSection = ({
   personalDetails,
@@ -30,7 +30,7 @@ const LondonPersonalDetailsSection = ({
         {firstName} {lastName}
         {jobTitle ? `${firstName || lastName ? ',' : ''} ${jobTitle}` : null}
       </Text>
-      <CommaSeperatedPdfText
+      <SeparatedPDFText
         style={londonTemplateStyles.documentDescription}
         fields={[address, city, postalCode, placeOfBirth, phone, email]}
       />

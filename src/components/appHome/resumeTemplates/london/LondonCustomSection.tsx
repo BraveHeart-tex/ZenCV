@@ -5,31 +5,11 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { getCustomSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonCustomSection = ({ section }: { section: TemplateDataSection }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        name: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.ACTIVITY_NAME),
-        city: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.CITY),
-        startDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.START_DATE),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.END_DATE),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.CUSTOM.DESCRIPTION,
-        ),
-      };
-    }),
-  );
+  const sectionEntries = getCustomSectionEntries(section);
 
   if (!sectionEntries.length) return null;
 

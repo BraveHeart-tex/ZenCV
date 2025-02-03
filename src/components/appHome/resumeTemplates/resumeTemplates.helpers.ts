@@ -1,9 +1,11 @@
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   DocumentRecordWithDisplayOrder,
   FieldName,
   SectionMetadataKey,
   SectionWithParsedMetadata,
+  TemplateDataSection,
   WithEntryId,
 } from '@/lib/types/documentBuilder.types';
 
@@ -37,4 +39,214 @@ export const getSectionMetadata = (
   key: SectionMetadataKey,
 ) => {
   return section.metadata.find((data) => data.key === key)?.value || null;
+};
+
+export const getWorkExperienceSectionEntries = (
+  section: TemplateDataSection,
+) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        jobTitle: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
+        ),
+        employer: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
+        ),
+        endDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
+        ),
+        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
+
+export const getEducationSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        school: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.SCHOOL),
+        degree: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.DEGREE),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.EDUCATION.START_DATE,
+        ),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.END_DATE),
+        city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
+
+export const getLinksSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        label: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL,
+        ),
+        link: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK,
+        ),
+      };
+    }),
+  );
+};
+
+export const getSkillsSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        name: findValueInItemFields(fields, FIELD_NAMES.SKILLS.SKILL),
+        level: findValueInItemFields(
+          fields,
+          FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
+        ),
+      };
+    }),
+  );
+};
+
+export const getInternshipsSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        jobTitle: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.JOB_TITLE,
+        ),
+        employer: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.EMPLOYER,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.START_DATE,
+        ),
+        endDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.END_DATE,
+        ),
+        city: findValueInItemFields(fields, FIELD_NAMES.INTERNSHIPS.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
+
+export const getLanguagesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        language: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LANGUAGE),
+        level: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LEVEL),
+      };
+    }),
+  );
+};
+
+export const getCoursesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        course: findValueInItemFields(fields, FIELD_NAMES.COURSES.COURSE),
+        institution: findValueInItemFields(
+          fields,
+          FIELD_NAMES.COURSES.INSTITUTION,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.COURSES.START_DATE,
+        ),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.COURSES.END_DATE),
+      };
+    }),
+  );
+};
+
+export const getCustomSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        name: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.ACTIVITY_NAME),
+        city: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.CITY),
+        startDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.START_DATE),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.END_DATE),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.CUSTOM.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
+
+export const getReferencesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        referentPhone: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.PHONE,
+        ),
+        referentCompany: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.COMPANY,
+        ),
+        referentEmail: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.REFERENT_EMAIL,
+        ),
+        referentFullName: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME,
+        ),
+      };
+    }),
+  );
+};
+
+export const getHobbiesSectionValue = (section: TemplateDataSection) => {
+  return section.items
+    .map((item) => item.fields.map((field) => field.value))
+    .join('');
 };

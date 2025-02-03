@@ -6,6 +6,7 @@ import {
   FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
+  INTERNAL_TEMPLATE_TYPES,
   NOT_TEMPLATED_SECTION_TYPES,
   SECTION_METADATA_KEYS,
   SELECT_TYPES,
@@ -118,3 +119,5 @@ export interface ResumeStats {
 }
 
 export type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;
+
+export type ResumeTemplate = ValueOf<typeof INTERNAL_TEMPLATE_TYPES>;

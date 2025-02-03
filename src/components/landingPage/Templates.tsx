@@ -4,10 +4,8 @@ import { Button } from '@/components/ui/button';
 
 export default function Templates() {
   const templates = [
-    { name: 'Professional', image: '/placeholder.svg?height=400&width=300' },
-    { name: 'Creative', image: '/placeholder.svg?height=400&width=300' },
-    { name: 'Modern', image: '/placeholder.svg?height=400&width=300' },
-    { name: 'Simple', image: '/placeholder.svg?height=400&width=300' },
+    { name: 'London', image: '/placeholder.svg?height=400&width=300' },
+    { name: 'Manhattan', image: '/placeholder.svg?height=400&width=300' },
   ];
 
   return (

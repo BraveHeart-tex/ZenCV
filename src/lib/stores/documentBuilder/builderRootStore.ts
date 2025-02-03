@@ -32,6 +32,8 @@ export class BuilderRootStore {
       this.UIStore.collapsedItemId = null;
       this.UIStore.itemRefs = new Map();
       this.UIStore.fieldRefs = new Map();
+      this.templateStore.debouncedResumeStats = { score: 0, suggestions: [] };
+      this.templateStore.debouncedTemplateData = null;
     });
   };
 }

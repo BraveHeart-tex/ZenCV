@@ -75,7 +75,7 @@ export class BuilderSectionStore {
 
     if (!this.root.documentStore.document) return;
 
-    await clientDb.transaction(
+    return await clientDb.transaction(
       'rw',
       [clientDb.sections, clientDb.fields, clientDb.items],
       async () => {
@@ -103,7 +103,12 @@ export class BuilderSectionStore {
           });
         });
 
-        await this.root.itemStore.addNewItemEntry(sectionId);
+        const itemId = await this.root.itemStore.addNewItemEntry(sectionId);
+
+        return {
+          itemId,
+          sectionId,
+        };
       },
     );
   };

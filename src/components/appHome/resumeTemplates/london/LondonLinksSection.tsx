@@ -1,31 +1,11 @@
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { getLinksSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { Link, Text, View } from '@react-pdf/renderer';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonLinksSection = ({ section }: { section: TemplateDataSection }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        label: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL,
-        ),
-        link: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getLinksSectionEntries(section);
   if (sectionEntries.length === 0) return null;
 
   return (

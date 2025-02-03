@@ -1,7 +1,4 @@
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { Text, View } from '@react-pdf/renderer';
 import {
@@ -9,7 +6,6 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonEducationSection = ({
@@ -17,27 +13,7 @@ const LondonEducationSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        school: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.SCHOOL),
-        degree: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.DEGREE),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.EDUCATION.START_DATE,
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.END_DATE),
-        city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getEducationSectionEntries(section);
   if (sectionEntries.length === 0) return null;
 
   return (

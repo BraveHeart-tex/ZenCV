@@ -61,7 +61,15 @@ const ResumeScoreSuggestionItem = observer(
           );
           if (!sectionOption) return;
 
-          await builderRootStore.sectionStore.addNewSection(sectionOption);
+          const result =
+            await builderRootStore.sectionStore.addNewSection(sectionOption);
+          const itemId = result?.itemId;
+
+          if (itemId) {
+            scrollItemIntoView(itemId, () => {
+              builderRootStore.UIStore.focusFirstFieldInItem(itemId);
+            });
+          }
           return;
         }
 
@@ -83,14 +91,22 @@ const ResumeScoreSuggestionItem = observer(
           );
 
         if (firstEmptySectionItem) {
-          scrollItemIntoView(firstEmptySectionItem.id);
-        } else {
-          const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
-            section.id,
-          );
-          if (!addedItemId) return;
-          scrollItemIntoView(addedItemId);
+          scrollItemIntoView(firstEmptySectionItem.id, () => {
+            builderRootStore.UIStore.focusFirstFieldInItem(
+              firstEmptySectionItem.id,
+            );
+          });
+          return;
         }
+
+        const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
+          section.id,
+        );
+        if (!addedItemId) return;
+
+        scrollItemIntoView(addedItemId, () => {
+          builderRootStore.UIStore.focusFirstFieldInItem(addedItemId);
+        });
         return;
       }
     });

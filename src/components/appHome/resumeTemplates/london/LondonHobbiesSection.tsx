@@ -1,18 +1,15 @@
-import React from 'react';
 import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
 
 const LondonHobbiesSection = ({
   section,
 }: {
   section: TemplateDataSection;
 }) => {
-  const hobbies = section.items
-    .map((item) => item.fields.map((field) => field.value))
-    .join('');
-
+  const hobbies = getHobbiesSectionValue(section);
   if (!hobbies) return;
 
   return (
