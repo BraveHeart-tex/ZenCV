@@ -516,15 +516,16 @@ export const getScoreColor = (
     bgColor = '#f57c00'; // Orange
   else if (score <= 74)
     bgColor = '#fbc02d'; // Yellow
-  else if (score <= 89)
-    bgColor = '#388e3c'; // Green
-  else bgColor = '#4a148c'; // Purple
+  else bgColor = '#388e3c'; // Green
 
   const textColor = getTextColorForBackground(bgColor);
   return { backgroundColor: bgColor, color: textColor };
 };
 
-export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
+export const scrollItemIntoView = (
+  itemId: DEX_Item['id'],
+  onItemInView?: () => void,
+): void => {
   const element = builderRootStore.UIStore.itemRefs.get(
     getItemContainerId(itemId),
   );
@@ -542,6 +543,7 @@ export const scrollItemIntoView = (itemId: DEX_Item['id']): void => {
       const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
 
       if (isInView) {
+        onItemInView?.();
         element.classList.add(highlightedElementClassName);
         element.focus();
 

@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { action } from 'mobx';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 
 interface AddNewItemButtonProps {
   sectionId: DEX_Section['id'];
@@ -12,7 +13,11 @@ interface AddNewItemButtonProps {
 
 const AddNewItemButton = observer(({ sectionId }: AddNewItemButtonProps) => {
   const handleAddItem = action(async () => {
-    await builderRootStore.itemStore.addNewItemEntry(sectionId);
+    const itemId = await builderRootStore.itemStore.addNewItemEntry(sectionId);
+    if (!itemId) return;
+    scrollItemIntoView(itemId, () => {
+      builderRootStore.UIStore.focusFirstFieldInItem(itemId);
+    });
   });
 
   return (
