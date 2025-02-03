@@ -6,12 +6,8 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { getInternshipsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonInternshipsSection = ({
@@ -19,36 +15,7 @@ const LondonInternshipsSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.JOB_TITLE,
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.EMPLOYER,
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.START_DATE,
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.END_DATE,
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.INTERNSHIPS.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.DESCRIPTION,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getInternshipsSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (

@@ -20,8 +20,8 @@ const ManhattanWorkExperienceSection = ({
           <ManhattanSectionEntry
             entry={entry}
             key={entry.entryId}
-            subtitleKey="jobTitle"
             titleKey="employer"
+            subtitleKey="jobTitle"
           />
         ))}
       </View>

@@ -132,3 +132,35 @@ export const getSkillsSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getInternshipsSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        jobTitle: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.JOB_TITLE,
+        ),
+        employer: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.EMPLOYER,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.START_DATE,
+        ),
+        endDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.END_DATE,
+        ),
+        city: findValueInItemFields(fields, FIELD_NAMES.INTERNSHIPS.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.INTERNSHIPS.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
