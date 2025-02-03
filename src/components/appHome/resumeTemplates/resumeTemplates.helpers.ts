@@ -244,3 +244,9 @@ export const getReferencesSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getHobbiesSectionValue = (section: TemplateDataSection) => {
+  return section.items
+    .map((item) => item.fields.map((field) => field.value))
+    .join('');
+};
