@@ -33,6 +33,8 @@ Font.register({
   ],
 });
 
+export const MANHATTAN_FONT_SIZE = 11.7 as const;
+
 export const manhattanTemplateStyles = StyleSheet.create({
   page: {
     paddingVertical: 25,
@@ -60,8 +62,9 @@ export const manhattanTemplateStyles = StyleSheet.create({
     marginBottom: 15,
   },
   link: {
-    color: '#2563eb',
-    textDecoration: 'none',
+    textDecoration: 'underline',
+    color: 'black',
+    fontSize: MANHATTAN_FONT_SIZE,
   },
   bullet: {
     width: 3,
@@ -71,5 +74,3 @@ export const manhattanTemplateStyles = StyleSheet.create({
     marginTop: 4,
   },
 });
-
-export const MANHATTAN_FONT_SIZE = 11.7 as const;

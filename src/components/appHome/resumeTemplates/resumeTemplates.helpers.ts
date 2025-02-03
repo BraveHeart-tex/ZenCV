@@ -97,3 +97,22 @@ export const getEducationSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getLinksSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        label: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL,
+        ),
+        link: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK,
+        ),
+      };
+    }),
+  );
+};
