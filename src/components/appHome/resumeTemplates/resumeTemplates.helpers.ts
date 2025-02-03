@@ -217,3 +217,30 @@ export const getCustomSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getReferencesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        referentPhone: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.PHONE,
+        ),
+        referentCompany: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.COMPANY,
+        ),
+        referentEmail: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.REFERENT_EMAIL,
+        ),
+        referentFullName: findValueInItemFields(
+          fields,
+          FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME,
+        ),
+      };
+    }),
+  );
+};

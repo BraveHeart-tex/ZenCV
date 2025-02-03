@@ -2,15 +2,11 @@ import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
+  getReferencesSectionEntries,
   getSectionMetadata,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import {
-  FIELD_NAMES,
-  SECTION_METADATA_KEYS,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonReferencesSection = ({
@@ -18,30 +14,7 @@ const LondonReferencesSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        referentPhone: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.PHONE,
-        ),
-        referentCompany: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.COMPANY,
-        ),
-        referentEmail: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_EMAIL,
-        ),
-        referentFullName: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME,
-        ),
-      };
-    }),
-  );
+  const sectionEntries = getReferencesSectionEntries(section);
 
   const hideReferences =
     getSectionMetadata(

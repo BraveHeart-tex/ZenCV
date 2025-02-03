@@ -1,10 +1,11 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import {
+  getReferencesSectionEntries,
   getSectionMetadata,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
@@ -15,30 +16,7 @@ const ManhattanReferencesSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        referentPhone: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.PHONE,
-        ),
-        referentCompany: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.COMPANY,
-        ),
-        referentEmail: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_EMAIL,
-        ),
-        referentFullName: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME,
-        ),
-      };
-    }),
-  );
+  const sectionEntries = getReferencesSectionEntries(section);
 
   const hideReferences =
     getSectionMetadata(
@@ -55,7 +33,7 @@ const ManhattanReferencesSection = ({
         {hideReferences ? (
           <Text
             style={{
-              fontSize: 11,
+              fontSize: MANHATTAN_FONT_SIZE,
             }}
           >
             References available upon request
@@ -72,7 +50,7 @@ const ManhattanReferencesSection = ({
             >
               <Text
                 style={{
-                  fontSize: 11,
+                  fontSize: MANHATTAN_FONT_SIZE,
                   fontWeight: 'bold',
                 }}
               >
@@ -88,12 +66,11 @@ const ManhattanReferencesSection = ({
               >
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
                   }}
                 >
                   {entry.referentEmail}
-                  {entry.referentEmail && entry.referentPhone ? ' • ' : ''}
+                  {entry.referentEmail && entry.referentPhone ? ' - ' : ''}
                   {entry.referentPhone}
                 </Text>
               </View>
