@@ -1,36 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getCoursesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 const ManhattanCoursesSection = ({
   section,
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        course: findValueInItemFields(fields, FIELD_NAMES.COURSES.COURSE),
-        institution: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.INSTITUTION,
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.START_DATE,
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.COURSES.END_DATE),
-      };
-    }),
-  );
-
+  const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
@@ -56,7 +37,7 @@ const ManhattanCoursesSection = ({
               >
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: MANHATTAN_FONT_SIZE,
                     fontWeight: 'bold',
                   }}
                 >
@@ -65,8 +46,7 @@ const ManhattanCoursesSection = ({
                 {entry.institution && (
                   <Text
                     style={{
-                      fontSize: 11,
-                      color: '#666666',
+                      fontSize: MANHATTAN_FONT_SIZE,
                     }}
                   >
                     {entry.institution}
@@ -76,8 +56,8 @@ const ManhattanCoursesSection = ({
               {(entry.startDate || entry.endDate) && (
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
+                    fontWeight: 'bold',
                   }}
                 >
                   {entry.startDate}

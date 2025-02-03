@@ -1,11 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { getCoursesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonCoursesSection = ({
@@ -13,25 +9,7 @@ const LondonCoursesSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        course: findValueInItemFields(fields, FIELD_NAMES.COURSES.COURSE),
-        institution: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.INSTITUTION,
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.START_DATE,
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.COURSES.END_DATE),
-      };
-    }),
-  );
-
+  const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (

@@ -177,3 +177,24 @@ export const getLanguagesSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getCoursesSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        course: findValueInItemFields(fields, FIELD_NAMES.COURSES.COURSE),
+        institution: findValueInItemFields(
+          fields,
+          FIELD_NAMES.COURSES.INSTITUTION,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.COURSES.START_DATE,
+        ),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.COURSES.END_DATE),
+      };
+    }),
+  );
+};
