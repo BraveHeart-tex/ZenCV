@@ -198,3 +198,22 @@ export const getCoursesSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getCustomSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        name: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.ACTIVITY_NAME),
+        city: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.CITY),
+        startDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.START_DATE),
+        endDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.END_DATE),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.CUSTOM.DESCRIPTION,
+        ),
+      };
+    }),
+  );
+};
