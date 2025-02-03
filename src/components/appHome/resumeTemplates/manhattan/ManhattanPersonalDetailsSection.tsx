@@ -1,6 +1,7 @@
 import { manhattanTemplateStyles } from './manhattan.styles';
 import { Text, View } from '@react-pdf/renderer';
 import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import SeparatedPDFText from '../london/SeparatedPdfText';
 
 const ManhattanPersonalDetailsSection = ({
   personalDetails,
@@ -36,6 +37,7 @@ const ManhattanPersonalDetailsSection = ({
       <Text style={manhattanTemplateStyles.documentTitle}>
         {firstName} {lastName}
       </Text>
+
       {jobTitle && (
         <Text
           style={{
@@ -47,28 +49,12 @@ const ManhattanPersonalDetailsSection = ({
           {jobTitle}
         </Text>
       )}
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 8,
-          marginBottom: 15,
-        }}
-      >
-        {contactDetails.map((detail, index) => (
-          <Text
-            key={detail}
-            style={{
-              ...manhattanTemplateStyles.documentDescription,
-              marginBottom: 0,
-            }}
-          >
-            {detail}
-            {index < contactDetails.length - 1 ? ' • ' : ''}
-          </Text>
-        ))}
-      </View>
+      <SeparatedPDFText
+        separator=" | "
+        fields={contactDetails}
+        style={manhattanTemplateStyles.documentDescription}
+      />
+
       {personalInfo.length > 0 && (
         <View
           style={{
