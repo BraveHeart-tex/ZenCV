@@ -11,6 +11,14 @@ import { dialogFooterClassNames } from '@/lib/constants';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -22,6 +30,9 @@ const CreateDocumentDialog = ({
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const [template, setTemplate] = useState<ResumeTemplate>(
+    INTERNAL_TEMPLATE_TYPES.LONDON,
+  );
   const input = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -36,7 +47,7 @@ const CreateDocumentDialog = ({
     try {
       const documentId = await createDocument({
         title: name,
-        templateType: INTERNAL_TEMPLATE_TYPES.LONDON,
+        templateType: template,
       });
 
       if (!documentId) {
@@ -109,6 +120,26 @@ const CreateDocumentDialog = ({
             aria-invalid={name ? 'false' : 'true'}
             required
           />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="template">Template</Label>
+          <Select
+            value={template}
+            onValueChange={(value) => setTemplate(value as ResumeTemplate)}
+            defaultValue={template}
+          >
+            <SelectTrigger className="w-full" id="template">
+              <SelectValue placeholder="Resume Template" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={INTERNAL_TEMPLATE_TYPES.LONDON}>
+                London
+              </SelectItem>
+              <SelectItem value={INTERNAL_TEMPLATE_TYPES.MANHATTAN}>
+                Manhattan
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className={dialogFooterClassNames}>
           <Button
