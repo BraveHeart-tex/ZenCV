@@ -21,7 +21,7 @@ const ManhattanSummarySection = ({
           marginTop: 5,
         }}
       >
-        <Html style={{ fontSize: 11 }} renderers={pdfHtmlRenderers}>
+        <Html style={{ fontSize: 12 }} renderers={pdfHtmlRenderers}>
           {summarySection.summary}
         </Html>
       </View>

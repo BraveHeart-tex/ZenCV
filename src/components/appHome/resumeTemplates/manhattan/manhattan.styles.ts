@@ -35,17 +35,20 @@ Font.register({
 
 export const manhattanTemplateStyles = StyleSheet.create({
   page: {
-    padding: 40,
+    paddingVertical: 25,
+    paddingHorizontal: 35,
     fontFamily: 'EB Garamond',
   },
   section: {
-    marginBottom: 10,
+    marginBottom: 4,
   },
   sectionLabel: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 4,
     textTransform: 'uppercase',
+    width: '100%',
+    borderBottom: '1px solid black',
   },
   documentTitle: {
     fontSize: 24,
@@ -53,7 +56,7 @@ export const manhattanTemplateStyles = StyleSheet.create({
     marginBottom: 4,
   },
   documentDescription: {
-    fontSize: 11,
+    fontSize: 13,
     marginBottom: 15,
   },
   link: {
