@@ -1,10 +1,9 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { getWorkExperienceSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import Html from 'react-pdf-html';
 import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
@@ -14,32 +13,7 @@ const ManhattanWorkExperienceSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        company: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getWorkExperienceSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
@@ -60,38 +34,42 @@ const ManhattanWorkExperienceSection = ({
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
+                    fontWeight: 'bold',
                   }}
                 >
-                  {entry.company}
+                  {entry.employer}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: MANHATTAN_FONT_SIZE,
+                  }}
+                >
+                  {entry.jobTitle}
                 </Text>
               </View>
               <View
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 2,
                   alignItems: 'flex-end',
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
+                    fontWeight: 'bold',
                   }}
                 >
                   {entry.startDate} - {entry.endDate}
                 </Text>
                 <Text
                   style={{
-                    fontSize: 11,
-                    color: '#666666',
+                    fontSize: MANHATTAN_FONT_SIZE,
                   }}
                 >
                   {entry.city}
@@ -99,8 +77,11 @@ const ManhattanWorkExperienceSection = ({
               </View>
             </View>
             {entry.description && (
-              <View style={{ marginTop: 4 }}>
-                <Html style={{ fontSize: 11 }} renderers={pdfHtmlRenderers}>
+              <View style={{ marginTop: 2 }}>
+                <Html
+                  style={{ fontSize: MANHATTAN_FONT_SIZE }}
+                  renderers={pdfHtmlRenderers}
+                >
                   {entry.description}
                 </Html>
               </View>

@@ -1,4 +1,7 @@
-import { manhattanTemplateStyles } from './manhattan.styles';
+import {
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
 import { Text, View } from '@react-pdf/renderer';
 import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import Html from 'react-pdf-html';
@@ -18,10 +21,13 @@ const ManhattanSummarySection = ({
       </Text>
       <View
         style={{
-          marginTop: 5,
+          marginTop: 2,
         }}
       >
-        <Html style={{ fontSize: 12 }} renderers={pdfHtmlRenderers}>
+        <Html
+          style={{ fontSize: MANHATTAN_FONT_SIZE }}
+          renderers={pdfHtmlRenderers}
+        >
           {summarySection.summary}
         </Html>
       </View>

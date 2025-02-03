@@ -1,7 +1,4 @@
-import {
-  findValueInItemFields,
-  getRenderableEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { getWorkExperienceSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
 import { Text, View } from '@react-pdf/renderer';
 import {
@@ -9,7 +6,6 @@ import {
   pdfHtmlRenderers,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import Html from 'react-pdf-html';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonWorkExperienceSection = ({
@@ -17,35 +13,7 @@ const LondonWorkExperienceSection = ({
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-        ),
-      };
-    }),
-  );
+  const sectionEntries = getWorkExperienceSectionEntries(section);
 
   if (!sectionEntries.length) return null;
 

@@ -33,8 +33,18 @@ const ManhattanPersonalDetailsSection = ({
   ].filter(Boolean);
 
   return (
-    <View style={manhattanTemplateStyles.section}>
-      <Text style={manhattanTemplateStyles.documentTitle}>
+    <View
+      style={{
+        ...manhattanTemplateStyles.section,
+        marginBottom: 0,
+      }}
+    >
+      <Text
+        style={{
+          ...manhattanTemplateStyles.documentTitle,
+          marginBottom: 0,
+        }}
+      >
         {firstName} {lastName}
       </Text>
 
@@ -43,7 +53,7 @@ const ManhattanPersonalDetailsSection = ({
           style={{
             ...manhattanTemplateStyles.documentDescription,
             fontSize: 14,
-            marginBottom: 8,
+            marginBottom: 0,
           }}
         >
           {jobTitle}
@@ -52,7 +62,10 @@ const ManhattanPersonalDetailsSection = ({
       <SeparatedPDFText
         separator=" | "
         fields={contactDetails}
-        style={manhattanTemplateStyles.documentDescription}
+        style={{
+          ...manhattanTemplateStyles.documentDescription,
+          marginBottom: 10,
+        }}
       />
 
       {personalInfo.length > 0 && (

@@ -40,7 +40,7 @@ export const manhattanTemplateStyles = StyleSheet.create({
     fontFamily: 'EB Garamond',
   },
   section: {
-    marginBottom: 4,
+    marginBottom: 10,
   },
   sectionLabel: {
     fontSize: 13,
@@ -71,3 +71,5 @@ export const manhattanTemplateStyles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
+export const MANHATTAN_FONT_SIZE = 11.7 as const;

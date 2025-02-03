@@ -1,9 +1,11 @@
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   DocumentRecordWithDisplayOrder,
   FieldName,
   SectionMetadataKey,
   SectionWithParsedMetadata,
+  TemplateDataSection,
   WithEntryId,
 } from '@/lib/types/documentBuilder.types';
 
@@ -37,4 +39,38 @@ export const getSectionMetadata = (
   key: SectionMetadataKey,
 ) => {
   return section.metadata.find((data) => data.key === key)?.value || null;
+};
+
+export const getWorkExperienceSectionEntries = (
+  section: TemplateDataSection,
+) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        jobTitle: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
+        ),
+        employer: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
+        ),
+        endDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
+        ),
+        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+        ),
+      };
+    }),
+  );
 };
