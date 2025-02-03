@@ -61,7 +61,11 @@ const ResumeScoreSuggestionItem = observer(
           );
           if (!sectionOption) return;
 
-          await builderRootStore.sectionStore.addNewSection(sectionOption);
+          const result =
+            await builderRootStore.sectionStore.addNewSection(sectionOption);
+          if (result?.itemId) {
+            scrollItemIntoView(result.itemId);
+          }
           return;
         }
 
