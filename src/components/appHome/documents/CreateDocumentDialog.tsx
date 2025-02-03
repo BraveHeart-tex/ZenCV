@@ -10,6 +10,7 @@ import { FilePlusIcon } from 'lucide-react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -33,7 +34,10 @@ const CreateDocumentDialog = ({
     }
 
     try {
-      const documentId = await createDocument({ title: name });
+      const documentId = await createDocument({
+        title: name,
+        templateType: INTERNAL_TEMPLATE_TYPES.LONDON,
+      });
 
       if (!documentId) {
         showErrorToast(

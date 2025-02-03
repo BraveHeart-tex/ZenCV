@@ -1,6 +1,7 @@
 import {
   FieldInsertTemplate,
   FieldName,
+  ResumeTemplate,
   SectionType,
   SelectType,
 } from '@/lib/types/documentBuilder.types';
@@ -10,6 +11,7 @@ type IdType = number;
 export interface DEX_Document {
   id: IdType;
   title: string;
+  templateType: ResumeTemplate;
   createdAt: string;
   updatedAt: string;
 }

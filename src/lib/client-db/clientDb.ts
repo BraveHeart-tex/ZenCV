@@ -5,6 +5,7 @@ import {
   DEX_Item,
   DEX_Section,
 } from './clientDbSchema';
+import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 
 export const clientDb = new Dexie('cv-builder-db') as Dexie & {
   documents: EntityTable<DEX_Document, 'id'>;
@@ -20,6 +21,24 @@ clientDb.version(1).stores({
   items: '++id, sectionId, containerType, displayOrder',
   fields: '++id, itemId, name, type, value, selectType, options',
 });
+
+clientDb
+  .version(2)
+  .stores({
+    documents: '++id, title, templateType, createdAt, updatedAt',
+    sections:
+      '++id, documentId, title, defaultTitle, type, displayOrder, metadata',
+    items: '++id, sectionId, containerType, displayOrder',
+    fields: '++id, itemId, name, type, value, selectType, options',
+  })
+  .upgrade((transaction) => {
+    transaction
+      .table('documents')
+      .toCollection()
+      .modify((document) => {
+        document.templateType = INTERNAL_TEMPLATE_TYPES.LONDON;
+      });
+  });
 
 clientDb.documents.hook('updating', (modifications, _primKey, object) => {
   return {
