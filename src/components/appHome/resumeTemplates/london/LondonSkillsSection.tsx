@@ -1,32 +1,16 @@
 import {
-  findValueInItemFields,
-  getRenderableEntries,
   getSectionMetadata,
+  getSkillsSectionEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
 import { PDF_BODY_FONT_SIZE } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { Text, View } from '@react-pdf/renderer';
 import { londonTemplateStyles } from '@/components/appHome/resumeTemplates/london/london.styles';
-import {
-  FIELD_NAMES,
-  SECTION_METADATA_KEYS,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
 const LondonSkillsSection = ({ section }: { section: TemplateDataSection }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        name: findValueInItemFields(fields, FIELD_NAMES.SKILLS.SKILL),
-        level: findValueInItemFields(
-          fields,
-          FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-        ),
-      };
-    }),
-  );
+  const sectionEntries = getSkillsSectionEntries(section);
 
   const showExperienceLevel =
     getSectionMetadata(

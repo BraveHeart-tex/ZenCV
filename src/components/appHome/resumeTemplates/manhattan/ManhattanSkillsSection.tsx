@@ -1,32 +1,66 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
-  findValueInItemFields,
-  getRenderableEntries,
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
+import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import {
+  getSectionMetadata,
+  getSkillsSectionEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { CHECKED_METADATA_VALUE } from '@/lib/constants';
 
 const ManhattanSkillsSection = ({
   section,
 }: {
   section: TemplateDataSection;
 }) => {
-  const sectionEntries = getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        skill: findValueInItemFields(fields, FIELD_NAMES.SKILLS.SKILL),
-        level: findValueInItemFields(
-          fields,
-          FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-        ),
-      };
-    }),
-  );
-
+  const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) return null;
+
+  const showExperienceLevel =
+    getSectionMetadata(
+      section,
+      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+    ) === CHECKED_METADATA_VALUE;
+
+  const isCommaSeparated =
+    getSectionMetadata(
+      section,
+      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+    ) === CHECKED_METADATA_VALUE;
+
+  const renderSkills = () => {
+    if (isCommaSeparated) {
+      return (
+        <View
+          style={{
+            fontSize: MANHATTAN_FONT_SIZE,
+          }}
+        >
+          <Text>{sectionEntries.map((entry) => entry.name).join(',  ')}</Text>
+        </View>
+      );
+    }
+
+    return sectionEntries.map((entry) => (
+      <View
+        key={entry.entryId}
+        style={{
+          fontSize: MANHATTAN_FONT_SIZE,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          width: '46%',
+        }}
+      >
+        <Text>{entry.name}</Text>
+        {showExperienceLevel ? <Text>{entry.level}</Text> : null}
+      </View>
+    ));
+  };
 
   return (
     <View style={manhattanTemplateStyles.section}>
@@ -40,36 +74,7 @@ const ManhattanSkillsSection = ({
           rowGap: 8,
         }}
       >
-        {sectionEntries.map((entry) => (
-          <View
-            key={entry.entryId}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: '45%',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 11,
-              }}
-            >
-              {entry.skill}
-            </Text>
-            {entry.level && (
-              <Text
-                style={{
-                  fontSize: 11,
-                  color: '#666666',
-                }}
-              >
-                {entry.level}
-              </Text>
-            )}
-          </View>
-        ))}
+        {renderSkills()}
       </View>
     </View>
   );

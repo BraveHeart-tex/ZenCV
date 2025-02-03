@@ -116,3 +116,19 @@ export const getLinksSectionEntries = (section: TemplateDataSection) => {
     }),
   );
 };
+
+export const getSkillsSectionEntries = (section: TemplateDataSection) => {
+  return getRenderableEntries(
+    section.items.map((item) => {
+      const fields = item.fields;
+      return {
+        entryId: crypto.randomUUID(),
+        name: findValueInItemFields(fields, FIELD_NAMES.SKILLS.SKILL),
+        level: findValueInItemFields(
+          fields,
+          FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
+        ),
+      };
+    }),
+  );
+};
