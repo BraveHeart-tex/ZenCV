@@ -15,9 +15,7 @@ const AddNewItemButton = observer(({ sectionId }: AddNewItemButtonProps) => {
   const handleAddItem = action(async () => {
     const itemId = await builderRootStore.itemStore.addNewItemEntry(sectionId);
     if (!itemId) return;
-    scrollItemIntoView(itemId, () => {
-      builderRootStore.UIStore.focusFirstFieldInItem(itemId);
-    });
+    scrollItemIntoView(itemId);
   });
 
   return (

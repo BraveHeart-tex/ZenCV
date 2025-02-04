@@ -545,8 +545,6 @@ export const scrollItemIntoView = (
       if (isInView) {
         onItemInView?.();
         element.classList.add(highlightedElementClassName);
-        element.focus();
-
         setTimeout(() => {
           element.classList.remove(highlightedElementClassName);
         }, 500);

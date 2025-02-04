@@ -57,9 +57,7 @@ const ResumeOverViewContent = observer(
     };
 
     const handleScrollToItem = (itemId: DEX_Item['id']) => {
-      scrollItemIntoView(itemId, () => {
-        builderRootStore.UIStore.focusFirstFieldInItem(itemId);
-      });
+      scrollItemIntoView(itemId);
     };
 
     return (

@@ -66,9 +66,7 @@ const ResumeScoreSuggestionItem = observer(
           const itemId = result?.itemId;
 
           if (itemId) {
-            scrollItemIntoView(itemId, () => {
-              builderRootStore.UIStore.focusFirstFieldInItem(itemId);
-            });
+            scrollItemIntoView(itemId);
           }
           return;
         }
@@ -91,11 +89,7 @@ const ResumeScoreSuggestionItem = observer(
           );
 
         if (firstEmptySectionItem) {
-          scrollItemIntoView(firstEmptySectionItem.id, () => {
-            builderRootStore.UIStore.focusFirstFieldInItem(
-              firstEmptySectionItem.id,
-            );
-          });
+          scrollItemIntoView(firstEmptySectionItem.id);
           return;
         }
 
@@ -104,9 +98,7 @@ const ResumeScoreSuggestionItem = observer(
         );
         if (!addedItemId) return;
 
-        scrollItemIntoView(addedItemId, () => {
-          builderRootStore.UIStore.focusFirstFieldInItem(addedItemId);
-        });
+        scrollItemIntoView(addedItemId);
         return;
       }
     });

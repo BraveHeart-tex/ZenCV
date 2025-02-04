@@ -38,6 +38,7 @@ import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import CollapsibleItemHeader from './CollapsibleItemHeader';
 import CollapsibleItemMobileContent from './CollapsibleItemMobileContent';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { useEffect } from 'react';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -59,6 +60,13 @@ const CollapsibleSectionItemContainer = observer(
       isOver,
       isSorting,
     } = useSortable({ id: itemId });
+
+    useEffect(() => {
+      if (!open) return;
+      if (window.innerWidth < 768) return;
+
+      builderRootStore.UIStore.focusFirstFieldInItem(itemId);
+    }, [open, itemId]);
 
     const shouldShowDeleteButton = !isDragging && !isOver && !isSorting;
     const shouldShowDragButton = !isDragging && !isOver && !isSorting;
