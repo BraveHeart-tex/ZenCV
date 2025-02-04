@@ -98,7 +98,7 @@ const DocumentBuilderPdfViewer = observer(
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
-    }, [renderData, isMobile, view]);
+    }, [renderData, isMobile, view, children]);
 
     const onDocumentLoad = (d: { numPages: number }) => {
       pdfViewerStore.setNumberOfPages(d.numPages);

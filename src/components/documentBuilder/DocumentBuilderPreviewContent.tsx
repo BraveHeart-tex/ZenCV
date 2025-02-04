@@ -13,8 +13,6 @@ const DocumentBuilderPreviewContent = observer(() => {
   if (!pdfTemplateData || !templateType) return null;
 
   const renderTemplate = () => {
-    const templateType = builderRootStore.documentStore.document?.templateType;
-
     if (templateType === INTERNAL_TEMPLATE_TYPES.LONDON) {
       return <LondonTemplate templateData={pdfTemplateData} />;
     }

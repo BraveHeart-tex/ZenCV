@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button';
 
 export default function Templates() {
   const templates = [
-    { name: 'London', image: '/placeholder.svg?height=400&width=300' },
-    { name: 'Manhattan', image: '/placeholder.svg?height=400&width=300' },
+    { name: 'London', image: '/templates/london.jpg' },
+    {
+      name: 'Manhattan',
+      image: '/templates/manhattan.jpg',
+    },
   ];
 
   return (
@@ -23,14 +26,14 @@ export default function Templates() {
                   alt={`${template.name} template`}
                   width={300}
                   height={400}
-                  className="object-cover w-full h-[300px]"
+                  className="object-cover w-full"
                 />
                 <div className="p-4">
                   <h3 className="mb-2 text-lg font-semibold">
                     {template.name}
                   </h3>
                   <Button variant="outline" className="w-full">
-                    Use Template
+                    Use this template
                   </Button>
                 </div>
               </CardContent>
