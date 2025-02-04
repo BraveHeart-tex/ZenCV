@@ -9,7 +9,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="h-14 max-w-screen-2xl container flex items-center mx-auto">
         <div className="md:flex hidden mr-4">
-          <Link className="flex items-center mr-6 space-x-2" to="/public">
+          <Link className="flex items-center mr-6 space-x-2" to="/">
             <Icons.logo />
             <span className="sm:inline-block hidden font-bold">{APP_NAME}</span>
           </Link>

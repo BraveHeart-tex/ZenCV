@@ -26,7 +26,7 @@ export default function Hero() {
               Start Building
             </Link>
             <Link
-              to="/public#features"
+              to="/#features"
               className={buttonVariants({
                 variant: 'outline',
                 size: 'lg',
