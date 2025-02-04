@@ -26,7 +26,6 @@ export const INTERNAL_SECTION_TYPES = {
 } as const;
 
 export const INTERNAL_TEMPLATE_TYPES = {
-  LONDON: 'london',
   MANHATTAN: 'manhattan',
 } as const;
 

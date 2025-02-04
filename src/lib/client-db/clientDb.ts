@@ -36,7 +36,7 @@ clientDb
       .table('documents')
       .toCollection()
       .modify((document) => {
-        document.templateType = INTERNAL_TEMPLATE_TYPES.LONDON;
+        document.templateType = INTERNAL_TEMPLATE_TYPES.MANHATTAN;
       });
   });
 

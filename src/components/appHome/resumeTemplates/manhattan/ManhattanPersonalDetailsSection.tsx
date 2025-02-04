@@ -1,7 +1,7 @@
 import { manhattanTemplateStyles } from './manhattan.styles';
 import { Text, View } from '@react-pdf/renderer';
 import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import SeparatedPDFText from '../london/SeparatedPdfText';
+import SeparatedPDFText from '../SeparatedPdfText';
 
 const ManhattanPersonalDetailsSection = ({
   personalDetails,

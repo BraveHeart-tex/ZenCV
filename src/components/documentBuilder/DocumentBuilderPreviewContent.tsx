@@ -1,7 +1,6 @@
 'use client';
 import { observer } from 'mobx-react-lite';
 import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuilderPdfViewer';
-import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import ManhattanTemplate from '../appHome/resumeTemplates/manhattan/ManhattanTemplate';
@@ -13,10 +12,6 @@ const DocumentBuilderPreviewContent = observer(() => {
   if (!pdfTemplateData || !templateType) return null;
 
   const renderTemplate = () => {
-    if (templateType === INTERNAL_TEMPLATE_TYPES.LONDON) {
-      return <LondonTemplate templateData={pdfTemplateData} />;
-    }
-
     if (templateType === INTERNAL_TEMPLATE_TYPES.MANHATTAN) {
       return <ManhattanTemplate templateData={pdfTemplateData} />;
     }

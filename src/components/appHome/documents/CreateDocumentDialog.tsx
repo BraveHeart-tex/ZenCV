@@ -31,7 +31,7 @@ const CreateDocumentDialog = ({
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [template, setTemplate] = useState<ResumeTemplate>(
-    INTERNAL_TEMPLATE_TYPES.LONDON,
+    INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   );
   const input = useRef<HTMLInputElement>(null);
 
@@ -132,9 +132,6 @@ const CreateDocumentDialog = ({
               <SelectValue placeholder="Resume Template" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={INTERNAL_TEMPLATE_TYPES.LONDON}>
-                London
-              </SelectItem>
               <SelectItem value={INTERNAL_TEMPLATE_TYPES.MANHATTAN}>
                 Manhattan
               </SelectItem>
