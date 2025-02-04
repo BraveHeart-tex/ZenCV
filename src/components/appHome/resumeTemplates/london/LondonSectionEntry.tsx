@@ -21,19 +21,15 @@ const LondonSectionEntry = <T extends Record<string, string>>({
         style={{
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 4,
-          gap: 16,
           width: '100%',
+          gap: 16,
         }}
       >
-        <View style={{ minWidth: '15%', maxWidth: '25%', marginRight: 16 }}>
+        <View style={{ width: '20%' }}>
           {(entry.startDate || entry.endDate) && (
             <Text
               style={{
                 fontSize: LONDON_FONT_SIZE,
-                paddingLeft: 0,
-                marginLeft: 0,
               }}
             >
               {entry.startDate}
@@ -42,41 +38,44 @@ const LondonSectionEntry = <T extends Record<string, string>>({
             </Text>
           )}
         </View>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2,
-            flex: 1,
-          }}
-        >
-          <Text style={{ fontSize: LONDON_FONT_SIZE, fontWeight: 'bold' }}>
-            {entry[titleKey]}
-          </Text>
-          {entry[subtitleKey] && (
-            <Text style={{ fontSize: LONDON_FONT_SIZE, fontStyle: 'italic' }}>
-              {entry[subtitleKey]}
-            </Text>
-          )}
-        </View>
-        <View style={{ minWidth: '15%', alignItems: 'flex-end' }}>
-          {entry.city && (
-            <Text style={{ fontSize: LONDON_FONT_SIZE }}>{entry.city}</Text>
-          )}
-        </View>
-      </View>
-      <View style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-        <View style={{ width: '20%' }} />
-        {entry.description && (
-          <View style={{ flex: 1 }}>
-            <Html
-              style={{ fontSize: LONDON_FONT_SIZE }}
-              renderers={pdfHtmlRenderers}
-            >
-              {entry.description}
-            </Html>
+        <View style={{ width: '80%' }}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 4,
+              width: '100%',
+              gap: 16,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: LONDON_FONT_SIZE, fontWeight: 'bold' }}>
+                {entry[titleKey]}
+              </Text>
+              {entry[subtitleKey] && (
+                <Text
+                  style={{ fontSize: LONDON_FONT_SIZE, fontStyle: 'italic' }}
+                >
+                  {entry[subtitleKey]}
+                </Text>
+              )}
+            </View>
+            {entry.city && (
+              <Text style={{ fontSize: LONDON_FONT_SIZE }}>{entry.city}</Text>
+            )}
           </View>
-        )}
+          {entry.description && (
+            <View style={{ width: '100%' }}>
+              <Html
+                style={{ fontSize: LONDON_FONT_SIZE }}
+                renderers={pdfHtmlRenderers}
+              >
+                {entry.description}
+              </Html>
+            </View>
+          )}
+        </View>
       </View>
     </View>
   );
