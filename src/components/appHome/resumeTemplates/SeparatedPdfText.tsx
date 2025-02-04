@@ -1,8 +1,9 @@
-import { Text } from '@react-pdf/renderer';
+import { ValueOf } from '@/lib/types/utils.types';
+import { Styles, Text } from '@react-pdf/renderer';
 import React from 'react';
 
 interface SeparatedPDFTextProps {
-  style: Record<string, unknown>;
+  style: ValueOf<Styles>;
   fields: string[];
   separator?: string;
 }

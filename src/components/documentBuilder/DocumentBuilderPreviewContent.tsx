@@ -4,6 +4,7 @@ import DocumentBuilderPdfViewer from '@/components/documentBuilder/DocumentBuild
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import ManhattanTemplate from '../appHome/resumeTemplates/manhattan/ManhattanTemplate';
+import LondonTemplate from '../appHome/resumeTemplates/london/LondonTemplate';
 
 const DocumentBuilderPreviewContent = observer(() => {
   const pdfTemplateData = builderRootStore.templateStore.debouncedTemplateData;
@@ -14,6 +15,10 @@ const DocumentBuilderPreviewContent = observer(() => {
   const renderTemplate = () => {
     if (templateType === INTERNAL_TEMPLATE_TYPES.MANHATTAN) {
       return <ManhattanTemplate templateData={pdfTemplateData} />;
+    }
+
+    if (templateType === INTERNAL_TEMPLATE_TYPES.LONDON) {
+      return <LondonTemplate templateData={pdfTemplateData} />;
     }
 
     return <></>;

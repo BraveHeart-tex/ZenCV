@@ -24,6 +24,13 @@ interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
 }
 
+const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
+  (key) => ({
+    label: key.charAt(0).toUpperCase() + key.slice(1).toLowerCase(),
+    value: INTERNAL_TEMPLATE_TYPES[key as keyof typeof INTERNAL_TEMPLATE_TYPES],
+  }),
+);
+
 const CreateDocumentDialog = ({
   triggerVariant = 'default',
 }: CreateDocumentDialogProps) => {
@@ -132,9 +139,11 @@ const CreateDocumentDialog = ({
               <SelectValue placeholder="Resume Template" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={INTERNAL_TEMPLATE_TYPES.MANHATTAN}>
-                Manhattan
-              </SelectItem>
+              {resumeTemplateSelectOptions.map((option) => (
+                <SelectItem value={option.value} key={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
