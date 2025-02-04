@@ -33,11 +33,10 @@ const LondonLinksSection = ({ section }: { section: TemplateDataSection }) => {
             </Link>
             <Text
               style={{
-                color: '#666666',
                 fontSize: LONDON_FONT_SIZE,
               }}
             >
-              {index < sectionEntries.length - 1 && ' | '}
+              {index < sectionEntries.length - 1 && ' • '}
             </Text>
           </View>
         ))}
