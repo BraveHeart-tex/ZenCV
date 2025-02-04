@@ -58,22 +58,25 @@ const LondonSectionEntry = <T extends Record<string, string>>({
               {entry[subtitleKey]}
             </Text>
           )}
-          {entry.description && (
-            <View>
-              <Html
-                style={{ fontSize: LONDON_FONT_SIZE }}
-                renderers={pdfHtmlRenderers}
-              >
-                {entry.description}
-              </Html>
-            </View>
-          )}
         </View>
         <View style={{ minWidth: '15%', alignItems: 'flex-end' }}>
           {entry.city && (
             <Text style={{ fontSize: LONDON_FONT_SIZE }}>{entry.city}</Text>
           )}
         </View>
+      </View>
+      <View style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+        <View style={{ width: '20%' }} />
+        {entry.description && (
+          <View style={{ flex: 1 }}>
+            <Html
+              style={{ fontSize: LONDON_FONT_SIZE }}
+              renderers={pdfHtmlRenderers}
+            >
+              {entry.description}
+            </Html>
+          </View>
+        )}
       </View>
     </View>
   );
