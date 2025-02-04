@@ -23,52 +23,58 @@ const LondonSectionEntry = <T extends Record<string, string>>({
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginBottom: 4,
+          gap: 16,
+          width: '100%',
         }}
       >
+        <View style={{ width: '15%' }}>
+          {(entry.startDate || entry.endDate) && (
+            <Text
+              style={{
+                fontSize: LONDON_FONT_SIZE,
+                paddingLeft: 0,
+                marginLeft: 0,
+              }}
+            >
+              {entry.startDate}
+              {entry.startDate ? ' - ' : ''}
+              {entry.endDate}
+            </Text>
+          )}
+        </View>
         <View
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
+            width: '65%',
           }}
         >
           <Text style={{ fontSize: LONDON_FONT_SIZE, fontWeight: 'bold' }}>
             {entry[titleKey]}
           </Text>
           {entry[subtitleKey] && (
-            <Text style={{ fontSize: LONDON_FONT_SIZE }}>
+            <Text style={{ fontSize: LONDON_FONT_SIZE, fontStyle: 'italic' }}>
               {entry[subtitleKey]}
             </Text>
           )}
-        </View>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-end',
-          }}
-        >
-          {(entry.startDate || entry.endDate) && (
-            <Text style={{ fontSize: LONDON_FONT_SIZE }}>
-              {entry.startDate}
-              {entry.endDate ? ` - ${entry.endDate}` : ''}
-            </Text>
+          {entry.description && (
+            <View>
+              <Html
+                style={{ fontSize: LONDON_FONT_SIZE }}
+                renderers={pdfHtmlRenderers}
+              >
+                {entry.description}
+              </Html>
+            </View>
           )}
+        </View>
+        <View style={{ width: '20%', alignItems: 'flex-end' }}>
           {entry.city && (
             <Text style={{ fontSize: LONDON_FONT_SIZE }}>{entry.city}</Text>
           )}
         </View>
       </View>
-      {entry.description && (
-        <View style={{ marginTop: 0 }}>
-          <Html
-            style={{ fontSize: LONDON_FONT_SIZE }}
-            renderers={pdfHtmlRenderers}
-          >
-            {entry.description}
-          </Html>
-        </View>
-      )}
     </View>
   );
 };

@@ -15,16 +15,14 @@ const LondonEducationSection = ({
   return (
     <View style={londonTemplateStyles.section}>
       <Text style={londonTemplateStyles.sectionLabel}>{section.title}</Text>
-      <View style={{ gap: 15 }}>
-        {sectionEntries.map((entry) => (
-          <LondonSectionEntry
-            entry={entry}
-            key={entry.entryId}
-            titleKey="school"
-            subtitleKey="degree"
-          />
-        ))}
-      </View>
+      {sectionEntries.map((entry) => (
+        <LondonSectionEntry
+          entry={entry}
+          key={entry.entryId}
+          titleKey="school"
+          subtitleKey="degree"
+        />
+      ))}
     </View>
   );
 };

@@ -3,6 +3,8 @@ import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import LondonPersonalDetailsSection from './LondonPersonalDetailsSection';
 import { londonTemplateStyles } from './london.styles';
 import LondonSummarySection from './LondonSummarySection';
+import LondonEducationSection from './LondonEducationSection';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 const LondonTemplate = ({
   templateData,
@@ -12,7 +14,6 @@ const LondonTemplate = ({
   const { personalDetails, summarySection } = templateData;
 
   const renderSections = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return templateData.sections.map((section) => {
       //   if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
       //     return (
@@ -20,9 +21,9 @@ const LondonTemplate = ({
       //     );
       //   }
 
-      //   if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-      //     return <LondonEducationSection section={section} key={section.id} />;
-      //   }
+      if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
+        return <LondonEducationSection section={section} key={section.id} />;
+      }
 
       //   if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
       //     return <LondonLinksSection section={section} key={section.id} />;

@@ -38,7 +38,8 @@ export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
       {...props}
       style={{
         ...props.style,
-        marginTop: 5,
+        marginTop: 2,
+        paddingLeft: 0,
         marginLeft: 0,
       }}
     >

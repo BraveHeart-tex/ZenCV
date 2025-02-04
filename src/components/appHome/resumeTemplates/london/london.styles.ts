@@ -1,6 +1,6 @@
 import { Font, StyleSheet } from '@react-pdf/renderer';
 
-export const LONDON_FONT_SIZE = 11.7;
+export const LONDON_FONT_SIZE = 11.5;
 
 Font.register({
   family: 'Times New Roman',
