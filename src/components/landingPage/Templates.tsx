@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 
 export default function Templates() {
   const templates = [
-    { name: 'London', image: '/templates/london.jpg' },
     {
       name: 'Manhattan',
       image: '/templates/manhattan.jpg',
