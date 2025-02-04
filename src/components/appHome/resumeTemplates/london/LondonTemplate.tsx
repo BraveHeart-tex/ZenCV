@@ -8,6 +8,7 @@ import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBui
 import LondonWorkExperienceSection from './LondonWorkExperienceSection';
 import LondonLinksSection from './LondonLinksSection';
 import LondonLanguagesSection from './LondonLanguagesSection';
+import LondonInternshipsSection from './LondonInternshipsSection';
 
 const LondonTemplate = ({
   templateData,
@@ -36,9 +37,9 @@ const LondonTemplate = ({
         return <LondonLanguagesSection section={section} key={section.id} />;
       }
 
-      //   if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-      //     return <LondonInternshipsSection section={section} key={section.id} />;
-      //   }
+      if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
+        return <LondonInternshipsSection section={section} key={section.id} />;
+      }
 
       //   if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
       //     return <LondonCoursesSection section={section} key={section.id} />;
