@@ -13,6 +13,7 @@ import LondonSkillsSection from './LondonSkillsSection';
 import LondonCoursesSection from './LondonCoursesSection';
 import LondonCustomSection from './LondonCustomSection';
 import LondonReferencesSection from './LondonReferencesSection';
+import LondonHobbiesSection from './LondonHobbiesSection';
 
 const LondonTemplate = ({
   templateData,
@@ -49,9 +50,9 @@ const LondonTemplate = ({
         return <LondonCoursesSection section={section} key={section.id} />;
       }
 
-      //   if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-      //     return <LondonHobbiesSection section={section} key={section.id} />;
-      //   }
+      if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
+        return <LondonHobbiesSection section={section} key={section.id} />;
+      }
 
       if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
         return <LondonCustomSection section={section} key={section.id} />;
