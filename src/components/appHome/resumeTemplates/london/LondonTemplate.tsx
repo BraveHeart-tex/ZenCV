@@ -10,6 +10,7 @@ import LondonLinksSection from './LondonLinksSection';
 import LondonLanguagesSection from './LondonLanguagesSection';
 import LondonInternshipsSection from './LondonInternshipsSection';
 import LondonSkillsSection from './LondonSkillsSection';
+import LondonCoursesSection from './LondonCoursesSection';
 
 const LondonTemplate = ({
   templateData,
@@ -42,9 +43,9 @@ const LondonTemplate = ({
         return <LondonInternshipsSection section={section} key={section.id} />;
       }
 
-      //   if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-      //     return <LondonCoursesSection section={section} key={section.id} />;
-      //   }
+      if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
+        return <LondonCoursesSection section={section} key={section.id} />;
+      }
 
       //   if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
       //     return <LondonHobbiesSection section={section} key={section.id} />;

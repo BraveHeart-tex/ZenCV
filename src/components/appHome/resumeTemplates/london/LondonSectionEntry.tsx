@@ -33,7 +33,7 @@ const LondonSectionEntry = <T extends Record<string, string>>({
               }}
             >
               {entry.startDate}
-              {entry.startDate ? ' - ' : ''}
+              {entry.startDate && entry.endDate ? ' - ' : ''}
               {entry.endDate}
             </Text>
           )}

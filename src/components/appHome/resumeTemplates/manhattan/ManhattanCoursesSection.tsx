@@ -61,7 +61,9 @@ const ManhattanCoursesSection = ({
                   }}
                 >
                   {entry.startDate}
-                  {entry.endDate ? ` - ${entry.endDate}` : ''}
+                  {entry.endDate
+                    ? ` ${entry.startDate ? ' - ' : ''} ${entry.endDate}`
+                    : ''}
                 </Text>
               )}
             </View>
