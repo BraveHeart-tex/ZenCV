@@ -27,7 +27,7 @@ const LondonSectionEntry = <T extends Record<string, string>>({
           width: '100%',
         }}
       >
-        <View style={{ width: '15%' }}>
+        <View style={{ minWidth: '15%', maxWidth: '25%', marginRight: 16 }}>
           {(entry.startDate || entry.endDate) && (
             <Text
               style={{
@@ -47,7 +47,7 @@ const LondonSectionEntry = <T extends Record<string, string>>({
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            width: '65%',
+            flex: 1,
           }}
         >
           <Text style={{ fontSize: LONDON_FONT_SIZE, fontWeight: 'bold' }}>
@@ -69,7 +69,7 @@ const LondonSectionEntry = <T extends Record<string, string>>({
             </View>
           )}
         </View>
-        <View style={{ width: '20%', alignItems: 'flex-end' }}>
+        <View style={{ minWidth: '15%', alignItems: 'flex-end' }}>
           {entry.city && (
             <Text style={{ fontSize: LONDON_FONT_SIZE }}>{entry.city}</Text>
           )}

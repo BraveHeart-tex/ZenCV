@@ -5,6 +5,7 @@ import { londonTemplateStyles } from './london.styles';
 import LondonSummarySection from './LondonSummarySection';
 import LondonEducationSection from './LondonEducationSection';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import LondonWorkExperienceSection from './LondonWorkExperienceSection';
 
 const LondonTemplate = ({
   templateData,
@@ -15,11 +16,11 @@ const LondonTemplate = ({
 
   const renderSections = () => {
     return templateData.sections.map((section) => {
-      //   if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-      //     return (
-      //       <LondonWorkExperienceSection section={section} key={section.id} />
-      //     );
-      //   }
+      if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
+        return (
+          <LondonWorkExperienceSection section={section} key={section.id} />
+        );
+      }
 
       if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
         return <LondonEducationSection section={section} key={section.id} />;
