@@ -1,7 +1,7 @@
-import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { templateOptionsWithImages } from '../appHome/resumeTemplates/resumeTemplates.constants';
+import { templateOptionsWithImages } from '../../appHome/resumeTemplates/resumeTemplates.constants';
+import TemplateImageDialog from './TemplateImageDialog';
 
 export default function Templates() {
   return (
@@ -14,13 +14,7 @@ export default function Templates() {
           {templateOptionsWithImages.map((template, index) => (
             <Card key={index} className="overflow-hidden">
               <CardContent className="p-0">
-                <Image
-                  src={template.image}
-                  alt={`${template.name} template`}
-                  width={300}
-                  height={400}
-                  className="object-cover w-full"
-                />
+                <TemplateImageDialog template={template} />
                 <div className="p-4">
                   <h3 className="mb-2 text-lg font-semibold">
                     {template.name}

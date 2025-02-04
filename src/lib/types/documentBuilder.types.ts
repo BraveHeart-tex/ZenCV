@@ -117,3 +117,10 @@ export interface ResumeStats {
 export type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;
 
 export type ResumeTemplate = ValueOf<typeof INTERNAL_TEMPLATE_TYPES>;
+
+export interface TemplateOption {
+  name: string;
+  image: string;
+  description: string;
+  tags: string[];
+}

@@ -1,3 +1,4 @@
+import { TemplateOption } from '@/lib/types/documentBuilder.types';
 import { Link, Text, View } from '@react-pdf/renderer';
 import { ComponentProps } from 'react';
 import Html from 'react-pdf-html';
@@ -60,13 +61,33 @@ export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
   p: (props) => <Text {...props} style={{ ...props.style, marginTop: 0 }} />,
 };
 
-export const templateOptionsWithImages = [
+export const templateOptionsWithImages: TemplateOption[] = [
   {
     name: 'London',
     image: '/templates/london.jpg',
+    description:
+      'The London template offers a clean and modern design, perfect for showcasing your professional experience in a structured and elegant format. Its minimalist layout ensures ATS compatibility while maintaining a polished and professional appearance.',
+    tags: [
+      'Clean & Modern',
+      'ATS-Optimized',
+      'Professional & Elegant',
+      'Minimalist',
+      'Easy to Customize',
+      'Organized',
+    ],
   },
   {
     name: 'Manhattan',
     image: '/templates/manhattan.jpg',
+    description:
+      'The Manhattan template combines a sleek, contemporary design with a focus on clarity and readability. Its ATS-friendly structure ensures your resume passes through automated systems effortlessly, while its professional layout highlights your skills and achievements effectively.',
+    tags: [
+      'Clean & Modern',
+      'ATS-Optimized',
+      'Professional & Elegant',
+      'Minimalist',
+      'Easy to Customize',
+      'Organized',
+    ],
   },
 ];
