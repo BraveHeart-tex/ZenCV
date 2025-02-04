@@ -15,6 +15,20 @@ const ManhattanSectionEntry = <T extends Record<string, string>>({
   titleKey,
   subtitleKey,
 }: ManhattanSectionEntryProps<T>) => {
+  const renderDate = () => {
+    const startDate = entry?.startDate;
+    const endDate = entry?.endDate;
+    if (startDate && endDate) {
+      return `${startDate} - ${endDate}`;
+    }
+    if (startDate) {
+      return startDate;
+    }
+    if (endDate) {
+      return endDate;
+    }
+    return '';
+  };
   return (
     <View key={entry.entryId}>
       <View
@@ -42,7 +56,7 @@ const ManhattanSectionEntry = <T extends Record<string, string>>({
           }}
         >
           <Text style={{ fontSize: MANHATTAN_FONT_SIZE, fontWeight: 'bold' }}>
-            {entry.startDate} - {entry.endDate}
+            {renderDate()}
           </Text>
           <Text style={{ fontSize: MANHATTAN_FONT_SIZE }}>{entry.city}</Text>
         </View>

@@ -37,7 +37,7 @@ export const MANHATTAN_FONT_SIZE = 11.7 as const;
 
 export const manhattanTemplateStyles = StyleSheet.create({
   page: {
-    paddingVertical: 25,
+    paddingVertical: 20,
     paddingHorizontal: 35,
     fontFamily: 'EB Garamond',
   },
