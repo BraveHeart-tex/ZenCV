@@ -55,7 +55,11 @@ const LondonSectionEntry = <T extends Record<string, string>>({
               </Text>
               {entry[subtitleKey] && (
                 <Text
-                  style={{ fontSize: LONDON_FONT_SIZE, fontStyle: 'italic' }}
+                  style={{
+                    fontSize: LONDON_FONT_SIZE,
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                  }}
                 >
                   {entry[subtitleKey]}
                 </Text>
