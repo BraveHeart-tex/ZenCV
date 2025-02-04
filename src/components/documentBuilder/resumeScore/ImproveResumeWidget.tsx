@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,23 @@ const ImproveResumeWidget = observer(() => {
   const { scrollY } = useScroll();
   const [open, setOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
     if (containerRef.current) {

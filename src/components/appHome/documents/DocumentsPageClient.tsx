@@ -12,7 +12,7 @@ const DocumentsPageClient = () => {
 
   const documents = useLiveQuery(
     async () => {
-      return await clientDb.documents.toArray();
+      return await clientDb.documents.orderBy('id').reverse().toArray();
     },
     [],
     null,
