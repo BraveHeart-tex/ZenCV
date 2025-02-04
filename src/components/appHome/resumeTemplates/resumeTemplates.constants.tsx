@@ -38,7 +38,8 @@ export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
       {...props}
       style={{
         ...props.style,
-        marginTop: 5,
+        marginTop: 2,
+        paddingLeft: 0,
         marginLeft: 0,
       }}
     >
@@ -58,3 +59,14 @@ export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
   ),
   p: (props) => <Text {...props} style={{ ...props.style, marginTop: 0 }} />,
 };
+
+export const templateOptionsWithImages = [
+  {
+    name: 'London',
+    image: '/templates/london.jpg',
+  },
+  {
+    name: 'Manhattan',
+    image: '/templates/manhattan.jpg',
+  },
+];

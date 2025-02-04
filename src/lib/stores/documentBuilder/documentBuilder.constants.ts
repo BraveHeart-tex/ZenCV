@@ -27,6 +27,7 @@ export const INTERNAL_SECTION_TYPES = {
 
 export const INTERNAL_TEMPLATE_TYPES = {
   MANHATTAN: 'manhattan',
+  LONDON: 'london',
 } as const;
 
 export const NOT_TEMPLATED_SECTION_TYPES = [
@@ -87,10 +88,6 @@ export const FIELD_NAMES = {
     COUNTRY: 'Country',
     CITY: 'City',
     ADDRESS: 'Address',
-    POSTAL_CODE: 'Postal Code',
-    DRIVING_LICENSE: 'Driving License',
-    PLACE_OF_BIRTH: 'Place of Birth',
-    DATE_OF_BIRTH: 'Date of Birth',
   },
   SUMMARY: {
     SUMMARY: 'Summary',

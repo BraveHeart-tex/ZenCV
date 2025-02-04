@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { action } from 'mobx';
 // import { action } from 'mobx';
 
 const DocumentBuilderPreviewHeader = observer(() => {
@@ -41,7 +42,7 @@ const DocumentBuilderPreviewHeader = observer(() => {
       >
         <ArrowLeftIcon />
       </Button>
-      {/* <Button
+      <Button
         onClick={action(async () => {
           const newTemplate =
             builderRootStore.documentStore.document?.templateType === 'london'
@@ -54,7 +55,7 @@ const DocumentBuilderPreviewHeader = observer(() => {
         })}
       >
         Change Template
-      </Button> */}
+      </Button>
       <Button
         className="self-end"
         disabled={!previousRenderValue}

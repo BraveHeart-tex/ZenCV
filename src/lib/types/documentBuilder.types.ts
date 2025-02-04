@@ -71,12 +71,8 @@ export interface PdfTemplateData {
     jobTitle: string;
     address: string;
     city: string;
-    postalCode: string;
-    placeOfBirth: string;
     phone: string;
     email: string;
-    dateOfBirth: string;
-    driversLicense: string;
   };
   summarySection: {
     sectionName: string;

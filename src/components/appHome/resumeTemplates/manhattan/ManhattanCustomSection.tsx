@@ -61,7 +61,9 @@ const ManhattanCustomSection = ({
                     }}
                   >
                     {entry.startDate}
-                    {entry.endDate ? ` - ${entry.endDate}` : ''}
+                    {entry.endDate && entry.startDate
+                      ? ` - ${entry.endDate}`
+                      : ''}
                   </Text>
                 )}
                 {entry.city && (
@@ -76,7 +78,7 @@ const ManhattanCustomSection = ({
               </View>
             </View>
             {entry.description && (
-              <View style={{ marginTop: 0 }}>
+              <View>
                 <Html
                   style={{ fontSize: MANHATTAN_FONT_SIZE }}
                   renderers={pdfHtmlRenderers}

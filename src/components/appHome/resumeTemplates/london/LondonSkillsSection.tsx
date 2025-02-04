@@ -1,21 +1,14 @@
-import { Text, View } from '@react-pdf/renderer';
-import {
-  MANHATTAN_FONT_SIZE,
-  manhattanTemplateStyles,
-} from './manhattan.styles';
 import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import {
   getSectionMetadata,
   getSkillsSectionEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+} from '../resumeTemplates.helpers';
+import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
 import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
+import { Text, View } from '@react-pdf/renderer';
 
-const ManhattanSkillsSection = ({
-  section,
-}: {
-  section: TemplateDataSection;
-}) => {
+const LondonSkillsSection = ({ section }: { section: TemplateDataSection }) => {
   const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) return null;
 
@@ -36,7 +29,7 @@ const ManhattanSkillsSection = ({
       return (
         <View
           style={{
-            fontSize: MANHATTAN_FONT_SIZE,
+            fontSize: LONDON_FONT_SIZE,
           }}
         >
           <Text>
@@ -55,7 +48,7 @@ const ManhattanSkillsSection = ({
       <View
         key={entry.entryId}
         style={{
-          fontSize: MANHATTAN_FONT_SIZE,
+          fontSize: LONDON_FONT_SIZE,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
@@ -70,8 +63,8 @@ const ManhattanSkillsSection = ({
   };
 
   return (
-    <View style={manhattanTemplateStyles.section}>
-      <Text style={manhattanTemplateStyles.sectionLabel}>{section.title}</Text>
+    <View style={londonTemplateStyles.section}>
+      <Text style={londonTemplateStyles.sectionLabel}>{section.title}</Text>
       <View
         style={{
           display: 'flex',
@@ -86,5 +79,4 @@ const ManhattanSkillsSection = ({
     </View>
   );
 };
-
-export default ManhattanSkillsSection;
+export default LondonSkillsSection;

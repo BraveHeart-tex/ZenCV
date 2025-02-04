@@ -99,20 +99,8 @@ export class BuilderTemplateStore {
         ),
         address: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.ADDRESS),
         city: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.CITY),
-        postalCode: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.POSTAL_CODE,
-        ),
-        placeOfBirth: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.PLACE_OF_BIRTH,
-        ),
         phone: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.PHONE),
         email: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.EMAIL),
-        dateOfBirth: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.DATE_OF_BIRTH,
-        ),
-        driversLicense: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.DRIVING_LICENSE,
-        ),
       },
       summarySection: {
         sectionName: this.root.sectionStore.getSectionNameByType(

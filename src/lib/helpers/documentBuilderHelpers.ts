@@ -298,7 +298,7 @@ const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
   let triggerTitle = jobTitle
     ? `${employer ? `${jobTitle} at ${employer}` : jobTitle}`
     : employer;
-  let description = `${startDate} - ${endDate}`;
+  let description = `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`;
   if (!jobTitle && !employer) {
     triggerTitle = '(Untitled)';
     description = '';
@@ -330,7 +330,7 @@ const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
       : degree
         ? degree
         : schoolTitle;
-  let description = `${startDate} - ${endDate}`;
+  let description = `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`;
   if (!schoolTitle && !degree) {
     triggerTitle = '(Untitled)';
     description = '';

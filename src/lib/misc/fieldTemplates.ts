@@ -40,22 +40,6 @@ export const personalDetailsSectionFields: FieldInsertTemplate[] = [
     name: FIELD_NAMES.PERSONAL_DETAILS.ADDRESS,
     type: FIELD_TYPES.STRING,
   },
-  {
-    name: FIELD_NAMES.PERSONAL_DETAILS.POSTAL_CODE,
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: FIELD_NAMES.PERSONAL_DETAILS.DRIVING_LICENSE,
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: FIELD_NAMES.PERSONAL_DETAILS.PLACE_OF_BIRTH,
-    type: FIELD_TYPES.STRING,
-  },
-  {
-    name: FIELD_NAMES.PERSONAL_DETAILS.DATE_OF_BIRTH,
-    type: FIELD_TYPES.STRING,
-  },
 ].map((field) => ({ ...field, value: '' }));
 
 export const employmentHistoryFields: FieldInsertTemplate[] = [
