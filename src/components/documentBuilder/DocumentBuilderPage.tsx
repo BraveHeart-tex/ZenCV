@@ -1,7 +1,7 @@
 'use client';
 import DocumentBuilderClient from '@/components/documentBuilder/DocumentBuilderClient';
 import { LazyMotion, domAnimation } from 'motion/react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
 import ResumeOverview from './resumeOverview/ResumeOverview';
@@ -9,29 +9,52 @@ import DocumentBuilderViewToggle from './builderViewOptions/DocumentBuilderViewT
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { observer } from 'mobx-react-lite';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
-import BuilderTemplatesPageHeader from './BuilderTemplatesPageHeader';
+import TemplateGallery from './templateGallery/TemplateGallery';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
+import { startTransition, useEffect } from 'react';
+import { showErrorToast } from '../ui/sonner';
 
 const DocumentBuilderPage = observer(() => {
+  const navigate = useNavigate();
   const params = useParams<{ id: string }>();
-  if (!params.id) return null;
+  const documentId = params?.id ? +params?.id : null;
+
+  useEffect(() => {
+    return () => {
+      builderRootStore.resetState();
+      pdfViewerStore.resetState();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      !documentId ||
+      builderRootStore.documentStore.document?.id === documentId
+    ) {
+      return;
+    }
+
+    startTransition(async () => {
+      const result =
+        await builderRootStore.documentStore.initializeStore(documentId);
+      if (result?.error) {
+        showErrorToast(result.error);
+        navigate('/documents');
+      }
+    });
+  }, [documentId, navigate]);
 
   if (
     builderRootStore.UIStore.currentView === BUILDER_CURRENT_VIEWS.TEMPLATES
   ) {
-    return (
-      <main className="bg-muted h-screen">
-        <div className=" bg-background flex items-center justify-center">
-          <BuilderTemplatesPageHeader />
-        </div>
-      </main>
-    );
+    return <TemplateGallery />;
   }
 
   return (
     <LazyMotion features={domAnimation} strict>
       <div>
         <ResumeOverview />
-        <DocumentBuilderClient documentId={+params.id} />
+        <DocumentBuilderClient />
         <ClientOnly>
           <DocumentBuilderPreview />
         </ClientOnly>

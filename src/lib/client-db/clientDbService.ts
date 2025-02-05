@@ -14,6 +14,7 @@ import {
   getInitialDocumentInsertBoilerplate,
   isSelectField,
 } from '@/lib/helpers/documentBuilderHelpers';
+import { ResumeTemplate } from '../types/documentBuilder.types';
 
 export const createDocument = async (data: DEX_InsertDocumentModel) => {
   return clientDb.transaction(
@@ -94,11 +95,18 @@ export const createDocument = async (data: DEX_InsertDocumentModel) => {
   );
 };
 
+const updateDocument = async (
+  documentId: DEX_Document['id'],
+  data: UpdateSpec<DEX_Document>,
+) => {
+  return clientDb.documents.update(documentId, data);
+};
+
 export const renameDocument = async (
   documentId: DEX_Document['id'],
   title: string,
 ) => {
-  return clientDb.documents.update(documentId, { title });
+  return updateDocument(documentId, { title });
 };
 
 export const updateSection = async (
@@ -277,4 +285,11 @@ export const bulkUpdateSections = async (
   }[],
 ) => {
   return clientDb.sections.bulkUpdate(keysAndChanges);
+};
+
+export const changeDocumentTemplateType = async (
+  documentId: DEX_Document['id'],
+  templateType: ResumeTemplate,
+) => {
+  return updateDocument(documentId, { templateType });
 };

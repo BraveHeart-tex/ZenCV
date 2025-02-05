@@ -2,9 +2,11 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import {
+  changeDocumentTemplateType,
   getFullDocumentStructure,
   renameDocument,
 } from '@/lib/client-db/clientDbService';
+import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 
 export class BuilderDocumentStore {
   root: BuilderRootStore;
@@ -62,5 +64,16 @@ export class BuilderDocumentStore {
           'An error occurred while renaming the document. Please try again.',
       };
     }
+  };
+
+  changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
+    if (!this.document || this.document.templateType === templateType) return;
+
+    await changeDocumentTemplateType(this.document.id, templateType);
+
+    runInAction(() => {
+      if (!this.document) return;
+      this.document.templateType = templateType;
+    });
   };
 }
