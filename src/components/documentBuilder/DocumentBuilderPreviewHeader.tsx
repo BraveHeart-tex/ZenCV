@@ -1,28 +1,18 @@
-import { useDocumentBuilderSearchParams } from '@/hooks/useDocumentBuilderSearchParams';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, LayoutGridIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { action } from 'mobx';
-// import { action } from 'mobx';
+import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import { downloadPDF } from '@/lib/helpers/documentBuilderHelpers';
 
 const DocumentBuilderPreviewHeader = observer(() => {
-  const { view, setView } = useDocumentBuilderSearchParams();
+  const view = builderRootStore.UIStore.currentView;
   const documentTitle =
     builderRootStore.documentStore.document?.title || 'Untitled';
   const previousRenderValue = pdfViewerStore.previousRenderValue;
-
-  const downloadPDF = () => {
-    const fileName = `${documentTitle}.pdf`;
-    if (!previousRenderValue) return;
-
-    const link = document.createElement('a');
-    link.href = previousRenderValue;
-    link.download = fileName;
-    link.click();
-  };
 
   return (
     <div
@@ -36,30 +26,32 @@ const DocumentBuilderPreviewHeader = observer(() => {
       <Button
         className={cn('xl:hidden', view === 'preview' && 'flex xl:hidden')}
         variant="outline"
-        onClick={() => {
-          setView('builder');
-        }}
+        onClick={action(() => {
+          builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
+        })}
       >
         <ArrowLeftIcon />
       </Button>
       <Button
         onClick={action(async () => {
-          const newTemplate =
-            builderRootStore.documentStore.document?.templateType === 'london'
-              ? 'manhattan'
-              : 'london';
-
-          if (!builderRootStore.documentStore.document) return;
-
-          builderRootStore.documentStore.document.templateType = newTemplate;
+          builderRootStore.UIStore.currentView =
+            BUILDER_CURRENT_VIEWS.TEMPLATES;
         })}
+        className="hover:bg-primary/5 dark:hover:bg-primary/10 sm:mx-0 lg:mr-auto items-center gap-2 px-1 mx-auto"
+        variant="ghost"
       >
+        <LayoutGridIcon />
         Change Template
       </Button>
       <Button
         className="self-end"
-        disabled={!previousRenderValue}
-        onClick={downloadPDF}
+        disabled={!previousRenderValue || pdfViewerStore.rendering}
+        onClick={() =>
+          downloadPDF({
+            file: previousRenderValue as string,
+            title: documentTitle,
+          })
+        }
       >
         Download PDF
       </Button>

@@ -17,6 +17,7 @@ const EditableDocumentTitle = observer(() => {
     try {
       await builderRootStore.documentStore.renameDocument(enteredTitle);
       showSuccessToast('Document renamed successfully.');
+      setOpen(false);
     } catch (error) {
       console.error(error);
       showErrorToast(

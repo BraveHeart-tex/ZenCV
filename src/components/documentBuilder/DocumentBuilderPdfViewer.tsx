@@ -9,12 +9,10 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { observer } from 'mobx-react-lite';
 import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { useAsync } from 'react-use';
-import {
-  DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
-  useDocumentBuilderSearchParams,
-} from '@/hooks/useDocumentBuilderSearchParams';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { runInAction } from 'mobx';
+import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -28,7 +26,7 @@ const DocumentBuilderPdfViewer = observer(
     renderTextLayer?: boolean;
     renderAnnotationLayer?: boolean;
   }) => {
-    const { view } = useDocumentBuilderSearchParams();
+    const view = builderRootStore.UIStore.currentView;
     const isMobile = useMediaQuery('(max-width: 768px)', false);
 
     const currentPage = pdfViewerStore.currentPage;
@@ -85,8 +83,7 @@ const DocumentBuilderPdfViewer = observer(
         if (
           !children ||
           !renderData ||
-          (isMobile &&
-            view !== DOCUMENT_BUILDER_SEARCH_PARAM_VALUES.VIEW.PREVIEW)
+          (isMobile && view !== BUILDER_CURRENT_VIEWS.PREVIEW)
         ) {
           return null;
         }
@@ -99,6 +96,12 @@ const DocumentBuilderPdfViewer = observer(
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
     }, [renderData, isMobile, view, children]);
+
+    useEffect(() => {
+      runInAction(() => {
+        pdfViewerStore.rendering = render.loading;
+      });
+    }, [render.loading]);
 
     const onDocumentLoad = (d: { numPages: number }) => {
       pdfViewerStore.setNumberOfPages(d.numPages);

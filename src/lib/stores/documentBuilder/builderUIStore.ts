@@ -2,6 +2,13 @@ import { makeAutoObservable } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
+import { ValueOf } from '@/lib/types/utils.types';
+
+export const BUILDER_CURRENT_VIEWS = {
+  BUILDER: 'builder',
+  PREVIEW: 'preview',
+  TEMPLATES: 'templates',
+} as const;
 
 export class BuilderUIStore {
   root: BuilderRootStore;
@@ -10,6 +17,9 @@ export class BuilderUIStore {
 
   itemRefs: Map<string, HTMLElement | null> = new Map();
   fieldRefs: Map<string, HTMLElement | null> = new Map();
+
+  currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
+  rendering: boolean = false;
 
   constructor(root: BuilderRootStore) {
     this.root = root;

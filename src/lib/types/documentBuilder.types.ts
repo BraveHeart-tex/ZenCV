@@ -13,7 +13,6 @@ import {
   SUGGESTION_ACTION_TYPES,
   SUGGESTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { DOCUMENT_BUILDER_SEARCH_PARAM_VALUES } from '@/hooks/useDocumentBuilderSearchParams';
 import {
   DEX_Field,
   DEX_Item,
@@ -58,11 +57,6 @@ export interface SectionWithParsedMetadata
   extends Omit<DEX_Section, 'metadata'> {
   metadata: ParsedSectionMetadata[];
 }
-
-export type BuilderViewSearchParamValue = ValueOfNestedObject<
-  typeof DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
-  'VIEW'
->;
 
 export interface PdfTemplateData {
   personalDetails: {

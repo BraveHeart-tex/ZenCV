@@ -594,3 +594,22 @@ export const createAndNavigateToDocument = async ({
     if (onError) onError();
   }
 };
+
+export const downloadPDF = ({
+  file,
+  title,
+}: {
+  file: string;
+  title: string;
+}) => {
+  const fileName = `${title}.pdf`;
+  if (!file) {
+    showErrorToast("File doesn't exist. Please try again.");
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.href = file;
+  link.download = fileName;
+  link.click();
+};

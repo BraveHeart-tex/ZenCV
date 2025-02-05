@@ -55,6 +55,7 @@ const CreateDocumentDialog = ({
       templateType: template,
       onSuccess(documentId) {
         navigate(`/builder/${documentId}`);
+        setOpen(false);
       },
     });
   };

@@ -24,6 +24,7 @@ class PdfViewerStore implements PdfViewerState {
   previousRenderValue: string | null = null;
   pdfDimensions: { width: number; height: number } | null = null;
 
+  rendering: boolean = false;
   constructor() {
     makeAutoObservable(this);
   }

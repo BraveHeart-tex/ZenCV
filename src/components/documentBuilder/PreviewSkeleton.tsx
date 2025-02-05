@@ -1,20 +1,16 @@
 import { cn } from '@/lib/utils/stringUtils';
-import {
-  DOCUMENT_BUILDER_SEARCH_PARAM_VALUES,
-  useDocumentBuilderSearchParams,
-} from '@/hooks/useDocumentBuilderSearchParams';
 import { Skeleton } from '@/components/ui/skeleton';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 const PreviewSkeleton = () => {
-  const { view } = useDocumentBuilderSearchParams();
+  const view = builderRootStore.UIStore.currentView;
   return (
     <div
       className={cn(
         'bg-secondary min-h-screen fixed top-0 right-0 w-1/2 z-[999]',
-        view === DOCUMENT_BUILDER_SEARCH_PARAM_VALUES.VIEW.PREVIEW &&
-          'w-full xl:w-1/2',
-        view === DOCUMENT_BUILDER_SEARCH_PARAM_VALUES.VIEW.BUILDER &&
-          'hidden xl:block',
+        view === BUILDER_CURRENT_VIEWS.PREVIEW && 'w-full xl:w-1/2',
+        view === BUILDER_CURRENT_VIEWS.BUILDER && 'hidden xl:block',
       )}
     >
       <div className="h-[90vh] max-w-2xl mx-auto pt-4">

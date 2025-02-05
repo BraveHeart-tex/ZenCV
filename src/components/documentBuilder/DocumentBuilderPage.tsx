@@ -4,13 +4,27 @@ import { LazyMotion, domAnimation } from 'motion/react';
 import { useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
-import { memo } from 'react';
 import ResumeOverview from './resumeOverview/ResumeOverview';
 import DocumentBuilderViewToggle from './builderViewOptions/DocumentBuilderViewToggle';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { observer } from 'mobx-react-lite';
+import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import BuilderTemplatesPageHeader from './BuilderTemplatesPageHeader';
 
-const DocumentBuilderPage = memo(() => {
+const DocumentBuilderPage = observer(() => {
   const params = useParams<{ id: string }>();
   if (!params.id) return null;
+
+  if (
+    builderRootStore.UIStore.currentView === BUILDER_CURRENT_VIEWS.TEMPLATES
+  ) {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <BuilderTemplatesPageHeader />
+      </div>
+    );
+  }
+
   return (
     <LazyMotion features={domAnimation} strict>
       <div>
@@ -24,7 +38,5 @@ const DocumentBuilderPage = memo(() => {
     </LazyMotion>
   );
 });
-
-DocumentBuilderPage.displayName = 'DocumentBuilderPage';
 
 export default DocumentBuilderPage;
