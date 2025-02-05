@@ -1,13 +1,7 @@
 'use client';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useTransition } from 'react';
 import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
@@ -62,25 +56,16 @@ const DocumentBuilderClient = observer(
             view === 'preview' && 'hidden xl:block',
           )}
         >
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  navigate('/documents');
-                  setTimeout(() => {
-                    builderRootStore.resetState();
-                  }, 100);
-                }}
-                variant="outline"
-                className="top-2 left-2 absolute"
-              >
-                <ArrowLeft />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Documents page</p>
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            onClick={() => {
+              navigate('/documents');
+              builderRootStore.resetState();
+            }}
+            variant="outline"
+            className="top-2 left-2 absolute"
+          >
+            Documents
+          </Button>
 
           <div className="max-w-screen-2xl mx-auto">
             <DocumentBuilderHeader />
