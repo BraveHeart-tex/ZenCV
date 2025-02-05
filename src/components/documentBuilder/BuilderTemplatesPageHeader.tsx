@@ -15,7 +15,7 @@ const BuilderTemplatesPageHeader = observer(() => {
     <div className="flex items-center justify-between w-full p-4">
       <Button
         variant="ghost"
-        className="items-center gap-2"
+        className="items-center gap-2 px-1"
         onClick={action(() => {
           builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
         })}

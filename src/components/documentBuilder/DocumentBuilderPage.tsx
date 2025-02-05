@@ -19,9 +19,11 @@ const DocumentBuilderPage = observer(() => {
     builderRootStore.UIStore.currentView === BUILDER_CURRENT_VIEWS.TEMPLATES
   ) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <BuilderTemplatesPageHeader />
-      </div>
+      <main className="bg-muted h-screen">
+        <div className=" bg-background flex items-center justify-center">
+          <BuilderTemplatesPageHeader />
+        </div>
+      </main>
     );
   }
 
