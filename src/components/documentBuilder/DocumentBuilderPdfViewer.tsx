@@ -28,7 +28,6 @@ const DocumentBuilderPdfViewer = observer(
   }) => {
     const view = builderRootStore.UIStore.currentView;
     const isMobile = useMediaQuery('(max-width: 768px)', false);
-
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
     const containerRef = useRef<HTMLDivElement>(null);

@@ -126,11 +126,16 @@ html > body[data-scroll-locked] {
   }
 }
 
+.react-pdf__Page {
+  border-radius: var(--radius) !important;
+}
+
 .react-pdf__Page__canvas {
   margin: 0 auto;
   max-width: 100% !important;
   height: auto !important;
   object-fit: contain;
+  border-radius: var(--radius) !important;
 }
 
 .previous-document {
@@ -188,13 +193,6 @@ html > body[data-scroll-locked] {
   opacity: 1;
   z-index: 30;
   transition: opacity 0.5s ease-in-out;
-}
-
-.react-pdf__Page__canvas {
-  margin: 0 auto;
-  max-width: 100% !important;
-  height: auto !important;
-  object-fit: contain;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
