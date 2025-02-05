@@ -6,6 +6,10 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 
+const aspectRatio = 0.75;
+const width = 300;
+const height = width / aspectRatio;
+
 interface ResumeTemplateOptionItemProps {
   option: TemplateOption;
 }
@@ -33,8 +37,8 @@ const ResumeTemplateOptionItem = observer(
           )}
           <Image
             src={option.image}
-            width={300}
-            height={400}
+            width={width}
+            height={height}
             alt={`Template ${option.name}`}
             className={cn(
               'ring-2 ring-transparent group-hover:ring-blue-500 object-cover transition-all duration-300 rounded-md',

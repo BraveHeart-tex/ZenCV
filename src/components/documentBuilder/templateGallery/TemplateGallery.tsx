@@ -12,7 +12,7 @@ const TemplateGallery = () => {
         <div className="bg-muted dark:bg-background xl:col-span-3 border-r h-[calc(100vh-4rem)] overflow-auto hidden xl:block">
           <ResumeTemplateOptions />
         </div>
-        <div className="xl:col-span-9 col-span-12 p-4">
+        <div className="xl:col-span-9 col-span-12 p-4 h-[calc(100vh-4rem)] overflow-auto flex items-center justify-center">
           <GalleryPdfViewer />
         </div>
       </div>

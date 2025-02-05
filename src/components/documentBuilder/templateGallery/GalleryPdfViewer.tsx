@@ -43,41 +43,15 @@ const GalleryPdfViewer = observer(() => {
     }
   }, [renderData, isMobile, templateType]);
 
-  const {
-    previousRenderValue,
-    shouldShowPreviousDocument,
-    currentPage,
-    onDocumentLoad,
-  } = usePdfViewerHelpers(render);
+  const { currentPage, onDocumentLoad } = usePdfViewerHelpers(render);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full overflow-hidden">
-      {shouldShowPreviousDocument ? (
-        <Document
-          key={`${templateType}-${previousRenderValue}`}
-          className="previous-document absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out opacity-50"
-          file={previousRenderValue}
-          loading={null}
-        >
-          <Page
-            key={currentPage}
-            pageNumber={currentPage}
-            renderAnnotationLayer={false}
-            renderTextLayer={false}
-            width={width}
-            height={height}
-            loading={null}
-          />
-        </Document>
-      ) : null}
-
+    <div ref={containerRef} className="w-full h-full">
       {render.value && !render.loading && (
         <Document
           key={`${templateType}-${render.value}`}
-          className={
-            'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
-          }
           file={render.value}
+          className="w-full h-full"
           loading={null}
           onLoadSuccess={onDocumentLoad}
         >
