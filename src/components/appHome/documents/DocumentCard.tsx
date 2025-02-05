@@ -21,7 +21,11 @@ import { action } from 'mobx';
 import { useNavigate } from 'react-router';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
-const DocumentCard = ({ document }: { document: DEX_Document }) => {
+interface DocumentCardProps {
+  document: DEX_Document;
+}
+
+const DocumentCard = ({ document }: DocumentCardProps) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();

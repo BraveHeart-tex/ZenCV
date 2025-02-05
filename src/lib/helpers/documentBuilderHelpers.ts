@@ -31,11 +31,14 @@ import {
   CollapsibleSectionType,
   FieldInsertTemplate,
   FieldValuesForKey,
+  ResumeTemplate,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
+import { createDocument } from '../client-db/clientDbService';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -557,4 +560,37 @@ export const scrollItemIntoView = (
   };
 
   setTimeout(scrollAndHighlight, TOGGLE_ITEM_WAIT_MS);
+};
+
+export const createAndNavigateToDocument = async ({
+  title,
+  templateType,
+  onSuccess,
+  onError,
+}: {
+  title: string;
+  templateType: ResumeTemplate;
+  onSuccess?: (documentId: DEX_Document['id']) => void;
+  onError?: () => void;
+}) => {
+  try {
+    const documentId = await createDocument({ title, templateType });
+
+    if (!documentId) {
+      showErrorToast(
+        'An error occurred while creating the document. Please try again.',
+      );
+      if (onError) onError();
+      return;
+    }
+
+    await builderRootStore.documentStore.initializeStore(documentId);
+    showSuccessToast('Document created successfully.');
+
+    if (onSuccess) onSuccess(documentId);
+  } catch (error) {
+    showErrorToast('An error occurred while creating the document.');
+    console.error(error);
+    if (onError) onError();
+  }
 };

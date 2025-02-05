@@ -2,14 +2,12 @@ import { Button } from '@/components/ui/button';
 import { type FormEvent, useRef, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { createDocument } from '@/lib/client-db/clientDbService';
+import { showErrorToast } from '@/components/ui/sonner';
 import { useNavigate } from 'react-router';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   Select,
@@ -19,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -51,28 +50,13 @@ const CreateDocumentDialog = ({
       return;
     }
 
-    try {
-      const documentId = await createDocument({
-        title: name,
-        templateType: template,
-      });
-
-      if (!documentId) {
-        showErrorToast(
-          'An error occurred while creating the document. Please try again.',
-        );
-        return;
-      }
-
-      await builderRootStore.documentStore.initializeStore(documentId);
-      showSuccessToast('Document created successfully.');
-      setName('');
-      setOpen(false);
-      navigate(`/builder/${documentId}`);
-    } catch (error) {
-      showErrorToast('An error occurred while creating the document.');
-      console.error(error);
-    }
+    await createAndNavigateToDocument({
+      title: name,
+      templateType: template,
+      onSuccess(documentId) {
+        navigate(`/builder/${documentId}`);
+      },
+    });
   };
 
   const renderTrigger = () => {

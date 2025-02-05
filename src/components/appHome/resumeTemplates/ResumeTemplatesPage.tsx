@@ -1,7 +1,9 @@
 'use client';
 
+import TemplateCard from '@/components/landingPage/templates/TemplateCard';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { templateOptionsWithImages } from './resumeTemplates.constants';
 
 const ResumeTemplatesPage = () => {
   return (
@@ -13,7 +15,13 @@ const ResumeTemplatesPage = () => {
           <span>Resume Templates</span>
         </div>
       </header>
-      <div className="flex flex-col flex-1 gap-4 p-4">Resume templates</div>
+      <div className="flex flex-col flex-1 gap-4 p-4">
+        <div className="md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-6">
+          {templateOptionsWithImages.map((template) => (
+            <TemplateCard template={template} key={template.name} />
+          ))}
+        </div>
+      </div>
     </SidebarInset>
   );
 };

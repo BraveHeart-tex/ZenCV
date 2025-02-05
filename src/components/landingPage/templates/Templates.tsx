@@ -1,7 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { templateOptionsWithImages } from '../../appHome/resumeTemplates/resumeTemplates.constants';
-import TemplateImageDialog from './TemplateImageDialog';
+import TemplateCard from './TemplateCard';
 
 export default function Templates() {
   return (
@@ -11,20 +9,8 @@ export default function Templates() {
           Professional Templates
         </h2>
         <div className="md:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-6">
-          {templateOptionsWithImages.map((template, index) => (
-            <Card key={index} className="overflow-hidden">
-              <CardContent className="p-0">
-                <TemplateImageDialog template={template} />
-                <div className="p-4">
-                  <h3 className="mb-2 text-lg font-semibold">
-                    {template.name}
-                  </h3>
-                  <Button variant="outline" className="w-full">
-                    Use this template
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+          {templateOptionsWithImages.map((template) => (
+            <TemplateCard template={template} key={template.name} />
           ))}
         </div>
       </div>

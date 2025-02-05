@@ -123,4 +123,5 @@ export interface TemplateOption {
   image: string;
   description: string;
   tags: string[];
+  value: ResumeTemplate;
 }
