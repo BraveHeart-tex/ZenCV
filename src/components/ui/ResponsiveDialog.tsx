@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/drawer';
 
 interface ResponsiveDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   children: React.ReactNode;
   title: string;
   description?: string;
@@ -27,7 +27,7 @@ interface ResponsiveDialogProps {
 
 const ResponsiveDialog = ({
   open,
-  onOpenChange,
+  onOpenChange = () => {},
   trigger,
   title,
   description,
