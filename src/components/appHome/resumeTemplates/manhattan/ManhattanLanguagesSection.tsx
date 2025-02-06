@@ -35,18 +35,24 @@ const ManhattanLanguagesSection = ({
               alignItems: 'center',
               width: '45%',
               justifyContent: 'space-between',
+              gap: 8,
             }}
           >
+            <View style={{ flex: 1, overflow: 'hidden' }}>
+              <Text
+                style={{
+                  fontSize: MANHATTAN_FONT_SIZE,
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {entry.language}
+              </Text>
+            </View>
             <Text
               style={{
                 fontSize: MANHATTAN_FONT_SIZE,
-              }}
-            >
-              {entry.language}
-            </Text>
-            <Text
-              style={{
-                fontSize: MANHATTAN_FONT_SIZE,
+                flexShrink: 0,
               }}
             >
               {entry.level}
