@@ -37,8 +37,8 @@ import {
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
-import { createDocument } from '../client-db/clientDbService';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import DocumentService from '../client-db/documentService';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -574,7 +574,10 @@ export const createAndNavigateToDocument = async ({
   onError?: () => void;
 }) => {
   try {
-    const documentId = await createDocument({ title, templateType });
+    const documentId = await DocumentService.createDocument({
+      title,
+      templateType,
+    });
 
     if (!documentId) {
       showErrorToast(

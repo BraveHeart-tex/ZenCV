@@ -10,16 +10,13 @@ import {
 import { FileSymlink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import {
-  deleteDocument,
-  renameDocument,
-} from '@/lib/client-db/clientDbService';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
 import { useNavigate } from 'react-router';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import DocumentService from '@/lib/client-db/documentService';
 
 interface DocumentCardProps {
   document: DEX_Document;
@@ -37,7 +34,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
       message: 'Are you sure you want to delete this document?',
       onConfirm: action(async () => {
         try {
-          await deleteDocument(document.id);
+          await DocumentService.deleteDocument(document.id);
           showSuccessToast('Document deleted successfully.');
           if (builderRootStore.documentStore?.document?.id === document.id) {
             builderRootStore.resetState();
@@ -57,7 +54,10 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
 
   const handleRenameSubmit = async (enteredTitle: string) => {
     try {
-      const result = await renameDocument(document.id, enteredTitle);
+      const result = await DocumentService.renameDocument(
+        document.id,
+        enteredTitle,
+      );
       if (!result) {
         showErrorToast('An error occurred while renaming the document.');
         return;

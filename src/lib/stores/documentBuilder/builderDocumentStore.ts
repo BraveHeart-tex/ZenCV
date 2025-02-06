@@ -1,12 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
-import {
-  changeDocumentTemplateType,
-  getFullDocumentStructure,
-  renameDocument,
-} from '@/lib/client-db/clientDbService';
+import { getFullDocumentStructure } from '@/lib/client-db/clientDbService';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import DocumentService from '@/lib/client-db/documentService';
 
 export class BuilderDocumentStore {
   root: BuilderRootStore;
@@ -52,7 +49,7 @@ export class BuilderDocumentStore {
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
     try {
-      await renameDocument(this.document.id, newValue);
+      await DocumentService.renameDocument(this.document.id, newValue);
       runInAction(() => {
         if (!this.document) return;
         this.document.title = newValue;
@@ -69,7 +66,10 @@ export class BuilderDocumentStore {
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
     if (!this.document || this.document.templateType === templateType) return;
 
-    await changeDocumentTemplateType(this.document.id, templateType);
+    await DocumentService.changeDocumentTemplateType(
+      this.document.id,
+      templateType,
+    );
 
     runInAction(() => {
       if (!this.document) return;
