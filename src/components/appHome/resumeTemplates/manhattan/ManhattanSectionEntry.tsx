@@ -37,10 +37,23 @@ const ManhattanSectionEntry = <T extends Record<string, string>>({
           flexDirection: 'row',
           justifyContent: 'space-between',
           marginBottom: 4,
+          gap: 16,
         }}
       >
-        <View style={{ display: 'flex', flexDirection: 'column' }}>
-          <Text style={{ fontSize: MANHATTAN_FONT_SIZE, fontWeight: 'bold' }}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: MANHATTAN_FONT_SIZE,
+              fontWeight: 'bold',
+            }}
+          >
             {entry[titleKey]}
           </Text>
           <Text style={{ fontSize: MANHATTAN_FONT_SIZE }}>
@@ -53,6 +66,7 @@ const ManhattanSectionEntry = <T extends Record<string, string>>({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-end',
+            flexShrink: 0,
           }}
         >
           <Text style={{ fontSize: MANHATTAN_FONT_SIZE, fontWeight: 'bold' }}>

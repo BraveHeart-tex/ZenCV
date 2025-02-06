@@ -61,10 +61,17 @@ const ManhattanSkillsSection = ({
           alignItems: 'center',
           justifyContent: 'space-between',
           width: '46%',
+          gap: 8,
         }}
       >
-        <Text>{entry.name}</Text>
-        {showExperienceLevel ? <Text>{entry.level}</Text> : null}
+        <View style={{ flex: 1 }}>
+          <Text>{entry.name}</Text>
+        </View>
+        {showExperienceLevel ? (
+          <View>
+            <Text>{entry.level}</Text>
+          </View>
+        ) : null}
       </View>
     ));
   };
