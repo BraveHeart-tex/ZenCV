@@ -8,14 +8,10 @@ import {
   SectionWithParsedMetadata,
 } from '@/lib/types/documentBuilder.types';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import {
-  bulkUpdateSections,
-  deleteSection,
-  updateSection,
-} from '@/lib/client-db/clientDbService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
+import SectionService from '@/lib/client-db/sectionService';
 
 export class BuilderSectionStore {
   root: BuilderRootStore;
@@ -55,7 +51,7 @@ export class BuilderSectionStore {
 
     if (changedSections.length) {
       try {
-        await bulkUpdateSections(
+        await SectionService.bulkUpdateSections(
           changedSections.map((section) => ({
             key: section.id,
             changes: {
@@ -133,14 +129,14 @@ export class BuilderSectionStore {
       );
     });
 
-    await deleteSection(sectionId);
+    await SectionService.deleteSection(sectionId);
   };
 
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
 
-    await updateSection(sectionId, {
+    await SectionService.updateSection(sectionId, {
       title: value,
     });
 
@@ -177,7 +173,7 @@ export class BuilderSectionStore {
       }
     });
 
-    await updateSection(sectionId, {
+    await SectionService.updateSection(sectionId, {
       metadata: JSON.stringify(
         section.metadata.map((metadata) => ({
           ...metadata,

@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
-import { getFullDocumentStructure } from '@/lib/client-db/clientDbService';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import DocumentService from '@/lib/client-db/documentService';
 
@@ -15,7 +14,7 @@ export class BuilderDocumentStore {
 
   initializeStore = async (documentId: DEX_Document['id']) => {
     try {
-      const result = await getFullDocumentStructure(documentId);
+      const result = await DocumentService.getFullDocumentStructure(documentId);
       if (!result?.success) {
         return {
           error: result?.error,

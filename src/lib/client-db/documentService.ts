@@ -2,9 +2,12 @@ import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import {
   DEX_Document,
+  DEX_Field,
   DEX_InsertDocumentModel,
   DEX_InsertFieldModel,
   DEX_InsertItemModel,
+  DEX_Item,
+  DEX_Section,
   SelectField,
 } from './clientDbSchema';
 import {
@@ -12,6 +15,16 @@ import {
   isSelectField,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { ResumeTemplate } from '../types/documentBuilder.types';
+
+type GetFullDocumentStructureResponse =
+  | { success: false; error: string }
+  | {
+      success: true;
+      document: DEX_Document;
+      sections: DEX_Section[];
+      items: DEX_Item[];
+      fields: DEX_Field[];
+    };
 
 class DocumentService {
   static async createDocument(data: DEX_InsertDocumentModel) {
@@ -90,6 +103,49 @@ class DocumentService {
         await clientDb.fields.bulkAdd(resolvedFieldDtos);
 
         return documentId;
+      },
+    );
+  }
+
+  static async getFullDocumentStructure(
+    documentId: DEX_Document['id'],
+  ): Promise<GetFullDocumentStructureResponse> {
+    return clientDb.transaction(
+      'r',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        if (!document) {
+          return {
+            success: false,
+            error: 'Document not found.',
+          };
+        }
+
+        const sections = await clientDb.sections
+          .where('documentId')
+          .equals(documentId)
+          .toArray();
+        const sectionIds = sections.map((section) => section.id);
+
+        const items = await clientDb.items
+          .where('sectionId')
+          .anyOf(sectionIds)
+          .toArray();
+        const itemIds = items.map((item) => item.id);
+
+        const fields = await clientDb.fields
+          .where('itemId')
+          .anyOf(itemIds)
+          .toArray();
+
+        return {
+          success: true,
+          document,
+          sections,
+          items,
+          fields,
+        };
       },
     );
   }

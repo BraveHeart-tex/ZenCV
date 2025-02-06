@@ -3,11 +3,7 @@ import { BuilderRootStore } from './builderRootStore';
 import { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
-import {
-  addItemFromTemplate,
-  bulkUpdateItems,
-  deleteItem,
-} from '@/lib/client-db/clientDbService';
+import ItemService from '@/lib/client-db/itemService';
 
 export class BuilderItemStore {
   root: BuilderRootStore;
@@ -39,7 +35,7 @@ export class BuilderItemStore {
     );
     if (!template) return;
 
-    const result = await addItemFromTemplate({
+    const result = await ItemService.addItemFromTemplate({
       ...template,
       sectionId,
       displayOrder: this.items.reduce(
@@ -73,7 +69,7 @@ export class BuilderItemStore {
       );
     });
 
-    await deleteItem(itemId);
+    await ItemService.deleteItem(itemId);
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {
@@ -102,7 +98,7 @@ export class BuilderItemStore {
 
     if (changedItems.length) {
       try {
-        await bulkUpdateItems(
+        await ItemService.bulkUpdateItems(
           changedItems.map((item) => ({
             key: item.id,
             changes: { displayOrder: item.displayOrder },
