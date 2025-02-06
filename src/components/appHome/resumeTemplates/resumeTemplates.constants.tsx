@@ -80,3 +80,5 @@ export const templateOptionsWithImages: TemplateOption[] = [
     value: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   },
 ];
+
+export const selectedOptionImageClassNames = 'ring-2 ring-blue-500' as const;

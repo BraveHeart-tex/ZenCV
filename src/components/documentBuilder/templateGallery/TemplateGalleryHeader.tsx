@@ -6,6 +6,7 @@ import { downloadPDF } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { action } from 'mobx';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import MobileTemplatePicker from './MobileTemplatePicker';
 
 const TemplateGalleryHeader = observer(() => {
   const documentTitle =
@@ -21,21 +22,24 @@ const TemplateGalleryHeader = observer(() => {
         })}
       >
         <ChevronLeftIcon />
-        Back to editor
+        <span className="lg:inline hidden">Back to editor</span>
       </Button>
-      <Button
-        disabled={
-          !pdfViewerStore.previousRenderValue || pdfViewerStore.rendering
-        }
-        onClick={() => {
-          downloadPDF({
-            file: pdfViewerStore.previousRenderValue as string,
-            title: documentTitle,
-          });
-        }}
-      >
-        Download PDF
-      </Button>
+      <div className="flex items-center gap-2">
+        <MobileTemplatePicker />
+        <Button
+          disabled={
+            !pdfViewerStore.previousRenderValue || pdfViewerStore.rendering
+          }
+          onClick={() => {
+            downloadPDF({
+              file: pdfViewerStore.previousRenderValue as string,
+              title: documentTitle,
+            });
+          }}
+        >
+          Download PDF
+        </Button>
+      </div>
     </div>
   );
 });
