@@ -6,7 +6,7 @@ import { downloadPDF } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { action } from 'mobx';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
-import MobileTemplatePicker from './MobileTemplatePicker';
+import MobileTemplatePickerTrigger from './MobileTemplatePickerTrigger';
 
 const TemplateGalleryHeader = observer(() => {
   const documentTitle =
@@ -25,7 +25,7 @@ const TemplateGalleryHeader = observer(() => {
         <span className="lg:inline hidden">Back to editor</span>
       </Button>
       <div className="flex items-center gap-2">
-        <MobileTemplatePicker />
+        <MobileTemplatePickerTrigger />
         <Button
           disabled={
             !pdfViewerStore.previousRenderValue || pdfViewerStore.rendering

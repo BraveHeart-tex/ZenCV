@@ -19,6 +19,8 @@ export class BuilderUIStore {
   fieldRefs: Map<string, HTMLElement | null> = new Map();
 
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
+
+  isMobileTemplateSelectorVisible: boolean = false;
   rendering: boolean = false;
 
   constructor(root: BuilderRootStore) {
@@ -28,6 +30,11 @@ export class BuilderUIStore {
 
   setElementRef = (key: string, value: HTMLElement | null) => {
     this.itemRefs.set(key, value);
+  };
+
+  toggleTemplateSelectorBottomMenu = () => {
+    this.isMobileTemplateSelectorVisible =
+      !this.isMobileTemplateSelectorVisible;
   };
 
   setFieldRef = (key: string, value: HTMLElement | null) => {

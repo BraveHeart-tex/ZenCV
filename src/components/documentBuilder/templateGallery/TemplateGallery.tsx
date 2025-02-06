@@ -1,4 +1,5 @@
 import GalleryPdfViewer from './GalleryPdfViewer';
+import MobileTemplatePickerContent from './MobileTemplatePickerContent';
 import ResumeTemplateOptions from './ResumeTemplateOptions';
 import TemplateGalleryHeader from './TemplateGalleryHeader';
 
@@ -16,6 +17,7 @@ const TemplateGallery = () => {
           <GalleryPdfViewer />
         </div>
       </div>
+      <MobileTemplatePickerContent />
     </main>
   );
 };

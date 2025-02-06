@@ -1,6 +1,5 @@
 'use client';
 import DocumentBuilderClient from '@/components/documentBuilder/DocumentBuilderClient';
-import { LazyMotion, domAnimation } from 'motion/react';
 import { useNavigate, useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
 import DocumentBuilderPreview from './DocumentBuilderPreview';
@@ -13,6 +12,7 @@ import TemplateGallery from './templateGallery/TemplateGallery';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { startTransition, useEffect } from 'react';
 import { showErrorToast } from '../ui/sonner';
+import LazyMotionWrapper from '../ui/LazyMotionWrapper';
 
 const DocumentBuilderPage = observer(() => {
   const navigate = useNavigate();
@@ -47,11 +47,15 @@ const DocumentBuilderPage = observer(() => {
   if (
     builderRootStore.UIStore.currentView === BUILDER_CURRENT_VIEWS.TEMPLATES
   ) {
-    return <TemplateGallery />;
+    return (
+      <LazyMotionWrapper>
+        <TemplateGallery />
+      </LazyMotionWrapper>
+    );
   }
 
   return (
-    <LazyMotion features={domAnimation} strict>
+    <LazyMotionWrapper>
       <div>
         <ResumeOverview />
         <DocumentBuilderClient />
@@ -60,7 +64,7 @@ const DocumentBuilderPage = observer(() => {
         </ClientOnly>
       </div>
       <DocumentBuilderViewToggle />
-    </LazyMotion>
+    </LazyMotionWrapper>
   );
 });
 
