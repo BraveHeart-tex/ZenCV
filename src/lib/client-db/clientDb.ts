@@ -55,7 +55,6 @@ clientDb
   })
   .upgrade(async (transaction) => {
     const defaultSettings: Setting[] = [
-      { key: 'theme', value: 'dark' },
       { key: 'language', value: 'en-US' },
       {
         key: 'editorPreferences',

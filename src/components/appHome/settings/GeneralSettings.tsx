@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import { clientDb } from '@/lib/client-db/clientDb';
+import AppColorModeToggle from '../AppColorModeToggle';
 
 const GeneralSettings = observer(() => {
   const handleLanguageChange = async (value: string) => {
@@ -19,6 +20,10 @@ const GeneralSettings = observer(() => {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">General Settings</h2>
+      <div className="space-y-2">
+        <Label htmlFor="language">Color Scheme</Label>
+        <AppColorModeToggle />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="language">Language</Label>
         <Select

@@ -14,8 +14,8 @@ import {
 import { Link } from 'react-router';
 import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
-import ColorModeToggleSidebar from '@/components/appHome/ColorModeToggleSidebar';
 import CreateDocumentDialog from './documents/CreateDocumentDialog';
+import AppColorModeToggle from './AppColorModeToggle';
 
 const items = [
   {
@@ -84,7 +84,7 @@ const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ColorModeToggleSidebar />
+            <AppColorModeToggle shouldShowSidebarButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
