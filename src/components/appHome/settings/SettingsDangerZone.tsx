@@ -6,6 +6,7 @@ import { clientDb } from '@/lib/client-db/clientDb';
 import { observer } from 'mobx-react-lite';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { runInAction } from 'mobx';
+import { showSuccessToast } from '@/components/ui/sonner';
 
 const SettingsDangerZone = observer(() => {
   const handleDeleteAllData = async () => {
@@ -17,6 +18,7 @@ const SettingsDangerZone = observer(() => {
       onConfirm: async () => {
         await clientDb.delete();
         await clientDb.open();
+        showSuccessToast('All local data deleted successfully.');
         runInAction(() => {
           confirmDialogStore.hideDialog();
         });

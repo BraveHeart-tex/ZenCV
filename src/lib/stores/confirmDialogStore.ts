@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 
 interface ShowDialogParams {
   message: string;
@@ -21,10 +21,7 @@ class ConfirmDialogStore {
   doNotAskAgainChecked: boolean = false;
 
   constructor() {
-    makeAutoObservable(this, {
-      showDialog: action,
-      hideDialog: action,
-    });
+    makeAutoObservable(this);
   }
 
   showDialog = ({
@@ -50,12 +47,14 @@ class ConfirmDialogStore {
     this.isOpen = false;
     this.onConfirm = () => {};
     setTimeout(() => {
-      this.message = '';
-      this.title = 'Confirm';
-      this.cancelText = 'Cancel';
-      this.confirmText = 'Confirm';
-      this.doNotAskAgainEnabled = false;
-      this.doNotAskAgainChecked = false;
+      runInAction(() => {
+        this.message = '';
+        this.title = 'Confirm';
+        this.cancelText = 'Cancel';
+        this.confirmText = 'Confirm';
+        this.doNotAskAgainEnabled = false;
+        this.doNotAskAgainChecked = false;
+      });
     }, 300);
   };
 

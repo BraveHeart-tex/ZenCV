@@ -3,6 +3,17 @@ import { liveQuery } from 'dexie';
 import { clientDb } from '@/lib/client-db/clientDb';
 import { EditorPreferences } from '../client-db/clientDbSchema';
 
+const defaultSettings = {
+  generalSettings: {
+    language: 'en-US',
+  },
+  editorPreferences: {
+    askBeforeDeletingItem: true,
+    askBeforeDeletingSection: true,
+    spellcheckEnabled: true,
+  },
+};
+
 class UserSettingsStore {
   generalSettings = {
     language: 'en-US',
@@ -21,21 +32,19 @@ class UserSettingsStore {
     liveQuery(() => clientDb.settings.toArray()).subscribe({
       next: (settings) => {
         runInAction(() => {
-          const editorPreferences = settings.find(
-            (s) => s.key === 'editorPreferences',
+          const settingsMap = Object.fromEntries(
+            settings.map((s) => [s.key, s.value]),
           );
 
-          const language = settings.find((s) => s.key === 'language')?.value;
-
-          if (language) {
-            this.generalSettings.language = language;
-          }
+          this.generalSettings.language =
+            settingsMap.language ?? defaultSettings.generalSettings.language;
 
           this.editorPreferences =
-            editorPreferences?.value as unknown as EditorPreferences;
+            (settingsMap.editorPreferences as unknown as EditorPreferences) ??
+            defaultSettings.editorPreferences;
         });
       },
-      error: (err) => console.error('Dexie liveQuery error:', err),
+      error: (err) => console.error('UserSettings.startListening error:', err),
     });
   }
 }
