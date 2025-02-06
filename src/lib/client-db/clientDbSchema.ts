@@ -102,3 +102,16 @@ export type DEX_InsertDocumentModel = Omit<
 
 export type DEX_InsertItemModel = Omit<DEX_Item, 'id'>;
 export type DEX_InsertFieldModel = Omit<DEX_Field, 'id'>;
+
+export interface EditorPreferences {
+  spellcheckEnabled: boolean;
+  askBeforeDeletingItem: boolean;
+  askBeforeDeletingSection: boolean;
+}
+
+export type SettingsKey = 'language' | 'editorPreferences';
+
+export interface Setting<T = unknown> {
+  key: SettingsKey;
+  value: T;
+}

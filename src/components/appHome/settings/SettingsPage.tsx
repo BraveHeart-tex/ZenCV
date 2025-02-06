@@ -1,9 +1,12 @@
 'use client';
-
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { observer } from 'mobx-react-lite';
+import GeneralSettings from './GeneralSettings';
+import EditorPreferences from './EditorPreferences';
+import SettingsDangerZone from './SettingsDangerZone';
 
-const SettingsPage = () => {
+const SettingsPage = observer(() => {
   return (
     <SidebarInset>
       <header className="shrink-0 flex items-center h-16 gap-2 border-b">
@@ -13,8 +16,15 @@ const SettingsPage = () => {
           <span>Settings</span>
         </div>
       </header>
-      <div className="flex flex-col flex-1 gap-4 p-4">Settings Page</div>
+      <div className="flex flex-col flex-1 w-full max-w-2xl gap-8 p-6 mx-auto">
+        <GeneralSettings />
+        <Separator />
+        <EditorPreferences />
+        <Separator />
+        <SettingsDangerZone />
+      </div>
     </SidebarInset>
   );
-};
+});
+
 export default SettingsPage;

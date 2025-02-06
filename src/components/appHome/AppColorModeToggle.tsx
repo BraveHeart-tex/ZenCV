@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { Button } from '../ui/button';
 
 const themeOptions = [
   {
@@ -27,7 +28,13 @@ const themeOptions = [
   },
 ];
 
-const ColorModeToggleSidebar = () => {
+interface SidebarColorModeToggleProps {
+  shouldShowSidebarButton?: boolean;
+}
+
+const AppColorModeToggle = ({
+  shouldShowSidebarButton,
+}: SidebarColorModeToggleProps) => {
   const { theme, setTheme } = useTheme();
 
   const renderTriggerContent = () => {
@@ -37,23 +44,35 @@ const ColorModeToggleSidebar = () => {
 
     if (!selectedOption) return;
 
-    return (
+    const content = (
       <div className="flex items-center gap-2">
         <selectedOption.icon className="h-[1.2rem] w-[1.2rem]" />
         {selectedOption.label}
+        <span className="sr-only">Select color theme</span>
       </div>
+    );
+
+    if (shouldShowSidebarButton) {
+      return (
+        <SidebarMenuButton variant="outline" className="justify-start w-full">
+          {content}
+        </SidebarMenuButton>
+      );
+    }
+
+    return (
+      <Button variant={'outline'} className="justify-start w-full">
+        {content}
+      </Button>
     );
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <SidebarMenuButton variant="outline" className="justify-start w-full">
-          {renderTriggerContent()}
-          <span className="sr-only">Select color theme</span>
-        </SidebarMenuButton>
+        {renderTriggerContent()}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent>
         {themeOptions.map((option) => (
           <DropdownMenuItem
             onClick={() => setTheme(option.value)}
@@ -69,4 +88,4 @@ const ColorModeToggleSidebar = () => {
   );
 };
 
-export default ColorModeToggleSidebar;
+export default AppColorModeToggle;
