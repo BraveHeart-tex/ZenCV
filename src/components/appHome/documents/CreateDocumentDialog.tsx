@@ -57,6 +57,11 @@ const CreateDocumentDialog = ({
         navigate(`/builder/${documentId}`);
         setOpen(false);
       },
+      onError() {
+        showErrorToast(
+          'Something went wrong while creating the document. Please try again later.',
+        );
+      },
     });
   };
 
