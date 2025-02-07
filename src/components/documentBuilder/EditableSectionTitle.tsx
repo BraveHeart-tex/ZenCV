@@ -8,16 +8,14 @@ import {
 } from '@/components/ui/tooltip';
 import { TrashIcon } from 'lucide-react';
 import { showSuccessToast } from '@/components/ui/sonner';
-import { action } from 'mobx';
+import { action, runInAction } from 'mobx';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import {
-  getSectionDeleteConfirmationPreference,
-  setSectionDeleteConfirmationPreference,
-} from '@/lib/helpers/userSettingsHelpers';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import RenameSectionFormDialog from './RenameSectionFormDialog';
 import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
+import UserSettingsService from '@/lib/client-db/userSettingsService';
 
 const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
@@ -29,7 +27,7 @@ const EditableSectionTitle = observer(
 
     const handleDeleteSection = action(async () => {
       const shouldNotAskConfirmation =
-        await getSectionDeleteConfirmationPreference();
+        !userSettingsStore.editorPreferences.askBeforeDeletingSection;
 
       if (shouldNotAskConfirmation) {
         await builderRootStore.sectionStore.removeSection(sectionId);
@@ -42,16 +40,17 @@ const EditableSectionTitle = observer(
         message: 'This action cannot be undone',
         doNotAskAgainEnabled: true,
         onConfirm: async () => {
-          const doNotAskAgain = confirmDialogStore.doNotAskAgainChecked;
-
           await builderRootStore.sectionStore.removeSection(sectionId);
           showSuccessToast('Section removed successfully.');
 
-          if (doNotAskAgain) {
-            await setSectionDeleteConfirmationPreference(doNotAskAgain);
-          }
+          runInAction(() => {
+            confirmDialogStore.hideDialog();
+          });
 
-          confirmDialogStore.hideDialog();
+          UserSettingsService.handleEditorPreferenceChange(
+            'askBeforeDeletingSection',
+            confirmDialogStore.doNotAskAgainChecked ? false : true,
+          );
         },
       });
     });

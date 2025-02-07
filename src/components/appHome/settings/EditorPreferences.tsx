@@ -3,23 +3,9 @@ import { observer } from 'mobx-react-lite';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
-import { clientDb } from '@/lib/client-db/clientDb';
+import UserSettingsService from '@/lib/client-db/userSettingsService';
 
 const EditorPreferences = observer(() => {
-  const handleEditorPreferenceChange = async (
-    key: keyof typeof userSettingsStore.editorPreferences,
-    value: boolean,
-  ) => {
-    const newPreferences = {
-      ...userSettingsStore.editorPreferences,
-      [key]: value,
-    };
-    await clientDb.settings.put({
-      key: 'editorPreferences',
-      value: newPreferences as unknown as string,
-    });
-  };
-
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Editor Preferences</h2>
@@ -32,7 +18,10 @@ const EditorPreferences = observer(() => {
             id="askBeforeDeletingItem"
             checked={userSettingsStore.editorPreferences.askBeforeDeletingItem}
             onCheckedChange={(checked) =>
-              handleEditorPreferenceChange('askBeforeDeletingItem', checked)
+              UserSettingsService.handleEditorPreferenceChange(
+                'askBeforeDeletingItem',
+                checked,
+              )
             }
           />
         </div>
@@ -46,7 +35,10 @@ const EditorPreferences = observer(() => {
               userSettingsStore.editorPreferences.askBeforeDeletingSection
             }
             onCheckedChange={(checked) =>
-              handleEditorPreferenceChange('askBeforeDeletingSection', checked)
+              UserSettingsService.handleEditorPreferenceChange(
+                'askBeforeDeletingSection',
+                checked,
+              )
             }
           />
         </div>
@@ -56,7 +48,10 @@ const EditorPreferences = observer(() => {
             id="enableSpellCheck"
             checked={userSettingsStore.editorPreferences.spellcheckEnabled}
             onCheckedChange={(checked) =>
-              handleEditorPreferenceChange('spellcheckEnabled', checked)
+              UserSettingsService.handleEditorPreferenceChange(
+                'spellcheckEnabled',
+                checked,
+              )
             }
           />
         </div>

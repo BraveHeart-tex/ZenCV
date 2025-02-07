@@ -1,6 +1,4 @@
 const ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY = 'doNotAskAgainItemDelete' as const;
-const SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY =
-  'doNotAskAgainSectionDelete' as const;
 
 const setDeleteConfirmationPreference = async (
   key: string,
@@ -26,18 +24,4 @@ export const setItemDeleteConfirmationPreference = async (checked: boolean) => {
 export const getItemDeleteConfirmationPreference =
   async (): Promise<boolean> => {
     return getDeleteConfirmationPreference(ITEM_DELETE_DO_NOT_ASK_AGAIN_KEY);
-  };
-
-export const setSectionDeleteConfirmationPreference = async (
-  checked: boolean,
-) => {
-  await setDeleteConfirmationPreference(
-    SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY,
-    checked,
-  );
-};
-
-export const getSectionDeleteConfirmationPreference =
-  async (): Promise<boolean> => {
-    return getDeleteConfirmationPreference(SECTION_DELETE_DO_NOT_ASK_AGAIN_KEY);
   };
