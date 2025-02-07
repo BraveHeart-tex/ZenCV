@@ -17,7 +17,7 @@ const PdfViewerPageControls = observer(
       <div
         className={cn(
           'flex items-center justify-center gap-2 mt-2',
-          variant === 'primary' && 'bg-primary rounded-full',
+          variant === 'primary' && 'bg-primary dark:bg-background rounded-full',
         )}
       >
         <Button
@@ -27,7 +27,8 @@ const PdfViewerPageControls = observer(
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
             'rounded-full size-[1.875rem]',
-            variant === 'primary' && 'text-primary-foreground',
+            variant === 'primary' &&
+              'text-primary-foreground dark:text-foreground',
           )}
         >
           <ChevronLeftIcon size={24} />
@@ -35,7 +36,8 @@ const PdfViewerPageControls = observer(
         <span
           className={cn(
             'text-muted-foreground tabular-nums text-xs',
-            variant === 'primary' && 'text-primary-foreground',
+            variant === 'primary' &&
+              'text-primary-foreground dark:text-foreground',
           )}
         >
           {currentPage} of {numberOfPages}
@@ -47,7 +49,8 @@ const PdfViewerPageControls = observer(
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
             'rounded-full size-[1.875rem]',
-            variant === 'primary' && 'text-primary-foreground',
+            variant === 'primary' &&
+              'text-primary-foreground dark:text-foreground',
           )}
         >
           <ChevronRightIcon size={24} />
