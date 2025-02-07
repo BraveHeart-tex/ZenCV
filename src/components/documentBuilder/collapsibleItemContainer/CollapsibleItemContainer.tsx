@@ -27,18 +27,16 @@ import type React from 'react';
 import { useMedia } from 'react-use';
 import { observer } from 'mobx-react-lite';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { action } from 'mobx';
+import { action, runInAction } from 'mobx';
 import { showSuccessToast } from '@/components/ui/sonner';
-import {
-  getItemDeleteConfirmationPreference,
-  setItemDeleteConfirmationPreference,
-} from '@/lib/helpers/userSettingsHelpers';
 import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import CollapsibleItemHeader from './CollapsibleItemHeader';
 import CollapsibleItemMobileContent from './CollapsibleItemMobileContent';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { useEffect } from 'react';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
+import UserSettingsService from '@/lib/client-db/userSettingsService';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -73,7 +71,7 @@ const CollapsibleSectionItemContainer = observer(
 
     const handleDeleteItemClick = action(async () => {
       const shouldNotAskForConfirmation =
-        await getItemDeleteConfirmationPreference();
+        !userSettingsStore.editorPreferences.askBeforeDeletingItem;
 
       if (shouldNotAskForConfirmation) {
         await builderRootStore.itemStore.removeItem(itemId);
@@ -87,15 +85,17 @@ const CollapsibleSectionItemContainer = observer(
         confirmText: 'Delete',
         cancelText: 'Cancel',
         onConfirm: async () => {
-          const doNotAskAgainChecked = confirmDialogStore.doNotAskAgainChecked;
           await builderRootStore.itemStore.removeItem(itemId);
           showSuccessToast('Entry deleted successfully.');
 
-          if (doNotAskAgainChecked !== undefined) {
-            await setItemDeleteConfirmationPreference(doNotAskAgainChecked);
-          }
+          runInAction(() => {
+            confirmDialogStore.hideDialog();
+          });
 
-          confirmDialogStore.hideDialog();
+          UserSettingsService.handleEditorPreferenceChange(
+            'askBeforeDeletingItem',
+            confirmDialogStore.doNotAskAgainChecked ? false : true,
+          );
         },
         doNotAskAgainEnabled: true,
       });
