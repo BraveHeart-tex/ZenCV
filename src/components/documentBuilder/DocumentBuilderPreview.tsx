@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils/stringUtils';
 import DocumentBuilderPreviewHeader from './DocumentBuilderPreviewHeader';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
-import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
 
 const DocumentBuilderPreview = observer(() => {
   const view = builderRootStore.UIStore.currentView;
@@ -23,7 +22,6 @@ const DocumentBuilderPreview = observer(() => {
         <DocumentBuilderPreviewContent />
         <DocumentBuilderPreviewFooter />
       </div>
-      <DocumentBuilderSettingsWidget />
     </div>
   );
 });

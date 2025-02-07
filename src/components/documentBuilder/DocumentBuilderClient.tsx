@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import ImproveResumeWidget from './resumeScore/ImproveResumeWidget';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
 
 const DocumentBuilderClient = observer(() => {
   const navigate = useNavigate();
@@ -19,21 +20,23 @@ const DocumentBuilderClient = observer(() => {
     <TooltipProvider>
       <div
         className={cn(
-          'bg-background min-h-screen px-6 md:p-12 py-14 relative w-1/2 hide-scrollbar',
+          'bg-background min-h-screen px-6 md:p-12 py-14 pt-4 md:pt-4 relative w-1/2 hide-scrollbar',
           view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
           view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block',
         )}
       >
-        <Button
-          onClick={() => {
-            navigate('/documents');
-            builderRootStore.resetState();
-          }}
-          variant="outline"
-          className="top-2 left-2 absolute"
-        >
-          Documents
-        </Button>
+        <div className="flex items-center justify-between w-full gap-4">
+          <Button
+            onClick={() => {
+              navigate('/documents');
+              builderRootStore.resetState();
+            }}
+            variant="outline"
+          >
+            Documents
+          </Button>
+          <DocumentBuilderSettingsWidget />
+        </div>
 
         <div className="max-w-screen-2xl mx-auto">
           <DocumentBuilderHeader />
