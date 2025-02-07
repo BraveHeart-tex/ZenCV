@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Icons } from '../misc/icons';
 import { ModeToggle } from '../ui/mode-toggle';
 import { APP_NAME } from '@/lib/appConfig';
+import { ArrowRight } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -42,7 +43,8 @@ export default function Header() {
               variant: 'default',
             })}
           >
-            Get Started
+            Start Building
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
         </div>
       </div>
