@@ -1,4 +1,4 @@
-import DocumentBuilderPreviewFooter from './DocumentBuilderPreviewFooter';
+import PdfViewerPageControls from './PdfViewerPageControls';
 import { observer } from 'mobx-react-lite';
 import DocumentBuilderPreviewContent from './DocumentBuilderPreviewContent';
 import { cn } from '@/lib/utils/stringUtils';
@@ -20,7 +20,7 @@ const DocumentBuilderPreview = observer(() => {
       <div className="h-[90vh] mx-auto pt-4">
         <DocumentBuilderPreviewHeader />
         <DocumentBuilderPreviewContent />
-        <DocumentBuilderPreviewFooter />
+        <PdfViewerPageControls />
       </div>
     </div>
   );
