@@ -213,18 +213,7 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: 'Leadership',
-          },
-          {
-            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-            type: FIELD_TYPES.STRING,
-            value: 'Advanced',
-          },
-        ],
+        fields: [],
       },
     ],
   },
@@ -406,13 +395,7 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: 'Problem Solving',
-          },
-        ],
+        fields: [],
       },
     ],
   },
@@ -594,13 +577,7 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: 'Creative Problem Solving',
-          },
-        ],
+        fields: [],
       },
     ],
   },
