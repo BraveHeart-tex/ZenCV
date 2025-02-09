@@ -36,6 +36,7 @@ export const sampleDataOptions: {
 export type PrefilledResumeStyle = ValueOf<typeof PREFILL_RESUME_STYLES>;
 
 import { SectionWithFields } from '../client-db/clientDbSchema';
+import { getInsertTemplatesWithValues } from '../misc/fieldTemplates';
 
 const getStandardTemplate = (
   documentId: DEX_Document['id'],
@@ -51,38 +52,16 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'Business Professional',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'John',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'Smith',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
-            type: FIELD_TYPES.STRING,
-            value: 'john.smith@email.com',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.PHONE,
-            type: FIELD_TYPES.STRING,
-            value: '+1 (555) 123-4567',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'New York, NY',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
+          WANTED_JOB_TITLE: 'Business Professional',
+          FIRST_NAME: 'John',
+          LAST_NAME: 'Smith',
+          EMAIL: 'john.smith@email.com',
+          PHONE: '+1 (555) 123-4567',
+          CITY: 'New York, NY',
+          COUNTRY: '',
+          ADDRESS: '',
+        }),
       },
     ],
   },
@@ -97,14 +76,10 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SUMMARY.SUMMARY,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p>Results-driven professional with 5+ years of experience in business development and project management. Proven track record of leading successful initiatives and driving organizational growth.</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SUMMARY', {
+          SUMMARY:
+            '<p>Results-driven professional with 5+ years of experience in business development and project management. Proven track record of leading successful initiatives and driving organizational growth.</p>',
+        }),
       },
     ],
   },
@@ -119,39 +94,15 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'Senior Business Analyst',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
-            type: FIELD_TYPES.STRING,
-            value: 'Global Solutions Corp.',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Jan 2020',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Present',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'New York, NY',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<ul><li>Led cross-functional teams in implementing strategic initiatives</li><li>Improved operational efficiency by 25% through process optimization</li><li>Managed client relationships resulting in 40% revenue growth</li></ul>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'Senior Business Analyst',
+          EMPLOYER: 'Global Solutions Corp.',
+          START_DATE: 'Jan 2020',
+          END_DATE: 'Present',
+          CITY: 'New York, NY',
+          DESCRIPTION:
+            '<ul><li>Led cross-functional teams in implementing strategic initiatives</li><li>Improved operational efficiency by 25% through process optimization</li><li>Managed client relationships resulting in 40% revenue growth</li></ul>',
+        }),
       },
     ],
   },
@@ -166,39 +117,15 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.EDUCATION.SCHOOL,
-            type: FIELD_TYPES.STRING,
-            value: 'University of Pennsylvania',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DEGREE,
-            type: FIELD_TYPES.STRING,
-            value: 'Bachelor of Science in Business Administration',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Sep 2014',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'May 2018',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'Philadelphia, PA',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p><strong>Core Skills:</strong> Project Management, Strategic Planning, Business Analysis</p><p><strong>Tools:</strong> MS Office Suite, Tableau, Salesforce</p><p><strong>Soft Skills:</strong> Leadership, Communication, Problem Solving</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('EDUCATION', {
+          SCHOOL: 'University of Pennsylvania',
+          DEGREE: 'Bachelor of Science in Business Administration',
+          START_DATE: 'Sep 2014',
+          END_DATE: 'May 2018',
+          CITY: 'Philadelphia, PA',
+          DESCRIPTION:
+            '<p><strong>Core Skills:</strong> Project Management, Strategic Planning, Business Analysis</p><p><strong>Tools:</strong> MS Office Suite, Tableau, Salesforce</p><p><strong>Soft Skills:</strong> Leadership, Communication, Problem Solving</p>',
+        }),
       },
     ],
   },
@@ -213,18 +140,10 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-          {
-            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SKILLS', {
+          SKILL: '',
+          EXPERIENCE_LEVEL: '',
+        }),
       },
     ],
   },
@@ -239,39 +158,14 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.CITY,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.START_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.END_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
-            value:
-              '<p><strong>Business Analysis Tools:</strong> Microsoft Excel, Tableau, Power BI, SQL, JIRA.<br><strong>Requirements Gathering:</strong> Stakeholder Interviews, Surveys, Workshops, Use Cases, User Stories.<br><strong>Process Improvement:</strong> Lean Six Sigma, Process Mapping, Root Cause Analysis, Workflow Optimization.<br><strong>Project Management:</strong> Agile, Scrum, Waterfall, Risk Management, Change Management.</p>',
-            type: FIELD_TYPES.RICH_TEXT,
-            placeholder: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('CUSTOM', {
+          ACTIVITY_NAME: '',
+          CITY: '',
+          DESCRIPTION:
+            '<p><strong>Business Analysis Tools:</strong> Microsoft Excel, Tableau, Power BI, SQL, JIRA.<br><strong>Requirements Gathering:</strong> Stakeholder Interviews, Surveys, Workshops, Use Cases, User Stories.<br><strong>Process Improvement:</strong> Lean Six Sigma, Process Mapping, Root Cause Analysis, Workflow Optimization.<br><strong>Project Management:</strong> Agile, Scrum, Waterfall, Risk Management, Change Management.</p>',
+          END_DATE: '',
+          START_DATE: '',
+        }),
       },
     ],
   },

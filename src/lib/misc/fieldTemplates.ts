@@ -5,7 +5,10 @@ import {
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { FieldInsertTemplate } from '@/lib/types/documentBuilder.types';
+import {
+  FieldInsertTemplate,
+  TopLevelFieldName,
+} from '@/lib/types/documentBuilder.types';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [
   {
@@ -230,3 +233,47 @@ export const languagesSectionFields: FieldInsertTemplate[] = [
   ...field,
   value: '',
 }));
+
+export const hobbiesSectionFields: FieldInsertTemplate[] = [
+  {
+    name: FIELD_NAMES.HOBBIES.WHAT_DO_YOU_LIKE,
+    type: FIELD_TYPES.TEXTAREA,
+    value: '',
+    placeholder: RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.HOBBIES],
+  },
+];
+
+export const summarySectionFields: FieldInsertTemplate[] = [
+  {
+    name: FIELD_NAMES.SUMMARY.SUMMARY,
+    type: FIELD_TYPES.RICH_TEXT,
+    value: '',
+    placeholder: RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.SUMMARY],
+  },
+];
+
+const fieldNamesToTemplates: Record<TopLevelFieldName, FieldInsertTemplate[]> =
+  {
+    PERSONAL_DETAILS: personalDetailsSectionFields,
+    WORK_EXPERIENCE: employmentHistoryFields,
+    EDUCATION: educationFields,
+    WEBSITES_SOCIAL_LINKS: websitesAndLinkFields,
+    SKILLS: skillsSectionFields,
+    COURSES: coursesSectionFields,
+    CUSTOM: customSectionFields,
+    REFERENCES: referencesSectionFields,
+    LANGUAGES: languagesSectionFields,
+    HOBBIES: hobbiesSectionFields,
+    INTERNSHIPS: employmentHistoryFields,
+    SUMMARY: summarySectionFields,
+  };
+
+export const getInsertTemplatesWithValues = <T extends TopLevelFieldName>(
+  key: T,
+  mapping: Record<keyof (typeof FIELD_NAMES)[T], string>,
+) => {
+  return fieldNamesToTemplates[key].map((field) => ({
+    ...field,
+    value: mapping[field.name as keyof typeof mapping],
+  }));
+};

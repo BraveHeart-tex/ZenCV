@@ -26,6 +26,8 @@ import {
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
+export type TopLevelFieldName = keyof typeof FIELD_NAMES;
+
 export type SectionType = ValueOf<typeof INTERNAL_SECTION_TYPES>;
 
 export type TemplatedSectionType = Exclude<

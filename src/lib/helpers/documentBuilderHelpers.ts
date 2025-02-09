@@ -13,17 +13,18 @@ import {
   customSectionFields,
   educationFields,
   employmentHistoryFields,
+  hobbiesSectionFields,
   languagesSectionFields,
   personalDetailsSectionFields,
   referencesSectionFields,
   skillsSectionFields,
+  summarySectionFields,
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
 import {
   FIELD_NAMES,
   highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
-  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
   TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
@@ -65,15 +66,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.STATIC,
           displayOrder: 1,
-          fields: [
-            {
-              name: FIELD_NAMES.SUMMARY.SUMMARY,
-              type: FIELD_TYPES.RICH_TEXT,
-              value: '',
-              placeholder:
-                RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.SUMMARY],
-            },
-          ],
+          fields: summarySectionFields,
         },
       ],
     },
@@ -186,15 +179,7 @@ export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
     [INTERNAL_SECTION_TYPES.HOBBIES]: {
       containerType: CONTAINER_TYPES.STATIC,
       displayOrder: 1,
-      fields: [
-        {
-          name: FIELD_NAMES.HOBBIES.WHAT_DO_YOU_LIKE,
-          type: FIELD_TYPES.TEXTAREA,
-          value: '',
-          placeholder:
-            RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.HOBBIES],
-        },
-      ],
+      fields: hobbiesSectionFields,
     },
     [INTERNAL_SECTION_TYPES.COURSES]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
