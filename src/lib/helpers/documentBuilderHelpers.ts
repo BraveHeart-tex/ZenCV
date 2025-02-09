@@ -576,12 +576,13 @@ export const createAndNavigateToDocument = async ({
   templateType,
   onSuccess,
   onError,
-  // selectedPrefillStyle = null,
+  selectedPrefillStyle = null,
 }: CreateAndNavigateToDocumentParams) => {
   try {
     const documentId = await DocumentService.createDocument({
       title,
       templateType,
+      selectedPrefillStyle,
     });
 
     if (!documentId) {

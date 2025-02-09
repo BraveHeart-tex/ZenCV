@@ -22,7 +22,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import {
   PREFILL_RESUME_STYLES,
   PrefilledResumeStyle,
+  sampleDataOptions,
 } from '@/lib/templates/prefilledTemplates';
+import { Nullable } from '@/lib/types/utils.types';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -35,21 +37,6 @@ const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
   }),
 );
 
-const sampleDataOptions: { label: string; value: PrefilledResumeStyle }[] = [
-  {
-    label: 'Standard',
-    value: PREFILL_RESUME_STYLES.STANDARD,
-  },
-  {
-    label: 'Tech-Focused',
-    value: PREFILL_RESUME_STYLES.TECH_FOCUSED,
-  },
-  {
-    label: 'Creative',
-    value: PREFILL_RESUME_STYLES.CREATIVE,
-  },
-] as const;
-
 const CreateDocumentDialog = ({
   triggerVariant = 'default',
 }: CreateDocumentDialogProps) => {
@@ -61,7 +48,7 @@ const CreateDocumentDialog = ({
     INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   );
   const [selectedPrefillStyle, setSelectedPrefillStyle] =
-    useState<PrefilledResumeStyle | null>(null);
+    useState<Nullable<PrefilledResumeStyle>>(null);
   const input = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent) => {

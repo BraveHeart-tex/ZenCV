@@ -15,6 +15,10 @@ import {
   isSelectField,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { ResumeTemplate } from '../types/documentBuilder.types';
+import {
+  getTemplateByStyle,
+  PrefilledResumeStyle,
+} from '../templates/prefilledTemplates';
 
 type GetFullDocumentStructureResponse =
   | { success: false; error: string }
@@ -27,15 +31,23 @@ type GetFullDocumentStructureResponse =
     };
 
 class DocumentService {
-  static async createDocument(data: DEX_InsertDocumentModel) {
+  static async createDocument(
+    data: DEX_InsertDocumentModel & {
+      selectedPrefillStyle: PrefilledResumeStyle | null;
+    },
+  ) {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
       async () => {
-        const documentId = await clientDb.documents.add(data as DEX_Document);
+        const documentId = await clientDb.documents.add({
+          templateType: data.templateType,
+          title: data.title,
+        } as DEX_Document);
 
-        const sectionTemplates =
-          getInitialDocumentInsertBoilerplate(documentId);
+        const sectionTemplates = data.selectedPrefillStyle
+          ? getTemplateByStyle(data.selectedPrefillStyle, documentId)
+          : getInitialDocumentInsertBoilerplate(documentId);
 
         const prepareSections = () =>
           sectionTemplates.map((section) => ({
