@@ -76,7 +76,7 @@ const CreateDocumentDialog = ({
     await createAndNavigateToDocument({
       title: name,
       templateType: template,
-      selectedPrefillStyle,
+      selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
       onSuccess(documentId) {
         navigate(`/builder/${documentId}`);
         setOpen(false);

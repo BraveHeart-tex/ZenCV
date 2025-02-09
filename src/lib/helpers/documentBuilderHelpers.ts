@@ -39,10 +39,7 @@ import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import DocumentService from '../client-db/documentService';
-import {
-  getTemplateByStyle,
-  PrefilledResumeStyle,
-} from '../templates/prefilledTemplates';
+import { PrefilledResumeStyle } from '../templates/prefilledTemplates';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -579,13 +576,12 @@ export const createAndNavigateToDocument = async ({
   templateType,
   onSuccess,
   onError,
-  selectedPrefillStyle = null,
+  // selectedPrefillStyle = null,
 }: CreateAndNavigateToDocumentParams) => {
   try {
     const documentId = await DocumentService.createDocument({
       title,
       templateType,
-      ...(selectedPrefillStyle ? getTemplateByStyle(selectedPrefillStyle) : {}),
     });
 
     if (!documentId) {
