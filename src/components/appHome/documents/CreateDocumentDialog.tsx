@@ -18,6 +18,13 @@ import {
 } from '@/components/ui/select';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  PREFILL_RESUME_STYLES,
+  PrefilledResumeStyle,
+  sampleDataOptions,
+} from '@/lib/templates/prefilledTemplates';
+import { Nullable } from '@/lib/types/utils.types';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
@@ -34,11 +41,14 @@ const CreateDocumentDialog = ({
   triggerVariant = 'default',
 }: CreateDocumentDialogProps) => {
   const navigate = useNavigate();
+  const [shouldUseSampleData, setShouldUseSampleData] = useState(false);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [template, setTemplate] = useState<ResumeTemplate>(
     INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   );
+  const [selectedPrefillStyle, setSelectedPrefillStyle] =
+    useState<Nullable<PrefilledResumeStyle>>(null);
   const input = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -53,6 +63,7 @@ const CreateDocumentDialog = ({
     await createAndNavigateToDocument({
       title: name,
       templateType: template,
+      selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
       onSuccess(documentId) {
         navigate(`/builder/${documentId}`);
         setOpen(false);
@@ -137,6 +148,51 @@ const CreateDocumentDialog = ({
             </SelectContent>
           </Select>
         </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="use-sample-data"
+              checked={shouldUseSampleData}
+              onCheckedChange={(checked: boolean) => {
+                if (!checked && selectedPrefillStyle) {
+                  setSelectedPrefillStyle(null);
+                }
+
+                setShouldUseSampleData(checked);
+              }}
+            />
+            <Label htmlFor="use-sample-data">Use sample data</Label>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Populate the document with sample data.
+          </p>
+        </div>
+        {shouldUseSampleData && (
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="sample-data-type">Sample Data Type</Label>
+            <Select
+              value={selectedPrefillStyle || ''}
+              onValueChange={(value) =>
+                setSelectedPrefillStyle(value as PrefilledResumeStyle)
+              }
+              defaultValue={
+                selectedPrefillStyle || PREFILL_RESUME_STYLES.STANDARD
+              }
+            >
+              <SelectTrigger className="w-full" id="sample-data-type">
+                <SelectValue placeholder="Select sample data type" />
+              </SelectTrigger>
+              <SelectContent>
+                {sampleDataOptions.map((option) => (
+                  <SelectItem value={option.value} key={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         <div className={dialogFooterClassNames}>
           <Button
             variant="outline"

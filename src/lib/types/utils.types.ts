@@ -5,3 +5,5 @@ export type NestedValueOf<T> = T extends object
   : T;
 
 export type ValueOfNestedObject<T, K extends keyof T> = T[K][keyof T[K]];
+
+export type Nullable<T> = T | null;

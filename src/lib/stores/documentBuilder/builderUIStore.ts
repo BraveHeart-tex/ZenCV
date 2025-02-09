@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
-import { ValueOf } from '@/lib/types/utils.types';
+import { Nullable, ValueOf } from '@/lib/types/utils.types';
 
 export const BUILDER_CURRENT_VIEWS = {
   BUILDER: 'builder',
@@ -13,10 +13,10 @@ export const BUILDER_CURRENT_VIEWS = {
 export class BuilderUIStore {
   root: BuilderRootStore;
 
-  collapsedItemId: DEX_Item['id'] | null = null;
+  collapsedItemId: Nullable<DEX_Item['id']> = null;
 
-  itemRefs: Map<string, HTMLElement | null> = new Map();
-  fieldRefs: Map<string, HTMLElement | null> = new Map();
+  itemRefs: Map<string, Nullable<HTMLElement>> = new Map();
+  fieldRefs: Map<string, Nullable<HTMLElement>> = new Map();
 
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
@@ -28,7 +28,7 @@ export class BuilderUIStore {
     makeAutoObservable(this);
   }
 
-  setElementRef = (key: string, value: HTMLElement | null) => {
+  setElementRef = (key: string, value: Nullable<HTMLElement>) => {
     this.itemRefs.set(key, value);
   };
 
@@ -37,7 +37,7 @@ export class BuilderUIStore {
       !this.isMobileTemplateSelectorVisible;
   };
 
-  setFieldRef = (key: string, value: HTMLElement | null) => {
+  setFieldRef = (key: string, value: Nullable<HTMLElement>) => {
     this.fieldRefs.set(key, value);
   };
 

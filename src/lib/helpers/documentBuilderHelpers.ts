@@ -13,17 +13,18 @@ import {
   customSectionFields,
   educationFields,
   employmentHistoryFields,
+  hobbiesSectionFields,
   languagesSectionFields,
   personalDetailsSectionFields,
   referencesSectionFields,
   skillsSectionFields,
+  summarySectionFields,
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
 import {
   FIELD_NAMES,
   highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
-  RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SECTION_METADATA_KEYS,
   TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
@@ -39,6 +40,7 @@ import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import DocumentService from '../client-db/documentService';
+import { PrefilledResumeStyle } from '../templates/prefilledTemplates';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -64,15 +66,7 @@ export const getInitialDocumentInsertBoilerplate = (
         {
           containerType: CONTAINER_TYPES.STATIC,
           displayOrder: 1,
-          fields: [
-            {
-              name: FIELD_NAMES.SUMMARY.SUMMARY,
-              type: FIELD_TYPES.RICH_TEXT,
-              value: '',
-              placeholder:
-                RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.SUMMARY],
-            },
-          ],
+          fields: summarySectionFields,
         },
       ],
     },
@@ -185,15 +179,7 @@ export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
     [INTERNAL_SECTION_TYPES.HOBBIES]: {
       containerType: CONTAINER_TYPES.STATIC,
       displayOrder: 1,
-      fields: [
-        {
-          name: FIELD_NAMES.HOBBIES.WHAT_DO_YOU_LIKE,
-          type: FIELD_TYPES.TEXTAREA,
-          value: '',
-          placeholder:
-            RICH_TEXT_PLACEHOLDERS_BY_TYPE[INTERNAL_SECTION_TYPES.HOBBIES],
-        },
-      ],
+      fields: hobbiesSectionFields,
     },
     [INTERNAL_SECTION_TYPES.COURSES]: {
       containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -562,21 +548,26 @@ export const scrollItemIntoView = (
   setTimeout(scrollAndHighlight, TOGGLE_ITEM_WAIT_MS);
 };
 
+interface CreateAndNavigateToDocumentParams {
+  title: string;
+  templateType: ResumeTemplate;
+  onSuccess?: (documentId: DEX_Document['id']) => void;
+  onError?: () => void;
+  selectedPrefillStyle?: PrefilledResumeStyle | null;
+}
+
 export const createAndNavigateToDocument = async ({
   title,
   templateType,
   onSuccess,
   onError,
-}: {
-  title: string;
-  templateType: ResumeTemplate;
-  onSuccess?: (documentId: DEX_Document['id']) => void;
-  onError?: () => void;
-}) => {
+  selectedPrefillStyle = null,
+}: CreateAndNavigateToDocumentParams) => {
   try {
     const documentId = await DocumentService.createDocument({
       title,
       templateType,
+      selectedPrefillStyle,
     });
 
     if (!documentId) {
