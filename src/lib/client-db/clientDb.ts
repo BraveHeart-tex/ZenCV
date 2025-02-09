@@ -59,7 +59,6 @@ clientDb
       {
         key: 'editorPreferences',
         value: {
-          spellcheckEnabled: true,
           askBeforeDeletingItem: true,
           askBeforeDeletingSection: true,
         } as EditorPreferences,

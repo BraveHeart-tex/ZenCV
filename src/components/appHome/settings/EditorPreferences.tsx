@@ -42,19 +42,6 @@ const EditorPreferences = observer(() => {
             }
           />
         </div>
-        <div className="flex items-center justify-between">
-          <Label htmlFor="enableSpellCheck">Enable spell check</Label>
-          <Switch
-            id="enableSpellCheck"
-            checked={userSettingsStore.editorPreferences.spellcheckEnabled}
-            onCheckedChange={(checked) =>
-              UserSettingsService.handleEditorPreferenceChange(
-                'spellcheckEnabled',
-                checked,
-              )
-            }
-          />
-        </div>
       </div>
     </div>
   );

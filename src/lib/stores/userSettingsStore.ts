@@ -10,7 +10,6 @@ const defaultSettings = {
   editorPreferences: {
     askBeforeDeletingItem: true,
     askBeforeDeletingSection: true,
-    spellcheckEnabled: true,
   },
 };
 
@@ -21,7 +20,6 @@ class UserSettingsStore {
   editorPreferences: EditorPreferences = {
     askBeforeDeletingItem: true,
     askBeforeDeletingSection: true,
-    spellcheckEnabled: true,
   };
   constructor() {
     makeAutoObservable(this);
