@@ -5,6 +5,7 @@ import { observer } from 'mobx-react-lite';
 import GeneralSettings from './GeneralSettings';
 import EditorPreferences from './EditorPreferences';
 import SettingsDangerZone from './SettingsDangerZone';
+import DataImportExport from './DataImportExport';
 
 const SettingsPage = observer(() => {
   return (
@@ -20,6 +21,8 @@ const SettingsPage = observer(() => {
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
+        <Separator />
+        <DataImportExport />
         <Separator />
         <SettingsDangerZone />
       </div>

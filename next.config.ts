@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next';
-import MillionLint from '@million/lint';
+import createMDX from '@next/mdx';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
 };
 
-export default MillionLint.next({ rsc: true })(nextConfig);
+const withMDX = createMDX({});
+
+export default withMDX(nextConfig);
