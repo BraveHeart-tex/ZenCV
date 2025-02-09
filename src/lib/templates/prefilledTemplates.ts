@@ -1,12 +1,5 @@
-import {
-  CONTAINER_TYPES,
-  DEX_Document,
-  FIELD_TYPES,
-} from '../client-db/clientDbSchema';
-import {
-  FIELD_NAMES,
-  INTERNAL_SECTION_TYPES,
-} from '../stores/documentBuilder/documentBuilder.constants';
+import { CONTAINER_TYPES, DEX_Document } from '../client-db/clientDbSchema';
+import { INTERNAL_SECTION_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 import { ValueOf } from '../types/utils.types';
 
 export const PREFILL_RESUME_STYLES = {
@@ -185,38 +178,16 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'Software Engineer',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'Alex',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'Chen',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
-            type: FIELD_TYPES.STRING,
-            value: 'alex.chen@email.com',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.PHONE,
-            type: FIELD_TYPES.STRING,
-            value: '+1 (555) 987-6543',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'San Francisco, CA',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
+          WANTED_JOB_TITLE: 'Software Engineer',
+          FIRST_NAME: 'Alex',
+          LAST_NAME: 'Chen',
+          EMAIL: 'alex.chen@email.com',
+          PHONE: '+1 (555) 987-6543',
+          CITY: 'San Francisco, CA',
+          COUNTRY: '',
+          ADDRESS: '',
+        }),
       },
     ],
   },
@@ -231,14 +202,10 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SUMMARY.SUMMARY,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p>Innovative Software Engineer with expertise in full-stack development and cloud architecture. Passionate about building scalable solutions and implementing cutting-edge technologies.</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SUMMARY', {
+          SUMMARY:
+            '<p>Innovative Software Engineer with expertise in full-stack development and cloud architecture. Passionate about building scalable solutions and implementing cutting-edge technologies.</p>',
+        }),
       },
     ],
   },
@@ -253,39 +220,15 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'Senior Software Engineer',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
-            type: FIELD_TYPES.STRING,
-            value: 'Tech Innovations Inc.',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Mar 2019',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Present',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'San Francisco, CA',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<ul><li>Architected and implemented microservices using Kubernetes and Docker</li><li>Optimized application performance resulting in 50% reduction in load times</li><li>Led migration to cloud infrastructure using AWS and Terraform</li></ul>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'Senior Software Engineer',
+          EMPLOYER: 'Tech Innovations Inc.',
+          START_DATE: 'Mar 2019',
+          END_DATE: 'Present',
+          CITY: 'San Francisco, CA',
+          DESCRIPTION:
+            '<ul><li>Architected and implemented microservices using Kubernetes and Docker</li><li>Optimized application performance resulting in 50% reduction in load times</li><li>Led migration to cloud infrastructure using AWS and Terraform</li></ul>',
+        }),
       },
     ],
   },
@@ -300,39 +243,15 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.EDUCATION.SCHOOL,
-            type: FIELD_TYPES.STRING,
-            value: 'Stanford University',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DEGREE,
-            type: FIELD_TYPES.STRING,
-            value: 'Master of Science in Computer Science',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Sep 2016',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Jun 2018',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'Stanford, CA',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p><strong>Languages:</strong> Python, JavaScript, Go, Rust</p><p><strong>Technologies:</strong> React, Node.js, GraphQL, Kubernetes</p><p><strong>Cloud & Tools:</strong> AWS, Docker, Terraform, CI/CD</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('EDUCATION', {
+          SCHOOL: 'Stanford University',
+          DEGREE: 'Master of Science in Computer Science',
+          START_DATE: 'Sep 2016',
+          END_DATE: 'Jun 2018',
+          CITY: 'Stanford, CA',
+          DESCRIPTION:
+            '<p><strong>Languages:</strong> Python, JavaScript, Go, Rust</p><p><strong>Technologies:</strong> React, Node.js, GraphQL, Kubernetes</p><p><strong>Cloud & Tools:</strong> AWS, Docker, Terraform, CI/CD</p>',
+        }),
       },
     ],
   },
@@ -347,18 +266,10 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-          {
-            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SKILLS', {
+          SKILL: '',
+          EXPERIENCE_LEVEL: '',
+        }),
       },
     ],
   },
@@ -373,39 +284,14 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.CITY,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.START_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.END_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
-            value:
-              '<p><strong>Front-End Development:</strong> HTML, CSS, JavaScript, React, Angular, Vue.js.<br><strong>Back-End Development:</strong> Node.js, Python, Java, Express.js, Django, Spring Boot.<br><strong>Database Management:</strong> SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).<br><strong>DevOps &amp; Tools:</strong> Git, Docker, Jenkins, AWS, Azure, Heroku.</p>',
-            type: FIELD_TYPES.RICH_TEXT,
-            placeholder: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('CUSTOM', {
+          ACTIVITY_NAME: '',
+          CITY: '',
+          START_DATE: '',
+          END_DATE: '',
+          DESCRIPTION:
+            '<p><strong>Front-End Development:</strong> HTML, CSS, JavaScript, React, Angular, Vue.js.<br><strong>Back-End Development:</strong> Node.js, Python, Java, Express.js, Django, Spring Boot.<br><strong>Database Management:</strong> SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).<br><strong>DevOps &amp; Tools:</strong> Git, Docker, Jenkins, AWS, Azure, Heroku.</p>',
+        }),
       },
     ],
   },
@@ -425,38 +311,16 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'UI/UX Designer',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'Sarah',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME,
-            type: FIELD_TYPES.STRING,
-            value: 'Parker',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
-            type: FIELD_TYPES.STRING,
-            value: 'sarah.parker@email.com',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.PHONE,
-            type: FIELD_TYPES.STRING,
-            value: '+1 (555) 456-7890',
-          },
-          {
-            name: FIELD_NAMES.PERSONAL_DETAILS.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'Los Angeles, CA',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
+          WANTED_JOB_TITLE: 'UI/UX Designer',
+          FIRST_NAME: 'Sarah',
+          LAST_NAME: 'Parker',
+          EMAIL: 'sarah.parker@email.com',
+          PHONE: '+1 (555) 456-7890',
+          CITY: 'Los Angeles, CA',
+          COUNTRY: '',
+          ADDRESS: '',
+        }),
       },
     ],
   },
@@ -471,14 +335,10 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SUMMARY.SUMMARY,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p>Creative UI/UX Designer with a passion for crafting intuitive and visually stunning digital experiences. Combining artistic vision with user-centered design principles.</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SUMMARY', {
+          SUMMARY:
+            '<p>Creative UI/UX Designer with a passion for crafting intuitive and visually stunning digital experiences. Combining artistic vision with user-centered design principles.</p>',
+        }),
       },
     ],
   },
@@ -493,39 +353,15 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-            type: FIELD_TYPES.STRING,
-            value: 'Senior UI/UX Designer',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
-            type: FIELD_TYPES.STRING,
-            value: 'Creative Design Studio',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Jun 2019',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Present',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'Los Angeles, CA',
-          },
-          {
-            name: FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<ul><li>Redesigned flagship product increasing user engagement by 75%</li><li>Created innovative design system used across multiple platforms</li><li>Led user research and testing for major feature launches</li></ul>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'Senior UI/UX Designer',
+          EMPLOYER: 'Creative Design Studio',
+          START_DATE: 'Jun 2019',
+          END_DATE: 'Present',
+          CITY: 'Los Angeles, CA',
+          DESCRIPTION:
+            '<ul><li>Redesigned flagship product increasing user engagement by 75%</li><li>Created innovative design system used across multiple platforms</li><li>Led user research and testing for major feature launches</li></ul>',
+        }),
       },
     ],
   },
@@ -540,39 +376,15 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.EDUCATION.SCHOOL,
-            type: FIELD_TYPES.STRING,
-            value: 'Rhode Island School of Design',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DEGREE,
-            type: FIELD_TYPES.STRING,
-            value: 'Bachelor of Fine Arts in Graphic Design',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.START_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'Sep 2015',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.END_DATE,
-            type: FIELD_TYPES.DATE_MONTH,
-            value: 'May 2019',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.CITY,
-            type: FIELD_TYPES.STRING,
-            value: 'Providence, RI',
-          },
-          {
-            name: FIELD_NAMES.EDUCATION.DESCRIPTION,
-            type: FIELD_TYPES.RICH_TEXT,
-            value:
-              '<p><strong>Design:</strong> UI/UX, Visual Design, Interaction Design</p><p><strong>Tools:</strong> Figma, Adobe Creative Suite, Sketch</p><p><strong>Skills:</strong> Prototyping, User Research, Design Systems</p>',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('EDUCATION', {
+          SCHOOL: 'Rhode Island School of Design',
+          DEGREE: 'Bachelor of Fine Arts in Graphic Design',
+          START_DATE: 'Sep 2015',
+          END_DATE: 'May 2019',
+          CITY: 'Providence, RI',
+          DESCRIPTION:
+            '<p><strong>Design:</strong> UI/UX, Visual Design, Interaction Design</p><p><strong>Tools:</strong> Figma, Adobe Creative Suite, Sketch</p><p><strong>Skills:</strong> Prototyping, User Research, Design Systems</p>',
+        }),
       },
     ],
   },
@@ -587,18 +399,10 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.SKILLS.SKILL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-          {
-            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
-            type: FIELD_TYPES.STRING,
-            value: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('SKILLS', {
+          SKILL: '',
+          EXPERIENCE_LEVEL: '',
+        }),
       },
     ],
   },
@@ -613,39 +417,14 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [
-          {
-            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.CITY,
-            value: '',
-            type: FIELD_TYPES.STRING,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.START_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.END_DATE,
-            value: '',
-            type: FIELD_TYPES.DATE_MONTH,
-            placeholder: '',
-          },
-          {
-            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
-            value:
-              '<p><strong>Design Tools:</strong> Adobe XD, Sketch, Figma, InVision, Axure.<br><strong>Prototyping &amp; Wireframing:</strong> Low-Fidelity Wireframes, High-Fidelity Prototypes, User Flows, Storyboards.<br><strong>User Research:</strong> User Interviews, Surveys, Usability Testing, A/B Testing, Personas.<br><strong>Information Architecture:</strong> Site Mapping, Card Sorting, Content Strategy, Navigation Design.</p>',
-            type: FIELD_TYPES.RICH_TEXT,
-            placeholder: '',
-          },
-        ],
+        fields: getInsertTemplatesWithValues('CUSTOM', {
+          ACTIVITY_NAME: '',
+          CITY: '',
+          START_DATE: '',
+          END_DATE: '',
+          DESCRIPTION:
+            '<p><strong>Design Tools:</strong> Adobe XD, Sketch, Figma, InVision, Axure.<br><strong>Prototyping &amp; Wireframing:</strong> Low-Fidelity Wireframes, High-Fidelity Prototypes, User Flows, Storyboards.<br><strong>User Research:</strong> User Interviews, Surveys, Usability Testing, A/B Testing, Personas.<br><strong>Information Architecture:</strong> Site Mapping, Card Sorting, Content Strategy, Navigation Design.</p>',
+        }),
       },
     ],
   },
