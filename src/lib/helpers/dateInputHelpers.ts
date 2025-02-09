@@ -41,6 +41,7 @@ export const isValidDateFormat = (input: string): boolean => {
     fullMonthCommaYyyyRegex.test(input) ||
     fullMonthYyyyRegex.test(input) ||
     shortMonthCommaYyyyRegex.test(input) ||
-    shortMonthYyyyRegex.test(input)
+    shortMonthYyyyRegex.test(input) ||
+    input === 'Present'
   );
 };
