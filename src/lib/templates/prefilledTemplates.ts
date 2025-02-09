@@ -1,6 +1,8 @@
 import { CONTAINER_TYPES, DEX_Document } from '../client-db/clientDbSchema';
 import { INTERNAL_SECTION_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 import { ValueOf } from '../types/utils.types';
+import { SectionWithFields } from '../client-db/clientDbSchema';
+import { getInsertTemplatesWithValues } from '../misc/fieldTemplates';
 
 export const PREFILL_RESUME_STYLES = {
   STANDARD: 'standard',
@@ -28,9 +30,6 @@ export const sampleDataOptions: {
 
 export type PrefilledResumeStyle = ValueOf<typeof PREFILL_RESUME_STYLES>;
 
-import { SectionWithFields } from '../client-db/clientDbSchema';
-import { getInsertTemplatesWithValues } from '../misc/fieldTemplates';
-
 const getStandardTemplate = (
   documentId: DEX_Document['id'],
 ): SectionWithFields[] => [
@@ -46,7 +45,7 @@ const getStandardTemplate = (
         containerType: CONTAINER_TYPES.STATIC,
         displayOrder: 1,
         fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
-          WANTED_JOB_TITLE: 'Business Professional',
+          WANTED_JOB_TITLE: 'Senior Business Analyst',
           FIRST_NAME: 'John',
           LAST_NAME: 'Smith',
           EMAIL: 'john.smith@email.com',
@@ -71,7 +70,7 @@ const getStandardTemplate = (
         displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
-            '<p>Results-driven professional with 5+ years of experience in business development and project management. Proven track record of leading successful initiatives and driving organizational growth.</p>',
+            '<p>Detail-oriented Senior Business Analyst with over 7 years of experience in driving business solutions and enhancing operational efficiency. Proven expertise in stakeholder engagement, data analysis, and project management. Adept at translating complex business requirements into actionable strategies, leading to significant cost savings and improved performance. Committed to fostering collaboration across teams to achieve organizational goals and deliver exceptional results.</p>',
         }),
       },
     ],
@@ -94,7 +93,20 @@ const getStandardTemplate = (
           END_DATE: 'Present',
           CITY: 'New York, NY',
           DESCRIPTION:
-            '<ul><li>Led cross-functional teams in implementing strategic initiatives</li><li>Improved operational efficiency by 25% through process optimization</li><li>Managed client relationships resulting in 40% revenue growth</li></ul>',
+            '<ul><li>Led cross-functional teams in implementing strategic initiatives, resulting in a 30% increase in project delivery speed.</li><li>Conducted comprehensive data analysis to identify trends and insights, driving a 20% improvement in operational efficiency.</li><li>Facilitated workshops with stakeholders to gather requirements and ensure alignment with business objectives.</li></ul>',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 2,
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'Business Analyst',
+          EMPLOYER: 'Tech Innovations LLC',
+          START_DATE: 'Jun 2017',
+          END_DATE: 'Dec 2019',
+          CITY: 'New York, NY',
+          DESCRIPTION:
+            '<ul><li>Analyzed business processes and identified areas for improvement, leading to a 15% reduction in operational costs.</li><li>Developed and maintained project documentation, including business requirements and functional specifications.</li><li>Collaborated with IT teams to implement software solutions that enhanced data reporting capabilities.</li></ul>',
         }),
       },
     ],
@@ -204,7 +216,7 @@ const getTechFocusedTemplate = (
         displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
-            '<p>Innovative Software Engineer with expertise in full-stack development and cloud architecture. Passionate about building scalable solutions and implementing cutting-edge technologies.</p>',
+            '<p>Innovative Software Engineer with over 5 years of experience in full-stack development and cloud architecture. Proven track record in designing scalable applications and optimizing performance. Skilled in leveraging modern technologies to deliver high-quality software solutions. Passionate about continuous learning and collaboration in agile environments to drive project success and enhance user experience.</p>',
         }),
       },
     ],
@@ -227,7 +239,20 @@ const getTechFocusedTemplate = (
           END_DATE: 'Present',
           CITY: 'San Francisco, CA',
           DESCRIPTION:
-            '<ul><li>Architected and implemented microservices using Kubernetes and Docker</li><li>Optimized application performance resulting in 50% reduction in load times</li><li>Led migration to cloud infrastructure using AWS and Terraform</li></ul>',
+            '<ul><li>Architected and implemented microservices using Kubernetes and Docker, enhancing system scalability and reliability.</li><li>Optimized application performance, resulting in a 50% reduction in load times and improved user satisfaction.</li><li>Led migration to cloud infrastructure using AWS and Terraform, reducing operational costs by 30%.</li></ul>',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 2,
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'Software Engineer',
+          EMPLOYER: 'Innovative Tech Solutions',
+          START_DATE: 'Jun 2017',
+          END_DATE: 'Feb 2019',
+          CITY: 'San Francisco, CA',
+          DESCRIPTION:
+            '<ul><li>Developed and maintained web applications using React and Node.js, improving user engagement by 40%.</li><li>Collaborated with cross-functional teams to define project requirements and deliver high-quality software solutions.</li><li>Implemented CI/CD pipelines, reducing deployment times by 60% and increasing release frequency.</li></ul>',
         }),
       },
     ],
@@ -236,9 +261,9 @@ const getTechFocusedTemplate = (
     title: 'Education',
     defaultTitle: 'Education',
     displayOrder: 4,
+    documentId,
     metadata: '',
     type: 'education',
-    documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -290,7 +315,7 @@ const getTechFocusedTemplate = (
           START_DATE: '',
           END_DATE: '',
           DESCRIPTION:
-            '<p><strong>Front-End Development:</strong> HTML, CSS, JavaScript, React, Angular, Vue.js.<br><strong>Back-End Development:</strong> Node.js, Python, Java, Express.js, Django, Spring Boot.<br><strong>Database Management:</strong> SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).<br><strong>DevOps &amp; Tools:</strong> Git, Docker, Jenkins, AWS, Azure, Heroku.</p>',
+            '<p><strong>Front-End Development:</strong> HTML, CSS, JavaScript, React, Angular, Vue.js.<br><strong>Back-End Development:</strong> Node.js, Python, Java, Express.js, Django, Spring Boot.<br><strong>Database Management:</strong> SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).<br><strong>DevOps & Tools:</strong> Git, Docker, Jenkins, AWS, Azure, Heroku.</p>',
         }),
       },
     ],
@@ -337,7 +362,7 @@ const getCreativeTemplate = (
         displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
-            '<p>Creative UI/UX Designer with a passion for crafting intuitive and visually stunning digital experiences. Combining artistic vision with user-centered design principles.</p>',
+            '<p>Creative UI/UX Designer with over 5 years of experience in crafting intuitive and visually stunning digital experiences. Skilled in user-centered design principles, I excel at transforming complex ideas into engaging interfaces. My passion for design is matched by my commitment to user research and testing, ensuring that every project not only meets aesthetic standards but also enhances usability and user satisfaction.</p>',
         }),
       },
     ],
@@ -360,7 +385,20 @@ const getCreativeTemplate = (
           END_DATE: 'Present',
           CITY: 'Los Angeles, CA',
           DESCRIPTION:
-            '<ul><li>Redesigned flagship product increasing user engagement by 75%</li><li>Created innovative design system used across multiple platforms</li><li>Led user research and testing for major feature launches</li></ul>',
+            '<ul><li>Redesigned flagship product, increasing user engagement by 75% through enhanced usability and visual appeal.</li><li>Developed a comprehensive design system adopted across multiple platforms, ensuring consistency and efficiency.</li><li>Led user research and testing initiatives for major feature launches, gathering insights that informed design decisions.</li></ul>',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 2,
+        fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
+          JOB_TITLE: 'UI/UX Designer',
+          EMPLOYER: 'Innovative Web Solutions',
+          START_DATE: 'Jul 2017',
+          END_DATE: 'May 2019',
+          CITY: 'Los Angeles, CA',
+          DESCRIPTION:
+            '<ul><li>Collaborated with product teams to create user personas and journey maps, enhancing the overall user experience.</li><li>Designed and prototyped user interfaces for web and mobile applications, resulting in a 40% increase in user satisfaction ratings.</li><li>Conducted usability testing sessions, iterating on designs based on user feedback to improve functionality.</li></ul>',
         }),
       },
     ],
@@ -423,7 +461,7 @@ const getCreativeTemplate = (
           START_DATE: '',
           END_DATE: '',
           DESCRIPTION:
-            '<p><strong>Design Tools:</strong> Adobe XD, Sketch, Figma, InVision, Axure.<br><strong>Prototyping &amp; Wireframing:</strong> Low-Fidelity Wireframes, High-Fidelity Prototypes, User Flows, Storyboards.<br><strong>User Research:</strong> User Interviews, Surveys, Usability Testing, A/B Testing, Personas.<br><strong>Information Architecture:</strong> Site Mapping, Card Sorting, Content Strategy, Navigation Design.</p>',
+            '<p><strong>Design Tools:</strong> Adobe XD, Sketch, Figma, InVision, Axure.<br><strong>Prototyping & Wireframing:</strong> Low-Fidelity Wireframes, High-Fidelity Prototypes, User Flows, Storyboards.<br><strong>User Research:</strong> User Interviews, Surveys, Usability Testing, A/B Testing, Personas.<br><strong>Information Architecture:</strong> Site Mapping, Card Sorting, Content Strategy, Navigation Design.</p>',
         }),
       },
     ],

@@ -74,6 +74,7 @@ class DocumentService {
           if (!sectionTemplate) return;
 
           sectionTemplate.items.forEach((item) => {
+            const itemInsertIndex = itemInsertDtos.length;
             itemInsertDtos.push({
               containerType: item.containerType || 'static',
               displayOrder: item.displayOrder,
@@ -83,7 +84,7 @@ class DocumentService {
             item.fields.forEach((field) => {
               if (isSelectField(field)) {
                 (fieldInsertDtos as Omit<SelectField, 'id'>[]).push({
-                  itemId: sectionIndex,
+                  itemId: itemInsertIndex,
                   name: field.name,
                   type: field.type,
                   selectType: field?.selectType || 'basic',
@@ -92,7 +93,7 @@ class DocumentService {
                 });
               } else {
                 fieldInsertDtos.push({
-                  itemId: sectionIndex,
+                  itemId: itemInsertIndex,
                   name: field.name,
                   type: field.type,
                   value: field.value,
