@@ -5,8 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Upload, Download } from 'lucide-react';
 import { clientDb } from '@/lib/client-db/clientDb';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import { Input } from '@/components/ui/input';
+import { useRef } from 'react';
+import { action, runInAction } from 'mobx';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 
 const DataImportExport = observer(() => {
+  const importInputRef = useRef<HTMLInputElement>(null);
+
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -15,36 +21,68 @@ const DataImportExport = observer(() => {
       const content = await file.text();
       const data = JSON.parse(content);
 
-      // Clear existing data
+      const requiredTables = [
+        'documents',
+        'sections',
+        'items',
+        'fields',
+        'settings',
+      ];
+      const missingTables = requiredTables.filter((table) => !data[table]);
+
+      if (missingTables.length > 0) {
+        throw new Error(
+          `Uploaded data is missing required tables: ${missingTables.join(', ')}`,
+        );
+      }
+
       await clientDb.delete();
       await clientDb.open();
 
-      // Import data for each table
-      if (data.documents) await clientDb.documents.bulkPut(data.documents);
-      if (data.sections) await clientDb.sections.bulkPut(data.sections);
-      if (data.items) await clientDb.items.bulkPut(data.items);
-      if (data.fields) await clientDb.fields.bulkPut(data.fields);
-      if (data.settings) await clientDb.settings.bulkPut(data.settings);
+      await clientDb.transaction(
+        'rw',
+        [
+          clientDb.documents,
+          clientDb.sections,
+          clientDb.items,
+          clientDb.fields,
+          clientDb.settings,
+        ],
+        async () => {
+          await Promise.all([
+            clientDb.documents.bulkPut(data.documents),
+            clientDb.sections.bulkPut(data.sections),
+            clientDb.items.bulkPut(data.items),
+            clientDb.fields.bulkPut(data.fields),
+            clientDb.settings.bulkPut(data.settings),
+          ]);
+        },
+      );
 
       showSuccessToast('Data imported successfully');
     } catch (error) {
       console.error('Import error:', error);
-      showErrorToast('Failed to import data. Please check the file format.');
+      showErrorToast(
+        error instanceof Error
+          ? `Failed to import data: ${error.message}`
+          : 'Failed to import data. Please check the file format.',
+      );
     }
 
-    // Reset the input
     event.target.value = '';
   };
 
   const handleExport = async () => {
     try {
-      const data = {
-        documents: await clientDb.documents.toArray(),
-        sections: await clientDb.sections.toArray(),
-        items: await clientDb.items.toArray(),
-        fields: await clientDb.fields.toArray(),
-        settings: await clientDb.settings.toArray(),
-      };
+      const [documents, sections, items, fields, settings] = await Promise.all([
+        clientDb.documents.toArray(),
+        clientDb.sections.toArray(),
+        clientDb.items.toArray(),
+        clientDb.fields.toArray(),
+        clientDb.settings.toArray(),
+      ]);
+
+      const data = { documents, sections, items, fields, settings };
 
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: 'application/json',
@@ -61,7 +99,11 @@ const DataImportExport = observer(() => {
       showSuccessToast('Data exported successfully');
     } catch (error) {
       console.error('Export error:', error);
-      showErrorToast('Failed to export data');
+      showErrorToast(
+        error instanceof Error
+          ? `Failed to export data: ${error.message}`
+          : 'Failed to export data',
+      );
     }
   };
 
@@ -75,17 +117,39 @@ const DataImportExport = observer(() => {
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => document.getElementById('import')?.click()}
+              onClick={() => {
+                if (importInputRef.current) {
+                  importInputRef.current.click();
+                }
+              }}
             >
               <Upload className="w-4 h-4 mr-2" />
               Import from JSON
             </Button>
-            <input
+            <Input
+              ref={importInputRef}
               type="file"
               id="import"
               accept=".json"
               className="hidden"
-              onChange={handleImport}
+              onChange={action((event) => {
+                if (!event.target.files?.[0]) return;
+                confirmDialogStore.showDialog({
+                  title: 'Importing Data',
+                  message:
+                    'Importing will replace your current data and cannot be undone. Do you want to continue?',
+                  confirmText: 'Yes',
+                  async onConfirm() {
+                    await handleImport(event);
+                    runInAction(() => {
+                      confirmDialogStore.hideDialog();
+                    });
+                  },
+                  onClose() {
+                    event.target.value = '';
+                  },
+                });
+              })}
             />
           </div>
         </div>

@@ -45,7 +45,10 @@ const ConfirmDialog = observer(() => {
       <Button
         type="button"
         variant="outline"
-        onClick={action(() => onClose())}
+        onClick={action(() => {
+          confirmDialogStore?.onCancel?.();
+          onClose();
+        })}
         className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors"
       >
         {confirmDialogStore.cancelText}
@@ -62,7 +65,12 @@ const ConfirmDialog = observer(() => {
 
   if (isDesktop) {
     return (
-      <Dialog open={isOpen} onOpenChange={action(() => onClose())}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={action(() => {
+          onClose();
+        })}
+      >
         <DialogContent className="bg-background border-border">
           <DialogHeader>
             <DialogTitle className="text-foreground text-xl font-semibold">
@@ -82,7 +90,12 @@ const ConfirmDialog = observer(() => {
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={action(() => onClose())}>
+    <Drawer
+      open={isOpen}
+      onOpenChange={action(() => {
+        onClose();
+      })}
+    >
       <DrawerContent className="bg-background border-border">
         <DrawerHeader>
           <DrawerTitle className="text-foreground text-xl font-semibold">

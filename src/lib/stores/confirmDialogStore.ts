@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 
 interface ShowDialogParams {
   message: string;
@@ -8,6 +8,8 @@ interface ShowDialogParams {
   confirmText?: string;
   doNotAskAgainEnabled?: boolean;
   doNotAskAgainChecked?: boolean;
+  onCancel?: () => void;
+  onClose?: () => void;
 }
 
 class ConfirmDialogStore {
@@ -15,6 +17,8 @@ class ConfirmDialogStore {
   message: string = '';
   title: string = '';
   onConfirm: () => void = () => {};
+  onCancel: () => void = () => {};
+  onClose: () => void = () => {};
   cancelText: string = 'Cancel';
   confirmText: string = 'Confirm';
   doNotAskAgainEnabled: boolean = false;
@@ -22,6 +26,19 @@ class ConfirmDialogStore {
 
   constructor() {
     makeAutoObservable(this);
+    this.initReactions();
+  }
+
+  private initReactions() {
+    reaction(
+      () => this.isOpen,
+      async (isOpen) => {
+        if (!isOpen) {
+          await this.onClose();
+          this.onClose = () => {};
+        }
+      },
+    );
   }
 
   showDialog = ({
@@ -32,6 +49,8 @@ class ConfirmDialogStore {
     confirmText = 'Confirm',
     doNotAskAgainChecked = false,
     doNotAskAgainEnabled = false,
+    onCancel = () => {},
+    onClose = () => {},
   }: ShowDialogParams) => {
     this.message = message;
     this.onConfirm = onConfirm;
@@ -41,11 +60,14 @@ class ConfirmDialogStore {
     this.confirmText = confirmText;
     this.doNotAskAgainChecked = doNotAskAgainChecked;
     this.doNotAskAgainEnabled = doNotAskAgainEnabled;
+    this.onCancel = onCancel;
+    this.onClose = onClose;
   };
 
   hideDialog = () => {
     this.isOpen = false;
     this.onConfirm = () => {};
+    this.onCancel = () => {};
     setTimeout(() => {
       runInAction(() => {
         this.message = '';
@@ -55,7 +77,7 @@ class ConfirmDialogStore {
         this.doNotAskAgainEnabled = false;
         this.doNotAskAgainChecked = false;
       });
-    }, 300);
+    }, 150);
   };
 
   handleDoNotAskAgainCheckedChange = (checked: boolean) => {
