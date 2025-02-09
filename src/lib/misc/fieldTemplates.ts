@@ -9,6 +9,7 @@ import {
   FieldInsertTemplate,
   TopLevelFieldName,
 } from '@/lib/types/documentBuilder.types';
+import { getKeyByValue } from '../utils/objectUtils';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [
   {
@@ -272,8 +273,17 @@ export const getInsertTemplatesWithValues = <T extends TopLevelFieldName>(
   key: T,
   mapping: Record<keyof (typeof FIELD_NAMES)[T], string>,
 ) => {
-  return fieldNamesToTemplates[key].map((field) => ({
-    ...field,
-    value: mapping[field.name as keyof typeof mapping],
-  }));
+  return fieldNamesToTemplates[key].map((field) => {
+    const fieldNameKey = getKeyByValue(FIELD_NAMES[key], field.name);
+
+    if (!fieldNameKey)
+      throw new Error(
+        `Field name ${field.name} not found in FIELD_NAMES[${key}]`,
+      );
+
+    return {
+      ...field,
+      value: mapping[fieldNameKey as keyof typeof mapping],
+    };
+  });
 };
