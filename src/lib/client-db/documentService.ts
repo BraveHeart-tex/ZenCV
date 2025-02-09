@@ -3,7 +3,6 @@ import { clientDb } from './clientDb';
 import {
   DEX_Document,
   DEX_Field,
-  DEX_InsertDocumentModel,
   DEX_InsertFieldModel,
   DEX_InsertItemModel,
   DEX_Item,
@@ -16,6 +15,14 @@ import {
 } from '@/lib/helpers/documentBuilderHelpers';
 import { ResumeTemplate } from '../types/documentBuilder.types';
 
+interface CreateDocumentWithTemplateData {
+  title: string;
+  templateType: ResumeTemplate;
+  sections?: Omit<DEX_Section, 'id' | 'documentId'>[];
+  items?: Omit<DEX_Item, 'id' | 'sectionId'>[];
+  fields?: Omit<DEX_Field, 'id' | 'itemId'>[];
+}
+
 type GetFullDocumentStructureResponse =
   | { success: false; error: string }
   | {
@@ -27,80 +34,117 @@ type GetFullDocumentStructureResponse =
     };
 
 class DocumentService {
-  static async createDocument(data: DEX_InsertDocumentModel) {
+  static async createDocument(data: CreateDocumentWithTemplateData) {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
       async () => {
-        const documentId = await clientDb.documents.add(data as DEX_Document);
+        const documentId = await clientDb.documents.add({
+          title: data.title,
+          templateType: data.templateType,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        } as DEX_Document);
 
-        const sectionTemplates =
-          getInitialDocumentInsertBoilerplate(documentId);
+        if (data.sections && data.items && data.fields) {
+          const prepareSections = () =>
+            data.sections!.map((section) => ({
+              ...section,
+              documentId,
+            }));
 
-        const prepareSections = () =>
-          sectionTemplates.map((section) => ({
-            defaultTitle: section.defaultTitle,
-            title: section.title,
-            displayOrder: section.displayOrder,
-            documentId,
-            metadata: section?.metadata || '',
-            type: section.type,
+          const sectionInsertIds = await clientDb.sections.bulkAdd(
+            prepareSections(),
+            {
+              allKeys: true,
+            },
+          );
+
+          const itemInsertDtos = data.items.map((item, index) => ({
+            ...item,
+            sectionId: sectionInsertIds[index],
           }));
 
-        const sectionInsertIds = await clientDb.sections.bulkAdd(
-          prepareSections(),
-          {
+          const itemInsertIds = await clientDb.items.bulkAdd(itemInsertDtos, {
             allKeys: true,
-          },
-        );
+          });
 
-        const itemInsertDtos: DEX_InsertItemModel[] = [];
-        const fieldInsertDtos: DEX_InsertFieldModel[] = [];
+          const resolvedFieldDtos = data.fields.map((field, index) => ({
+            ...field,
+            itemId: itemInsertIds[Math.floor(index / 3)],
+          }));
 
-        sectionTemplates.forEach((sectionTemplate, sectionIndex) => {
-          const sectionId = sectionInsertIds[sectionIndex];
-          if (!sectionTemplate) return;
+          await clientDb.fields.bulkAdd(resolvedFieldDtos);
+        } else {
+          const sectionTemplates =
+            getInitialDocumentInsertBoilerplate(documentId);
 
-          sectionTemplate.items.forEach((item) => {
-            itemInsertDtos.push({
-              containerType: item.containerType || 'static',
-              displayOrder: item.displayOrder,
-              sectionId,
-            });
+          const prepareSections = () =>
+            sectionTemplates.map((section) => ({
+              defaultTitle: section.defaultTitle,
+              title: section.title,
+              displayOrder: section.displayOrder,
+              documentId,
+              metadata: section?.metadata || '',
+              type: section.type,
+            }));
 
-            item.fields.forEach((field) => {
-              if (isSelectField(field)) {
-                (fieldInsertDtos as Omit<SelectField, 'id'>[]).push({
-                  itemId: sectionIndex,
-                  name: field.name,
-                  type: field.type,
-                  selectType: field?.selectType || 'basic',
-                  options: field?.options || null,
-                  value: field.value,
-                });
-              } else {
-                fieldInsertDtos.push({
-                  itemId: sectionIndex,
-                  name: field.name,
-                  type: field.type,
-                  value: field.value,
-                  placeholder: field?.placeholder || '',
-                });
-              }
+          const sectionInsertIds = await clientDb.sections.bulkAdd(
+            prepareSections(),
+            {
+              allKeys: true,
+            },
+          );
+
+          const itemInsertDtos: DEX_InsertItemModel[] = [];
+          const fieldInsertDtos: DEX_InsertFieldModel[] = [];
+
+          sectionTemplates.forEach((sectionTemplate, sectionIndex) => {
+            const sectionId = sectionInsertIds[sectionIndex];
+            if (!sectionTemplate) return;
+
+            sectionTemplate.items.forEach((item) => {
+              itemInsertDtos.push({
+                containerType: item.containerType || 'static',
+                displayOrder: item.displayOrder,
+                sectionId,
+              });
+
+              const currentItemIndex = itemInsertDtos.length;
+              item.fields.forEach((field) => {
+                if (isSelectField(field)) {
+                  (fieldInsertDtos as Omit<SelectField, 'id'>[]).push({
+                    itemId: currentItemIndex,
+                    name: field.name,
+                    type: field.type,
+                    selectType: field?.selectType || 'basic',
+                    options: field?.options || null,
+                    value: field.value,
+                  });
+                } else {
+                  fieldInsertDtos.push({
+                    itemId: currentItemIndex,
+                    name: field.name,
+                    type: field.type,
+                    value: field.value,
+                    placeholder: field?.placeholder || '',
+                  });
+                }
+              });
             });
           });
-        });
 
-        const itemInsertIds = await clientDb.items.bulkAdd(itemInsertDtos, {
-          allKeys: true,
-        });
+          const itemInsertIds = await clientDb.items.bulkAdd(itemInsertDtos, {
+            allKeys: true,
+          });
 
-        const resolvedFieldDtos = fieldInsertDtos.map((field) => ({
-          ...field,
-          itemId: itemInsertIds[field.itemId],
-        }));
+          const resolvedFieldDtos = fieldInsertDtos.map((field) => ({
+            ...field,
+            itemId: itemInsertIds[field.itemId],
+          }));
 
-        await clientDb.fields.bulkAdd(resolvedFieldDtos);
+          await clientDb.fields.bulkAdd(resolvedFieldDtos);
+        }
 
         return documentId;
       },

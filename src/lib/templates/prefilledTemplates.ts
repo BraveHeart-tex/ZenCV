@@ -289,11 +289,11 @@ export const getTemplateByStyle = (
   style: PrefilledResumeStyle,
 ): PrefilledTemplate => {
   switch (style) {
-    case 'standard':
+    case PREFILL_RESUME_STYLES.STANDARD:
       return standardTemplate;
-    case 'tech-focused':
+    case PREFILL_RESUME_STYLES.TECH_FOCUSED:
       return techFocusedTemplate;
-    case 'creative':
+    case PREFILL_RESUME_STYLES.CREATIVE:
       return creativeTemplate;
     default:
       return standardTemplate;

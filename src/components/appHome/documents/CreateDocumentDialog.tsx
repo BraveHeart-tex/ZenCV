@@ -60,9 +60,8 @@ const CreateDocumentDialog = ({
   const [template, setTemplate] = useState<ResumeTemplate>(
     INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   );
-  const [selectedPrefillStyle, setSelectedPrefillStyle] = useState<
-    PrefilledResumeStyle | ''
-  >('');
+  const [selectedPrefillStyle, setSelectedPrefillStyle] =
+    useState<PrefilledResumeStyle | null>(null);
   const input = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: FormEvent) => {
@@ -77,6 +76,7 @@ const CreateDocumentDialog = ({
     await createAndNavigateToDocument({
       title: name,
       templateType: template,
+      selectedPrefillStyle,
       onSuccess(documentId) {
         navigate(`/builder/${documentId}`);
         setOpen(false);
@@ -169,7 +169,7 @@ const CreateDocumentDialog = ({
               checked={shouldUseSampleData}
               onCheckedChange={(checked: boolean) => {
                 if (!checked && selectedPrefillStyle) {
-                  setSelectedPrefillStyle('');
+                  setSelectedPrefillStyle(null);
                 }
 
                 setShouldUseSampleData(checked);
@@ -185,11 +185,13 @@ const CreateDocumentDialog = ({
           <div className="flex flex-col gap-2">
             <Label htmlFor="sample-data-type">Sample Data Type</Label>
             <Select
-              value={selectedPrefillStyle}
+              value={selectedPrefillStyle || ''}
               onValueChange={(value) =>
                 setSelectedPrefillStyle(value as PrefilledResumeStyle)
               }
-              defaultValue={selectedPrefillStyle}
+              defaultValue={
+                selectedPrefillStyle || PREFILL_RESUME_STYLES.STANDARD
+              }
             >
               <SelectTrigger className="w-full" id="sample-data-type">
                 <SelectValue placeholder="Select sample data type" />

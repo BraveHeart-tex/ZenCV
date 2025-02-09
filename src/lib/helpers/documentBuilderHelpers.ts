@@ -39,6 +39,10 @@ import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import DocumentService from '../client-db/documentService';
+import {
+  getTemplateByStyle,
+  PrefilledResumeStyle,
+} from '../templates/prefilledTemplates';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -562,21 +566,26 @@ export const scrollItemIntoView = (
   setTimeout(scrollAndHighlight, TOGGLE_ITEM_WAIT_MS);
 };
 
+interface CreateAndNavigateToDocumentParams {
+  title: string;
+  templateType: ResumeTemplate;
+  onSuccess?: (documentId: DEX_Document['id']) => void;
+  onError?: () => void;
+  selectedPrefillStyle?: PrefilledResumeStyle | null;
+}
+
 export const createAndNavigateToDocument = async ({
   title,
   templateType,
   onSuccess,
   onError,
-}: {
-  title: string;
-  templateType: ResumeTemplate;
-  onSuccess?: (documentId: DEX_Document['id']) => void;
-  onError?: () => void;
-}) => {
+  selectedPrefillStyle = null,
+}: CreateAndNavigateToDocumentParams) => {
   try {
     const documentId = await DocumentService.createDocument({
       title,
       templateType,
+      ...(selectedPrefillStyle ? getTemplateByStyle(selectedPrefillStyle) : {}),
     });
 
     if (!documentId) {
