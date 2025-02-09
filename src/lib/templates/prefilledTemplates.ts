@@ -213,7 +213,65 @@ const getStandardTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [],
+        fields: [
+          {
+            name: FIELD_NAMES.SKILLS.SKILL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+          {
+            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Other',
+    defaultTitle: 'Custom Section',
+    displayOrder: 6,
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.CUSTOM,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 1,
+        fields: [
+          {
+            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.CITY,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.START_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.END_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
+            value:
+              '<p><strong>Business Analysis Tools:</strong> Microsoft Excel, Tableau, Power BI, SQL, JIRA.<br><strong>Requirements Gathering:</strong> Stakeholder Interviews, Surveys, Workshops, Use Cases, User Stories.<br><strong>Process Improvement:</strong> Lean Six Sigma, Process Mapping, Root Cause Analysis, Workflow Optimization.<br><strong>Project Management:</strong> Agile, Scrum, Waterfall, Risk Management, Change Management.</p>',
+            type: FIELD_TYPES.RICH_TEXT,
+            placeholder: '',
+          },
+        ],
       },
     ],
   },
@@ -395,7 +453,65 @@ const getTechFocusedTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [],
+        fields: [
+          {
+            name: FIELD_NAMES.SKILLS.SKILL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+          {
+            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Other',
+    defaultTitle: 'Custom Section',
+    displayOrder: 6,
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.CUSTOM,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 1,
+        fields: [
+          {
+            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.CITY,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.START_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.END_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
+            value:
+              '<p><strong>Front-End Development:</strong> HTML, CSS, JavaScript, React, Angular, Vue.js.<br><strong>Back-End Development:</strong> Node.js, Python, Java, Express.js, Django, Spring Boot.<br><strong>Database Management:</strong> SQL (MySQL, PostgreSQL), NoSQL (MongoDB, Firebase).<br><strong>DevOps &amp; Tools:</strong> Git, Docker, Jenkins, AWS, Azure, Heroku.</p>',
+            type: FIELD_TYPES.RICH_TEXT,
+            placeholder: '',
+          },
+        ],
       },
     ],
   },
@@ -577,7 +693,65 @@ const getCreativeTemplate = (
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
         displayOrder: 1,
-        fields: [],
+        fields: [
+          {
+            name: FIELD_NAMES.SKILLS.SKILL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+          {
+            name: FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL,
+            type: FIELD_TYPES.STRING,
+            value: '',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: 'Other',
+    defaultTitle: 'Custom Section',
+    displayOrder: 6,
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.CUSTOM,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        displayOrder: 1,
+        fields: [
+          {
+            name: FIELD_NAMES.CUSTOM.ACTIVITY_NAME,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.CITY,
+            value: '',
+            type: FIELD_TYPES.STRING,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.START_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.END_DATE,
+            value: '',
+            type: FIELD_TYPES.DATE_MONTH,
+            placeholder: '',
+          },
+          {
+            name: FIELD_NAMES.CUSTOM.DESCRIPTION,
+            value:
+              '<p><strong>Design Tools:</strong> Adobe XD, Sketch, Figma, InVision, Axure.<br><strong>Prototyping &amp; Wireframing:</strong> Low-Fidelity Wireframes, High-Fidelity Prototypes, User Flows, Storyboards.<br><strong>User Research:</strong> User Interviews, Surveys, Usability Testing, A/B Testing, Personas.<br><strong>Information Architecture:</strong> Site Mapping, Card Sorting, Content Strategy, Navigation Design.</p>',
+            type: FIELD_TYPES.RICH_TEXT,
+            placeholder: '',
+          },
+        ],
       },
     ],
   },
