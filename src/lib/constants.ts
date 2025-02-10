@@ -18,3 +18,6 @@ export const dialogFooterClassNames =
 
 export const UNCHECKED_METADATA_VALUE = '0' as const;
 export const CHECKED_METADATA_VALUE = '1' as const;
+
+export const genericErrorMessage =
+  'An internal error occurred. Please try again later.';
