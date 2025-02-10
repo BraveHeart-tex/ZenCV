@@ -1,0 +1,49 @@
+.shepherd-content {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.shepherd-text {
+  color: hsl(var(--primary-foreground)) !important;
+  line-height: 1.75rem !important;
+}
+
+.shepherd-header {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.shepherd-title {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.shepherd-footer .shepherd-button {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+  border: none !important;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  font-weight: 500 !important;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  border-radius: var(--radius) !important;
+}
+
+.shepherd-footer .shepherd-button:hover {
+  background-color: hsl(var(--background) / 0.9) !important;
+}
+
+.shepherd-cancel-icon {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.shepherd-has-title .shepherd-content .shepherd-cancel-icon {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.shepherd-arrow::before {
+  background: hsl(var(--primary)) !important;
+}

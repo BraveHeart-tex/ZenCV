@@ -17,7 +17,6 @@ import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { genericErrorMessage } from '@/lib/constants';
-import { buttonVariants } from '@/components/ui/button';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
@@ -92,19 +91,9 @@ const ResumeScoreSuggestionContent = observer(
           const tour = new Shepherd.Tour({
             useModalOverlay: true,
             defaultStepOptions: {
+              classes: 'shadow-md bg-background border-primary',
               modalOverlayOpeningPadding: 8,
               modalOverlayOpeningRadius: 4,
-              classes: 'shadow-xl rounded-lg bg-background border z-[9999]',
-              when: {
-                show: () => {
-                  const overlay = document.querySelector(
-                    '.shepherd-modal-overlay-container',
-                  );
-                  if (overlay) {
-                    overlay.classList.add('bg-black/50', 'z-[9998]');
-                  }
-                },
-              },
             },
           });
 
@@ -119,13 +108,8 @@ const ResumeScoreSuggestionContent = observer(
               {
                 text: 'Got it',
                 action: tour.complete,
-                classes: buttonVariants({
-                  variant: 'default',
-                }),
               },
             ],
-
-            classes: 'shepherd-theme-custom max-w-md p-4',
             modalOverlayOpeningPadding: 16,
           });
 

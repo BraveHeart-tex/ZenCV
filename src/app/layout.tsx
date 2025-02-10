@@ -1,5 +1,6 @@
 import './globals.css';
-import './tiptap.css';
+import '@/styles/shepherd.css';
+import '@/styles/tiptap.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ui/theme-provider';
