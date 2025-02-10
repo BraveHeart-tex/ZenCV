@@ -25,6 +25,7 @@ export class BuilderTemplateStore {
 
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
+
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);

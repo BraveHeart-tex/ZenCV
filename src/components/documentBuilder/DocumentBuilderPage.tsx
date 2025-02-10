@@ -14,6 +14,7 @@ import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { startTransition, useEffect } from 'react';
 import { showErrorToast } from '../ui/sonner';
 import LazyMotionWrapper from '../ui/LazyMotionWrapper';
+import { BuilderAiSuggestionsProvider } from '@/hooks/useBuilderAiSuggestions';
 
 const DocumentBuilderPage = observer(() => {
   const navigate = useNavigate();
@@ -56,16 +57,18 @@ const DocumentBuilderPage = observer(() => {
   }
 
   return (
-    <LazyMotionWrapper>
-      <div>
-        <ResumeOverview />
-        <DocumentBuilderClient />
-        <ClientOnly>
-          <DocumentBuilderPreview />
-        </ClientOnly>
-      </div>
-      <DocumentBuilderViewToggle />
-    </LazyMotionWrapper>
+    <BuilderAiSuggestionsProvider>
+      <LazyMotionWrapper>
+        <div>
+          <ResumeOverview />
+          <DocumentBuilderClient />
+          <ClientOnly>
+            <DocumentBuilderPreview />
+          </ClientOnly>
+        </div>
+        <DocumentBuilderViewToggle />
+      </LazyMotionWrapper>
+    </BuilderAiSuggestionsProvider>
   );
 });
 

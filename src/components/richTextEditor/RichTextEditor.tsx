@@ -14,6 +14,13 @@ export interface RichTextEditorProps {
   id?: string;
 }
 
+export interface EditorRef extends HTMLDivElement {
+  focus: () => void;
+  scrollIntoView: () => void;
+  getBoundingClientRect: () => DOMRect;
+  setContent: (content: string) => void;
+}
+
 const RichTextEditor = ({
   initialValue,
   placeholder,
@@ -64,6 +71,11 @@ const RichTextEditor = ({
       }
 
       return new DOMRect(0, 0, 0, 0);
+    },
+    setContent(content: string) {
+      if (editor) {
+        editor.commands.setContent(content);
+      }
     },
   }));
 

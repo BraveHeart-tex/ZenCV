@@ -42,6 +42,8 @@ import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import DocumentService from '../client-db/documentService';
 import { PrefilledResumeStyle } from '../templates/prefilledTemplates';
+import { GenerateSummarySchema } from '../validation/generateSummary.schema';
+import { findValueInItemFields } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -621,4 +623,73 @@ export const hasFilledFields = (
           (!fieldNames || fieldNames.includes(field.name)) && field.value,
       );
   });
+};
+
+export const prepareWorkExperienceEntries =
+  (): GenerateSummarySchema['workExperiences'] => {
+    const workExperienceSection = builderRootStore.sectionStore.sections.find(
+      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+    );
+
+    if (!workExperienceSection) return [];
+
+    const workExperienceItems = builderRootStore.itemStore.getItemsBySectionId(
+      workExperienceSection.id,
+    );
+
+    return workExperienceItems.map((item) => {
+      const fields = builderRootStore.fieldStore.getFieldsByItemId(item.id);
+      return {
+        jobTitle: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
+        ),
+        employer: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER,
+        ),
+        startDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.START_DATE,
+        ),
+        endDate: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.END_DATE,
+        ),
+        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
+        description: findValueInItemFields(
+          fields,
+          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+        ),
+      };
+    });
+  };
+
+export const getSummaryFieldId = (): number | null => {
+  const sectionId = builderRootStore.sectionStore.sections.find(
+    (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY,
+  )?.id;
+
+  if (!sectionId) return null;
+
+  const items = builderRootStore.itemStore.getItemsBySectionId(sectionId);
+
+  if (!items.length) return null;
+
+  const fields = items.flatMap((item) =>
+    builderRootStore.fieldStore.getFieldsByItemId(item.id),
+  );
+
+  return (
+    fields.find((field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY)?.id ||
+    null
+  );
+};
+
+export const setSummaryFieldValue = async (value: string) => {
+  const summaryFieldId = getSummaryFieldId();
+
+  if (summaryFieldId) {
+    await builderRootStore.fieldStore.setFieldValue(summaryFieldId, value);
+  }
 };

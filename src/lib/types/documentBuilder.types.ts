@@ -121,3 +121,12 @@ export interface TemplateOption {
   tags: string[];
   value: ResumeTemplate;
 }
+
+export interface AISuggestionBase {
+  title?: string;
+  description?: string;
+}
+
+export type AISuggestion =
+  | (AISuggestionBase & { type: 'text'; value: string })
+  | (AISuggestionBase & { type: 'options'; values: string[] });

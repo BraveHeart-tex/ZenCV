@@ -12,6 +12,7 @@ interface AnimatedSuggestionButtonProps {
   scoreValueTextColor?: string;
   className?: string;
   iconContainerClassName?: string;
+  disabled?: boolean;
 }
 
 const AnimatedSuggestionButton = ({
@@ -23,6 +24,7 @@ const AnimatedSuggestionButton = ({
   scoreValueTextColor,
   className,
   iconContainerClassName,
+  disabled,
 }: AnimatedSuggestionButtonProps) => {
   return (
     <Button
@@ -40,6 +42,7 @@ const AnimatedSuggestionButton = ({
           ease: 'easeOut',
         }}
         onClick={onClick}
+        disabled={disabled}
       >
         {scoreValue !== undefined && (
           <motion.span

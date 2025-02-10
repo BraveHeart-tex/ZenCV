@@ -5,6 +5,7 @@ import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
+import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
 
 export class BuilderRootStore {
   documentStore: BuilderDocumentStore;
@@ -14,6 +15,8 @@ export class BuilderRootStore {
 
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
+
+  builderAiSuggestionsStore: BuilderAISuggestionsStore;
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
     this.sectionStore = new BuilderSectionStore(this);
@@ -21,6 +24,7 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
+    this.builderAiSuggestionsStore = new BuilderAISuggestionsStore(this);
   }
 
   resetState = () => {

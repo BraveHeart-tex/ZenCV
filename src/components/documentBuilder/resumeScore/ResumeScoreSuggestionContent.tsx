@@ -10,13 +10,17 @@ import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { hasFilledFields } from '@/lib/helpers/documentBuilderHelpers';
+import {
+  hasFilledFields,
+  prepareWorkExperienceEntries,
+} from '@/lib/helpers/documentBuilderHelpers';
 import { useShepherd } from '@/hooks/useShepherd';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { genericErrorMessage } from '@/lib/constants';
+import { useBuilderAiSuggestions } from '@/hooks/useBuilderAiSuggestions';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
@@ -29,6 +33,8 @@ const messageText =
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
+    const { completeSummary, isCompletingSummary } = useBuilderAiSuggestions();
+
     const Shepherd = useShepherd();
     const suggestions =
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
@@ -117,7 +123,15 @@ const ResumeScoreSuggestionContent = observer(
         };
 
         setTimeout(startTour, CONTENT_ANIMATION_DURATION_MS);
+        return;
       }
+
+      setOpen(false);
+      completeSummary('', {
+        body: {
+          workExperiences: prepareWorkExperienceEntries(),
+        },
+      });
     };
 
     return (
@@ -139,6 +153,7 @@ const ResumeScoreSuggestionContent = observer(
               icon={<SparklesIcon className="text-white" />}
               iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
               onClick={handleWriteProfileSummary}
+              disabled={isCompletingSummary}
             />
           </AnimatedSuggestionsContainer>
 
