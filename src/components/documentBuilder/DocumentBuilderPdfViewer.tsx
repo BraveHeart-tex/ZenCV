@@ -11,8 +11,10 @@ import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { useAsync } from 'react-use';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { runInAction } from 'mobx';
+import { action, runInAction } from 'mobx';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import { Button } from '../ui/button';
+import { Maximize2Icon } from 'lucide-react';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -141,28 +143,43 @@ const DocumentBuilderPdfViewer = observer(
         ) : null}
 
         {render.value && !render.loading && (
-          <Document
-            key={render.value}
-            className={
-              'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
-            }
-            file={render.value}
-            loading={null}
-            onLoadSuccess={onDocumentLoad}
-          >
-            <Page
-              key={currentPage}
-              renderAnnotationLayer={renderAnnotationLayer}
-              renderTextLayer={renderTextLayer}
-              pageNumber={currentPage}
-              width={pdfDimensions.pdfWidth}
-              height={pdfDimensions.pdfHeight}
+          <div className="group w-max relative mx-auto">
+            <Document
+              key={render.value}
+              className={
+                'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
+              }
+              file={render.value}
               loading={null}
-              onRenderSuccess={() => {
-                pdfViewerStore.setPreviousRenderValue(render.value as string);
-              }}
-            />
-          </Document>
+              onLoadSuccess={onDocumentLoad}
+            >
+              <Page
+                key={currentPage}
+                renderAnnotationLayer={renderAnnotationLayer}
+                renderTextLayer={renderTextLayer}
+                pageNumber={currentPage}
+                width={pdfDimensions.pdfWidth}
+                height={pdfDimensions.pdfHeight}
+                loading={null}
+                onRenderSuccess={() => {
+                  pdfViewerStore.setPreviousRenderValue(render.value as string);
+                }}
+              />
+            </Document>
+
+            <Button
+              size="icon"
+              className="xl:inline-flex group-hover:opacity-100 group-hover:scale-100 top-1/2 left-1/2 dark:bg-background dark:text-foreground dark:hover:bg-background dark:hover:text-foreground absolute hidden transition-all transform scale-50 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
+              aria-label="Maximize PDF Viewer"
+              tabIndex={0}
+              onClick={action(() => {
+                builderRootStore.UIStore.currentView =
+                  BUILDER_CURRENT_VIEWS.TEMPLATES;
+              })}
+            >
+              <Maximize2Icon />
+            </Button>
+          </div>
         )}
       </div>
     );
