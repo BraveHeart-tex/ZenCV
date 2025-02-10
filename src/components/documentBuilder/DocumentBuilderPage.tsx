@@ -1,4 +1,5 @@
 'use client';
+
 import DocumentBuilderClient from '@/components/documentBuilder/DocumentBuilderClient';
 import { useNavigate, useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';

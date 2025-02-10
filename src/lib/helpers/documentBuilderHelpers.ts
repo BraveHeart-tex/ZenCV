@@ -31,6 +31,7 @@ import {
 import {
   CollapsibleSectionType,
   FieldInsertTemplate,
+  FieldName,
   FieldValuesForKey,
   ResumeTemplate,
   TemplatedSectionType,
@@ -606,4 +607,18 @@ export const downloadPDF = ({
   link.href = file;
   link.download = fileName;
   link.click();
+};
+
+export const hasFilledFields = (
+  items: DEX_Item[],
+  fieldNames?: FieldName[],
+) => {
+  return items.some((item) => {
+    return builderRootStore.fieldStore
+      .getFieldsByItemId(item.id)
+      .some(
+        (field) =>
+          (!fieldNames || fieldNames.includes(field.name)) && field.value,
+      );
+  });
 };

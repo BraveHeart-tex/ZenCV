@@ -6,6 +6,14 @@ import { SparklesIcon } from 'lucide-react';
 import AnimatedSuggestionsContainer from './SuggestionsContainer';
 import SuggestionGroupHeading from './SuggestionGroupHeading';
 import AnimatedSuggestionButton from './AnimatedSuggestionButton';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { hasFilledFields } from '@/lib/helpers/documentBuilderHelpers';
+import { useShepherd } from '@/hooks/useShepherd';
+import { getItemContainerId } from '@/lib/utils/stringUtils';
+import { showErrorToast } from '@/components/ui/sonner';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
@@ -13,12 +21,88 @@ interface ResumeScoreSuggestionContentProps {
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
+    const Shepherd = useShepherd();
     const suggestions =
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
 
-    if (suggestions.length === 0) {
-      return null;
-    }
+    const handleWriteProfileSummary = async () => {
+      const workExperienceSectionId =
+        builderRootStore.sectionStore.sections.find(
+          (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+        )?.id;
+      if (!workExperienceSectionId) return;
+
+      const items = builderRootStore.sectionStore.getSectionItemsBySectionType(
+        INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+      );
+
+      let itemId: number | undefined = items[0]?.id;
+
+      if (items.length === 0) {
+        itemId = await builderRootStore.itemStore.addNewItemEntry(
+          workExperienceSectionId,
+        );
+      }
+
+      if (!itemId) {
+        showErrorToast(
+          'Something went wrong internally, please try again later.',
+        );
+        return;
+      }
+
+      const shouldFillWorkExperience = !hasFilledFields(items, [
+        FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
+        FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+      ]);
+
+      if (shouldFillWorkExperience) {
+        setOpen(false);
+        if (builderRootStore.UIStore.collapsedItemId !== itemId) {
+          builderRootStore.UIStore.toggleItem(itemId);
+        }
+        const tour = new Shepherd.Tour({
+          useModalOverlay: true,
+          defaultStepOptions: {
+            scrollTo: true,
+            modalOverlayOpeningPadding: 8,
+            modalOverlayOpeningRadius: 4,
+            classes: 'shadow-xl rounded-lg bg-background border z-[9999]',
+            when: {
+              show: () => {
+                const overlay = document.querySelector(
+                  '.shepherd-modal-overlay-container',
+                );
+                if (overlay) {
+                  overlay.classList.add('bg-black/50', 'z-[9998]');
+                }
+              },
+            },
+          },
+        });
+
+        tour.addStep({
+          id: 'work-experience-step',
+          text: 'In order to generate a profile summary, you must enter a work experience entry. Please fill in your job title and description here.',
+          attachTo: {
+            element: `#${getItemContainerId(itemId)}`,
+            on: 'top',
+          },
+          buttons: [
+            {
+              text: 'Got it',
+              action: tour.complete,
+              classes:
+                'px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors',
+            },
+          ],
+          classes: 'shepherd-theme-custom max-w-md p-4',
+          modalOverlayOpeningPadding: 16,
+        });
+
+        tour.start();
+      }
+    };
 
     return (
       <motion.div
@@ -35,22 +119,26 @@ const ResumeScoreSuggestionContent = observer(
               label="Write your profile summary"
               icon={<SparklesIcon className="text-white" />}
               iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
+              onClick={handleWriteProfileSummary}
             />
           </AnimatedSuggestionsContainer>
 
-          <SuggestionGroupHeading>
-            Boost Your Resume Score
-          </SuggestionGroupHeading>
-
-          <AnimatedSuggestionsContainer>
-            {suggestions.map((suggestion) => (
-              <ResumeScoreSuggestionItem
-                setOpen={setOpen}
-                suggestion={suggestion}
-                key={suggestion.key}
-              />
-            ))}
-          </AnimatedSuggestionsContainer>
+          {suggestions.length > 0 ? (
+            <>
+              <SuggestionGroupHeading>
+                Boost Your Resume Score
+              </SuggestionGroupHeading>
+              <AnimatedSuggestionsContainer>
+                {suggestions.map((suggestion) => (
+                  <ResumeScoreSuggestionItem
+                    setOpen={setOpen}
+                    suggestion={suggestion}
+                    key={suggestion.key}
+                  />
+                ))}
+              </AnimatedSuggestionsContainer>
+            </>
+          ) : null}
         </div>
       </motion.div>
     );

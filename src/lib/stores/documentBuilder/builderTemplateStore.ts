@@ -4,7 +4,6 @@ import {
   PdfTemplateData,
   ResumeStats,
   ResumeSuggestion,
-  SectionType,
 } from '@/lib/types/documentBuilder.types';
 import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import {
@@ -117,15 +116,6 @@ export class BuilderTemplateStore {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
 
-    const getSectionItems = (type: SectionType) => {
-      const section = this.root.sectionStore.sections.find(
-        (s) => s.type === type,
-      );
-      return section
-        ? this.root.itemStore.getItemsBySectionId(section.id)
-        : null;
-    };
-
     const hasFilledFields = (items: DEX_Item[], fieldName?: string) =>
       items?.some((item) =>
         this.root.fieldStore
@@ -137,7 +127,7 @@ export class BuilderTemplateStore {
 
     SECTION_SUGGESTION_CONFIG.forEach(
       ({ type, scoreValue, label, fieldName }) => {
-        const items = getSectionItems(type);
+        const items = this.root.sectionStore.getSectionItemsBySectionType(type);
 
         if (items && hasFilledFields(items, fieldName)) {
           score += scoreValue;
@@ -156,7 +146,9 @@ export class BuilderTemplateStore {
       },
     );
 
-    const skillsItems = getSectionItems(INTERNAL_SECTION_TYPES.SKILLS);
+    const skillsItems = this.root.sectionStore.getSectionItemsBySectionType(
+      INTERNAL_SECTION_TYPES.SKILLS,
+    );
     if (skillsItems) {
       const addedSkills = skillsItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL),
@@ -173,7 +165,9 @@ export class BuilderTemplateStore {
       }
     }
 
-    const languageItems = getSectionItems(INTERNAL_SECTION_TYPES.LANGUAGES);
+    const languageItems = this.root.sectionStore.getSectionItemsBySectionType(
+      INTERNAL_SECTION_TYPES.LANGUAGES,
+    );
     if (languageItems) {
       const addedLanguages = languageItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE),

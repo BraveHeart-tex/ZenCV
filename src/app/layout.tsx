@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/ui/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { APP_NAME } from '@/lib/appConfig';
+import 'shepherd.js/dist/css/shepherd.css';
 
 const inter = Inter({
   weight: 'variable',
