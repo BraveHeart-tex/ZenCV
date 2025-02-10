@@ -2,6 +2,10 @@ import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
 import ResumeScoreSuggestionItem from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { SparklesIcon } from 'lucide-react';
+import AnimatedSuggestionsContainer from './SuggestionsContainer';
+import SuggestionGroupHeading from './SuggestionGroupHeading';
+import AnimatedSuggestionButton from './AnimatedSuggestionButton';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
@@ -25,22 +29,20 @@ const ResumeScoreSuggestionContent = observer(
         className="overflow-hidden"
       >
         <div className="py-4">
-          <motion.h3
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="scroll-m-20 text-lg font-semibold tracking-tight"
-          >
+          <SuggestionGroupHeading>AI Assistant</SuggestionGroupHeading>
+          <AnimatedSuggestionsContainer>
+            <AnimatedSuggestionButton
+              label="Write your profile summary"
+              icon={<SparklesIcon className="text-white" />}
+              iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
+            />
+          </AnimatedSuggestionsContainer>
+
+          <SuggestionGroupHeading>
             Boost Your Resume Score
-          </motion.h3>
-          <motion.div
-            className="md:grid-cols-2 grid gap-2 py-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          </SuggestionGroupHeading>
+
+          <AnimatedSuggestionsContainer>
             {suggestions.map((suggestion) => (
               <ResumeScoreSuggestionItem
                 setOpen={setOpen}
@@ -48,7 +50,7 @@ const ResumeScoreSuggestionContent = observer(
                 key={suggestion.key}
               />
             ))}
-          </motion.div>
+          </AnimatedSuggestionsContainer>
         </div>
       </motion.div>
     );
