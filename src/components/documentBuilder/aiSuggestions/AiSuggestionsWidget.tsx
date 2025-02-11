@@ -15,8 +15,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SummaryAiSuggestionWidget from './SummaryAiSuggestionWidget';
+import { SUMMARY_GENERATION_EVENT_NAME } from './useAiSuggestionHelpers';
 
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
@@ -33,6 +34,41 @@ const AiSuggestionsWidget = observer(
     const isMobile = useMediaQuery('(max-width: 1280px)', false);
     const summaryField = getSummaryField();
     const isProfessionalSummary = fieldId === summaryField?.id;
+    const popoverRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      const controller = new AbortController();
+
+      document.addEventListener(
+        SUMMARY_GENERATION_EVENT_NAME,
+        () => {
+          setOpen(true);
+
+          const scrollToPopover = () => {
+            if (popoverRef.current) {
+              const popoverPosition =
+                popoverRef.current.getBoundingClientRect();
+
+              window.scrollTo({
+                top: popoverPosition.top / 2,
+                behavior: 'instant',
+              });
+            } else {
+              requestAnimationFrame(scrollToPopover);
+            }
+          };
+
+          requestAnimationFrame(scrollToPopover);
+        },
+        {
+          signal: controller.signal,
+        },
+      );
+
+      return () => {
+        controller.abort();
+      };
+    }, []);
 
     const renderSuggestionWidget = () => {
       if (!suggestion) {
@@ -109,6 +145,7 @@ const AiSuggestionsWidget = observer(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
         <PopoverContent
+          ref={popoverRef}
           avoidCollisions={false}
           side={isMobile ? 'top' : 'top'}
           align="start"

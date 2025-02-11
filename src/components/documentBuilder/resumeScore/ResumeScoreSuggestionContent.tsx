@@ -6,31 +6,12 @@ import { SparklesIcon } from 'lucide-react';
 import AnimatedSuggestionsContainer from './SuggestionsContainer';
 import SuggestionGroupHeading from './SuggestionGroupHeading';
 import AnimatedSuggestionButton from './AnimatedSuggestionButton';
-import {
-  FIELD_NAMES,
-  INTERNAL_SECTION_TYPES,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  getSummaryValue,
-  hasFilledFields,
-  prepareWorkExperienceEntries,
-} from '@/lib/helpers/documentBuilderHelpers';
-import { useShepherd } from '@/hooks/useShepherd';
-import { getItemContainerId } from '@/lib/utils/stringUtils';
-import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
-import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { genericErrorMessage } from '@/lib/constants';
-import { useBuilderAiSuggestions } from '@/hooks/useBuilderAiSuggestions';
+import { getSummaryValue } from '@/lib/helpers/documentBuilderHelpers';
+import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: (open: boolean) => void;
 }
-
-const CONTENT_ANIMATION_DURATION_MS = 300;
-
-const messageText =
-  'Please add a job title and description to your work experience to generate a profile summary';
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
@@ -38,112 +19,7 @@ const ResumeScoreSuggestionContent = observer(
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
 
     const hasWrittenSummary = !!getSummaryValue();
-    const { completeSummary, improveSummary, isLoading } =
-      useBuilderAiSuggestions();
-    const Shepherd = useShepherd();
-    const isMobile = useMediaQuery('(max-width: 1024px)', true);
-
-    const handleWriteProfileSummary = async () => {
-      const workExperienceSectionId =
-        builderRootStore.sectionStore.sections.find(
-          (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-        )?.id;
-      if (!workExperienceSectionId) return;
-
-      const items = builderRootStore.sectionStore.getSectionItemsBySectionType(
-        INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-      );
-
-      let itemId: number | undefined = items[0]?.id;
-
-      if (items.length === 0) {
-        itemId = await builderRootStore.itemStore.addNewItemEntry(
-          workExperienceSectionId,
-        );
-      }
-
-      if (!itemId) {
-        showErrorToast(genericErrorMessage);
-        return;
-      }
-
-      const shouldFillWorkExperience = !hasFilledFields(items, [
-        FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-        FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-      ]);
-
-      if (shouldFillWorkExperience) {
-        setOpen(false);
-
-        const startTour = () => {
-          if (builderRootStore.UIStore.collapsedItemId !== itemId) {
-            builderRootStore.UIStore.toggleItem(itemId);
-          }
-          const element = builderRootStore.UIStore.itemRefs.get(
-            getItemContainerId(itemId),
-          );
-
-          if (!element) {
-            console.warn('Element not found');
-            showErrorToast(genericErrorMessage);
-            return;
-          }
-
-          if (isMobile) {
-            scrollToCenterAndFocus(element);
-            showInfoToast(messageText);
-            return;
-          }
-
-          scrollToCenterAndFocus(element);
-          const tour = new Shepherd.Tour({
-            useModalOverlay: true,
-            defaultStepOptions: {
-              classes: 'shadow-md bg-background border-primary',
-              modalOverlayOpeningPadding: 8,
-              modalOverlayOpeningRadius: 4,
-            },
-          });
-
-          tour.addStep({
-            id: 'work-experience-step',
-            text: messageText,
-            attachTo: {
-              element: `#${getItemContainerId(itemId)}`,
-              on: 'top',
-            },
-            buttons: [
-              {
-                text: 'Got it',
-                action: tour.complete,
-              },
-            ],
-            modalOverlayOpeningPadding: 16,
-          });
-
-          tour.start();
-        };
-
-        setTimeout(startTour, CONTENT_ANIMATION_DURATION_MS);
-        return;
-      }
-      setOpen(false);
-
-      if (hasWrittenSummary) {
-        improveSummary('', {
-          body: {
-            summary: getSummaryValue(),
-            workExperiences: prepareWorkExperienceEntries(),
-          },
-        });
-      } else {
-        completeSummary('', {
-          body: {
-            workExperiences: prepareWorkExperienceEntries(),
-          },
-        });
-      }
-    };
+    const { handleWriteProfileSummary, isLoading } = useAiSuggestionHelpers();
 
     return (
       <motion.div
@@ -151,7 +27,7 @@ const ResumeScoreSuggestionContent = observer(
         animate={{ opacity: 1, height: 'auto' }}
         exit={{ opacity: 0, height: 0 }}
         transition={{
-          duration: CONTENT_ANIMATION_DURATION_MS / 1000,
+          duration: 0.3,
           ease: 'easeInOut',
         }}
         className="overflow-hidden"

@@ -1,7 +1,7 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import Shepherd from 'shepherd.js';
 
-interface ShepherdContextType {
+export interface ShepherdContextType {
   Shepherd: typeof Shepherd;
 }
 

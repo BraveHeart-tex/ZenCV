@@ -706,3 +706,26 @@ export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
 
   return section?.type || null;
 };
+
+export const shouldFillWorkExperience = (items: DEX_Item[]) => {
+  return !hasFilledFields(items, [
+    FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
+    FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
+  ]);
+};
+
+export const getWorkExperienceSectionId = () => {
+  return builderRootStore.sectionStore.sections.find(
+    (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+  )?.id;
+};
+
+export const getOrCreateWorkExperienceItem = async (sectionId: number) => {
+  const items = builderRootStore.sectionStore.getSectionItemsBySectionType(
+    INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+  );
+
+  if (items.length > 0) return items[0]?.id;
+
+  return await builderRootStore.itemStore.addNewItemEntry(sectionId);
+};
