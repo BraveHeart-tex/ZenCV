@@ -150,6 +150,7 @@ const AiSuggestionsWidget = observer(
           side={isMobile ? 'top' : 'top'}
           align="start"
           className="max-w-[80vw] w-max lg:max-w-lg"
+          asChild
         >
           {renderSuggestionWidget()}
         </PopoverContent>

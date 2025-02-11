@@ -39,7 +39,10 @@ const ResumeScoreSuggestionContent = observer(
               label={`${hasWrittenSummary ? 'Improve' : 'Generate'} your profile summary`}
               icon={<SparklesIcon className="text-white" />}
               iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
-              onClick={handleWriteProfileSummary}
+              onClick={() => {
+                setOpen(false);
+                handleWriteProfileSummary();
+              }}
               disabled={isLoading}
             />
           </AnimatedSuggestionsContainer>

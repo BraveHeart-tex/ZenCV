@@ -1,6 +1,5 @@
 'use client';
 
-import { ShepherdJourneyProvider } from '@/hooks/useShepherd';
 import dynamic from 'next/dynamic';
 import { BrowserRouter, Route, Routes } from 'react-router';
 
@@ -34,14 +33,7 @@ const App = () => {
           <Route path="/resume-templates" element={<ResumeTemplatesPage />} />
         </Route>
 
-        <Route
-          path={'/builder/:id'}
-          element={
-            <ShepherdJourneyProvider>
-              <DocumentBuilderPage />
-            </ShepherdJourneyProvider>
-          }
-        />
+        <Route path={'/builder/:id'} element={<DocumentBuilderPage />} />
       </Routes>
     </BrowserRouter>
   );

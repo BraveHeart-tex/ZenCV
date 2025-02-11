@@ -21,19 +21,25 @@ const ImproveResumeWidget = observer(() => {
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
+    const controller = new AbortController();
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener(
+      'click',
+      (event: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setOpen(false);
+        }
+      },
+      {
+        signal: controller.signal,
+      },
+    );
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      controller.abort();
     };
   }, []);
 

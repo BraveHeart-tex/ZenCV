@@ -1,7 +1,6 @@
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
 import { useBuilderAiSuggestions } from '@/hooks/useBuilderAiSuggestions';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { useShepherd } from '@/hooks/useShepherd';
 import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { genericErrorMessage } from '@/lib/constants';
 import {
@@ -14,6 +13,7 @@ import {
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import shepherdStore from '@/lib/stores/documentBuilder/shepherdStore';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 
 const shouldAddJobEntryErrorMessage =
@@ -22,7 +22,7 @@ const shouldAddJobEntryErrorMessage =
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
 export const useAiSuggestionHelpers = () => {
-  const Shepherd = useShepherd();
+  const Shepherd = shepherdStore.Shepherd;
   const isMobile = useMediaQuery('(max-width: 1024px)', true);
   const { completeSummary, improveSummary, isLoading } =
     useBuilderAiSuggestions();
