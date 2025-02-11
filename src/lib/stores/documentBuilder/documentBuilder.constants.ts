@@ -9,6 +9,7 @@ import {
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
 import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
+import { SectionType } from '@/lib/types/documentBuilder.types';
 
 export const INTERNAL_SECTION_TYPES = {
   PERSONAL_DETAILS: 'personal-details',
@@ -285,3 +286,9 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   ...item,
   defaultTitle: item.title,
 }));
+
+export const SECTIONS_WITH_RICH_TEXT_AI = new Map<SectionType, boolean>([
+  [INTERNAL_SECTION_TYPES.SUMMARY, true],
+  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
+  [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
+]);

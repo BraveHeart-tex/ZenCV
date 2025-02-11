@@ -697,3 +697,12 @@ export const getSummaryValue = () => {
   const summaryField = getSummaryField();
   return summaryField?.value;
 };
+
+export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
+  const item = builderRootStore.itemStore.getItemById(itemId);
+  if (!item) return null;
+
+  const section = builderRootStore.sectionStore.getSectionById(item?.sectionId);
+
+  return section?.type || null;
+};

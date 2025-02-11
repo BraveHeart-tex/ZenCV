@@ -13,8 +13,13 @@ import { Button } from '@/components/ui/button';
 import { SparklesIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 
+interface BuilderRichTextEditorInputProps {
+  fieldId: DEX_Field['id'];
+  shouldRenderAiWidget?: boolean;
+}
+
 const BuilderRichTextEditorInput = observer(
-  ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
+  ({ fieldId, shouldRenderAiWidget }: BuilderRichTextEditorInputProps) => {
     const field = builderRootStore.fieldStore.getFieldById(fieldId);
     if (!field) return null;
 
@@ -50,6 +55,8 @@ const BuilderRichTextEditorInput = observer(
               await builderRootStore.fieldStore.setFieldValue(fieldId, html);
             })}
             renderEditorFooter={() => {
+              if (!shouldRenderAiWidget) return null;
+
               return (
                 <AiSuggestionsWidget
                   fieldId={fieldId}

@@ -9,13 +9,20 @@ import {
   FIELD_TYPES,
 } from '@/lib/client-db/clientDbSchema';
 import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
+import {
+  getFieldHtmlId,
+  getSectionTypeByItemId,
+} from '@/lib/helpers/documentBuilderHelpers';
 import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
-import { SELECT_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  SECTIONS_WITH_RICH_TEXT_AI,
+  SELECT_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { SectionType } from '@/lib/types/documentBuilder.types';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -69,7 +76,12 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             ?.containerType === CONTAINER_TYPES.COLLAPSIBLE ? (
             <Label htmlFor={htmlInputId}>{field.name}</Label>
           ) : null}
-          <BuilderRichTextEditorInput fieldId={fieldId} />
+          <BuilderRichTextEditorInput
+            fieldId={fieldId}
+            shouldRenderAiWidget={SECTIONS_WITH_RICH_TEXT_AI.has(
+              getSectionTypeByItemId(field.itemId) as SectionType,
+            )}
+          />
         </>
       );
     }
