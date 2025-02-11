@@ -9,6 +9,9 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { useRef } from 'react';
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
+import { Button } from '@/components/ui/button';
+import { SparklesIcon } from 'lucide-react';
+import { cn } from '@/lib/utils/stringUtils';
 
 const BuilderRichTextEditorInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
@@ -46,21 +49,41 @@ const BuilderRichTextEditorInput = observer(
             onChange={action(async (html) => {
               await builderRootStore.fieldStore.setFieldValue(fieldId, html);
             })}
+            renderEditorFooter={() => {
+              return (
+                <AiSuggestionsWidget
+                  fieldId={fieldId}
+                  containerRef={containerRef}
+                  onAcceptSuggestion={(suggestionValue) => {
+                    const editorRef = builderRootStore.UIStore.fieldRefs.get(
+                      fieldId.toString(),
+                    );
+                    if (editorRef) {
+                      (editorRef as EditorRef)?.setContent(suggestionValue);
+                    }
+                  }}
+                  renderTrigger={() => {
+                    return (
+                      <div
+                        className={cn(
+                          'absolute bottom-0 left-0 xl:left-auto xl:right-0',
+                        )}
+                      >
+                        <Button
+                          variant="outline"
+                          className="items-center gap-2 border-r-0 rounded-r-none rounded-bl-none"
+                        >
+                          <SparklesIcon />
+                          Get AI Suggestion
+                        </Button>
+                      </div>
+                    );
+                  }}
+                />
+              );
+            }}
           />
         </div>
-
-        <AiSuggestionsWidget
-          fieldId={fieldId}
-          containerRef={containerRef}
-          onAcceptSuggestion={(suggestionValue) => {
-            const editorRef = builderRootStore.UIStore.fieldRefs.get(
-              fieldId.toString(),
-            );
-            if (editorRef) {
-              (editorRef as EditorRef)?.setContent(suggestionValue);
-            }
-          }}
-        />
       </>
     );
   },
