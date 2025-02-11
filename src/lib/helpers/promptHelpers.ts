@@ -1,18 +1,19 @@
 import { GenerateSummarySchema } from '../validation/generateSummary.schema';
+import { ImproveSummary } from '../validation/imrpoveSummary.schema';
+import { WorkExperience } from '../validation/workExperience.schema';
+
+const generateExperienceText = (workExperiences: WorkExperience[]) =>
+  workExperiences
+    .map((exp, index) => {
+      return `${index + 1}. **${exp.jobTitle}** at **${exp.employer}** (${exp.startDate} - ${exp.endDate}) | ${exp.city}
+ - ${exp.description}`;
+    })
+    .join('\n\n');
 
 export const generateResumeSummaryPrompt = (
   workExperiences: GenerateSummarySchema['workExperiences'],
 ): string => {
-  if (!Array.isArray(workExperiences) || workExperiences.length === 0) {
-    throw new Error('Invalid work experiences data.');
-  }
-
-  const experiencesText = workExperiences
-    .map((exp, index) => {
-      return `${index + 1}. **${exp.jobTitle}** at **${exp.employer}** (${exp.startDate} - ${exp.endDate}) | ${exp.city}
-     - ${exp.description}`;
-    })
-    .join('\n\n');
+  const experiencesText = generateExperienceText(workExperiences);
 
   return `You are a skilled resume expert specializing in crafting impactful professional summaries that effectively showcase career achievements and potential. Your expertise lies in creating compelling narratives that immediately capture employers' attention.
 
@@ -32,4 +33,28 @@ export const generateResumeSummaryPrompt = (
   ${experiencesText}
 
   Note: Focus on creating a concise yet impactful summary that showcases the candidate's most significant contributions and career trajectory. Avoid generic statements and emphasize specific achievements. Respond only with the generated summary.`;
+};
+
+export const generateImproveSummaryPrompt = (data: ImproveSummary) => {
+  const { summary, workExperiences } = data;
+
+  const experiencesText = generateExperienceText(workExperiences);
+
+  return `You are a skilled resume expert specializing in improving professional summaries to make them more impactful and effective. Your expertise lies in enhancing existing summaries to better showcase career achievements and potential.
+
+  Your task is to analyze and improve the following professional summary while considering the candidate's work experience. The improved summary should:
+  - Be more impactful and engaging while maintaining professionalism
+  - Better highlight specific achievements and measurable results
+  - Incorporate relevant industry keywords and technical expertise
+  - Emphasize leadership abilities and career progression where applicable
+  - Focus on unique value propositions that set the candidate apart
+  - Maintain an optimal length of 3-5 sentences
+
+  Current Summary:
+  ${summary}
+
+  Work Experience:
+  ${experiencesText}
+
+  Please analyze the current summary and work experience, then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience. Respond only with the improved summary.`;
 };

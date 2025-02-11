@@ -24,7 +24,7 @@ const BuilderRichTextEditorInput = observer(
     const containerRef = useRef<HTMLDivElement | null>(null);
 
     const { refs, floatingStyles, update } = useFloating({
-      placement: 'right-end',
+      placement: 'right',
     });
 
     const suggestion =
