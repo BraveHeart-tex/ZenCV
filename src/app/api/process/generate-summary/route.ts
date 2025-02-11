@@ -7,6 +7,7 @@ import { google } from '@ai-sdk/google';
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+
     const validationResult = generateSummarySchema.safeParse(body);
     if (validationResult?.error) {
       return NextResponse.json(
