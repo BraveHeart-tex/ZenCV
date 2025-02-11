@@ -7,13 +7,20 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { useCompletion } from '@ai-sdk/react';
 import { createContext, useContext, useEffect, useRef } from 'react';
 
+const BASE_API_ROUTE = '/api/process';
+
 type UseCompletion = ReturnType<typeof useCompletion>;
 
 const BuilderAiSuggestionsContext = createContext<{
   completeSummary: UseCompletion['complete'];
   isCompletingSummary: UseCompletion['isLoading'];
   generatedSummary: UseCompletion['completion'];
+
   isLoading: boolean;
+
+  improveSummary: UseCompletion['complete'];
+  isImprovingSummary: UseCompletion['isLoading'];
+  improvedSummary: UseCompletion['completion'];
 } | null>(null);
 
 export const BuilderAiSuggestionsProvider = ({
@@ -27,9 +34,9 @@ export const BuilderAiSuggestionsProvider = ({
     complete: completeSummary,
     isLoading: isCompletingSummary,
     completion: generatedSummary,
-    error,
+    error: summaryCompletionError,
   } = useCompletion({
-    api: '/api/process/generate-summary',
+    api: `${BASE_API_ROUTE}/generate-summary`,
     onError(error) {
       showErrorToast(error.message, {
         id: toastId.current,
@@ -37,27 +44,46 @@ export const BuilderAiSuggestionsProvider = ({
     },
   });
 
-  const isLoading = isCompletingSummary;
+  const {
+    complete: improveSummary,
+    isLoading: isImprovingSummary,
+    completion: improvedSummary,
+    error: summaryImprovementError,
+  } = useCompletion({
+    api: `${BASE_API_ROUTE}/improve-summary`,
+    onError(error) {
+      showErrorToast(error.message, {
+        id: toastId.current,
+      });
+    },
+  });
+
+  const isLoading = isCompletingSummary || isImprovingSummary;
 
   useEffect(() => {
     if (isLoading && !toastId.current) {
       toastId.current = showLoadingToast('Generating summary...');
     }
 
-    if (!isLoading && toastId.current && !error) {
+    if (
+      !isLoading &&
+      toastId.current &&
+      !summaryCompletionError &&
+      !summaryImprovementError
+    ) {
       showSuccessToast('Summary generated successfully', {
         id: toastId.current,
       });
       toastId.current = undefined;
     }
-  }, [isLoading, error]);
+  }, [isLoading, summaryCompletionError, summaryImprovementError]);
 
   useEffect(() => {
-    if (!generatedSummary) return;
+    if (!generatedSummary && !improvedSummary) return;
     builderRootStore.builderAiSuggestionsStore.setSummarySuggestion(
-      generatedSummary,
+      generatedSummary || improvedSummary,
     );
-  }, [generatedSummary]);
+  }, [generatedSummary, improvedSummary]);
 
   return (
     <BuilderAiSuggestionsContext.Provider
@@ -65,8 +91,10 @@ export const BuilderAiSuggestionsProvider = ({
         completeSummary,
         isCompletingSummary,
         generatedSummary,
-        // As more options are added, we can derive the overall loading state
-        isLoading: isCompletingSummary,
+        isLoading,
+        improveSummary,
+        isImprovingSummary,
+        improvedSummary,
       }}
     >
       {children}

@@ -11,6 +11,7 @@ import {
   INTERNAL_SECTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
+  getSummaryValue,
   hasFilledFields,
   prepareWorkExperienceEntries,
 } from '@/lib/helpers/documentBuilderHelpers';
@@ -33,12 +34,13 @@ const messageText =
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
-    const { completeSummary, isCompletingSummary } = useBuilderAiSuggestions();
-
-    const Shepherd = useShepherd();
     const suggestions =
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
 
+    const hasWrittenSummary = !!getSummaryValue();
+    const { completeSummary, improveSummary, isLoading } =
+      useBuilderAiSuggestions();
+    const Shepherd = useShepherd();
     const isMobile = useMediaQuery('(max-width: 1024px)', true);
 
     const handleWriteProfileSummary = async () => {
@@ -125,13 +127,22 @@ const ResumeScoreSuggestionContent = observer(
         setTimeout(startTour, CONTENT_ANIMATION_DURATION_MS);
         return;
       }
-
       setOpen(false);
-      completeSummary('', {
-        body: {
-          workExperiences: prepareWorkExperienceEntries(),
-        },
-      });
+
+      if (hasWrittenSummary) {
+        improveSummary('', {
+          body: {
+            summary: getSummaryValue(),
+            workExperiences: prepareWorkExperienceEntries(),
+          },
+        });
+      } else {
+        completeSummary('', {
+          body: {
+            workExperiences: prepareWorkExperienceEntries(),
+          },
+        });
+      }
     };
 
     return (
@@ -149,11 +160,11 @@ const ResumeScoreSuggestionContent = observer(
           <SuggestionGroupHeading>AI Assistant</SuggestionGroupHeading>
           <AnimatedSuggestionsContainer>
             <AnimatedSuggestionButton
-              label="Write your profile summary"
+              label={`${hasWrittenSummary ? 'Improve' : 'Generate'} your profile summary`}
               icon={<SparklesIcon className="text-white" />}
               iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
               onClick={handleWriteProfileSummary}
-              disabled={isCompletingSummary}
+              disabled={isLoading}
             />
           </AnimatedSuggestionsContainer>
 

@@ -665,7 +665,7 @@ export const prepareWorkExperienceEntries =
     });
   };
 
-export const getSummaryFieldId = (): number | null => {
+export const getSummaryField = (): DEX_Field | null => {
   const sectionId = builderRootStore.sectionStore.sections.find(
     (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY,
   )?.id;
@@ -681,15 +681,19 @@ export const getSummaryFieldId = (): number | null => {
   );
 
   return (
-    fields.find((field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY)?.id ||
-    null
+    fields.find((field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY) || null
   );
 };
 
 export const setSummaryFieldValue = async (value: string) => {
-  const summaryFieldId = getSummaryFieldId();
+  const summaryFieldId = getSummaryField()?.id;
 
   if (summaryFieldId) {
     await builderRootStore.fieldStore.setFieldValue(summaryFieldId, value);
   }
+};
+
+export const getSummaryValue = () => {
+  const summaryField = getSummaryField();
+  return summaryField?.value;
 };

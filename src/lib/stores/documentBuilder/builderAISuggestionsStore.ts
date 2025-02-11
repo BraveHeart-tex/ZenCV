@@ -2,7 +2,7 @@ import { makeAutoObservable, ObservableMap } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { AISuggestion } from '@/lib/types/documentBuilder.types';
-import { getSummaryFieldId } from '@/lib/helpers/documentBuilderHelpers';
+import { getSummaryField } from '@/lib/helpers/documentBuilderHelpers';
 
 export class BuilderAISuggestionsStore {
   root: BuilderRootStore;
@@ -16,7 +16,7 @@ export class BuilderAISuggestionsStore {
   }
 
   setSummarySuggestion(generatedSummary: string) {
-    const summaryFieldId = getSummaryFieldId();
+    const summaryFieldId = getSummaryField()?.id;
 
     if (summaryFieldId) {
       this.fieldSuggestions.set(summaryFieldId, {

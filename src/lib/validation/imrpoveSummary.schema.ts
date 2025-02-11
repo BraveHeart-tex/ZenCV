@@ -8,7 +8,7 @@ export const improveSummarySchema = z.object({
     .max(2000, 'Summary cannot be longer than 2000 characters'),
   workExperiences: z
     .array(workExperienceSchema)
-    .length(1, 'At least one work experience entry is required')
+    .min(1, 'At least one work experience entry is required')
     .max(10, 'At most 10 work experience entries are allowed'),
 });
 
