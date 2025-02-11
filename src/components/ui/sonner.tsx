@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { Toaster as Sonner, toast } from 'sonner';
+import { ExternalToast, Toaster as Sonner, toast } from 'sonner';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -30,16 +30,26 @@ const Toaster = ({ ...props }: ToasterProps) => {
   );
 };
 
-const showErrorToast = (message: string) => {
-  return toast.error(message);
+const showErrorToast = (message: string, data?: ExternalToast) => {
+  return toast.error(message, data);
 };
 
-export const showInfoToast = (message: string) => {
-  return toast.info(message);
+const showInfoToast = (message: string, data?: ExternalToast) => {
+  return toast.info(message, data);
 };
 
-const showSuccessToast = (message: string) => {
-  return toast.success(message);
+const showSuccessToast = (message: string, data?: ExternalToast) => {
+  return toast.success(message, data);
 };
 
-export { Toaster, showErrorToast, showSuccessToast };
+const showLoadingToast = (message: string, data?: ExternalToast) => {
+  return toast.loading(message, data);
+};
+
+export {
+  Toaster,
+  showErrorToast,
+  showSuccessToast,
+  showInfoToast,
+  showLoadingToast,
+};

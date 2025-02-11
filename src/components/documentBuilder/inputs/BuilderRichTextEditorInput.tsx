@@ -7,7 +7,7 @@ import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { action, runInAction } from 'mobx';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { useFloating } from '@floating-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   getFieldHtmlId,
   setSummaryFieldValue,
@@ -21,9 +21,7 @@ const BuilderRichTextEditorInput = observer(
     if (!field) return null;
 
     const id = getFieldHtmlId(field);
-    const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(
-      null,
-    );
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
     const { refs, floatingStyles, update } = useFloating({
       placement: 'right-end',
@@ -35,8 +33,8 @@ const BuilderRichTextEditorInput = observer(
     const shouldRenderSuggestion = !!suggestion;
 
     useEffect(() => {
-      if (containerRef && shouldRenderSuggestion) {
-        refs.setReference(containerRef);
+      if (containerRef.current && shouldRenderSuggestion) {
+        refs.setReference(containerRef.current);
         update();
       } else {
         refs.setReference(null);
@@ -64,7 +62,9 @@ const BuilderRichTextEditorInput = observer(
                   {suggestion.description}
                 </p>
               </div>
-              <span className="flex-1 overflow-auto">{suggestion.value}</span>
+              <span className="flex-1 max-h-[300px] overflow-auto">
+                {suggestion.value}
+              </span>
               <div className="flex items-center justify-end gap-2">
                 <Button
                   variant="outline"
@@ -139,7 +139,7 @@ const BuilderRichTextEditorInput = observer(
             border-bottom: 1px solid hsl(var(--input));
           }
         `}</style>
-        <div ref={setContainerRef}>
+        <div ref={containerRef}>
           <RichTextEditor
             ref={(ref) => {
               builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
