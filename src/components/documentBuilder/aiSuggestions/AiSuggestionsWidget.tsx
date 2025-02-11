@@ -1,10 +1,11 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { setSummaryFieldValue } from '@/lib/helpers/documentBuilderHelpers';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { useFloating } from '@floating-ui/react';
+import { autoUpdate, flip, offset, useFloating } from '@floating-ui/react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
@@ -19,9 +20,17 @@ const AiSuggestionsWidget = observer(
   ({ containerRef, fieldId, onAcceptSuggestion }: AISuggestionWidgetProps) => {
     const suggestion =
       builderRootStore.builderAiSuggestionsStore.fieldSuggestions.get(fieldId);
+    const isMobile = useMediaQuery('(max-width: 1280px)', false);
 
     const { refs, floatingStyles, update } = useFloating({
-      placement: 'right',
+      placement: isMobile ? 'bottom' : 'right',
+      middleware: [
+        offset(5),
+        flip({
+          fallbackPlacements: isMobile ? ['top'] : ['left'],
+        }),
+      ],
+      whileElementsMounted: autoUpdate,
     });
 
     useEffect(() => {
@@ -43,18 +52,18 @@ const AiSuggestionsWidget = observer(
           <div
             ref={refs.setFloating}
             style={floatingStyles}
-            className="bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 z-50 max-w-xl p-4 border rounded-lg shadow-md outline-none"
+            className="bg-popover text-popover-foreground animate-in fade-in-0 zoom-in-95 z-50 max-w-xl p-4 transition-all duration-300 border rounded-lg shadow-md outline-none"
           >
             <div className="flex flex-col gap-4">
               <div className="space-y-1">
                 <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
                   {suggestion.title}
                 </h3>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-muted-foreground text-sm">
                   {suggestion.description}
                 </p>
               </div>
-              <span className="flex-1 max-h-[300px] overflow-auto">
+              <span className="flex-1 max-h-[200px] xl:max-h-[300px] overflow-auto">
                 {suggestion.value}
               </span>
               <div className="flex items-center justify-end gap-2">

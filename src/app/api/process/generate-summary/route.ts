@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (error) {
-    console.error(error);
+    console.error('generate-summary error', error);
     return NextResponse.json({
       success: false,
       fieldErrors: {},

@@ -22,7 +22,7 @@ export class BuilderAISuggestionsStore {
       this.fieldSuggestions.set(summaryFieldId, {
         type: 'text',
         value: generatedSummary,
-        title: 'Professional Summary',
+        title: 'AI-Suggested Summary',
         description:
           "If you accept the generated summary below, it will replace your current one. Don't worry,you can always make changes later!",
       });
