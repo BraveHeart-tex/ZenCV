@@ -9,7 +9,6 @@ export const jobPostingSchema = z.object({
     .string()
     .min(1, 'Job title is required')
     .max(200, 'Job title cannot be longer than 200 characters'),
-
   roleDescription: z
     .string()
     .min(1, 'Role is required')

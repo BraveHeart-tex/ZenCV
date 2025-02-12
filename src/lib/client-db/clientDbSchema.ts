@@ -5,6 +5,7 @@ import {
   SectionType,
   SelectType,
 } from '@/lib/types/documentBuilder.types';
+import { JobPostingSchema } from '../validation/jobPosting.schema';
 
 type IdType = number;
 
@@ -14,6 +15,7 @@ export interface DEX_Document {
   templateType: ResumeTemplate;
   createdAt: string;
   updatedAt: string;
+  jobPostingId: IdType;
 }
 
 export interface DEX_Section {
@@ -108,9 +110,13 @@ export interface EditorPreferences {
   askBeforeDeletingSection: boolean;
 }
 
-export type SettingsKey = 'language' | 'editorPreferences';
+export type DEX_SettingsKey = 'language' | 'editorPreferences';
 
-export interface Setting<T = unknown> {
-  key: SettingsKey;
+export interface DEX_Setting<T = unknown> {
+  key: DEX_SettingsKey;
   value: T;
+}
+
+export interface DEX_JobPosting extends JobPostingSchema {
+  id: IdType;
 }

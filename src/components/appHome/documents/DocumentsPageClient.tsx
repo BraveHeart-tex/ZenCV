@@ -52,8 +52,9 @@ const DocumentsPageClient = () => {
           <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
             You don’t have any documents yet!
           </h2>
-          <p className="text-muted-foreground">
-            Ready to get started? Click below to create your first document.
+          <p className="text-muted-foreground text-center">
+            Ready to get started? Click below to create your first document in
+            just a few clicks.
           </p>
         </div>
         <CreateDocumentDialog />
