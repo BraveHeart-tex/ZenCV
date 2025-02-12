@@ -45,6 +45,7 @@ const TailorForJobPostingBanner = observer(() => {
 
     setOpen(false);
     showSuccessToast(result.message);
+    form.reset();
   };
 
   if (builderRootStore.documentStore.document?.jobPostingId) return null;
