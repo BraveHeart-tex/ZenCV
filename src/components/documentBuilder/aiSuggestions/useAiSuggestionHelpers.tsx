@@ -17,7 +17,7 @@ import shepherdStore from '@/lib/stores/documentBuilder/shepherdStore';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 
 const shouldAddJobEntryErrorMessage =
-  'Please add a job title and description to your work experience to generate a profile summary';
+  'Add a work experience entry (job title, description, dates) to generate your profile summary.';
 
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
