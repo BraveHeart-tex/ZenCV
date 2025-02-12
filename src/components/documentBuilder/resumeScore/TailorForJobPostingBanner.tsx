@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { BrainCircuitIcon, ChevronRightIcon } from 'lucide-react';
@@ -19,8 +20,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import { observer } from 'mobx-react-lite';
 
-const TailorForJobPostingBanner = () => {
+const TailorForJobPostingBanner = observer(() => {
   const [open, setOpen] = useState(false);
 
   const form = useForm<JobPostingSchema>({
@@ -32,9 +36,18 @@ const TailorForJobPostingBanner = () => {
     },
   });
 
-  const onSubmit = (values: JobPostingSchema) => {
-    alert(JSON.stringify(values, null, 2));
+  const onSubmit = async (values: JobPostingSchema) => {
+    const result = await builderRootStore.documentStore.addJobPosting(values);
+    if (!result.success) {
+      showErrorToast(result.message);
+      return;
+    }
+
+    setOpen(false);
+    showSuccessToast(result.message);
   };
+
+  if (builderRootStore.documentStore.document?.jobPostingId) return null;
 
   return (
     <ResponsiveDialog
@@ -117,6 +130,6 @@ const TailorForJobPostingBanner = () => {
       </Form>
     </ResponsiveDialog>
   );
-};
+});
 
 export default TailorForJobPostingBanner;

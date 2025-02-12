@@ -17,6 +17,7 @@ export class BuilderRootStore {
   templateStore: BuilderTemplateStore;
 
   builderAiSuggestionsStore: BuilderAISuggestionsStore;
+
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
     this.sectionStore = new BuilderSectionStore(this);

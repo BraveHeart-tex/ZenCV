@@ -8,7 +8,6 @@ import { Toaster } from '@/components/ui/sonner';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { APP_NAME } from '@/lib/appConfig';
 import 'shepherd.js/dist/css/shepherd.css';
-import ReactScan from '@/components/ReactScan';
 
 const inter = Inter({
   weight: 'variable',
@@ -28,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <ReactScan />
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js" defer />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

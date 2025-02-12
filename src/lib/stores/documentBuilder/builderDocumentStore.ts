@@ -3,6 +3,8 @@ import { BuilderRootStore } from './builderRootStore';
 import { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import DocumentService from '@/lib/client-db/documentService';
+import JobPostingService from '@/lib/client-db/jobPostingService';
+import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 export class BuilderDocumentStore {
   root: BuilderRootStore;
@@ -71,8 +73,37 @@ export class BuilderDocumentStore {
     );
 
     runInAction(() => {
-      if (!this.document) return;
-      this.document.templateType = templateType;
+      this.document!.templateType = templateType;
     });
+  };
+
+  addJobPosting = async (data: JobPostingSchema) => {
+    if (!this.document) {
+      return {
+        success: false,
+        message: 'Document not found.',
+      };
+    }
+
+    try {
+      const jobPostingId = await JobPostingService.addJobPosting(
+        data,
+        this.document.id,
+      );
+      runInAction(() => {
+        this.document!.jobPostingId = jobPostingId;
+      });
+      return {
+        success: true,
+        message: 'Job posting added successfully.',
+      };
+    } catch (error) {
+      console.error('addJobPosting error', error);
+      return {
+        success: false,
+        message:
+          'An error occurred while adding the job posting. Please try again.',
+      };
+    }
   };
 }
