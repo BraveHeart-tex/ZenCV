@@ -53,8 +53,13 @@ const JobPostingFormDialog = observer(
       }
     }, [open, mode]);
 
+    // TODO:
     const onSubmit = async (values: JobPostingSchema) => {
-      const result = await builderRootStore.documentStore.addJobPosting(values);
+      const result =
+        mode == 'create'
+          ? await builderRootStore.documentStore.addJobPosting(values)
+          : await builderRootStore.documentStore.updateJobPosting(values);
+
       if (!result.success) {
         showErrorToast(result.message);
         return;

@@ -152,4 +152,43 @@ export class BuilderDocumentStore {
       };
     }
   };
+
+  updateJobPosting = async (data: Partial<JobPostingSchema>) => {
+    if (!this.document) {
+      return {
+        success: false,
+        message: 'Document not found.',
+      };
+    }
+
+    if (!this.document.jobPostingId) {
+      return {
+        success: false,
+        message: 'The document has no job posting connection.',
+      };
+    }
+
+    try {
+      await JobPostingService.updateJobPosting(
+        this.document.jobPostingId,
+        data,
+      );
+      runInAction(() => {
+        if (this.document?.jobPosting) {
+          Object.assign(this.document.jobPosting, data);
+        }
+      });
+      return {
+        success: true,
+        message: 'Job posting updated successfully.',
+      };
+    } catch (error) {
+      console.error('updateJobPosting error', error);
+      return {
+        success: false,
+        message:
+          'An error occurred while updating the job posting. Please try again.',
+      };
+    }
+  };
 }

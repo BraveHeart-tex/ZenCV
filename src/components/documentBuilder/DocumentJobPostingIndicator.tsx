@@ -34,7 +34,7 @@ const DocumentJobPostingIndicator = observer(() => {
     <div className="group flex items-center w-full gap-2">
       <Tooltip>
         <TooltipTrigger className="cursor-default">
-          <div className="max-w-36 md:max-w-72 bg-muted whitespace-nowrap flex items-center px-1 overflow-hidden text-xs truncate rounded-md">
+          <div className="max-w-36 md:max-w-72 bg-muted whitespace-nowrap flex items-center px-1 space-x-1 overflow-hidden text-xs truncate rounded-md">
             <div className="bg-background p-1 rounded-md">
               <BriefcaseBusinessIcon className="w-3 h-3" />
             </div>

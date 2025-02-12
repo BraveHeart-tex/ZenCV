@@ -1,3 +1,4 @@
+import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import { DEX_Document, DEX_JobPosting } from './clientDbSchema';
 import DocumentService from './documentService';
@@ -27,6 +28,12 @@ class JobPostingService {
         return await clientDb.jobPostings.delete(jobPostingId);
       },
     );
+  }
+  static async updateJobPosting(
+    key: DEX_JobPosting['id'],
+    data: UpdateSpec<DEX_JobPosting>,
+  ) {
+    return clientDb.jobPostings.update(key, data);
   }
 }
 
