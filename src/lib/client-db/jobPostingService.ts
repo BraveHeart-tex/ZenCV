@@ -19,6 +19,15 @@ class JobPostingService {
       },
     );
   }
+  static async removeJobPosting(jobPostingId: DEX_JobPosting['id']) {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.jobPostings, clientDb.documents],
+      async () => {
+        return await clientDb.jobPostings.delete(jobPostingId);
+      },
+    );
+  }
 }
 
 export default JobPostingService;

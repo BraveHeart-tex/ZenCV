@@ -1,6 +1,9 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { BuilderRootStore } from './builderRootStore';
-import { DEX_Document } from '@/lib/client-db/clientDbSchema';
+import {
+  DEX_Document,
+  DEX_DocumentWithJobPosting,
+} from '@/lib/client-db/clientDbSchema';
 import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import DocumentService from '@/lib/client-db/documentService';
 import JobPostingService from '@/lib/client-db/jobPostingService';
@@ -8,7 +11,7 @@ import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 export class BuilderDocumentStore {
   root: BuilderRootStore;
-  document: DEX_Document | null = null;
+  document: DEX_DocumentWithJobPosting | null = null;
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
@@ -91,7 +94,13 @@ export class BuilderDocumentStore {
         this.document.id,
       );
       runInAction(() => {
-        this.document!.jobPostingId = jobPostingId;
+        if (this.document) {
+          this.document!.jobPostingId = jobPostingId;
+          this.document.jobPosting = {
+            ...data,
+            id: jobPostingId,
+          };
+        }
       });
       return {
         success: true,
@@ -103,6 +112,43 @@ export class BuilderDocumentStore {
         success: false,
         message:
           'An error occurred while adding the job posting. Please try again.',
+      };
+    }
+  };
+
+  removeJobPosting = async () => {
+    if (!this.document) {
+      return {
+        success: false,
+        message: 'Document not found.',
+      };
+    }
+
+    if (!this.document.jobPostingId) {
+      return {
+        success: false,
+        message: 'The document has no job posting connection.',
+      };
+    }
+
+    try {
+      await JobPostingService.removeJobPosting(this.document.jobPostingId);
+      runInAction(() => {
+        if (this.document?.jobPosting) {
+          this.document!.jobPostingId = null;
+          this.document.jobPosting = null;
+        }
+      });
+      return {
+        success: true,
+        message: 'Job posting removed successfully.',
+      };
+    } catch (error) {
+      console.error('removeJobPosting error', error);
+      return {
+        success: false,
+        message:
+          'An error occurred while removing the job posting. Please try again.',
       };
     }
   };

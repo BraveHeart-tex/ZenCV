@@ -6,6 +6,7 @@ import {
   SelectType,
 } from '@/lib/types/documentBuilder.types';
 import { JobPostingSchema } from '../validation/jobPosting.schema';
+import { Nullable } from '../types/utils.types';
 
 type IdType = number;
 
@@ -15,7 +16,7 @@ export interface DEX_Document {
   templateType: ResumeTemplate;
   createdAt: string;
   updatedAt: string;
-  jobPostingId: IdType;
+  jobPostingId: Nullable<IdType>;
 }
 
 export interface DEX_Section {

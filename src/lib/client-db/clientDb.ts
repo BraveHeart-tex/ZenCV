@@ -102,3 +102,12 @@ clientDb.documents.hook('creating', (_, obj) => {
   obj.createdAt = new Date().toISOString();
   obj.updatedAt = new Date().toISOString();
 });
+
+clientDb.jobPostings.hook('deleting', (primKey) => {
+  clientDb.documents
+    .where('jobPostingId')
+    .equals(primKey)
+    .modify((doc) => {
+      doc.jobPostingId = null;
+    });
+});

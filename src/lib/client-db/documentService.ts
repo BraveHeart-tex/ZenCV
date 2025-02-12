@@ -2,6 +2,7 @@ import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import {
   DEX_Document,
+  DEX_DocumentWithJobPosting,
   DEX_Field,
   DEX_InsertDocumentModel,
   DEX_InsertFieldModel,
@@ -24,7 +25,7 @@ type GetFullDocumentStructureResponse =
   | { success: false; error: string }
   | {
       success: true;
-      document: DEX_Document;
+      document: DEX_DocumentWithJobPosting;
       sections: DEX_Section[];
       items: DEX_Item[];
       fields: DEX_Field[];
@@ -125,14 +126,27 @@ class DocumentService {
   ): Promise<GetFullDocumentStructureResponse> {
     return clientDb.transaction(
       'r',
-      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      [
+        clientDb.documents,
+        clientDb.sections,
+        clientDb.items,
+        clientDb.fields,
+        clientDb.jobPostings,
+      ],
       async () => {
-        const document = await clientDb.documents.get(documentId);
+        const document = (await clientDb.documents.get(
+          documentId,
+        )) as DEX_DocumentWithJobPosting;
         if (!document) {
           return {
             success: false,
             error: 'Document not found.',
           };
+        }
+
+        if (document.jobPostingId) {
+          document.jobPosting =
+            (await clientDb.jobPostings.get(document.jobPostingId)) || null;
         }
 
         const sections = await clientDb.sections
