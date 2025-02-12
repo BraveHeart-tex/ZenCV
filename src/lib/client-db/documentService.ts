@@ -32,7 +32,7 @@ type GetFullDocumentStructureResponse =
 
 class DocumentService {
   static async createDocument(
-    data: DEX_InsertDocumentModel & {
+    data: Omit<DEX_InsertDocumentModel, 'jobPostingId'> & {
       selectedPrefillStyle: PrefilledResumeStyle | null;
     },
   ) {

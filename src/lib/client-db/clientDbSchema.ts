@@ -120,3 +120,7 @@ export interface DEX_Setting<T = unknown> {
 export interface DEX_JobPosting extends JobPostingSchema {
   id: IdType;
 }
+
+export interface DEX_DocumentWithJobPosting extends DEX_Document {
+  jobPosting: DEX_JobPosting | null;
+}

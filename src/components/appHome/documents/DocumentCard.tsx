@@ -1,5 +1,5 @@
 'use client';
-import { DEX_Document } from '@/lib/client-db/clientDbSchema';
+import { DEX_DocumentWithJobPosting } from '@/lib/client-db/clientDbSchema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -7,7 +7,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FileSymlink, MoreHorizontal, Pencil, Trash } from 'lucide-react';
+import {
+  BriefcaseBusinessIcon,
+  FileSymlink,
+  MoreHorizontal,
+  Pencil,
+  Trash,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
@@ -19,7 +25,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import DocumentService from '@/lib/client-db/documentService';
 
 interface DocumentCardProps {
-  document: DEX_Document;
+  document: DEX_DocumentWithJobPosting;
 }
 
 const DocumentCard = ({ document }: DocumentCardProps) => {
@@ -113,7 +119,16 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
-        <CardContent className="p-3 pt-0">
+        <CardContent className="p-3 pt-0 space-y-2">
+          {document.jobPosting ? (
+            <div className="bg-muted whitespace-nowrap flex items-center w-full gap-2 px-1 overflow-hidden text-xs truncate rounded-md">
+              <div className="bg-background p-1 rounded-md">
+                <BriefcaseBusinessIcon className="w-3 h-3" />
+              </div>
+              {document.jobPosting.jobTitle} at{' '}
+              {document.jobPosting.companyName}
+            </div>
+          ) : null}
           <p className="text-muted-foreground text-sm font-medium">
             Updated{' '}
             {new Intl.DateTimeFormat(navigator.language, {
