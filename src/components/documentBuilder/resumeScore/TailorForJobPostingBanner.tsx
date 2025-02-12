@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import {
+  JOB_POSTING_DESCRIPTION_LIMIT,
   jobPostingSchema,
   JobPostingSchema,
 } from '@/lib/validation/jobPosting.schema';
@@ -104,19 +105,27 @@ const TailorForJobPostingBanner = observer(() => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="roleDescription"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Role Description</FormLabel>
-                <FormControl>
-                  <Textarea rows={6} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div>
+            <FormField
+              control={form.control}
+              name="roleDescription"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Role Description</FormLabel>
+                  <FormControl>
+                    <Textarea rows={6} {...field} />
+                  </FormControl>
+                  <div className="flex items-center justify-between gap-4">
+                    <FormMessage />
+                    <div className="pt-1 text-xs text-right">
+                      {form.watch('roleDescription').length} /{' '}
+                      {JOB_POSTING_DESCRIPTION_LIMIT}
+                    </div>
+                  </div>
+                </FormItem>
+              )}
+            />
+          </div>
           <div className={dialogFooterClassNames}>
             <Button
               type="button"
