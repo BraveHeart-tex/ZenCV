@@ -115,9 +115,9 @@ const TailorForJobPostingBanner = observer(() => {
                   <FormControl>
                     <Textarea rows={6} {...field} />
                   </FormControl>
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between w-full gap-8">
                     <FormMessage />
-                    <div className="pt-1 text-xs text-right">
+                    <div className="whitespace-nowrap pt-1 ml-auto text-xs text-right">
                       {form.watch('roleDescription').length} /{' '}
                       {JOB_POSTING_DESCRIPTION_LIMIT}
                     </div>
@@ -130,7 +130,10 @@ const TailorForJobPostingBanner = observer(() => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                form.reset();
+              }}
             >
               Cancel
             </Button>
