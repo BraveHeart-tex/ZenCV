@@ -16,7 +16,9 @@ const DocumentsPageClient = () => {
       const documents = await clientDb.documents.toArray();
 
       const jobPostingIds = [
-        ...new Set(documents.map((doc) => doc.jobPostingId).filter(Boolean)),
+        ...new Set(
+          documents.map((doc) => doc.jobPostingId).filter((id) => id !== null),
+        ),
       ];
 
       const jobPostingsMap = new Map<DEX_JobPosting['id'], DEX_JobPosting>();

@@ -6,6 +6,7 @@ import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { showErrorToast, showSuccessToast } from '../ui/sonner';
 import { runInAction } from 'mobx';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
+import JobPostingFormDialog from './resumeScore/JobPostingFormDialog';
 
 const DocumentJobPostingIndicator = observer(() => {
   if (!builderRootStore.documentStore.document?.jobPosting) return null;
@@ -50,13 +51,18 @@ const DocumentJobPostingIndicator = observer(() => {
           </span>
         </TooltipContent>
       </Tooltip>
-      <Button
-        className="group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none"
-        variant="ghost"
-        size="icon"
-      >
-        <Edit2Icon />
-      </Button>
+      <JobPostingFormDialog
+        mode="edit"
+        trigger={
+          <Button
+            className="group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none"
+            variant="ghost"
+            size="icon"
+          >
+            <Edit2Icon />
+          </Button>
+        }
+      />
       <Button
         className="group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none"
         variant="ghost"
