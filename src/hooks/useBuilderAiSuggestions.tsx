@@ -4,24 +4,15 @@ import {
   showSuccessToast,
 } from '@/components/ui/sonner';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import type { AiSuggestionsContext } from '@/lib/types/documentBuilder.types';
 import { useCompletion } from '@ai-sdk/react';
 import { createContext, useContext, useEffect, useRef } from 'react';
 
 const BASE_API_ROUTE = '/api/process';
 
-type UseCompletion = ReturnType<typeof useCompletion>;
-
-const BuilderAiSuggestionsContext = createContext<{
-  completeSummary: UseCompletion['complete'];
-  isCompletingSummary: UseCompletion['isLoading'];
-  generatedSummary: UseCompletion['completion'];
-
-  isLoading: boolean;
-
-  improveSummary: UseCompletion['complete'];
-  isImprovingSummary: UseCompletion['isLoading'];
-  improvedSummary: UseCompletion['completion'];
-} | null>(null);
+const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
+  null,
+);
 
 export const BuilderAiSuggestionsProvider = ({
   children,
@@ -58,15 +49,42 @@ export const BuilderAiSuggestionsProvider = ({
     },
   });
 
-  const isLoading = isCompletingSummary || isImprovingSummary;
+  const {
+    complete: analyzeJob,
+    completion: jobAnalysis,
+    error: jobAnalysisError,
+    isLoading: isAnalyzingJob,
+  } = useCompletion({
+    api: `${BASE_API_ROUTE}/job-analysis`,
+    onError(error) {
+      showErrorToast(error.message, {
+        id: toastId.current,
+      });
+    },
+  });
+
+  const isLoadingSummary = isCompletingSummary || isImprovingSummary;
+  const isLoading = isLoadingSummary || isAnalyzingJob;
 
   useEffect(() => {
-    if (isLoading && !toastId.current) {
+    if (isAnalyzingJob && !toastId.current) {
+      toastId.current = showLoadingToast('Analyzing job posting...');
+    }
+
+    if (!isAnalyzingJob && toastId.current && !jobAnalysisError) {
+      showSuccessToast('Job posting analyzed successfully', {
+        id: toastId.current,
+      });
+    }
+  }, [isAnalyzingJob, jobAnalysisError]);
+
+  useEffect(() => {
+    if (isLoadingSummary && !toastId.current) {
       toastId.current = showLoadingToast('Generating summary...');
     }
 
     if (
-      !isLoading &&
+      !isLoadingSummary &&
       toastId.current &&
       !summaryCompletionError &&
       !summaryImprovementError
@@ -76,7 +94,7 @@ export const BuilderAiSuggestionsProvider = ({
       });
       toastId.current = undefined;
     }
-  }, [isLoading, summaryCompletionError, summaryImprovementError]);
+  }, [isLoadingSummary, summaryCompletionError, summaryImprovementError]);
 
   useEffect(() => {
     if (!generatedSummary && !improvedSummary) return;
@@ -95,6 +113,8 @@ export const BuilderAiSuggestionsProvider = ({
         improveSummary,
         isImprovingSummary,
         improvedSummary,
+        analyzeJob,
+        jobAnalysis,
       }}
     >
       {children}
