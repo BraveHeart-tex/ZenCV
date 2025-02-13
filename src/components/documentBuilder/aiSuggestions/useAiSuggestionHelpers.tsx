@@ -1,76 +1,26 @@
-import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
+import { showErrorToast } from '@/components/ui/sonner';
 import { useBuilderAiSuggestions } from '@/hooks/useBuilderAiSuggestions';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { genericErrorMessage } from '@/lib/constants';
 import {
   getOrCreateWorkExperienceItem,
   getSummaryField,
   getWorkExperienceSectionId,
   prepareWorkExperienceEntries,
-  shouldFillWorkExperience,
+  isWorkExperienceIncomplete,
 } from '@/lib/helpers/documentBuilderHelpers';
-import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import shepherdStore from '@/lib/stores/documentBuilder/shepherdStore';
-import { getItemContainerId } from '@/lib/utils/stringUtils';
+import {
+  INTERNAL_SECTION_TYPES,
+  START_WORK_EXPERIENCE_TOUR_DELAY_MS,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
-
-const shouldAddJobEntryErrorMessage =
-  'Add a work experience entry (job title, description, dates) to generate your profile summary.';
+import { startWorkExperienceTour } from './aiSuggestions.utils';
 
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
 export const useAiSuggestionHelpers = () => {
-  const Shepherd = shepherdStore.Shepherd;
-  const isMobile = useMediaQuery('(max-width: 1024px)', true);
   const { completeSummary, improveSummary, isLoading, analyzeJob } =
     useBuilderAiSuggestions();
-
-  const startWorkExperienceTour = (itemId: DEX_Item['id']) => {
-    if (builderRootStore.UIStore.collapsedItemId !== itemId) {
-      builderRootStore.UIStore.toggleItem(itemId);
-    }
-
-    const element = builderRootStore.UIStore.itemRefs.get(
-      getItemContainerId(itemId),
-    );
-    if (!element) {
-      console.warn('Element not found');
-      showErrorToast(genericErrorMessage);
-      return;
-    }
-
-    scrollToCenterAndFocus(element);
-
-    if (isMobile) {
-      showInfoToast(shouldAddJobEntryErrorMessage);
-      return;
-    }
-
-    const tour = new Shepherd.Tour({
-      useModalOverlay: true,
-      defaultStepOptions: {
-        classes: 'shadow-md bg-background border-primary',
-        modalOverlayOpeningPadding: 8,
-        modalOverlayOpeningRadius: 4,
-      },
-    });
-
-    tour.addStep({
-      id: 'work-experience-step',
-      text: shouldAddJobEntryErrorMessage,
-      attachTo: {
-        element: `#${getItemContainerId(itemId)}`,
-        on: 'top',
-      },
-      buttons: [{ text: 'Got it', action: tour.complete }],
-      modalOverlayOpeningPadding: 16,
-    });
-
-    tour.start();
-  };
 
   const handleProfileSummaryUpdate = (summaryValue: string) => {
     const body = {
@@ -100,13 +50,16 @@ export const useAiSuggestionHelpers = () => {
     }
 
     if (
-      shouldFillWorkExperience(
+      isWorkExperienceIncomplete(
         builderRootStore.sectionStore.getSectionItemsBySectionType(
           INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
         ),
       )
     ) {
-      setTimeout(() => startWorkExperienceTour(itemId), 300);
+      setTimeout(
+        () => startWorkExperienceTour(itemId),
+        START_WORK_EXPERIENCE_TOUR_DELAY_MS,
+      );
       return;
     }
 

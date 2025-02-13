@@ -5,7 +5,7 @@
 
 .shepherd-text {
   color: hsl(var(--primary-foreground)) !important;
-  line-height: 1.75rem !important;
+  font-weight: 500;
 }
 
 .shepherd-header {

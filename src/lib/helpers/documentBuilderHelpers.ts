@@ -707,7 +707,7 @@ export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
   return section?.type || null;
 };
 
-export const shouldFillWorkExperience = (items: DEX_Item[]) => {
+export const isWorkExperienceIncomplete = (items: DEX_Item[]) => {
   return !hasFilledFields(items, [
     FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
     FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,

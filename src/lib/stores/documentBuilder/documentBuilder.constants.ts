@@ -292,3 +292,5 @@ export const SECTIONS_WITH_RICH_TEXT_AI = new Map<SectionType, boolean>([
   [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
   [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
 ]);
+
+export const START_WORK_EXPERIENCE_TOUR_DELAY_MS = 300 as const;
