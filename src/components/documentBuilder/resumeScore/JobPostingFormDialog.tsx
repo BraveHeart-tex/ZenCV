@@ -23,7 +23,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import {
+  showErrorToast,
+  showInfoToast,
+  showSuccessToast,
+} from '@/components/ui/sonner';
+import { getChangedValues } from '@/lib/utils/objectUtils';
 
 interface JobPostingFormDialogProps {
   trigger: React.ReactNode;
@@ -53,12 +58,39 @@ const JobPostingFormDialog = observer(
       }
     }, [open, mode]);
 
-    // TODO:
     const onSubmit = async (values: JobPostingSchema) => {
+      if (!builderRootStore.documentStore?.document?.jobPosting) {
+        console.error(
+          'The current document does not have a job posting associated with it.',
+        );
+        showErrorToast(
+          'The document does not have a job posting associated with it.',
+        );
+        return;
+      }
+
+      if (
+        mode === 'edit' &&
+        Object.keys(
+          getChangedValues(
+            builderRootStore.documentStore.document.jobPosting,
+            values,
+          ),
+        ).length === 0
+      ) {
+        showInfoToast("You haven't made any changes to the job posting.");
+        return;
+      }
+
       const result =
         mode == 'create'
           ? await builderRootStore.documentStore.addJobPosting(values)
-          : await builderRootStore.documentStore.updateJobPosting(values);
+          : await builderRootStore.documentStore.updateJobPosting(
+              getChangedValues(
+                builderRootStore.documentStore.document.jobPosting,
+                values,
+              ),
+            );
 
       if (!result.success) {
         showErrorToast(result.message);
@@ -67,7 +99,11 @@ const JobPostingFormDialog = observer(
 
       setOpen(false);
       showSuccessToast(result.message);
-      form.reset();
+      form.reset({
+        companyName: '',
+        jobTitle: '',
+        roleDescription: '',
+      });
     };
 
     return (
