@@ -78,6 +78,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       },
     });
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -126,7 +127,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
           control={form.control}
           name="shouldUseSampleData"
           render={({ field }) => (
-            <FormItem className="flex items-center gap-2">
+            <FormItem className="flex items-center gap-2 space-y-0">
               <FormControl>
                 <Checkbox
                   checked={field.value}
