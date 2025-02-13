@@ -23,7 +23,12 @@ import {
   ValueOf,
   ValueOfNestedObject,
 } from '@/lib/types/utils.types';
-import type { UseCompletionHelpers } from '@ai-sdk/react';
+import type {
+  Experimental_UseObjectHelpers,
+  UseCompletionHelpers,
+} from '@ai-sdk/react';
+import { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
+import { JobPostingSchema } from '../validation/jobPosting.schema';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
@@ -143,6 +148,12 @@ export interface AiSuggestionsContext {
   isImprovingSummary: UseCompletionHelpers['isLoading'];
   improvedSummary: UseCompletionHelpers['completion'];
 
-  analyzeJob: UseCompletionHelpers['complete'];
-  jobAnalysis: UseCompletionHelpers['completion'];
+  analyzeJob: Experimental_UseObjectHelpers<
+    JobAnalysisResult,
+    JobPostingSchema
+  >['submit'];
+  jobAnalysis: Experimental_UseObjectHelpers<
+    JobAnalysisResult,
+    unknown
+  >['object'];
 }

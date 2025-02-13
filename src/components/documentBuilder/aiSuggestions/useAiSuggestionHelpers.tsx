@@ -70,9 +70,7 @@ export const useAiSuggestionHelpers = () => {
   };
 
   const handleJobAnalysis = async (values: JobPostingSchema) => {
-    await analyzeJob('', {
-      body: values,
-    });
+    analyzeJob(values);
   };
 
   return {

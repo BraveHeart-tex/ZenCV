@@ -7,6 +7,11 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import type { AiSuggestionsContext } from '@/lib/types/documentBuilder.types';
 import { useCompletion } from '@ai-sdk/react';
 import { createContext, useContext, useEffect, useRef } from 'react';
+import { experimental_useObject as useObject } from '@ai-sdk/react';
+import {
+  JobAnalysisResult,
+  jobAnalysisResultSchema,
+} from '@/lib/validation/jobAnalysisResult.schema';
 
 const BASE_API_ROUTE = '/api/process';
 
@@ -50,12 +55,13 @@ export const BuilderAiSuggestionsProvider = ({
   });
 
   const {
-    complete: analyzeJob,
-    completion: jobAnalysis,
+    submit: analyzeJob,
+    object: jobAnalysis,
     error: jobAnalysisError,
     isLoading: isAnalyzingJob,
-  } = useCompletion({
+  } = useObject({
     api: `${BASE_API_ROUTE}/job-analysis`,
+    schema: jobAnalysisResultSchema,
     onError(error) {
       showErrorToast(error.message, {
         id: toastId.current,
@@ -102,6 +108,14 @@ export const BuilderAiSuggestionsProvider = ({
       generatedSummary || improvedSummary,
     );
   }, [generatedSummary, improvedSummary]);
+
+  useEffect(() => {
+    if (!jobAnalysis) return;
+
+    builderRootStore.builderAiSuggestionsStore.setJobAnalysisResults(
+      jobAnalysis as Partial<JobAnalysisResult>,
+    );
+  }, [jobAnalysis]);
 
   return (
     <BuilderAiSuggestionsContext.Provider
