@@ -1,5 +1,6 @@
 import { GenerateSummarySchema } from '../validation/generateSummary.schema';
 import { ImproveSummary } from '../validation/imrpoveSummary.schema';
+import { JobPostingSchema } from '../validation/jobPosting.schema';
 import { WorkExperience } from '../validation/workExperience.schema';
 
 const generateExperienceText = (workExperiences: WorkExperience[]) =>
@@ -57,4 +58,31 @@ export const generateImproveSummaryPrompt = (data: ImproveSummary) => {
   ${experiencesText}
 
   Please analyze the current summary and work experience, then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience. Respond only with the improved summary.`;
+};
+
+export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
+  const { companyName, jobTitle, roleDescription } = data;
+
+  return `You are an expert job market analyst specializing in dissecting job descriptions to identify key requirements, responsibilities, and qualifications. Your expertise lies in providing clear, actionable insights that help candidates understand the role and align their qualifications effectively.
+
+  Your task is to analyze the following job posting and provide suggestions in a specific JSON format that will help candidates tailor their resume effectively.
+
+  Job Details:
+  Company: ${companyName}
+  Position: ${jobTitle}
+
+  Job Description:
+  ${roleDescription}
+
+  Based on the job description, provide suggestions in the following JSON format:
+  {
+    "suggestedJobTitle": "A standardized job title that best matches the role description",
+    "workExperienceAndSummarySuggestions": [
+      "Specific suggestions for work experience and summary content that align with the job requirements",
+      "Each suggestion should be actionable and help candidates highlight relevant experience",
+      "Include suggestions for key achievements, skills, and qualifications to emphasize"
+    ]
+  }
+
+  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role.`;
 };
