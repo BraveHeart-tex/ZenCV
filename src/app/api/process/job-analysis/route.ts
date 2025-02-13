@@ -1,8 +1,9 @@
 import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { streamObject } from 'ai';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 
 export async function POST(req: Request) {
   try {
@@ -24,12 +25,16 @@ export async function POST(req: Request) {
 
     const prompt = generateJobAnalysisPrompt(validationResult.data);
 
-    const result = streamText({
+    const result = streamObject({
       model: google('gemini-2.0-flash-lite-preview-02-05'),
+      schema: z.object({
+        suggestedJobTitle: z.string(),
+        keywordSuggestions: z.array(z.string()),
+      }),
       prompt,
     });
 
-    return result.toDataStreamResponse({
+    return result.toTextStreamResponse({
       status: 200,
     });
   } catch (error) {

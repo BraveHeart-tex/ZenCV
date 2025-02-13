@@ -2,7 +2,6 @@
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
-
 import { useEffect, useState } from 'react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { Input } from '@/components/ui/input';
@@ -29,23 +28,28 @@ import {
   showSuccessToast,
 } from '@/components/ui/sonner';
 import { getChangedValues } from '@/lib/utils/objectUtils';
+import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
+import { mockJobPostingData } from '@/lib/mockData';
 
 interface JobPostingFormDialogProps {
   trigger: React.ReactNode;
   mode?: 'edit' | 'create';
 }
 
+const defaultFormValues: JobPostingSchema = {
+  companyName: '',
+  jobTitle: '',
+  roleDescription: '',
+};
+
 const JobPostingFormDialog = observer(
   ({ trigger, mode = 'create' }: JobPostingFormDialogProps) => {
     const [open, setOpen] = useState(false);
+    const { handleJobAnalysis } = useAiSuggestionHelpers();
 
     const form = useForm<JobPostingSchema>({
       resolver: zodResolver(jobPostingSchema),
-      defaultValues: {
-        companyName: '',
-        jobTitle: '',
-        roleDescription: '',
-      },
+      defaultValues: defaultFormValues,
     });
 
     useEffect(() => {
@@ -59,51 +63,43 @@ const JobPostingFormDialog = observer(
     }, [open, mode]);
 
     const onSubmit = async (values: JobPostingSchema) => {
-      if (!builderRootStore.documentStore?.document?.jobPosting) {
-        console.error(
-          'The current document does not have a job posting associated with it.',
-        );
-        showErrorToast(
-          'The document does not have a job posting associated with it.',
-        );
-        return;
-      }
+      if (mode === 'edit') {
+        const jobPosting = builderRootStore.documentStore?.document?.jobPosting;
 
-      if (
-        mode === 'edit' &&
-        Object.keys(
-          getChangedValues(
-            builderRootStore.documentStore.document.jobPosting,
-            values,
-          ),
-        ).length === 0
-      ) {
-        showInfoToast("You haven't made any changes to the job posting.");
-        return;
+        if (!jobPosting) {
+          return;
+        }
+
+        const changedValues = getChangedValues(jobPosting, values);
+
+        if (Object.keys(changedValues ?? {}).length === 0) {
+          showInfoToast("You haven't made any changes to the job posting.");
+          return;
+        }
       }
 
       const result =
-        mode == 'create'
-          ? await builderRootStore.documentStore.addJobPosting(values)
-          : await builderRootStore.documentStore.updateJobPosting(
+        mode === 'edit'
+          ? await builderRootStore.documentStore?.updateJobPosting(
               getChangedValues(
-                builderRootStore.documentStore.document.jobPosting,
+                builderRootStore.documentStore?.document?.jobPosting ?? {},
                 values,
               ),
-            );
+            )
+          : await builderRootStore.documentStore?.addJobPosting(values);
 
-      if (!result.success) {
-        showErrorToast(result.message);
+      if (!result?.success) {
+        showErrorToast(result?.message ?? 'An unknown error occurred.');
         return;
       }
 
       setOpen(false);
       showSuccessToast(result.message);
-      form.reset({
-        companyName: '',
-        jobTitle: '',
-        roleDescription: '',
-      });
+      form.reset(defaultFormValues);
+
+      if (mode === 'create') {
+        await handleJobAnalysis(values);
+      }
     };
 
     return (
@@ -115,7 +111,7 @@ const JobPostingFormDialog = observer(
         onOpenChange={(isOpen) => {
           setOpen(isOpen);
           if (!isOpen) {
-            form.reset();
+            form.reset(defaultFormValues);
           }
         }}
       >
@@ -167,6 +163,20 @@ const JobPostingFormDialog = observer(
                   </FormItem>
                 )}
               />
+            </div>
+            <div>
+              {/* TODO: Will Remove after testing */}
+              {process.env.NODE_ENV === 'development' && (
+                <Button
+                  onClick={() => {
+                    form.reset(mockJobPostingData);
+                  }}
+                  type="button"
+                  variant="outline"
+                >
+                  Use Mock Data
+                </Button>
+              )}
             </div>
             <div className={dialogFooterClassNames}>
               <Button

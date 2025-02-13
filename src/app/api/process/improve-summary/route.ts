@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { streamText } from 'ai';
 import { google } from '@ai-sdk/google';
-import { improveSummarySchema } from '@/lib/validation/imrpoveSummary.schema';
+import { improveSummarySchema } from '@/lib/validation/improveSummary.schema';
 import { generateImproveSummaryPrompt } from '@/lib/helpers/promptHelpers';
 
 export async function POST(req: Request) {

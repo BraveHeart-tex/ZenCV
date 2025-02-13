@@ -15,6 +15,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import shepherdStore from '@/lib/stores/documentBuilder/shepherdStore';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
+import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 const shouldAddJobEntryErrorMessage =
   'Add a work experience entry (job title, description, dates) to generate your profile summary.';
@@ -24,7 +25,7 @@ export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 export const useAiSuggestionHelpers = () => {
   const Shepherd = shepherdStore.Shepherd;
   const isMobile = useMediaQuery('(max-width: 1024px)', true);
-  const { completeSummary, improveSummary, isLoading } =
+  const { completeSummary, improveSummary, isLoading, analyzeJob } =
     useBuilderAiSuggestions();
 
   const startWorkExperienceTour = (itemId: DEX_Item['id']) => {
@@ -115,8 +116,15 @@ export const useAiSuggestionHelpers = () => {
     dispatchSummaryGenerationEvent();
   };
 
+  const handleJobAnalysis = async (values: JobPostingSchema) => {
+    await analyzeJob('', {
+      body: values,
+    });
+  };
+
   return {
     handleWriteProfileSummary,
     isLoading,
+    handleJobAnalysis,
   };
 };

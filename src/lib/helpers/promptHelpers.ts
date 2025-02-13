@@ -1,5 +1,5 @@
 import { GenerateSummarySchema } from '../validation/generateSummary.schema';
-import { ImproveSummary } from '../validation/imrpoveSummary.schema';
+import { ImproveSummary } from '../validation/improveSummary.schema';
 import { JobPostingSchema } from '../validation/jobPosting.schema';
 import { WorkExperience } from '../validation/workExperience.schema';
 
@@ -78,12 +78,11 @@ export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
   Based on the job description, provide suggestions in the following JSON format:
   {
     "suggestedJobTitle": "A standardized job title that best matches the role description",
-    "workExperienceAndSummarySuggestions": [
-      "Specific suggestions for work experience and summary content that align with the job requirements",
-      "Each suggestion should be actionable and help candidates highlight relevant experience",
-      "Include suggestions for key achievements, skills, and qualifications to emphasize"
+    "keywordSuggestions": [
+      "Specific keywords that best match the job requirements. Maximum of 15 keywords if applicable.",
+      "Example: ['SQL', 'Python', 'React']",
     ]
   }
 
-  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role. Respond only with the suggested JSON.`;
+  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role. Respond only in RFC 7159 compliant JSON format.`;
 };
