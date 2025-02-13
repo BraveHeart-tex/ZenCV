@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import { useAiSuggestionHelpers } from './useAiSuggestionHelpers';
 import { useRef } from 'react';
+import { Loader2Icon } from 'lucide-react';
 
 interface SummaryAiSuggestionWidgetProps {
   summaryField: DEX_Field;
@@ -25,24 +26,33 @@ const SummaryAiSuggestionWidget = observer(
             {summaryField?.value ? `or enhance your existing one` : ''}
           </p>
         </div>
-        <div className={cn('grid', summaryField?.value && 'grid-cols-2 gap-4')}>
-          <Button
-            variant="outline"
-            onClick={handleWriteProfileSummary}
-            disabled={isLoading}
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2">
+            <Loader2Icon className="animate-spin" />
+            <p className="text-muted-foreground">AI is generating...</p>
+          </div>
+        ) : (
+          <div
+            className={cn('grid', summaryField?.value && 'grid-cols-2 gap-4')}
           >
-            Generate
-          </Button>
-          {summaryField?.value ? (
             <Button
               variant="outline"
               onClick={handleWriteProfileSummary}
               disabled={isLoading}
             >
-              Improve
+              Generate
             </Button>
-          ) : null}
-        </div>
+            {summaryField?.value ? (
+              <Button
+                variant="outline"
+                onClick={handleWriteProfileSummary}
+                disabled={isLoading}
+              >
+                Improve
+              </Button>
+            ) : null}
+          </div>
+        )}
       </>
     );
   },

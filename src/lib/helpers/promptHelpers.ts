@@ -24,6 +24,7 @@ export const generateResumeSummaryPrompt = (
   - Highlights leadership abilities and technical expertise where applicable
   - Focuses on unique value propositions and notable accomplishments
   - Emphasizes the candidate's ability to drive results and make a meaningful impact
+  - Maintains an optimal length of 3-5 sentences, ensuring clarity and conciseness
   
   Your summary should be tailored to the candidate's qualifications and experiences, ensuring it effectively communicates their strengths and achievements.
 
@@ -49,7 +50,7 @@ export const generateImproveSummaryPrompt = (data: ImproveSummary) => {
   - Incorporate relevant industry keywords and technical expertise
   - Emphasize leadership abilities and career progression where applicable
   - Focus on unique value propositions that set the candidate apart
-  - Maintain an optimal length of 3-5 sentences
+  - Maintain an optimal length of 3-5 sentences, ensuring clarity and conciseness.
 
   Current Summary:
   ${summary}
@@ -84,5 +85,5 @@ export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
     ]
   }
 
-  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role.`;
+  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role. Respond only with the suggested JSON.`;
 };
