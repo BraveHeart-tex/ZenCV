@@ -109,6 +109,7 @@ export type DEX_InsertFieldModel = Omit<DEX_Field, 'id'>;
 export interface EditorPreferences {
   askBeforeDeletingItem: boolean;
   askBeforeDeletingSection: boolean;
+  showAiSuggestions: boolean;
 }
 
 export type DEX_SettingsKey = 'language' | 'editorPreferences';

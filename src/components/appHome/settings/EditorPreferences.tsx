@@ -4,8 +4,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import UserSettingsService from '@/lib/client-db/userSettingsService';
+import { useNetworkState } from 'react-use';
 
 const EditorPreferences = observer(() => {
+  const { online } = useNetworkState();
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Editor Preferences</h2>
@@ -42,6 +44,23 @@ const EditorPreferences = observer(() => {
             }
           />
         </div>
+        {online ? (
+          <div className="flex items-center justify-between">
+            <Label htmlFor="showAiSuggestions">
+              Show AI suggestions (requires sign in)
+            </Label>
+            <Switch
+              id="showAiSuggestions"
+              checked={userSettingsStore.editorPreferences.showAiSuggestions}
+              onCheckedChange={(checked) =>
+                UserSettingsService.handleEditorPreferenceChange(
+                  'showAiSuggestions',
+                  checked,
+                )
+              }
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -63,6 +63,7 @@ clientDb
         value: {
           askBeforeDeletingItem: true,
           askBeforeDeletingSection: true,
+          showAiSuggestions: true,
         } as EditorPreferences,
       },
     ];
