@@ -2,12 +2,12 @@ import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import {
   DEX_Document,
-  DEX_DocumentWithJobPosting,
   DEX_Field,
   DEX_InsertDocumentModel,
   DEX_InsertFieldModel,
   DEX_InsertItemModel,
   DEX_Item,
+  DEX_JobPosting,
   DEX_Section,
   SelectField,
 } from './clientDbSchema';
@@ -20,12 +20,14 @@ import {
   getTemplateByStyle,
   PrefilledResumeStyle,
 } from '../templates/prefilledTemplates';
+import JobPostingService from '@/lib/client-db/jobPostingService';
 
 type GetFullDocumentStructureResponse =
   | { success: false; error: string }
   | {
       success: true;
-      document: DEX_DocumentWithJobPosting;
+      document: DEX_Document;
+      jobPosting: DEX_JobPosting | null;
       sections: DEX_Section[];
       items: DEX_Item[];
       fields: DEX_Field[];
@@ -134,9 +136,7 @@ class DocumentService {
         clientDb.jobPostings,
       ],
       async () => {
-        const document = (await clientDb.documents.get(
-          documentId,
-        )) as DEX_DocumentWithJobPosting;
+        const document = await clientDb.documents.get(documentId);
         if (!document) {
           return {
             success: false,
@@ -144,10 +144,10 @@ class DocumentService {
           };
         }
 
-        if (document.jobPostingId) {
-          document.jobPosting =
-            (await clientDb.jobPostings.get(document.jobPostingId)) || null;
-        }
+        const jobPosting = document.jobPostingId
+          ? (await JobPostingService.getJobPosting(document.jobPostingId)) ||
+            null
+          : null;
 
         const sections = await clientDb.sections
           .where('documentId')
@@ -169,6 +169,7 @@ class DocumentService {
         return {
           success: true,
           document,
+          jobPosting,
           sections,
           items,
           fields,

@@ -7,7 +7,7 @@ class JobPostingService {
   static async addJobPosting(
     data: Omit<DEX_JobPosting, 'id'>,
     documentId: DEX_Document['id'],
-  ) {
+  ): Promise<number> {
     return clientDb.transaction(
       'rw',
       [clientDb.jobPostings, clientDb.documents],
@@ -20,20 +20,29 @@ class JobPostingService {
       },
     );
   }
-  static async removeJobPosting(jobPostingId: DEX_JobPosting['id']) {
+
+  static async removeJobPosting(
+    jobPostingId: DEX_JobPosting['id'],
+  ): Promise<void> {
     return clientDb.transaction(
       'rw',
       [clientDb.jobPostings, clientDb.documents],
       async () => {
-        return await clientDb.jobPostings.delete(jobPostingId);
+        return clientDb.jobPostings.delete(jobPostingId);
       },
     );
   }
   static async updateJobPosting(
     key: DEX_JobPosting['id'],
     data: UpdateSpec<DEX_JobPosting>,
-  ) {
+  ): Promise<number> {
     return clientDb.jobPostings.update(key, data);
+  }
+
+  static async getJobPosting(
+    id: DEX_JobPosting['id'],
+  ): Promise<DEX_JobPosting | null> {
+    return (await clientDb.jobPostings.get(id)) || null;
   }
 }
 

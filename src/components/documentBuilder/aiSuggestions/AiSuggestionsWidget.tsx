@@ -31,7 +31,7 @@ const AiSuggestionsWidget = observer(
   ({ fieldId, onAcceptSuggestion, renderTrigger }: AISuggestionWidgetProps) => {
     const [open, setOpen] = useState(false);
     const suggestion =
-      builderRootStore.builderAiSuggestionsStore.fieldSuggestions.get(fieldId);
+      builderRootStore.aiSuggestionsStore.fieldSuggestions.get(fieldId);
     const isMobile = useMediaQuery('(max-width: 1280px)', false);
     const summaryField = getSummaryField();
     const isProfessionalSummary = fieldId === summaryField?.id;
@@ -115,7 +115,7 @@ const AiSuggestionsWidget = observer(
                         setOpen(false);
                         runInAction(() => {
                           confirmDialogStore.hideDialog();
-                          builderRootStore.builderAiSuggestionsStore.fieldSuggestions.delete(
+                          builderRootStore.aiSuggestionsStore.fieldSuggestions.delete(
                             fieldId,
                           );
                         });
@@ -128,7 +128,7 @@ const AiSuggestionsWidget = observer(
                 <Button
                   onClick={action(async () => {
                     setOpen(false);
-                    builderRootStore.builderAiSuggestionsStore.fieldSuggestions.delete(
+                    builderRootStore.aiSuggestionsStore.fieldSuggestions.delete(
                       fieldId,
                     );
                     await setSummaryFieldValue(suggestion.value);

@@ -19,10 +19,9 @@ interface WantedJobTitleSuggestionPopoverProps {
 
 const WantedJobTitleSuggestionPopover = observer(
   ({ fieldId }: WantedJobTitleSuggestionPopoverProps) => {
-    const jobTitle =
-      builderRootStore.documentStore.document?.jobPosting?.jobTitle;
+    const jobTitle = builderRootStore.jobPostingStore.jobPosting?.jobTitle;
     const suggestedJobTitle =
-      builderRootStore.builderAiSuggestionsStore.suggestedJobTitle;
+      builderRootStore.aiSuggestionsStore.suggestedJobTitle;
 
     if (
       !suggestedJobTitle ||
@@ -32,9 +31,7 @@ const WantedJobTitleSuggestionPopover = observer(
     }
 
     const handleSuggestedTitleClick = async () => {
-      await builderRootStore.builderAiSuggestionsStore.applySuggestedJobTitle(
-        fieldId,
-      );
+      await builderRootStore.aiSuggestionsStore.applySuggestedJobTitle(fieldId);
     };
 
     return (

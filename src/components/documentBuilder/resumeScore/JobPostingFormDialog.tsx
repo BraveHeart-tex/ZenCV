@@ -22,11 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import {
-  showErrorToast,
-  showInfoToast,
-  showSuccessToast,
-} from '@/components/ui/sonner';
+import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
 import { getChangedValues } from '@/lib/utils/objectUtils';
 import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
 import { mockJobPostingData } from '@/lib/mockData';
@@ -56,15 +52,15 @@ const JobPostingFormDialog = observer(
       if (
         open &&
         mode === 'edit' &&
-        builderRootStore.documentStore.document?.jobPosting
+        builderRootStore.jobPostingStore?.jobPosting
       ) {
-        form.reset(builderRootStore.documentStore.document.jobPosting);
+        form.reset(builderRootStore.jobPostingStore.jobPosting);
       }
     }, [open, mode]);
 
     const onSubmit = async (values: JobPostingSchema) => {
       if (mode === 'edit') {
-        const jobPosting = builderRootStore.documentStore?.document?.jobPosting;
+        const jobPosting = builderRootStore.jobPostingStore?.jobPosting;
 
         if (!jobPosting) {
           return;
@@ -80,13 +76,13 @@ const JobPostingFormDialog = observer(
 
       const result =
         mode === 'edit'
-          ? await builderRootStore.documentStore?.updateJobPosting(
+          ? await builderRootStore.jobPostingStore.updateJobPosting(
               getChangedValues(
-                builderRootStore.documentStore?.document?.jobPosting ?? {},
+                builderRootStore.jobPostingStore?.jobPosting ?? {},
                 values,
               ),
             )
-          : await builderRootStore.documentStore?.addJobPosting(values);
+          : await builderRootStore.jobPostingStore.addJobPosting(values);
 
       if (!result?.success) {
         showErrorToast(result?.message ?? 'An unknown error occurred.');
@@ -94,7 +90,6 @@ const JobPostingFormDialog = observer(
       }
 
       setOpen(false);
-      showSuccessToast(result.message);
       form.reset(defaultFormValues);
 
       if (mode === 'create') {

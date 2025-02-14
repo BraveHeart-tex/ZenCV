@@ -9,7 +9,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import JobPostingFormDialog from './resumeScore/JobPostingFormDialog';
 
 const DocumentJobPostingIndicator = observer(() => {
-  if (!builderRootStore.documentStore.document?.jobPosting) return null;
+  if (!builderRootStore.jobPostingStore.jobPosting) return null;
 
   const handleDeleteJobPosting = () => {
     confirmDialogStore.showDialog({
@@ -17,7 +17,8 @@ const DocumentJobPostingIndicator = observer(() => {
       message: 'This will also remove its link to the document.',
       confirmText: 'Yes',
       onConfirm: async () => {
-        const result = await builderRootStore.documentStore.removeJobPosting();
+        const result =
+          await builderRootStore.jobPostingStore.removeJobPosting();
 
         if (!result.success) {
           showErrorToast(result.message);
@@ -39,15 +40,15 @@ const DocumentJobPostingIndicator = observer(() => {
               <BriefcaseBusinessIcon className="w-3 h-3" />
             </div>
             <span>
-              {builderRootStore.documentStore.document.jobPosting.jobTitle} at{' '}
-              {builderRootStore.documentStore.document.jobPosting.companyName}
+              {builderRootStore.jobPostingStore.jobPosting.jobTitle} at{' '}
+              {builderRootStore.jobPostingStore.jobPosting.companyName}
             </span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
           <span>
-            {builderRootStore.documentStore.document.jobPosting.jobTitle} at{' '}
-            {builderRootStore.documentStore.document.jobPosting.companyName}
+            {builderRootStore.jobPostingStore.jobPosting.jobTitle} at{' '}
+            {builderRootStore.jobPostingStore.jobPosting.companyName}
           </span>
         </TooltipContent>
       </Tooltip>

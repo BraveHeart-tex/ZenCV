@@ -104,7 +104,7 @@ export const BuilderAiSuggestionsProvider = ({
 
   useEffect(() => {
     if (!generatedSummary && !improvedSummary) return;
-    builderRootStore.builderAiSuggestionsStore.setSummarySuggestion(
+    builderRootStore.aiSuggestionsStore.setSummarySuggestion(
       generatedSummary || improvedSummary,
     );
   }, [generatedSummary, improvedSummary]);
@@ -112,7 +112,7 @@ export const BuilderAiSuggestionsProvider = ({
   useEffect(() => {
     if (!jobAnalysis) return;
 
-    builderRootStore.builderAiSuggestionsStore.setJobAnalysisResults(
+    builderRootStore.aiSuggestionsStore.setJobAnalysisResults(
       jobAnalysis as Partial<JobAnalysisResult>,
     );
   }, [jobAnalysis]);

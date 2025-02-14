@@ -6,6 +6,7 @@ import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
 import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
+import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
 
 export class BuilderRootStore {
   documentStore: BuilderDocumentStore;
@@ -16,7 +17,8 @@ export class BuilderRootStore {
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
 
-  builderAiSuggestionsStore: BuilderAISuggestionsStore;
+  aiSuggestionsStore: BuilderAISuggestionsStore;
+  jobPostingStore: BuilderJobPostingStore;
 
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
@@ -25,7 +27,8 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
-    this.builderAiSuggestionsStore = new BuilderAISuggestionsStore(this);
+    this.aiSuggestionsStore = new BuilderAISuggestionsStore(this);
+    this.jobPostingStore = new BuilderJobPostingStore(this);
   }
 
   resetState = () => {
