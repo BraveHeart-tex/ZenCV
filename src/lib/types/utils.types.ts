@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export type ValueOf<T> = T[keyof T];
 
 export type NestedValueOf<T> = T extends object
@@ -7,3 +9,5 @@ export type NestedValueOf<T> = T extends object
 export type ValueOfNestedObject<T, K extends keyof T> = T[K][keyof T[K]];
 
 export type Nullable<T> = T | null;
+
+export type UseState<T> = Dispatch<SetStateAction<T>>;

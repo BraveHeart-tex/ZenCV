@@ -5,11 +5,11 @@ import { SparklesIcon } from 'lucide-react';
 import { getSummaryValue } from '@/lib/helpers/documentBuilderHelpers';
 import { useAiSuggestionHelpers } from '@/components/documentBuilder/aiSuggestions/useAiSuggestionHelpers';
 import { observer } from 'mobx-react-lite';
-import { Dispatch, SetStateAction } from 'react';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
+import { UseState } from '@/lib/types/utils.types';
 
 interface AiSuggestionsContentProps {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: UseState<boolean>;
 }
 
 const AiSuggestionsContent = observer(

@@ -1,6 +1,5 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { Dispatch, SetStateAction } from 'react';
 import { Input } from '@/components/ui/input';
 import { showErrorToast } from '@/components/ui/sonner';
 import { useNavigate } from 'react-router';
@@ -30,6 +29,7 @@ import {
   CreateDocumentFormData,
   createNewDocumentSchema,
 } from '@/lib/validation/createDocument.schema';
+import { UseState } from '@/lib/types/utils.types';
 
 const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
   (key) => ({
@@ -39,7 +39,7 @@ const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
 );
 
 interface CreateDocumentFormProps {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: UseState<boolean>;
 }
 
 const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {

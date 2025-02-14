@@ -5,10 +5,10 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import AnimatedSuggestionsContainer from './SuggestionsContainer';
 import SuggestionGroupHeading from './SuggestionGroupHeading';
 import AiSuggestionsContent from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
-import { Dispatch, SetStateAction } from 'react';
+import { UseState } from '@/lib/types/utils.types';
 
 interface ResumeScoreSuggestionContentProps {
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: UseState<boolean>;
 }
 
 const ResumeScoreSuggestionContent = observer(
