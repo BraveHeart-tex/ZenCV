@@ -138,6 +138,9 @@ export class BuilderDocumentStore {
           this.document!.jobPostingId = null;
           this.document.jobPosting = null;
         }
+
+        this.root.builderAiSuggestionsStore.suggestedJobTitle = '';
+        this.root.builderAiSuggestionsStore.keywordSuggestions = [];
       });
       return {
         success: true,
