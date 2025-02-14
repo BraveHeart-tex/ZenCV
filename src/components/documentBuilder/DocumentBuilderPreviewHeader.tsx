@@ -41,7 +41,7 @@ const DocumentBuilderPreviewHeader = observer(() => {
         variant="ghost"
       >
         <LayoutGridIcon />
-        Change Template
+        View in Template Gallery
       </Button>
       <Button
         className="self-end"

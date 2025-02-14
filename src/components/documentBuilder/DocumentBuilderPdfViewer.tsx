@@ -11,11 +11,8 @@ import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { useAsync } from 'react-use';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { action, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
-import { Button } from '../ui/button';
-import { Maximize2Icon } from 'lucide-react';
-import { cn } from '@/lib/utils/stringUtils';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -123,10 +120,7 @@ const DocumentBuilderPdfViewer = observer(
     return (
       <div
         ref={containerRef}
-        className={cn(
-          'relative h-full overflow-hidden w-max mx-auto group',
-          shouldShowPreviousDocument && 'w-full',
-        )}
+        className={'relative h-full overflow-hidden w-full'}
       >
         {shouldShowLoader ? <PreviewSkeleton /> : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
@@ -172,18 +166,6 @@ const DocumentBuilderPdfViewer = observer(
             />
           </Document>
         )}
-        <Button
-          size="icon"
-          className="xl:inline-flex group-hover:opacity-100 group-hover:scale-100 top-1/2 left-1/2 dark:bg-background dark:text-foreground dark:hover:bg-background dark:hover:text-foreground absolute hidden transition-all transform scale-50 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0"
-          aria-label="Maximize PDF Viewer"
-          tabIndex={0}
-          onClick={action(() => {
-            builderRootStore.UIStore.currentView =
-              BUILDER_CURRENT_VIEWS.TEMPLATES;
-          })}
-        >
-          <Maximize2Icon />
-        </Button>
       </div>
     );
   },
