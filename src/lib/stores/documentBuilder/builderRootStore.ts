@@ -42,6 +42,10 @@ export class BuilderRootStore {
       this.UIStore.fieldRefs = new Map();
       this.templateStore.debouncedResumeStats = { score: 0, suggestions: [] };
       this.templateStore.debouncedTemplateData = null;
+
+      this.aiSuggestionsStore.keywordSuggestions = [];
+      this.aiSuggestionsStore.suggestedJobTitle = '';
+      this.jobPostingStore.jobPosting = null;
     });
   };
 }
