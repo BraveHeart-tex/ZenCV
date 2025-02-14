@@ -2,24 +2,19 @@ import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
 import ResumeScoreSuggestionItem from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { SparklesIcon } from 'lucide-react';
 import AnimatedSuggestionsContainer from './SuggestionsContainer';
 import SuggestionGroupHeading from './SuggestionGroupHeading';
-import AnimatedSuggestionButton from './AnimatedSuggestionButton';
-import { getSummaryValue } from '@/lib/helpers/documentBuilderHelpers';
-import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
+import AiSuggestionsContent from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
+import { Dispatch, SetStateAction } from 'react';
 
 interface ResumeScoreSuggestionContentProps {
-  setOpen: (open: boolean) => void;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
     const suggestions =
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
-
-    const hasWrittenSummary = !!getSummaryValue();
-    const { handleWriteProfileSummary, isLoading } = useAiSuggestionHelpers();
 
     return (
       <motion.div
@@ -33,20 +28,7 @@ const ResumeScoreSuggestionContent = observer(
         className="overflow-hidden"
       >
         <div className="py-4">
-          <SuggestionGroupHeading>AI Assistant</SuggestionGroupHeading>
-          <AnimatedSuggestionsContainer>
-            <AnimatedSuggestionButton
-              label={`${hasWrittenSummary ? 'Improve' : 'Generate'} your profile summary`}
-              icon={<SparklesIcon className="text-white" />}
-              iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
-              onClick={() => {
-                setOpen(false);
-                handleWriteProfileSummary();
-              }}
-              disabled={isLoading}
-            />
-          </AnimatedSuggestionsContainer>
-
+          <AiSuggestionsContent setOpen={setOpen} />
           {suggestions.length > 0 ? (
             <>
               <SuggestionGroupHeading>

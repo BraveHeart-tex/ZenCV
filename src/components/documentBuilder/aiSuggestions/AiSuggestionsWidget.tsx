@@ -18,6 +18,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import SummaryAiSuggestionWidget from './SummaryAiSuggestionWidget';
 import { SUMMARY_GENERATION_EVENT_NAME } from './useAiSuggestionHelpers';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
@@ -38,6 +39,10 @@ const AiSuggestionsWidget = observer(
 
     useEffect(() => {
       const controller = new AbortController();
+
+      if (!userSettingsStore.editorPreferences.showAiSuggestions) {
+        controller.abort();
+      }
 
       document.addEventListener(
         SUMMARY_GENERATION_EVENT_NAME,
@@ -140,6 +145,8 @@ const AiSuggestionsWidget = observer(
 
       return null;
     };
+
+    if (!userSettingsStore.editorPreferences.showAiSuggestions) return null;
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
