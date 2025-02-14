@@ -18,11 +18,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import {
+  FIELD_NAMES,
   SECTIONS_WITH_RICH_TEXT_AI,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { SectionType } from '@/lib/types/documentBuilder.types';
+import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -39,7 +41,18 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     if (field.type === FIELD_TYPES.STRING) {
       return (
         <>
-          <Label htmlFor={htmlInputId}>{field.name}</Label>
+          <div
+            className={cn(
+              'flex items-center justify-between gap-8',
+              field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
+                'max-h-[0.875rem]',
+            )}
+          >
+            <Label htmlFor={htmlInputId}>{field.name}</Label>
+            {field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE && (
+              <WantedJobTitleSuggestionPopover fieldId={fieldId} />
+            )}
+          </div>
           <Input
             id={htmlInputId}
             ref={(ref) =>

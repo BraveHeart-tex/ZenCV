@@ -7,6 +7,7 @@ import { useAiSuggestionHelpers } from '@/components/documentBuilder/aiSuggestio
 import { observer } from 'mobx-react-lite';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import { UseState } from '@/lib/types/utils.types';
+import { aiButtonBaseClassnames } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 interface AiSuggestionsContentProps {
   setOpen: UseState<boolean>;
@@ -26,7 +27,7 @@ const AiSuggestionsContent = observer(
           <AnimatedSuggestionButton
             label={`${hasWrittenSummary ? 'Improve' : 'Generate'} your profile summary`}
             icon={<SparklesIcon className="text-white" />}
-            iconContainerClassName="dark:bg-purple-900 bg-purple-700 hover:bg-purple-800"
+            iconContainerClassName={aiButtonBaseClassnames}
             onClick={() => {
               setOpen(false);
               handleWriteProfileSummary();

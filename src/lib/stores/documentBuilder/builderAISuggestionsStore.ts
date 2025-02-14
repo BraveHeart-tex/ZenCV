@@ -1,5 +1,5 @@
-import { makeAutoObservable, ObservableMap } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
+import { action, makeAutoObservable, ObservableMap } from 'mobx';
+import { builderRootStore, BuilderRootStore } from './builderRootStore';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { AISuggestion } from '@/lib/types/documentBuilder.types';
 import { getSummaryField } from '@/lib/helpers/documentBuilderHelpers';
@@ -39,5 +39,17 @@ export class BuilderAISuggestionsStore {
     if (data.suggestedJobTitle) {
       this.suggestedJobTitle = data.suggestedJobTitle;
     }
+  };
+
+  @action
+  applySuggestedJobTitle = async (fieldId: DEX_Field['id']) => {
+    if (!this.suggestedJobTitle) return;
+
+    await builderRootStore.fieldStore.setFieldValue(
+      fieldId,
+      this.suggestedJobTitle,
+    );
+
+    this.suggestedJobTitle = '';
   };
 }

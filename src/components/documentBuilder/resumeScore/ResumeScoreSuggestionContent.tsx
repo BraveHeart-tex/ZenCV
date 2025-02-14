@@ -29,6 +29,7 @@ const ResumeScoreSuggestionContent = observer(
       >
         <div className="py-4">
           <AiSuggestionsContent setOpen={setOpen} />
+
           {suggestions.length > 0 ? (
             <>
               <SuggestionGroupHeading>
