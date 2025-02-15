@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, ObservableMap } from 'mobx';
+import { makeAutoObservable, ObservableMap, runInAction } from 'mobx';
 import { builderRootStore, BuilderRootStore } from './builderRootStore';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { AISuggestion } from '@/lib/types/documentBuilder.types';
@@ -41,7 +41,6 @@ export class BuilderAISuggestionsStore {
     }
   };
 
-  @action
   applySuggestedJobTitle = async (fieldId: DEX_Field['id']) => {
     if (!this.suggestedJobTitle) return;
 
@@ -50,6 +49,8 @@ export class BuilderAISuggestionsStore {
       this.suggestedJobTitle,
     );
 
-    this.suggestedJobTitle = '';
+    runInAction(() => {
+      this.suggestedJobTitle = '';
+    });
   };
 }
