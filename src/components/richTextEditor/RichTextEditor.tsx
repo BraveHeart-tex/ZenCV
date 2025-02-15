@@ -83,7 +83,7 @@ const RichTextEditor = ({
 
   return (
     <div className="w-full" ref={containerRef}>
-      <div className="border-muted-foreground/50 bg-background editor-input-container rounded-md">
+      <div className="border-input bg-background border rounded-md">
         <RichTextEditorMenubar editor={editor} />
         <div className="min-h-[200px] overflow-auto relative pb-10">
           <EditorContent

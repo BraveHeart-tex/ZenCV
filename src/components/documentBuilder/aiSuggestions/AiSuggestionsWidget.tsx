@@ -22,7 +22,6 @@ import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
-  containerRef: React.RefObject<HTMLDivElement | null>;
   onAcceptSuggestion?: (suggestion: string) => void;
   renderTrigger: () => React.ReactNode;
 }

@@ -5,6 +5,7 @@
   padding: 10px;
   overflow: auto;
   cursor: auto;
+  background: hsl(var(--background));
 
   &:focus-visible {
     border: none;
