@@ -12,17 +12,21 @@ import { action, runInAction } from 'mobx';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import RenameSectionFormDialog from './RenameSectionFormDialog';
-import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  DELETABLE_INTERNAL_SECTION_TYPES,
+  SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import UserSettingsService from '@/lib/client-db/userSettingsService';
+import KeywordSuggestionsWidget from '@/components/documentBuilder/aiSuggestions/KeywordSuggestionsWidget';
 
 const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const section = builderRootStore.sectionStore.getSectionById(sectionId)!;
 
-    const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.includes(
-      section.type as (typeof DELETABLE_INTERNAL_SECTION_TYPES)[number],
+    const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.has(
+      section.type,
     );
 
     const handleDeleteSection = action(async () => {
@@ -80,6 +84,12 @@ const EditableSectionTitle = observer(
               </Tooltip>
             </div>
           )}
+          {SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type) ? (
+            <KeywordSuggestionsWidget
+              sectionId={section.id}
+              sectionType={section.type}
+            />
+          ) : null}
         </div>
       </div>
     );

@@ -12,6 +12,7 @@ import { aiButtonBaseClassnames } from '@/lib/stores/documentBuilder/documentBui
 import { PopoverClose } from '@radix-ui/react-popover';
 import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface WantedJobTitleSuggestionPopoverProps {
   fieldId: DEX_Field['id'];
@@ -36,7 +37,7 @@ const WantedJobTitleSuggestionPopover = observer(
 
     return (
       <Popover>
-        <PopoverTrigger className={aiButtonBaseClassnames} asChild>
+        <PopoverTrigger className={cn(aiButtonBaseClassnames)} asChild>
           <Button size="xsIcon">
             <DiamondPlus className="w-4 h-4 text-white" />
           </Button>

@@ -9,6 +9,7 @@ import { aiButtonBaseClassnames } from '@/lib/stores/documentBuilder/documentBui
 import {
   BriefcaseBusinessIcon,
   CircleHelp,
+  ClipboardCheckIcon,
   ClipboardIcon,
   DiamondPlus,
 } from 'lucide-react';
@@ -24,6 +25,7 @@ import {
 } from '@/components/ui/tooltip';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { useState } from 'react';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface KeywordSuggestionsWidgetProps {
   sectionId: DEX_Section['id'];
@@ -40,7 +42,7 @@ const KeywordSuggestionsWidget = observer(
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <Button size="xsIcon" className={aiButtonBaseClassnames}>
+          <Button size="xsIcon" className={cn(aiButtonBaseClassnames)}>
             <DiamondPlus className="w-4 h-4 text-white" />
           </Button>
         </PopoverTrigger>
@@ -115,9 +117,11 @@ const KeywordSuggestionButton = ({ keyword }: KeywordSuggestionButtonProps) => {
       variant="outline"
       onClick={handleKeywordClick}
     >
-      <span>{keyword}</span>
-      <div className="space-x-1">
-        <ClipboardIcon />
+      <span className="flex-1 w-full overflow-hidden text-left truncate">
+        {keyword}
+      </span>
+      <div className="flex items-center gap-1">
+        {copied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
         {copied && <span>Copied</span>}
       </div>
     </Button>
