@@ -8,7 +8,7 @@ import { JobAnalysisResult } from '@/lib/validation/jobAnalysisResult.schema';
 export class BuilderAISuggestionsStore {
   root: BuilderRootStore;
   suggestedJobTitle: string | null = null;
-  keywordSuggestions: string[] | null = null;
+  keywordSuggestions: string[] = [];
 
   fieldSuggestions: ObservableMap<DEX_Field['id'], AISuggestion> =
     new ObservableMap();

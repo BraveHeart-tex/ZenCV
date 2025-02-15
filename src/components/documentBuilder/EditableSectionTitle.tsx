@@ -47,9 +47,9 @@ const EditableSectionTitle = observer(
             confirmDialogStore.hideDialog();
           });
 
-          UserSettingsService.handleEditorPreferenceChange(
+          await UserSettingsService.handleEditorPreferenceChange(
             'askBeforeDeletingSection',
-            confirmDialogStore.doNotAskAgainChecked ? false : true,
+            !confirmDialogStore.doNotAskAgainChecked,
           );
         },
       });
