@@ -11,6 +11,7 @@ import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
 import { Button } from '@/components/ui/button';
 import { SparklesIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
+import RichTextCharacterCounter from '@/components/documentBuilder/RichTextCharacterCounter';
 
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];
@@ -47,7 +48,7 @@ const BuilderRichTextEditorInput = observer(
               >
                 <Button
                   variant="outline"
-                  className="border-br-0 items-center gap-2 border-b-0 border-r-0 rounded-tr-none rounded-bl-none"
+                  className="xl:border-br-0 xl:border-r-0 xl:rounded-tr-none xl:rounded-bl-none xl:border-l xl:rounded-tl xl:rounded-br border-b-0 border-l-0 rounded-tl-none rounded-br-none"
                 >
                   <SparklesIcon />
                   Get AI Suggestion
@@ -74,6 +75,10 @@ const BuilderRichTextEditorInput = observer(
           placeholder={field?.placeholder || ''}
           onChange={handleRichTextChange}
           renderEditorFooter={renderEditorFooter}
+        />
+        <RichTextCharacterCounter
+          fieldValue={field.value}
+          itemId={field.itemId}
         />
       </div>
     );
