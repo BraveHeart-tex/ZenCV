@@ -1,10 +1,4 @@
-import {
-  action,
-  makeAutoObservable,
-  ObservableMap,
-  reaction,
-  runInAction,
-} from 'mobx';
+import { makeAutoObservable, ObservableMap, reaction, runInAction } from 'mobx';
 import { builderRootStore, BuilderRootStore } from './builderRootStore';
 import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { AISuggestion } from '@/lib/types/documentBuilder.types';
@@ -31,7 +25,6 @@ export class BuilderAISuggestionsStore {
     this.setupReactions();
   }
 
-  @action
   private setupReactions = () => {
     const checkUsedKeywords = debounce((values: string[]) => {
       this.usedKeywords.clear();
@@ -41,18 +34,24 @@ export class BuilderAISuggestionsStore {
       this.keywordSuggestions.forEach((keyword) => {
         values.forEach((value) => {
           if (value.includes(keyword.toLowerCase())) {
-            this.usedKeywords.add(keyword);
+            runInAction(() => {
+              this.usedKeywords.add(keyword);
+            });
           }
         });
       });
     }, KEYWORD_CHECK_REACTION_DELAY_MS);
 
     reaction(
-      () =>
-        this.richTextFieldsWithKeywordChecks.map((field) =>
-          removeHTMLTags(field.value).toLowerCase(),
-        ),
-      checkUsedKeywords,
+      () => {
+        return {
+          values: this.richTextFieldsWithKeywordChecks.map((field) =>
+            removeHTMLTags(field.value).toLowerCase(),
+          ),
+          keywords: this.keywordSuggestions,
+        };
+      },
+      ({ values }) => checkUsedKeywords(values),
     );
   };
 
