@@ -76,7 +76,7 @@ const KeywordSuggestionsWidget = observer(
             <DiamondPlus className="w-4 h-4 text-white" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="space-y-4">
+        <PopoverContent className="space-y-4" side="top">
           <div className="flex items-center justify-between w-full gap-8">
             <div className="flex items-center gap-2">
               <div className="bg-foreground p-1 rounded-md">
