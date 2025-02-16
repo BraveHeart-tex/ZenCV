@@ -1,6 +1,11 @@
 import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
-import { DEX_Field, DEX_InsertItemModel, DEX_Item } from './clientDbSchema';
+import {
+  DEX_Field,
+  DEX_InsertItemModel,
+  DEX_Item,
+  DEX_Section,
+} from './clientDbSchema';
 
 class ItemService {
   static async deleteItem(itemId: DEX_Item['id']) {
@@ -59,6 +64,12 @@ class ItemService {
         };
       },
     );
+  }
+
+  static async getItemsWithSectionIds(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<DEX_Item[]> {
+    return clientDb.items.where('sectionId').anyOf(sectionIds).toArray();
   }
 }
 

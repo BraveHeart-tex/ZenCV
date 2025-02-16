@@ -1,6 +1,7 @@
 import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import {
+  DEX_AiSuggestions,
   DEX_Document,
   DEX_Field,
   DEX_InsertDocumentModel,
@@ -21,6 +22,10 @@ import {
   PrefilledResumeStyle,
 } from '../templates/prefilledTemplates';
 import JobPostingService from '@/lib/client-db/jobPostingService';
+import SectionService from '@/lib/client-db/sectionService';
+import ItemService from '@/lib/client-db/itemService';
+import FieldService from '@/lib/client-db/fieldService';
+import AiSuggestionsService from '@/lib/client-db/aiSuggestionsService';
 
 type GetFullDocumentStructureResponse =
   | { success: false; error: string }
@@ -31,8 +36,10 @@ type GetFullDocumentStructureResponse =
       sections: DEX_Section[];
       items: DEX_Item[];
       fields: DEX_Field[];
+      aiSuggestions: DEX_AiSuggestions | null;
     };
 
+// TODO: Use other service methods here
 class DocumentService {
   static async createDocument(
     data: Omit<DEX_InsertDocumentModel, 'jobPostingId'> & {
@@ -134,9 +141,10 @@ class DocumentService {
         clientDb.items,
         clientDb.fields,
         clientDb.jobPostings,
+        clientDb.aiSuggestions,
       ],
       async () => {
-        const document = await clientDb.documents.get(documentId);
+        const document = await this.getDocumentById(documentId);
         if (!document) {
           return {
             success: false,
@@ -149,22 +157,18 @@ class DocumentService {
             null
           : null;
 
-        const sections = await clientDb.sections
-          .where('documentId')
-          .equals(documentId)
-          .toArray();
+        const sections = await SectionService.getSectionsByDocumentId(
+          document.id,
+        );
         const sectionIds = sections.map((section) => section.id);
 
-        const items = await clientDb.items
-          .where('sectionId')
-          .anyOf(sectionIds)
-          .toArray();
+        const items = await ItemService.getItemsWithSectionIds(sectionIds);
         const itemIds = items.map((item) => item.id);
 
-        const fields = await clientDb.fields
-          .where('itemId')
-          .anyOf(itemIds)
-          .toArray();
+        const fields = await FieldService.getFieldsWithItemIds(itemIds);
+
+        const aiSuggestions =
+          await AiSuggestionsService.getAiSuggestionsByDocumentId(document.id);
 
         return {
           success: true,
@@ -173,6 +177,7 @@ class DocumentService {
           sections,
           items,
           fields,
+          aiSuggestions,
         };
       },
     );
@@ -223,6 +228,12 @@ class DocumentService {
     templateType: ResumeTemplate,
   ) => {
     return this.updateDocument(documentId, { templateType });
+  };
+
+  static getDocumentById = async (
+    documentId: DEX_Document['id'],
+  ): Promise<DEX_Document | null> => {
+    return (await clientDb.documents.get(documentId)) || null;
   };
 }
 

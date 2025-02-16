@@ -65,15 +65,15 @@ export class BuilderJobPostingStore {
     }
 
     try {
-      await JobPostingService.removeJobPosting(this.jobPosting.id);
+      await JobPostingService.removeJobPosting(
+        this.root.documentStore.document.id,
+      );
       runInAction(() => {
         if (this.root.documentStore.document) {
           this.root.documentStore.document.jobPostingId = null;
           this.jobPosting = null;
         }
-
-        this.root.aiSuggestionsStore.suggestedJobTitle = '';
-        this.root.aiSuggestionsStore.keywordSuggestions = [];
+        this.root.aiSuggestionsStore.resetState();
       });
       return {
         success: true,

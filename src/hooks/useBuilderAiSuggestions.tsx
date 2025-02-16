@@ -12,6 +12,7 @@ import {
   JobAnalysisResult,
   jobAnalysisResultSchema,
 } from '@/lib/validation/jobAnalysisResult.schema';
+import AiSuggestionsService from '@/lib/client-db/aiSuggestionsService';
 
 const BASE_API_ROUTE = '/api/process';
 
@@ -65,6 +66,21 @@ export const BuilderAiSuggestionsProvider = ({
     onError(error) {
       showErrorToast(error.message, {
         id: toastId.current,
+      });
+    },
+    async onFinish(event) {
+      if (
+        !event.object ||
+        event.error ||
+        !builderRootStore.documentStore.document
+      ) {
+        return;
+      }
+
+      await AiSuggestionsService.addAiSuggestions({
+        keywordSuggestions: event.object.keywordSuggestions,
+        suggestedJobTitle: event.object.suggestedJobTitle,
+        documentId: builderRootStore.documentStore.document.id,
       });
     },
   });

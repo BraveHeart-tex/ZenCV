@@ -126,3 +126,10 @@ export interface DEX_JobPosting extends JobPostingSchema {
 export interface DEX_DocumentWithJobPosting extends DEX_Document {
   jobPosting: DEX_JobPosting | null;
 }
+
+export interface DEX_AiSuggestions {
+  id: IdType;
+  suggestedJobTitle: string;
+  keywordSuggestions: string[];
+  documentId: DEX_Document['id'];
+}

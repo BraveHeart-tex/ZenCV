@@ -21,7 +21,6 @@ export class BuilderUIStore {
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
   isMobileTemplateSelectorVisible: boolean = false;
-  rendering: boolean = false;
 
   constructor(root: BuilderRootStore) {
     this.root = root;
@@ -100,5 +99,13 @@ export class BuilderUIStore {
     requestAnimationFrame(() => {
       element.focus();
     });
+  };
+
+  resetState = () => {
+    this.collapsedItemId = null;
+    this.itemRefs = new Map();
+    this.fieldRefs = new Map();
+    this.isMobileTemplateSelectorVisible = false;
+    this.currentView = 'builder';
   };
 }

@@ -105,4 +105,10 @@ export class BuilderAISuggestionsStore {
         );
       });
   }
+
+  resetState = () => {
+    this.keywordSuggestions = [];
+    this.suggestedJobTitle = '';
+    this.usedKeywords.clear();
+  };
 }

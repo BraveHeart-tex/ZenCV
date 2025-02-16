@@ -2,6 +2,7 @@ import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import { DEX_Document, DEX_JobPosting } from './clientDbSchema';
 import DocumentService from './documentService';
+import AiSuggestionsService from '@/lib/client-db/aiSuggestionsService';
 
 class JobPostingService {
   static async addJobPosting(
@@ -21,14 +22,13 @@ class JobPostingService {
     );
   }
 
-  static async removeJobPosting(
-    jobPostingId: DEX_JobPosting['id'],
-  ): Promise<void> {
+  static async removeJobPosting(documentId: DEX_Document['id']): Promise<void> {
     return clientDb.transaction(
       'rw',
-      [clientDb.jobPostings, clientDb.documents],
+      [clientDb.jobPostings, clientDb.documents, clientDb.aiSuggestions],
       async () => {
-        return clientDb.jobPostings.delete(jobPostingId);
+        await clientDb.jobPostings.delete(documentId);
+        await AiSuggestionsService.deleteAiSuggestions(documentId);
       },
     );
   }

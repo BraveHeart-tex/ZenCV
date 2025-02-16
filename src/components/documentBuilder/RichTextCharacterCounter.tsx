@@ -27,8 +27,8 @@ interface EmotionRange {
 const summaryEmotionRanges: EmotionRange[] = [
   { expression: 'sad', min: 0, max: 99 },
   { expression: 'neutral', min: 100, max: 398 },
-  { expression: 'happy', min: 399, max: 599 },
-  { expression: 'neutral', min: 600, max: Infinity },
+  { expression: 'happy', min: 399, max: 609 },
+  { expression: 'neutral', min: 610, max: Infinity },
 ];
 
 const workExperienceEmotionRanges: EmotionRange[] = [

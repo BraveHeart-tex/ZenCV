@@ -1,6 +1,6 @@
 import { UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
-import { DEX_Section } from './clientDbSchema';
+import { DEX_Document, DEX_Section } from './clientDbSchema';
 
 class SectionService {
   static async updateSection(
@@ -34,6 +34,12 @@ class SectionService {
     }[],
   ) {
     return clientDb.sections.bulkUpdate(keysAndChanges);
+  }
+
+  static async getSectionsByDocumentId(
+    documentId: DEX_Document['id'],
+  ): Promise<DEX_Section[]> {
+    return clientDb.sections.where('documentId').equals(documentId).toArray();
   }
 }
 

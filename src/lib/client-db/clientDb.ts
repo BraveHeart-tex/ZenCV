@@ -7,6 +7,7 @@ import {
   EditorPreferences,
   DEX_JobPosting,
   DEX_Setting,
+  DEX_AiSuggestions,
 } from './clientDbSchema';
 import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 
@@ -17,6 +18,7 @@ export const clientDb = new Dexie('cv-builder-db') as Dexie & {
   fields: EntityTable<DEX_Field, 'id'>;
   settings: EntityTable<DEX_Setting<string>, 'key'>;
   jobPostings: EntityTable<DEX_JobPosting, 'id'>;
+  aiSuggestions: EntityTable<DEX_AiSuggestions, 'id'>;
 };
 
 clientDb.version(1).stores({
@@ -72,7 +74,7 @@ clientDb
   });
 
 clientDb
-  .version(4)
+  .version(5)
   .stores({
     documents: '++id, title, templateType, jobPostingId, createdAt, updatedAt',
     sections:
@@ -81,13 +83,16 @@ clientDb
     fields: '++id, itemId, name, type, value, selectType, options',
     settings: 'key',
     jobPostings: '++id, companyName, jobTitle, roleDescription',
+    aiSuggestions: '++id, suggestedJobTitle, keywordSuggestions, documentId',
   })
   .upgrade((transaction) => {
     transaction
       .table('documents')
       .toCollection()
       .modify((doc) => {
-        doc.jobPostingId = null;
+        if (!doc.jobPostingId) {
+          doc.jobPostingId = null;
+        }
       });
   });
 
