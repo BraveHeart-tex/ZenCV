@@ -35,6 +35,7 @@ import {
   FieldName,
   FieldValuesForKey,
   ResumeTemplate,
+  SectionType,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
@@ -744,3 +745,9 @@ export const prepareSectionsInsertData = (
     metadata: section?.metadata || '',
     type: section.type,
   }));
+
+export const getKeywordSuggestionScrollEventName = (
+  sectionType: SectionType,
+) => {
+  return `SCROLL_TO_KEYWORD_WIDGET_${sectionType}`;
+};

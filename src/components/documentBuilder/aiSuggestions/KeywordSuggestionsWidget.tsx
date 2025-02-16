@@ -24,9 +24,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils/stringUtils';
 import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
+import { getKeywordSuggestionScrollEventName } from '@/lib/helpers/documentBuilderHelpers';
 
 interface KeywordSuggestionsWidgetProps {
   sectionId: DEX_Section['id'];
@@ -34,15 +35,43 @@ interface KeywordSuggestionsWidgetProps {
 }
 
 const KeywordSuggestionsWidget = observer(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ sectionId, sectionType }: KeywordSuggestionsWidgetProps) => {
+  ({ sectionType }: KeywordSuggestionsWidgetProps) => {
+    const [open, setOpen] = useState(false);
+    const popoverRef = useRef<HTMLButtonElement | null>(null);
+
     if (builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0) {
       return null;
     }
 
+    useEffect(() => {
+      const controller = new AbortController();
+
+      document.addEventListener(
+        getKeywordSuggestionScrollEventName(sectionType),
+        () => {
+          setOpen(true);
+          if (popoverRef.current) {
+            const rect = popoverRef.current.getBoundingClientRect();
+            const absoluteY = window.scrollY + rect.top;
+            const centerY =
+              absoluteY - window.innerHeight / 2 + rect.height / 2;
+
+            window.scrollTo({ top: centerY, behavior: 'smooth' });
+          }
+        },
+        {
+          signal: controller.signal,
+        },
+      );
+
+      return () => {
+        controller.abort();
+      };
+    }, [sectionType]);
+
     return (
-      <Popover>
-        <PopoverTrigger asChild>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild ref={popoverRef}>
           <Button size="xsIcon" className={cn(aiButtonBaseClassnames)}>
             <DiamondPlus className="w-4 h-4 text-white" />
           </Button>
