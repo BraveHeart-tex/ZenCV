@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { SparklesIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 import RichTextCharacterCounter from '@/components/documentBuilder/RichTextCharacterCounter';
+import { useCallback } from 'react';
 
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];
@@ -25,7 +26,7 @@ const BuilderRichTextEditorInput = observer(
 
     const id = getFieldHtmlId(field);
 
-    const renderEditorFooter = () => {
+    const renderEditorFooter = useCallback(() => {
       if (!shouldRenderAiWidget) return null;
 
       return (
@@ -58,7 +59,7 @@ const BuilderRichTextEditorInput = observer(
           }}
         />
       );
-    };
+    }, [fieldId, shouldRenderAiWidget]);
 
     const handleRichTextChange = action(async (html: string) => {
       await builderRootStore.fieldStore.setFieldValue(fieldId, html);

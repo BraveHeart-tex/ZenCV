@@ -287,7 +287,10 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   defaultTitle: item.title,
 }));
 
-export const SECTIONS_WITH_RICH_TEXT_AI = new Map<SectionType, boolean>([
+export const SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER = new Map<
+  SectionType,
+  boolean
+>([
   [INTERNAL_SECTION_TYPES.SUMMARY, true],
   [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
   [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],

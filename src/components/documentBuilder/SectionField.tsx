@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import {
   FIELD_NAMES,
-  SECTIONS_WITH_RICH_TEXT_AI,
+  INTERNAL_SECTION_TYPES,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
@@ -94,9 +94,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           ) : null}
           <BuilderRichTextEditorInput
             fieldId={fieldId}
-            shouldRenderAiWidget={SECTIONS_WITH_RICH_TEXT_AI.has(
-              getSectionTypeByItemId(field.itemId) as SectionType,
-            )}
+            shouldRenderAiWidget={
+              (getSectionTypeByItemId(field.itemId) as SectionType) ===
+              INTERNAL_SECTION_TYPES.SUMMARY
+            }
           />
         </>
       );

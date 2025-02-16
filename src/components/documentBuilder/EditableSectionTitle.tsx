@@ -64,8 +64,14 @@ const EditableSectionTitle = observer(
         <h2 className="scroll-m-20 text-xl font-semibold tracking-tight">
           {section.title}
         </h2>
-        <div className="flex items-center">
+        <div className="flex items-center gap-1">
           <RenameSectionFormDialog sectionId={sectionId} />
+          {SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type) ? (
+            <KeywordSuggestionsWidget
+              sectionId={section.id}
+              sectionType={section.type}
+            />
+          ) : null}
           {isSectionDeletable && (
             <div className="lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
               <Tooltip>
@@ -84,12 +90,6 @@ const EditableSectionTitle = observer(
               </Tooltip>
             </div>
           )}
-          {SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type) ? (
-            <KeywordSuggestionsWidget
-              sectionId={section.id}
-              sectionType={section.type}
-            />
-          ) : null}
         </div>
       </div>
     );

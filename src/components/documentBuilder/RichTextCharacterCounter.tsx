@@ -3,7 +3,7 @@ import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { getSectionTypeByItemId } from '@/lib/helpers/documentBuilderHelpers';
 import {
   INTERNAL_SECTION_TYPES,
-  SECTIONS_WITH_RICH_TEXT_AI,
+  SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn, removeHTMLTags } from '@/lib/utils/stringUtils';
 import SmoothEmotionIcon from '@/components/misc/SmoothEmotionIcon';
@@ -52,7 +52,10 @@ const RichTextCharacterCounter = observer(
   ({ fieldValue, itemId }: RichTextCharacterCounterProps) => {
     const sectionType = getSectionTypeByItemId(itemId);
 
-    if (!sectionType || !SECTIONS_WITH_RICH_TEXT_AI.has(sectionType)) {
+    if (
+      !sectionType ||
+      !SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER.has(sectionType)
+    ) {
       return null;
     }
 
