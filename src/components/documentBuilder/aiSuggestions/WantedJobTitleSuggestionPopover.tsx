@@ -16,10 +16,11 @@ import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestio
 
 interface WantedJobTitleSuggestionPopoverProps {
   fieldId: DEX_Field['id'];
+  value: string;
 }
 
 const WantedJobTitleSuggestionPopover = observer(
-  ({ fieldId }: WantedJobTitleSuggestionPopoverProps) => {
+  ({ fieldId, value }: WantedJobTitleSuggestionPopoverProps) => {
     const jobTitle = builderRootStore.jobPostingStore.jobPosting?.jobTitle;
     const suggestedJobTitle =
       builderRootStore.aiSuggestionsStore.suggestedJobTitle;
@@ -34,6 +35,8 @@ const WantedJobTitleSuggestionPopover = observer(
     const handleSuggestedTitleClick = async () => {
       await builderRootStore.aiSuggestionsStore.applySuggestedJobTitle(fieldId);
     };
+
+    if (value === suggestedJobTitle) return null;
 
     return (
       <Popover>

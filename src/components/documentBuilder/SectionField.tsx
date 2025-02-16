@@ -50,7 +50,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           >
             <Label htmlFor={htmlInputId}>{field.name}</Label>
             {field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE && (
-              <WantedJobTitleSuggestionPopover fieldId={fieldId} />
+              <WantedJobTitleSuggestionPopover
+                fieldId={fieldId}
+                value={field.value}
+              />
             )}
           </div>
           <Input
