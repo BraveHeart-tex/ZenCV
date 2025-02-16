@@ -197,7 +197,14 @@ class DocumentService {
   static async deleteDocument(documentId: DEX_Document['id']) {
     return clientDb.transaction(
       'rw',
-      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      [
+        clientDb.documents,
+        clientDb.sections,
+        clientDb.items,
+        clientDb.fields,
+        clientDb.jobPostings,
+        clientDb.aiSuggestions,
+      ],
       async () => {
         await clientDb.documents.delete(documentId);
 
@@ -210,6 +217,7 @@ class DocumentService {
 
         const fieldIds = await FieldService.getFieldIdsByItemIds(itemIds);
         await FieldService.bulkDeleteFields(fieldIds);
+        await JobPostingService.removeJobPostingByDocumentId(documentId);
       },
     );
   }

@@ -22,7 +22,9 @@ class JobPostingService {
     );
   }
 
-  static async removeJobPosting(documentId: DEX_Document['id']): Promise<void> {
+  static async removeJobPostingByDocumentId(
+    documentId: DEX_Document['id'],
+  ): Promise<void> {
     return clientDb.transaction(
       'rw',
       [clientDb.jobPostings, clientDb.documents, clientDb.aiSuggestions],

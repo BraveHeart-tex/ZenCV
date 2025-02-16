@@ -65,7 +65,7 @@ export class BuilderJobPostingStore {
     }
 
     try {
-      await JobPostingService.removeJobPosting(
+      await JobPostingService.removeJobPostingByDocumentId(
         this.root.documentStore.document.id,
       );
       runInAction(() => {
