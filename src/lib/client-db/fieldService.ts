@@ -1,5 +1,6 @@
 import { clientDb } from './clientDb';
 import { DEX_Field, DEX_Item } from './clientDbSchema';
+import { InsertType } from 'dexie';
 
 class FieldService {
   static async updateField(fieldId: DEX_Field['id'], value: string) {
@@ -19,6 +20,11 @@ class FieldService {
   }
   static async bulkDeleteFields(fieldIds: DEX_Field['id'][]): Promise<void> {
     return clientDb.fields.bulkDelete(fieldIds);
+  }
+  static async bulkAddFields(
+    data: InsertType<DEX_Field, 'id'>[],
+  ): Promise<DEX_Field['id'][]> {
+    return clientDb.fields.bulkAdd(data, { allKeys: true });
   }
 }
 

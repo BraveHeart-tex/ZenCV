@@ -15,6 +15,7 @@ import {
 import {
   getInitialDocumentInsertBoilerplate,
   isSelectField,
+  prepareSectionsInsertData,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { ResumeTemplate } from '../types/documentBuilder.types';
 import {
@@ -39,7 +40,6 @@ type GetFullDocumentStructureResponse =
       aiSuggestions: DEX_AiSuggestions | null;
     };
 
-// TODO: Use other service methods here
 class DocumentService {
   static async createDocument(
     data: Omit<DEX_InsertDocumentModel, 'jobPostingId'> & {
@@ -59,21 +59,8 @@ class DocumentService {
           ? getTemplateByStyle(data.selectedPrefillStyle, documentId)
           : getInitialDocumentInsertBoilerplate(documentId);
 
-        const prepareSections = () =>
-          sectionTemplates.map((section) => ({
-            defaultTitle: section.defaultTitle,
-            title: section.title,
-            displayOrder: section.displayOrder,
-            documentId,
-            metadata: section?.metadata || '',
-            type: section.type,
-          }));
-
-        const sectionInsertIds = await clientDb.sections.bulkAdd(
-          prepareSections(),
-          {
-            allKeys: true,
-          },
+        const sectionInsertIds = await SectionService.bulkAddSections(
+          prepareSectionsInsertData(sectionTemplates, documentId),
         );
 
         const itemInsertDtos: DEX_InsertItemModel[] = [];
@@ -114,16 +101,14 @@ class DocumentService {
           });
         });
 
-        const itemInsertIds = await clientDb.items.bulkAdd(itemInsertDtos, {
-          allKeys: true,
-        });
+        const itemInsertIds = await ItemService.bulkAddItems(itemInsertDtos);
 
         const resolvedFieldDtos = fieldInsertDtos.map((field) => ({
           ...field,
           itemId: itemInsertIds[field.itemId],
         }));
 
-        await clientDb.fields.bulkAdd(resolvedFieldDtos);
+        await FieldService.bulkAddFields(resolvedFieldDtos);
 
         return documentId;
       },

@@ -4,6 +4,7 @@ import {
   DEX_Document,
   type DEX_Field,
   type DEX_Item,
+  DEX_Section,
   FIELD_TYPES,
   SectionWithFields,
   type SelectField,
@@ -44,6 +45,7 @@ import DocumentService from '../client-db/documentService';
 import { PrefilledResumeStyle } from '../templates/prefilledTemplates';
 import { GenerateSummarySchema } from '../validation/generateSummary.schema';
 import { findValueInItemFields } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { InsertType } from 'dexie';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id'],
@@ -729,3 +731,16 @@ export const getOrCreateWorkExperienceItem = async (sectionId: number) => {
 
   return await builderRootStore.itemStore.addNewItemEntry(sectionId);
 };
+
+export const prepareSectionsInsertData = (
+  sectionTemplates: SectionWithFields[],
+  documentId: DEX_Document['id'],
+): InsertType<DEX_Section, 'id'>[] =>
+  sectionTemplates.map((section) => ({
+    defaultTitle: section.defaultTitle,
+    title: section.title,
+    displayOrder: section.displayOrder,
+    documentId,
+    metadata: section?.metadata || '',
+    type: section.type,
+  }));

@@ -1,4 +1,4 @@
-import { UpdateSpec } from 'dexie';
+import { InsertType, UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
 import {
   DEX_Field,
@@ -80,6 +80,14 @@ class ItemService {
 
   static async bulkDeleteItems(itemIds: DEX_Item['id'][]): Promise<void> {
     return clientDb.items.bulkDelete(itemIds);
+  }
+
+  static async bulkAddItems(
+    data: InsertType<DEX_Item, 'id'>[],
+  ): Promise<DEX_Item['id'][]> {
+    return clientDb.items.bulkAdd(data, {
+      allKeys: true,
+    });
   }
 }
 
