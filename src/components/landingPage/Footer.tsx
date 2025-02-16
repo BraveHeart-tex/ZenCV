@@ -3,7 +3,7 @@ import { Icons } from '../misc/icons';
 
 export default function Footer() {
   return (
-    <footer className="bg-background/80 w-full border-t">
+    <footer className="bg-background/80 w-full px-4 border-t">
       <div className="md:h-24 md:flex-row md:py-0 container flex flex-col items-center justify-between py-10 mx-auto space-y-4">
         <div className="md:flex-row md:space-y-0 md:space-x-4 flex flex-col items-center justify-between w-full space-y-4">
           <div className="flex items-center gap-2">
