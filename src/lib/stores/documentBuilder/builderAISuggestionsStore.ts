@@ -1,14 +1,26 @@
-import { makeAutoObservable, ObservableMap, runInAction } from 'mobx';
+import {
+  action,
+  makeAutoObservable,
+  ObservableMap,
+  reaction,
+  runInAction,
+} from 'mobx';
 import { builderRootStore, BuilderRootStore } from './builderRootStore';
-import { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { AISuggestion } from '@/lib/types/documentBuilder.types';
 import { getSummaryField } from '@/lib/helpers/documentBuilderHelpers';
 import { JobAnalysisResult } from '@/lib/validation/jobAnalysisResult.schema';
+import debounce from '@/lib/utils/debounce';
+import { SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { removeHTMLTags } from '@/lib/utils/stringUtils';
+
+const KEYWORD_CHECK_REACTION_DELAY_MS = 500 as const;
 
 export class BuilderAISuggestionsStore {
   root: BuilderRootStore;
   suggestedJobTitle: string | null = null;
   keywordSuggestions: string[] = [];
+  usedKeywords = new Set<string>();
 
   fieldSuggestions: ObservableMap<DEX_Field['id'], AISuggestion> =
     new ObservableMap();
@@ -16,7 +28,33 @@ export class BuilderAISuggestionsStore {
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
+    this.setupReactions();
   }
+
+  @action
+  private setupReactions = () => {
+    const checkUsedKeywords = debounce((values: string[]) => {
+      this.usedKeywords.clear();
+
+      if (this.keywordSuggestions.length === 0) return;
+
+      this.keywordSuggestions.forEach((keyword) => {
+        values.forEach((value) => {
+          if (value.includes(keyword.toLowerCase())) {
+            this.usedKeywords.add(keyword);
+          }
+        });
+      });
+    }, KEYWORD_CHECK_REACTION_DELAY_MS);
+
+    reaction(
+      () =>
+        this.richTextFieldsWithKeywordChecks.map((field) =>
+          removeHTMLTags(field.value).toLowerCase(),
+        ),
+      checkUsedKeywords,
+    );
+  };
 
   setSummarySuggestion(generatedSummary: string) {
     const summaryFieldId = getSummaryField()?.id;
@@ -53,4 +91,19 @@ export class BuilderAISuggestionsStore {
       this.suggestedJobTitle = '';
     });
   };
+
+  get richTextFieldsWithKeywordChecks() {
+    return this.root.sectionStore.sections
+      .filter((section) =>
+        SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type),
+      )
+      .flatMap((section) => {
+        const items = this.root.itemStore.getItemsBySectionId(section.id);
+        return items.flatMap((item) =>
+          this.root.fieldStore
+            .getFieldsByItemId(item.id)
+            .filter((field) => field.type === FIELD_TYPES.RICH_TEXT),
+        );
+      });
+  }
 }

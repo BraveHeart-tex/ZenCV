@@ -7,6 +7,7 @@ import {
 import { Button } from '@/components/ui/button';
 import {
   BriefcaseBusinessIcon,
+  CheckIcon,
   CircleHelp,
   ClipboardCheckIcon,
   ClipboardIcon,
@@ -64,7 +65,7 @@ const KeywordSuggestionsWidget = observer(
           </div>
           <div className="flex items-center gap-1">
             <span className="font-semibold">
-              0 /{' '}
+              {builderRootStore.aiSuggestionsStore.usedKeywords.size} /{' '}
               {builderRootStore.aiSuggestionsStore.keywordSuggestions.length}
             </span>
             <span>Keywords</span>
@@ -86,7 +87,13 @@ const KeywordSuggestionsWidget = observer(
           <div className="flex-1 max-h-[200px] overflow-auto space-y-1">
             {builderRootStore.aiSuggestionsStore.keywordSuggestions.map(
               (keyword) => (
-                <KeywordSuggestionButton keyword={keyword} key={keyword} />
+                <KeywordSuggestionButton
+                  keyword={keyword}
+                  key={keyword}
+                  isUsed={builderRootStore.aiSuggestionsStore.usedKeywords.has(
+                    keyword,
+                  )}
+                />
               ),
             )}
           </div>
@@ -98,9 +105,13 @@ const KeywordSuggestionsWidget = observer(
 
 interface KeywordSuggestionButtonProps {
   keyword: string;
+  isUsed: boolean;
 }
 
-const KeywordSuggestionButton = ({ keyword }: KeywordSuggestionButtonProps) => {
+const KeywordSuggestionButton = ({
+  keyword,
+  isUsed,
+}: KeywordSuggestionButtonProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleKeywordClick = async () => {
@@ -116,13 +127,20 @@ const KeywordSuggestionButton = ({ keyword }: KeywordSuggestionButtonProps) => {
       className="items-center justify-between w-full gap-8 px-1"
       variant="outline"
       onClick={handleKeywordClick}
+      disabled={isUsed}
     >
       <span className="flex-1 w-full overflow-hidden text-left truncate">
         {keyword}
       </span>
       <div className="flex items-center gap-1">
-        {copied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
-        {copied && <span>Copied</span>}
+        {isUsed ? (
+          <CheckIcon />
+        ) : (
+          <>
+            {copied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
+            {copied && <span>Copied</span>}
+          </>
+        )}
       </div>
     </Button>
   );
