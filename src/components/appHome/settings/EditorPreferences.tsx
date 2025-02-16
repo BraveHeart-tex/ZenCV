@@ -5,6 +5,14 @@ import { Switch } from '@/components/ui/switch';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import UserSettingsService from '@/lib/client-db/userSettingsService';
 import { useNetworkState } from 'react-use';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import { CircleHelpIcon } from 'lucide-react';
 
 const EditorPreferences = observer(() => {
   const { online } = useNetworkState();
@@ -46,9 +54,21 @@ const EditorPreferences = observer(() => {
         </div>
         {online ? (
           <div className="flex items-center justify-between">
-            <Label htmlFor="showAiSuggestions">
-              Show AI suggestions (requires sign in)
-            </Label>
+            <div className="flex items-center gap-1">
+              <Label htmlFor="showAiSuggestions">Show AI suggestions</Label>{' '}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button size="xsIcon" variant="ghost">
+                      <CircleHelpIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sign in to access AI-powered suggestions.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Switch
               id="showAiSuggestions"
               checked={userSettingsStore.editorPreferences.showAiSuggestions}
