@@ -8,11 +8,11 @@ import { BriefcaseBusinessIcon, DiamondPlus, PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { observer } from 'mobx-react-lite';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { aiButtonBaseClassnames } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { PopoverClose } from '@radix-ui/react-popover';
 import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { cn } from '@/lib/utils/stringUtils';
+import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 
 interface WantedJobTitleSuggestionPopoverProps {
   fieldId: DEX_Field['id'];

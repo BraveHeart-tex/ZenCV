@@ -295,9 +295,6 @@ export const SECTIONS_WITH_RICH_TEXT_AI = new Map<SectionType, boolean>([
 
 export const START_WORK_EXPERIENCE_TOUR_DELAY_MS = 300 as const;
 
-export const aiButtonBaseClassnames =
-  'dark:bg-purple-900 hover:bg-purple-800 bg-purple-700 rounded-md';
-
 export const SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET = new Map<
   SectionType,
   boolean

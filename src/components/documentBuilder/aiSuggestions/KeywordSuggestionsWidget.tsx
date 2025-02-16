@@ -5,7 +5,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { aiButtonBaseClassnames } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   BriefcaseBusinessIcon,
   CircleHelp,
@@ -26,6 +25,7 @@ import {
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { useState } from 'react';
 import { cn } from '@/lib/utils/stringUtils';
+import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 
 interface KeywordSuggestionsWidgetProps {
   sectionId: DEX_Section['id'];
