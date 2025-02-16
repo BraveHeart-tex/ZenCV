@@ -201,24 +201,15 @@ class DocumentService {
       async () => {
         await clientDb.documents.delete(documentId);
 
-        const sectionIds = await clientDb.sections
-          .where('documentId')
-          .equals(documentId)
-          .primaryKeys();
+        const sectionIds =
+          await SectionService.getSectionIdsByDocumentId(documentId);
+        await SectionService.bulkDeleteSections(sectionIds);
 
-        await clientDb.sections.bulkDelete(sectionIds);
+        const itemIds = await ItemService.getItemIdsBySectionIds(sectionIds);
+        await ItemService.bulkDeleteItems(itemIds);
 
-        const itemIds = await clientDb.items
-          .where('sectionId')
-          .anyOf(sectionIds)
-          .primaryKeys();
-        await clientDb.items.bulkDelete(itemIds);
-
-        const fieldIds = await clientDb.fields
-          .where('itemId')
-          .anyOf(itemIds)
-          .primaryKeys();
-        await clientDb.fields.bulkDelete(fieldIds);
+        const fieldIds = await FieldService.getFieldIdsByItemIds(itemIds);
+        await FieldService.bulkDeleteFields(fieldIds);
       },
     );
   }

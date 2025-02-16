@@ -71,6 +71,16 @@ class ItemService {
   ): Promise<DEX_Item[]> {
     return clientDb.items.where('sectionId').anyOf(sectionIds).toArray();
   }
+
+  static async getItemIdsBySectionIds(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<DEX_Item['id'][]> {
+    return clientDb.items.where('sectionId').anyOf(sectionIds).primaryKeys();
+  }
+
+  static async bulkDeleteItems(itemIds: DEX_Item['id'][]): Promise<void> {
+    return clientDb.items.bulkDelete(itemIds);
+  }
 }
 
 export default ItemService;

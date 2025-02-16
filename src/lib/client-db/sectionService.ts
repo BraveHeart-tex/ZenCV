@@ -41,6 +41,21 @@ class SectionService {
   ): Promise<DEX_Section[]> {
     return clientDb.sections.where('documentId').equals(documentId).toArray();
   }
+
+  static async getSectionIdsByDocumentId(
+    documentId: DEX_Document['id'],
+  ): Promise<number[]> {
+    return clientDb.sections
+      .where('documentId')
+      .equals(documentId)
+      .primaryKeys();
+  }
+
+  static async bulkDeleteSections(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<void> {
+    return clientDb.sections.bulkDelete(sectionIds);
+  }
 }
 
 export default SectionService;
