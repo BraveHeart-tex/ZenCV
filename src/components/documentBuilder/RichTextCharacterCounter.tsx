@@ -5,7 +5,7 @@ import {
   INTERNAL_SECTION_TYPES,
   SECTIONS_WITH_RICH_TEXT_AI,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { removeHTMLTags } from '@/lib/utils/stringUtils';
+import { cn, removeHTMLTags } from '@/lib/utils/stringUtils';
 import SmoothEmotionIcon from '@/components/misc/SmoothEmotionIcon';
 import type { ComponentProps } from 'react';
 
@@ -46,15 +46,22 @@ const RichTextCharacterCounter = observer(
             <p className="text-muted-foreground lg:inline hidden">
               Keep it between 400-600 characters for better interview chances.
             </p>
-            <div className="flex items-center gap-1 ml-auto">
-              <p>
+
+            <div className="flex items-center ml-auto">
+              <p
+                className={cn(
+                  'transition-[padding-right] duration-300 ease',
+                  trimmedValue.length > 0 && 'pr-1',
+                )}
+              >
                 <span className="text-foreground">{trimmedValue.length}</span>{' '}
                 <span className="text-muted-foreground"> / 600</span>
               </p>
-
-              {trimmedValue.length > 0 ? (
-                <SmoothEmotionIcon expression={getExpression()} />
-              ) : null}
+              <div className="h-[1.75rem]">
+                {trimmedValue.length > 0 ? (
+                  <SmoothEmotionIcon expression={getExpression()} />
+                ) : null}
+              </div>
             </div>
           </div>
         );
