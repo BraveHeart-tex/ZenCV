@@ -27,7 +27,6 @@ import {
   highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
-  TOGGLE_ITEM_WAIT_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   CollapsibleSectionType,
@@ -551,7 +550,7 @@ export const scrollItemIntoView = (
     requestAnimationFrame(checkScrollCompletion);
   };
 
-  setTimeout(scrollAndHighlight, TOGGLE_ITEM_WAIT_MS);
+  setTimeout(scrollAndHighlight, 300);
 };
 
 interface CreateAndNavigateToDocumentParams {

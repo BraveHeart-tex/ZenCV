@@ -192,8 +192,6 @@ export const SUGGESTION_ACTION_TYPES = {
   FOCUS_FIELD: 'FOCUS_FIELD',
 } as const;
 
-export const TOGGLE_ITEM_WAIT_MS = 100 as const;
-
 export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
 
 export const SUGGESTION_TYPES = {
