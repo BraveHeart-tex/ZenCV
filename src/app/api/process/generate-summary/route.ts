@@ -2,7 +2,7 @@ import { generateResumeSummaryPrompt } from '@/lib/helpers/promptHelpers';
 import { generateSummarySchema } from '@/lib/validation/generateSummary.schema';
 import { NextResponse } from 'next/server';
 import { streamText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
     );
 
     const result = streamText({
-      model: google('gemini-2.0-flash-lite-preview-02-05'),
+      model: defaultAiModel,
       prompt,
     });
 

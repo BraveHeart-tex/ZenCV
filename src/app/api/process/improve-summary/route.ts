@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { streamText } from 'ai';
-import { google } from '@ai-sdk/google';
 import { improveSummarySchema } from '@/lib/validation/improveSummary.schema';
 import { generateImproveSummaryPrompt } from '@/lib/helpers/promptHelpers';
+import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
   try {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const prompt = generateImproveSummaryPrompt(validationResult.data);
 
     const result = streamText({
-      model: google('gemini-2.0-flash-lite-preview-02-05'),
+      model: defaultAiModel,
       prompt,
     });
 

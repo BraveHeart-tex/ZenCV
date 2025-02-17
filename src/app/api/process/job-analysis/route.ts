@@ -1,9 +1,9 @@
 import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { google } from '@ai-sdk/google';
 import { generateObject } from 'ai';
 import { NextResponse } from 'next/server';
+import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     const prompt = generateJobAnalysisPrompt(validationResult.data);
 
     const result = await generateObject({
-      model: google('gemini-2.0-flash-lite-preview-02-05'),
+      model: defaultAiModel,
       schema: jobAnalysisResultSchema,
       prompt,
     });
