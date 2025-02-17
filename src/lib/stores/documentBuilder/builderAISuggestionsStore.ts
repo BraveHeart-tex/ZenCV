@@ -69,13 +69,9 @@ export class BuilderAISuggestionsStore {
     }
   }
 
-  setJobAnalysisResults = (data: Partial<JobAnalysisResult>) => {
-    if (data.keywordSuggestions) {
-      this.keywordSuggestions = data.keywordSuggestions;
-    }
-    if (data.suggestedJobTitle) {
-      this.suggestedJobTitle = data.suggestedJobTitle;
-    }
+  setJobAnalysisResults = (data: JobAnalysisResult) => {
+    this.keywordSuggestions = data.keywordSuggestions;
+    this.suggestedJobTitle = data.suggestedJobTitle;
   };
 
   applySuggestedJobTitle = async (fieldId: DEX_Field['id']) => {

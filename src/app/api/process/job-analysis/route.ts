@@ -2,7 +2,7 @@ import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
 import { google } from '@ai-sdk/google';
-import { streamObject } from 'ai';
+import { generateObject } from 'ai';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
           fieldErrors: validationResult.error.flatten().fieldErrors,
           timestamp: Date.now(),
           message: 'Invalid request body.',
+          data: null,
         },
         {
           status: 400,
@@ -25,21 +26,31 @@ export async function POST(req: Request) {
 
     const prompt = generateJobAnalysisPrompt(validationResult.data);
 
-    const result = streamObject({
+    const result = await generateObject({
       model: google('gemini-2.0-flash-lite-preview-02-05'),
       schema: jobAnalysisResultSchema,
       prompt,
     });
 
-    return result.toTextStreamResponse({
-      status: 200,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        fieldErrors: {},
+        timestamp: Date.now(),
+        data: result.object,
+        message: 'Job analysis completed successfully.',
+      },
+      {
+        status: 200,
+      },
+    );
   } catch (error) {
     console.error('/api/process/job-analysis error', error);
     return NextResponse.json(
       {
         success: false,
         fieldErrors: {},
+        data: null,
         timestamp: Date.now(),
         message: 'An internal error occurred while processing the request.',
       },

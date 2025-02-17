@@ -131,5 +131,5 @@ export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
   - [Skill 3]
   (etc...)
 
-  Note: Ensure each skill is truly unique and provides distinct value. Do not list skills that overlap in meaning or represent the same core competency.`;
+  Note: Ensure each skill is truly unique and provides distinct value. Do not list skills that overlap in meaning or represent the same core competency. Respond with a list of unique skills without any duplicates.`;
 };

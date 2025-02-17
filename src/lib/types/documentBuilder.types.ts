@@ -23,10 +23,7 @@ import {
   ValueOf,
   ValueOfNestedObject,
 } from '@/lib/types/utils.types';
-import type {
-  Experimental_UseObjectHelpers,
-  UseCompletionHelpers,
-} from '@ai-sdk/react';
+import type { UseCompletionHelpers } from '@ai-sdk/react';
 import { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
 import { JobPostingSchema } from '../validation/jobPosting.schema';
 
@@ -148,12 +145,7 @@ export interface AiSuggestionsContext {
   isImprovingSummary: UseCompletionHelpers['isLoading'];
   improvedSummary: UseCompletionHelpers['completion'];
 
-  analyzeJob: Experimental_UseObjectHelpers<
-    JobAnalysisResult,
-    JobPostingSchema
-  >['submit'];
-  jobAnalysis: Experimental_UseObjectHelpers<
-    JobAnalysisResult,
-    unknown
-  >['object'];
+  analyzeJob: (
+    values: JobPostingSchema,
+  ) => Promise<JobAnalysisResult | undefined>;
 }

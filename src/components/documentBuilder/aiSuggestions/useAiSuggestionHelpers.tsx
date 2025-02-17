@@ -13,8 +13,8 @@ import {
   INTERNAL_SECTION_TYPES,
   START_WORK_EXPERIENCE_TOUR_DELAY_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 import { startWorkExperienceTour } from './aiSuggestions.utils';
+import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
@@ -74,12 +74,12 @@ export const useAiSuggestionHelpers = () => {
   };
 
   const handleJobAnalysis = async (values: JobPostingSchema) => {
-    analyzeJob(values);
+    await analyzeJob(values);
   };
 
   return {
+    handleJobAnalysis,
     handleWriteProfileSummary,
     isLoading,
-    handleJobAnalysis,
   };
 };
