@@ -39,10 +39,6 @@ const KeywordSuggestionsWidget = observer(
     const [open, setOpen] = useState(false);
     const popoverRef = useRef<HTMLButtonElement | null>(null);
 
-    if (builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0) {
-      return null;
-    }
-
     useEffect(() => {
       const controller = new AbortController();
 
@@ -68,6 +64,10 @@ const KeywordSuggestionsWidget = observer(
         controller.abort();
       };
     }, [sectionType]);
+
+    if (builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0) {
+      return null;
+    }
 
     return (
       <Popover open={open} onOpenChange={setOpen}>

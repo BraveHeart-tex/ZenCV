@@ -66,7 +66,7 @@ export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
 
   return `You are an expert job market analyst specializing in dissecting job descriptions to identify key requirements, responsibilities, and qualifications. Your expertise lies in providing clear, actionable insights that help candidates understand the role and align their qualifications effectively.
 
-  Your task is to analyze the following job posting and provide suggestions in a specific JSON format that will help candidates tailor their resume effectively.
+  Your task is to analyze the following job posting and provide suggestions in a specific format that will help candidates tailor their resume effectively.
 
   Job Details:
   Company: ${companyName}
@@ -75,14 +75,38 @@ export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
   Job Description:
   ${roleDescription}
 
-  Based on the job description, provide suggestions in the following JSON format:
-  {
-    "suggestedJobTitle": "A standardized job title that best matches the role description",
-    "keywordSuggestions": [
-      "Specific keywords that best match the job requirements. Maximum of 15 keywords if applicable.",
-      "Example: ['SQL', 'Python', 'React']",
-    ]
-  }
+  Based on the job description, provide suggestions in the following format:
 
-  Ensure your suggestions are specific, actionable, and directly aligned with the job requirements. Focus on helping candidates position their experience effectively for this role. Respond only in RFC 7159 compliant JSON format.`;
+  1. Suggested Job Title: A standardized job title that best matches the role description
+  2. Keyword Suggestions: A list of only the most relevant and specific skills that directly match the job requirements. Each skill must be explicitly mentioned or strongly implied in the job description. List each skill on a new line with a hyphen (-) prefix. Include a balanced mix of:
+      - Technical skills (programming languages, tools, platforms)
+      - Domain knowledge (industry-specific expertise, methodologies)
+      - Soft skills (only if specifically emphasized in the description)
+      Maximum 15 unique skills total.
+
+  Skill Selection Rules:
+  1. Each skill MUST be explicitly mentioned or clearly implied in the job description
+  2. NO duplicate skills or variations of the same skill
+     Examples of duplicates to avoid:
+     - "React" vs "ReactJS" vs "React.js" (use only "React")
+     - "Node.js" vs "NodeJS" vs "Node" (use only "Node.js")
+     - "UI/UX" vs "User Interface Design" (choose the more specific term)
+  3. Use standard industry formatting for technical terms:
+     - JavaScript (not Javascript or javascript)
+     - Node.js (not NodeJS or Node)
+     - TypeScript (not Typescript or typescript)
+  4. Prioritize specific technical skills over generic terms
+  5. Only include soft skills that are explicitly emphasized
+  6. Each skill must be unique and distinct in meaning
+
+  Format your response exactly as shown below:
+  Suggested Job Title: [Single standardized title]
+
+  Keyword Suggestions:
+  - [Skill 1]
+  - [Skill 2]
+  - [Skill 3]
+  (etc...)
+
+  Note: Ensure each skill is truly unique and provides distinct value. Do not list skills that overlap in meaning or represent the same core competency.`;
 };

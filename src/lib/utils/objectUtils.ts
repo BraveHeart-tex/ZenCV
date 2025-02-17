@@ -8,7 +8,7 @@ export const getKeyByValue = (
 export const getChangedValues = <T extends Record<string, unknown>>(
   previousData: T,
   newData: T,
-) => {
+): Partial<T> => {
   const changed: Partial<T> = {};
 
   for (const key in newData) {

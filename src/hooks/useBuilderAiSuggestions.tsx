@@ -77,6 +77,15 @@ export const BuilderAiSuggestionsProvider = ({
         return;
       }
 
+      if (
+        builderRootStore.aiSuggestionsStore.keywordSuggestions.length ||
+        builderRootStore.aiSuggestionsStore.suggestedJobTitle
+      ) {
+        await AiSuggestionsService.deleteAiSuggestions(
+          builderRootStore.documentStore.document.id,
+        );
+      }
+
       await AiSuggestionsService.addAiSuggestions({
         keywordSuggestions: event.object.keywordSuggestions,
         suggestedJobTitle: event.object.suggestedJobTitle,

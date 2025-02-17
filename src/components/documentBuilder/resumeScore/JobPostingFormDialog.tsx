@@ -58,42 +58,54 @@ const JobPostingFormDialog = observer(
       }
     }, [open, mode]);
 
-    const onSubmit = async (values: JobPostingSchema) => {
-      if (mode === 'edit') {
-        const jobPosting = builderRootStore.jobPostingStore?.jobPosting;
-
-        if (!jobPosting) {
-          return;
-        }
-
-        const changedValues = getChangedValues(jobPosting, values);
-
-        if (Object.keys(changedValues ?? {}).length === 0) {
-          showInfoToast("You haven't made any changes to the job posting.");
-          return;
-        }
-      }
-
-      const result =
-        mode === 'edit'
-          ? await builderRootStore.jobPostingStore.updateJobPosting(
-              getChangedValues(
-                builderRootStore.jobPostingStore?.jobPosting ?? {},
-                values,
-              ),
-            )
-          : await builderRootStore.jobPostingStore.addJobPosting(values);
-
+    const handleJobResult = (result: { success: boolean; message: string }) => {
       if (!result?.success) {
         showErrorToast(result?.message ?? 'An unknown error occurred.');
-        return;
+        return false;
       }
 
       setOpen(false);
       form.reset(defaultFormValues);
+      return true;
+    };
 
-      if (mode === 'create') {
+    const handleJobPostingUpdate = async (values: JobPostingSchema) => {
+      const jobPosting = builderRootStore.jobPostingStore?.jobPosting;
+
+      if (!jobPosting) return;
+
+      const changedValues = getChangedValues(jobPosting, values);
+
+      if (Object.keys(changedValues ?? {}).length === 0) {
+        showInfoToast("You haven't made any changes to the job posting.");
+        return;
+      }
+
+      const result =
+        await builderRootStore.jobPostingStore.updateJobPosting(changedValues);
+
+      if (!handleJobResult(result)) return;
+
+      if (changedValues.jobTitle || changedValues.roleDescription) {
+        builderRootStore.aiSuggestionsStore.resetState();
         await handleJobAnalysis(values);
+      }
+    };
+
+    const handleJobPostingCreate = async (values: JobPostingSchema) => {
+      const result =
+        await builderRootStore.jobPostingStore.addJobPosting(values);
+
+      if (!handleJobResult(result)) return;
+
+      await handleJobAnalysis(values);
+    };
+
+    const onSubmit = async (values: JobPostingSchema) => {
+      if (mode === 'edit') {
+        await handleJobPostingUpdate(values);
+      } else {
+        await handleJobPostingCreate(values);
       }
     };
 
