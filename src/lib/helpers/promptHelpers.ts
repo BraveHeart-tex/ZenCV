@@ -58,25 +58,30 @@ export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
 
   return `You are a skilled resume expert specializing in improving professional summaries to make them more impactful and effective. Your expertise lies in enhancing existing summaries to better showcase career achievements and potential.
 
-  Your task is to analyze and improve the following professional summary while considering the candidate's work experience${jobPosting ? ' and the target job posting' : ''}. The improved summary should:
-  - Be concise and keep the summary between 400-650 characters
-  - Better highlight specific achievements and measurable results
-  - Incorporate relevant industry keywords and technical expertise
-  - Emphasize leadership abilities and career progression where applicable
-  - Focus on unique value propositions that set the candidate apart${
-    jobPosting
-      ? `
-  - Align with the requirements and qualifications of the target job posting`
-      : ''
-  }
-
-  Current Summary:
-  ${summary}
-
-  Work Experience:
-  ${experiencesText}${jobPostingSection}
-
-  Analyze the current summary and work experience${jobPosting ? ', along with the job posting,' : ''} then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience${jobPosting ? ' and the target job requirements' : ''}. Provide ONLY the improved summary text, without any prefix or additional formatting.`;
+    Your task is to analyze and improve the following professional summary while considering the candidate's work experience${jobPosting ? ' and the target job posting' : ''}. The improved summary should:
+    - Better highlight specific achievements and measurable results
+    - Incorporate relevant industry keywords and technical expertise
+    - Emphasize leadership abilities and career progression where applicable
+    - Focus on unique value propositions that set the candidate apart${
+      jobPosting
+        ? `
+    - Align with the requirements and qualifications of the target job posting`
+        : ''
+    }
+    
+    Current Summary:
+    ${summary}
+    
+    Work Experience:
+    ${experiencesText}${jobPostingSection}
+    
+    Analyze the current summary and work experience${jobPosting ? ', along with the job posting,' : ''} then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience${jobPosting ? ' and the target job requirements' : ''}.
+    
+    ### Response Format:
+    - Respond **only** with the improved summary text as a **single string**.
+    - **Do not** include any introductions, explanations, or extra formatting.
+    - The response should be **directly usable** as the improved summary.
+`;
 };
 
 export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
