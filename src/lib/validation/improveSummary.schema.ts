@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { workExperienceSchema } from './workExperience.schema';
+import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 export const improveSummarySchema = z.object({
   summary: z
@@ -10,6 +11,7 @@ export const improveSummarySchema = z.object({
     .array(workExperienceSchema)
     .min(1, 'At least one work experience entry is required')
     .max(10, 'At most 10 work experience entries are allowed'),
+  jobPosting: jobPostingSchema.optional(),
 });
 
-export type ImproveSummary = z.infer<typeof improveSummarySchema>;
+export type ImproveSummaryData = z.infer<typeof improveSummarySchema>;

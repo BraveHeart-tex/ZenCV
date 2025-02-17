@@ -27,8 +27,12 @@ export const useAiSuggestionHelpers = () => {
       workExperiences: prepareWorkExperienceEntries(),
     };
 
+    const jobPosting = builderRootStore.jobPostingStore.jobPosting || undefined;
+
     if (summaryValue) {
-      improveSummary('', { body: { ...body, summary: summaryValue } });
+      improveSummary('', {
+        body: { ...body, summary: summaryValue, jobPosting },
+      });
     } else {
       completeSummary('', { body });
     }

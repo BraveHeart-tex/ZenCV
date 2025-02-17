@@ -1,13 +1,14 @@
 import { GenerateSummarySchema } from '../validation/generateSummary.schema';
-import { ImproveSummary } from '../validation/improveSummary.schema';
+import { ImproveSummaryData } from '../validation/improveSummary.schema';
 import { JobPostingSchema } from '../validation/jobPosting.schema';
 import { WorkExperience } from '../validation/workExperience.schema';
+import { removeHTMLTags } from '@/lib/utils/stringUtils';
 
 const generateExperienceText = (workExperiences: WorkExperience[]) =>
   workExperiences
     .map((exp, index) => {
       return `${index + 1}. **${exp.jobTitle}** at **${exp.employer}** (${exp.startDate} - ${exp.endDate}) | ${exp.city}
- - ${exp.description}`;
+ - ${removeHTMLTags(exp.description)}`;
     })
     .join('\n\n');
 
@@ -37,28 +38,45 @@ export const generateResumeSummaryPrompt = (
   Note: Focus on creating a concise yet impactful summary that showcases the candidate's most significant contributions and career trajectory. Avoid generic statements and emphasize specific achievements. Respond only with the generated summary.`;
 };
 
-export const generateImproveSummaryPrompt = (data: ImproveSummary) => {
+export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
   const { summary, workExperiences } = data;
+
+  const jobPosting = data?.jobPosting;
 
   const experiencesText = generateExperienceText(workExperiences);
 
+  const jobPostingSection = jobPosting
+    ? `
+  Job Details:
+  Company: ${jobPosting.companyName}
+  Position: ${jobPosting.jobTitle}
+
+  Job Description:
+  ${jobPosting.roleDescription}
+  `
+    : '';
+
   return `You are a skilled resume expert specializing in improving professional summaries to make them more impactful and effective. Your expertise lies in enhancing existing summaries to better showcase career achievements and potential.
 
-  Your task is to analyze and improve the following professional summary while considering the candidate's work experience. The improved summary should:
-  - Be more impactful and engaging while maintaining professionalism
+  Your task is to analyze and improve the following professional summary while considering the candidate's work experience${jobPosting ? ' and the target job posting' : ''}. The improved summary should:
+  - Be concise and keep the summary between 400-650 characters
   - Better highlight specific achievements and measurable results
   - Incorporate relevant industry keywords and technical expertise
   - Emphasize leadership abilities and career progression where applicable
-  - Focus on unique value propositions that set the candidate apart
-  - Maintain an optimal length of 3-5 sentences, ensuring clarity and conciseness.
+  - Focus on unique value propositions that set the candidate apart${
+    jobPosting
+      ? `
+  - Align with the requirements and qualifications of the target job posting`
+      : ''
+  }
 
   Current Summary:
   ${summary}
 
   Work Experience:
-  ${experiencesText}
+  ${experiencesText}${jobPostingSection}
 
-  Please analyze the current summary and work experience, then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience. Respond only with the improved summary.`;
+  Analyze the current summary and work experience${jobPosting ? ', along with the job posting,' : ''} then provide an improved version that better represents the candidate's qualifications and achievements. Focus on making the summary more compelling while ensuring it aligns with the candidate's experience${jobPosting ? ' and the target job requirements' : ''}. Provide ONLY the improved summary text, without any prefix or additional formatting.`;
 };
 
 export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
