@@ -14,12 +14,31 @@ const generateExperienceText = (workExperiences: WorkExperience[]) =>
 
 export const generateResumeSummaryPrompt = (
   workExperiences: GenerateSummarySchema['workExperiences'],
+  jobPosting?: GenerateSummarySchema['jobPosting'],
 ): string => {
   const experiencesText = generateExperienceText(workExperiences);
 
+  const jobPostingSection = jobPosting
+    ? `
+
+  Target Position Information:
+  Company: ${jobPosting.companyName}
+  Position: ${jobPosting.jobTitle}
+
+  Job Description:
+  ${jobPosting.roleDescription}
+  `
+    : '';
+
   return `You are a skilled resume expert specializing in crafting impactful professional summaries that effectively showcase career achievements and potential. Your expertise lies in creating compelling narratives that immediately capture employers' attention.
 
-  Your task is to create a powerful professional summary (3-5 sentences) that:
+  Your task is to create a powerful professional summary (3-5 sentences) that:${
+    jobPosting
+      ? `
+  - Aligns with the target position's requirements and qualifications
+  - Emphasizes relevant experience and skills that match the job description`
+      : ''
+  }
   - Incorporates relevant industry keywords and measurable impacts
   - Maintains a confident, professional tone
   - Highlights leadership abilities and technical expertise where applicable
@@ -27,15 +46,20 @@ export const generateResumeSummaryPrompt = (
   - Emphasizes the candidate's ability to drive results and make a meaningful impact
   - Maintains an optimal length of 3-5 sentences, ensuring clarity and conciseness
   
-  Your summary should be tailored to the candidate's qualifications and experiences, ensuring it effectively communicates their strengths and achievements.
+  Your summary should be tailored to the candidate's qualifications and experiences${jobPosting ? ' and the target position' : ''}, ensuring it effectively communicates their strengths and achievements.
 
-  Based on the following work experience, craft a summary that positions the candidate as a standout professional:
+  Based on the following work experience${jobPosting ? ' and job posting' : ''}, craft a summary that positions the candidate as a standout professional:
 
   Work Experience:
 
-  ${experiencesText}
+  ${experiencesText}${jobPostingSection}
 
-  Note: Focus on creating a concise yet impactful summary that showcases the candidate's most significant contributions and career trajectory. Avoid generic statements and emphasize specific achievements. Respond only with the generated summary.`;
+  ### Response Format:
+    - Be concise yet informative.
+    - Respond **only** with the generated summary text as a **single string**.
+    - **Do not** include any introductions, explanations, or extra formatting.
+    - The response should be **directly usable** as the generated summary.
+    `;
 };
 
 export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
@@ -47,7 +71,7 @@ export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
 
   const jobPostingSection = jobPosting
     ? `
-  Job Details:
+  Target Position Information:
   Company: ${jobPosting.companyName}
   Position: ${jobPosting.jobTitle}
 

@@ -34,7 +34,7 @@ export const useAiSuggestionHelpers = () => {
         body: { ...body, summary: summaryValue, jobPosting },
       });
     } else {
-      completeSummary('', { body });
+      completeSummary('', { body: { ...body, jobPosting } });
     }
   };
 

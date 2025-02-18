@@ -23,6 +23,7 @@ export async function POST(req: Request) {
 
     const prompt = generateResumeSummaryPrompt(
       validationResult.data.workExperiences,
+      validationResult.data?.jobPosting,
     );
 
     const result = streamText({
