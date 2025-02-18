@@ -26,8 +26,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          crossOrigin="anonymous"
+          src="//unpkg.com/react-scan/dist/auto.global.js"
+          defer
+        />
+      </head>
       <body className={`${inter.className} antialiased`}>
-        <script src="https://unpkg.com/react-scan/dist/auto.global.js" defer />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
 import { useAiSuggestionHelpers } from './useAiSuggestionHelpers';
 import { useRef } from 'react';
@@ -22,8 +21,8 @@ const SummaryAiSuggestionWidget = observer(
             Professional Summary
           </h3>
           <p className="text-muted-foreground text-sm">
-            Generate a brand-new summary{' '}
-            {summaryField?.value ? `or enhance your existing one` : ''}
+            {summaryField?.value ? 'Improve your' : 'Generate a brand-new'}{' '}
+            summary with AI
           </p>
         </div>
         {isLoading ? (
@@ -32,16 +31,7 @@ const SummaryAiSuggestionWidget = observer(
             <p className="text-muted-foreground">AI is generating...</p>
           </div>
         ) : (
-          <div
-            className={cn('grid', summaryField?.value && 'grid-cols-2 gap-4')}
-          >
-            <Button
-              variant="outline"
-              onClick={handleWriteProfileSummary}
-              disabled={isLoading}
-            >
-              Generate
-            </Button>
+          <div className="grid">
             {summaryField?.value ? (
               <Button
                 variant="outline"
@@ -50,7 +40,15 @@ const SummaryAiSuggestionWidget = observer(
               >
                 Improve
               </Button>
-            ) : null}
+            ) : (
+              <Button
+                variant="outline"
+                onClick={handleWriteProfileSummary}
+                disabled={isLoading}
+              >
+                Generate
+              </Button>
+            )}
           </div>
         )}
       </>
