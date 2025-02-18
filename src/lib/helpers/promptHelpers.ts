@@ -20,46 +20,36 @@ export const generateResumeSummaryPrompt = (
 
   const jobPostingSection = jobPosting
     ? `
-
-  Target Position Information:
-  Company: ${jobPosting.companyName}
-  Position: ${jobPosting.jobTitle}
-
-  Job Description:
-  ${jobPosting.roleDescription}
-  `
+      Target Role:
+      - **Company:** ${jobPosting.companyName}
+      - **Position:** ${jobPosting.jobTitle}
+      
+      **Job Description:**  
+      ${jobPosting.roleDescription}
+      `
     : '';
 
-  return `You are a skilled resume expert specializing in crafting impactful professional summaries that effectively showcase career achievements and potential. Your expertise lies in creating compelling narratives that immediately capture employers' attention.
-
-  Your task is to create a powerful professional summary (3-5 sentences) that:${
-    jobPosting
-      ? `
-  - Aligns with the target position's requirements and qualifications
-  - Emphasizes relevant experience and skills that match the job description`
-      : ''
-  }
-  - Incorporates relevant industry keywords and measurable impacts
-  - Maintains a confident, professional tone
-  - Highlights leadership abilities and technical expertise where applicable
-  - Focuses on unique value propositions and notable accomplishments
-  - Emphasizes the candidate's ability to drive results and make a meaningful impact
-  - Maintains an optimal length of 3-5 sentences, ensuring clarity and conciseness
-  
-  Your summary should be tailored to the candidate's qualifications and experiences${jobPosting ? ' and the target position' : ''}, ensuring it effectively communicates their strengths and achievements.
-
-  Based on the following work experience${jobPosting ? ' and job posting' : ''}, craft a summary that positions the candidate as a standout professional:
-
-  Work Experience:
-
-  ${experiencesText}${jobPostingSection}
-
-  ### Response Format:
-    - Be concise yet informative.
-    - Respond **only** with the generated summary text as a **single string**.
-    - **Do not** include any introductions, explanations, or extra formatting.
-    - The response should be **directly usable** as the generated summary.
-    `;
+  return `### Role:
+      You are a **resume-writing expert** specializing in creating compelling professional summaries that highlight achievements, skills, and impact.
+    
+      ### Task:
+      Generate a **3-5 sentence** professional summary that:
+      - Showcases **key achievements, skills, and measurable impacts**.
+      - Maintains a **confident, professional tone**.
+      - Incorporates **industry-relevant keywords**.
+      - ${jobPosting ? 'Aligns with the **target role’s qualifications and job description**.' : 'Emphasizes the candidate’s unique value propositions.'}
+      - Highlights **leadership, technical expertise, and problem-solving skills** when applicable.
+      - Is **concise, direct, and impactful**.
+    
+      ### Input:
+      **Candidate's Work Experience:**
+      ${experiencesText}${jobPostingSection}
+    
+      ### Output Format:
+      - Respond **only** with the generated summary as a **single string**.
+      - **Do not** include introductions, explanations, or extra formatting.
+      - The response must be **immediately usable** as the candidate’s professional summary.
+      `;
 };
 
 export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
