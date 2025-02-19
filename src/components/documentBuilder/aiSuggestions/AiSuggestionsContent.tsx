@@ -12,6 +12,7 @@ import userSettingsStore from '@/lib/stores/userSettingsStore';
 import { UseState } from '@/lib/types/utils.types';
 import { cn } from '@/lib/utils/stringUtils';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface AiSuggestionsContentProps {
   setOpen: UseState<boolean>;
@@ -26,6 +27,11 @@ const AiSuggestionsContent = observer(
     const { handleWriteProfileSummary, isLoading } = useAiSuggestionHelpers();
 
     if (!userSettingsStore.editorPreferences.showAiSuggestions) return null;
+
+    const hasKeywordsLeft =
+      builderRootStore.aiSuggestionsStore.keywordSuggestions.length &&
+      builderRootStore.aiSuggestionsStore.usedKeywords.size !==
+        builderRootStore.aiSuggestionsStore.keywordSuggestions.length;
 
     const handleWriteSummaryClick = async () => {
       setOpen(false);
@@ -48,17 +54,20 @@ const AiSuggestionsContent = observer(
 
     return (
       <>
-        <SuggestionGroupHeading>Tailor Your Resume</SuggestionGroupHeading>
-        <AnimatedSuggestionsContainer>
-          <AnimatedSuggestionButton
-            label={'Add Work Experience keywords'}
-            icon={<SparklesIcon className="text-white" />}
-            iconContainerClassName={cn(aiButtonBaseClassnames)}
-            onClick={handleAddWorkExperienceKeywordsClick}
-            disabled={isLoading}
-          />
-        </AnimatedSuggestionsContainer>
-
+        {hasKeywordsLeft ? (
+          <>
+            <SuggestionGroupHeading>Tailor Your Resume</SuggestionGroupHeading>
+            <AnimatedSuggestionsContainer>
+              <AnimatedSuggestionButton
+                label={`Add Work Experience keywords (${builderRootStore.aiSuggestionsStore.usedKeywords.size} / ${builderRootStore.aiSuggestionsStore.keywordSuggestions.length})`}
+                icon={<SparklesIcon className="text-white" />}
+                iconContainerClassName={cn(aiButtonBaseClassnames)}
+                onClick={handleAddWorkExperienceKeywordsClick}
+                disabled={isLoading}
+              />
+            </AnimatedSuggestionsContainer>
+          </>
+        ) : null}
         <SuggestionGroupHeading>AI Assistant</SuggestionGroupHeading>
         <AnimatedSuggestionsContainer>
           <AnimatedSuggestionButton
