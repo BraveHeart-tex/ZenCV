@@ -1,7 +1,14 @@
 import { Button } from '@/components/ui/button';
-import { SignInButton, SignOutButton, useUser } from '@clerk/nextjs';
+import {
+  showErrorToast,
+  showLoadingToast,
+  showSuccessToast,
+} from '@/components/ui/sonner';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/nextjs';
 import { CheckIcon } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
 import { useLocation } from 'react-router';
 
 const aiPerks = [
@@ -11,9 +18,65 @@ const aiPerks = [
 ];
 
 const AuthenticationStatus = () => {
+  const [loading, setLoading] = useState(false);
   const { isSignedIn, user } = useUser();
   const location = useLocation();
   const pathname = location.pathname;
+  const { signOut } = useClerk();
+
+  const handleDeleteClerkAccount = () => {
+    confirmDialogStore.showDialog({
+      title: 'Are you sure you want to delete your account?',
+      message:
+        'Deleting your account will remove access to AI features. This action cannot be undone. Your local data (documents, templates, settings) will NOT be deleted.',
+      async onConfirm() {
+        const loadingToastId = showLoadingToast('Deleting your account...');
+        if (!user || !isSignedIn) {
+          showErrorToast('You must be signed in to delete your account.', {
+            id: loadingToastId,
+          });
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const response = await fetch('/api/auth/delete-clerk-account', {
+            method: 'DELETE',
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to delete account');
+          }
+
+          const data = await response.json();
+          if (!data?.success) {
+            throw new Error('Failed to delete account');
+          }
+
+          await signOut({
+            redirectUrl: pathname,
+          });
+          showSuccessToast('Your account has been deleted successfully.', {
+            id: loadingToastId,
+          });
+          confirmDialogStore.hideDialog();
+        } catch (error) {
+          showErrorToast(
+            'An error occurred while deleting your account. Please try again later.',
+            {
+              id: loadingToastId,
+            },
+          );
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      },
+      confirmText: 'Delete Account',
+      cancelText: 'Cancel',
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -44,13 +107,19 @@ const AuthenticationStatus = () => {
             </div>
           </div>
           <div className="flex items-center justify-end gap-2">
-            <Button variant="destructive">Delete Account</Button>
+            <Button
+              variant="destructive"
+              disabled={loading}
+              onClick={handleDeleteClerkAccount}
+            >
+              Delete Account
+            </Button>
             <SignOutButton
               signOutOptions={{
                 redirectUrl: pathname,
               }}
             >
-              <Button>Sign out</Button>
+              <Button disabled={loading}>Sign out</Button>
             </SignOutButton>
           </div>
         </div>
@@ -78,7 +147,7 @@ const AuthenticationStatus = () => {
             fallbackRedirectUrl={pathname}
             signUpFallbackRedirectUrl={pathname}
           >
-            <Button>Sign in</Button>
+            <Button disabled={loading}>Sign in</Button>
           </SignInButton>
         </>
       )}
