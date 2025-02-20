@@ -5,7 +5,9 @@ import {
   DEX_Item,
   DEX_Section,
   EditorPreferences,
-  Setting,
+  DEX_JobPosting,
+  DEX_Setting,
+  DEX_AiSuggestions,
 } from './clientDbSchema';
 import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 
@@ -14,7 +16,9 @@ export const clientDb = new Dexie('cv-builder-db') as Dexie & {
   sections: EntityTable<DEX_Section, 'id'>;
   items: EntityTable<DEX_Item, 'id'>;
   fields: EntityTable<DEX_Field, 'id'>;
-  settings: EntityTable<Setting<string>, 'key'>;
+  settings: EntityTable<DEX_Setting<string>, 'key'>;
+  jobPostings: EntityTable<DEX_JobPosting, 'id'>;
+  aiSuggestions: EntityTable<DEX_AiSuggestions, 'id'>;
 };
 
 clientDb.version(1).stores({
@@ -54,18 +58,42 @@ clientDb
     settings: 'key',
   })
   .upgrade(async (transaction) => {
-    const defaultSettings: Setting[] = [
+    const defaultSettings: DEX_Setting[] = [
       { key: 'language', value: 'en-US' },
       {
         key: 'editorPreferences',
         value: {
           askBeforeDeletingItem: true,
           askBeforeDeletingSection: true,
+          showAiSuggestions: true,
         } as EditorPreferences,
       },
     ];
 
     await transaction.table('settings').bulkAdd(defaultSettings);
+  });
+
+clientDb
+  .version(6)
+  .stores({
+    documents: '++id, title, templateType, jobPostingId, createdAt, updatedAt',
+    sections:
+      '++id, documentId, title, defaultTitle, type, displayOrder, metadata',
+    items: '++id, sectionId, containerType, displayOrder',
+    fields: '++id, itemId, name, type, value, selectType, options',
+    settings: 'key',
+    jobPostings: '++id, companyName, jobTitle, roleDescription, documentId',
+    aiSuggestions: '++id, suggestedJobTitle, keywordSuggestions, documentId',
+  })
+  .upgrade((transaction) => {
+    transaction
+      .table('documents')
+      .toCollection()
+      .modify((doc) => {
+        if (!doc.jobPostingId) {
+          doc.jobPostingId = null;
+        }
+      });
   });
 
 clientDb.documents.hook('updating', (modifications, _primKey, object) => {
@@ -79,4 +107,13 @@ clientDb.documents.hook('updating', (modifications, _primKey, object) => {
 clientDb.documents.hook('creating', (_, obj) => {
   obj.createdAt = new Date().toISOString();
   obj.updatedAt = new Date().toISOString();
+});
+
+clientDb.jobPostings.hook('deleting', (primKey) => {
+  clientDb.documents
+    .where('jobPostingId')
+    .equals(primKey)
+    .modify((doc) => {
+      doc.jobPostingId = null;
+    });
 });

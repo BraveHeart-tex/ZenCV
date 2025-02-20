@@ -1,47 +1,87 @@
 'use client';
-import RichTextEditor from '@/components/richTextEditor/RichTextEditor';
+import RichTextEditor, {
+  EditorRef,
+} from '@/components/richTextEditor/RichTextEditor';
 import { observer } from 'mobx-react-lite';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { action } from 'mobx';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
+import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
+import { Button } from '@/components/ui/button';
+import { SparklesIcon } from 'lucide-react';
+import { cn } from '@/lib/utils/stringUtils';
+import RichTextCharacterCounter from '@/components/documentBuilder/RichTextCharacterCounter';
+import { useCallback } from 'react';
+
+interface BuilderRichTextEditorInputProps {
+  fieldId: DEX_Field['id'];
+  shouldRenderAiWidget?: boolean;
+}
 
 const BuilderRichTextEditorInput = observer(
-  ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
+  ({ fieldId, shouldRenderAiWidget }: BuilderRichTextEditorInputProps) => {
     const field = builderRootStore.fieldStore.getFieldById(fieldId);
     if (!field) return null;
 
     const id = getFieldHtmlId(field);
 
+    const renderEditorFooter = useCallback(() => {
+      if (!shouldRenderAiWidget) return null;
+
+      return (
+        <AiSuggestionsWidget
+          fieldId={fieldId}
+          onAcceptSuggestion={(suggestionValue) => {
+            const editorRef = builderRootStore.UIStore.fieldRefs.get(
+              fieldId.toString(),
+            );
+            if (editorRef) {
+              (editorRef as EditorRef)?.setContent(suggestionValue);
+            }
+          }}
+          renderTrigger={() => {
+            return (
+              <div
+                className={cn(
+                  'absolute bottom-0 left-0 xl:left-auto xl:right-0',
+                )}
+              >
+                <Button
+                  variant="outline"
+                  className="xl:border-br-0 xl:border-r-0 xl:rounded-tr-none xl:rounded-bl-none xl:border-l xl:rounded-tl xl:rounded-br border-b-0 border-l-0 rounded-tl-none rounded-br-none"
+                >
+                  <SparklesIcon />
+                  Get AI Suggestion
+                </Button>
+              </div>
+            );
+          }}
+        />
+      );
+    }, [fieldId, shouldRenderAiWidget]);
+
+    const handleRichTextChange = action(async (html: string) => {
+      await builderRootStore.fieldStore.setFieldValue(fieldId, html);
+    });
+
     return (
-      <>
-        <style jsx global>{`
-          .tiptap.ProseMirror {
-            min-height: 200px;
-            padding: 10px;
-            background: hsl(var(--background));
-          }
-
-          .editor-input-container {
-            border: 1px solid hsl(var(--input));
-          }
-
-          .editor-input-menubar {
-            border-bottom: 1px solid hsl(var(--input));
-          }
-        `}</style>
+      <div>
         <RichTextEditor
-          ref={(ref) =>
-            builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref)
-          }
+          ref={(ref) => {
+            builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+          }}
           id={id}
           initialValue={field.value}
           placeholder={field?.placeholder || ''}
-          onChange={action(async (html) => {
-            await builderRootStore.fieldStore.setFieldValue(fieldId, html);
-          })}
+          onChange={handleRichTextChange}
+          renderEditorFooter={renderEditorFooter}
         />
-      </>
+        <RichTextCharacterCounter
+          fieldValue={field.value}
+          itemId={field.itemId}
+        />
+      </div>
     );
   },
 );

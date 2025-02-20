@@ -5,11 +5,12 @@
   padding: 10px;
   overflow: auto;
   cursor: auto;
+  background: hsl(var(--background));
 
   &:focus-visible {
     border: none;
     overflow: visible;
-    outline: hsl(var(--ring)) auto 1px !important;
+    outline: none !important;
   }
 }
 

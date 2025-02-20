@@ -23,6 +23,9 @@ import {
   ValueOf,
   ValueOfNestedObject,
 } from '@/lib/types/utils.types';
+import type { UseCompletionHelpers } from '@ai-sdk/react';
+import { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
+import { JobPostingSchema } from '../validation/jobPosting.schema';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
@@ -120,4 +123,29 @@ export interface TemplateOption {
   description: string;
   tags: string[];
   value: ResumeTemplate;
+}
+
+export interface AISuggestionBase {
+  title?: string;
+  description?: string;
+}
+
+export type AISuggestion =
+  | (AISuggestionBase & { type: 'text'; value: string })
+  | (AISuggestionBase & { type: 'options'; values: string[] });
+
+export interface AiSuggestionsContext {
+  completeSummary: UseCompletionHelpers['complete'];
+  isCompletingSummary: UseCompletionHelpers['isLoading'];
+  generatedSummary: UseCompletionHelpers['completion'];
+
+  isLoading: boolean;
+
+  improveSummary: UseCompletionHelpers['complete'];
+  isImprovingSummary: UseCompletionHelpers['isLoading'];
+  improvedSummary: UseCompletionHelpers['completion'];
+
+  analyzeJob: (
+    values: JobPostingSchema,
+  ) => Promise<JobAnalysisResult | undefined>;
 }

@@ -12,6 +12,14 @@ export interface RichTextEditorProps {
   onChange?: (html: string) => void;
   ref?: Ref<HTMLDivElement>;
   id?: string;
+  renderEditorFooter?: () => React.ReactNode;
+}
+
+export interface EditorRef extends HTMLDivElement {
+  focus: () => void;
+  scrollIntoView: () => void;
+  getBoundingClientRect: () => DOMRect;
+  setContent: (content: string) => void;
 }
 
 const RichTextEditor = ({
@@ -20,6 +28,7 @@ const RichTextEditor = ({
   onChange,
   ref,
   id,
+  renderEditorFooter,
 }: RichTextEditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const editor = useEditor({
@@ -65,19 +74,25 @@ const RichTextEditor = ({
 
       return new DOMRect(0, 0, 0, 0);
     },
+    setContent(content: string) {
+      if (editor) {
+        editor.commands.setContent(content);
+      }
+    },
   }));
 
   return (
     <div className="w-full" ref={containerRef}>
-      <div className="border-muted-foreground/50 bg-background editor-input-container rounded-md">
+      <div className="border-input bg-background border rounded-md">
         <RichTextEditorMenubar editor={editor} />
-        <div className="min-h-[200px] overflow-auto">
+        <div className="min-h-[200px] overflow-auto relative pb-10">
           <EditorContent
             id={id}
             ref={ref}
             editor={editor}
             className="max-w-none"
           />
+          {renderEditorFooter?.()}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 'use client';
+
 import DocumentBuilderClient from '@/components/documentBuilder/DocumentBuilderClient';
 import { useNavigate, useParams } from 'react-router';
 import ClientOnly from '../misc/ClientOnly';
@@ -13,6 +14,8 @@ import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { startTransition, useEffect } from 'react';
 import { showErrorToast } from '../ui/sonner';
 import LazyMotionWrapper from '../ui/LazyMotionWrapper';
+import { BuilderAiSuggestionsProvider } from '@/hooks/useBuilderAiSuggestions';
+import ProtectedServiceDialog from '../auth/ProtectedServiceDialog';
 
 const DocumentBuilderPage = observer(() => {
   const navigate = useNavigate();
@@ -55,16 +58,19 @@ const DocumentBuilderPage = observer(() => {
   }
 
   return (
-    <LazyMotionWrapper>
-      <div>
-        <ResumeOverview />
-        <DocumentBuilderClient />
-        <ClientOnly>
-          <DocumentBuilderPreview />
-        </ClientOnly>
-      </div>
-      <DocumentBuilderViewToggle />
-    </LazyMotionWrapper>
+    <BuilderAiSuggestionsProvider>
+      <LazyMotionWrapper>
+        <div>
+          <ResumeOverview />
+          <DocumentBuilderClient />
+          <ClientOnly>
+            <DocumentBuilderPreview />
+          </ClientOnly>
+        </div>
+        <DocumentBuilderViewToggle />
+      </LazyMotionWrapper>
+      <ProtectedServiceDialog />
+    </BuilderAiSuggestionsProvider>
   );
 });
 

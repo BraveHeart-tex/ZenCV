@@ -3,7 +3,7 @@ import { buttonVariants } from '../ui/button';
 
 const Cta = () => {
   return (
-    <section className="border-t">
+    <section className="px-4 border-t">
       <div className="md:py-32 container flex flex-col items-center gap-4 py-24 mx-auto text-center">
         <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">
           Ready to get started?

@@ -1,11 +1,14 @@
 import './globals.css';
-import './tiptap.css';
+import '@/styles/shepherd.css';
+import '@/styles/tiptap.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { APP_NAME } from '@/lib/appConfig';
+import 'shepherd.js/dist/css/shepherd.css';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const inter = Inter({
   weight: 'variable',
@@ -23,19 +26,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-          <Toaster />
-          <ConfirmDialog />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <head>
+          <script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+            defer
+          />
+        </head>
+        <body className={`${inter.className} antialiased`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+            <ConfirmDialog />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

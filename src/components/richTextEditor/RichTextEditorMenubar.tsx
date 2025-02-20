@@ -72,7 +72,7 @@ const RichTextEditorMenubar = memo(({ editor }: RichTextEditorMenubarProps) => {
   }
 
   return (
-    <div className="border-muted-foreground/50 editor-input-menubar flex flex-wrap gap-2 p-2 border-b">
+    <div className="border-input editor-input-menubar flex flex-wrap gap-2 p-2 border-b">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon">

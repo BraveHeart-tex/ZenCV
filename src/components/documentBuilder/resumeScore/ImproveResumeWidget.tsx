@@ -13,6 +13,7 @@ import ResumeScoreSuggestionContent from '@/components/documentBuilder/resumeSco
 import { ChevronDownIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 import { useMotionValueEvent, useScroll } from 'motion/react';
+import DocumentJobPostingIndicator from '../DocumentJobPostingIndicator';
 
 const ImproveResumeWidget = observer(() => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,19 +22,25 @@ const ImproveResumeWidget = observer(() => {
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
+    const controller = new AbortController();
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener(
+      'click',
+      (event: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setOpen(false);
+        }
+      },
+      {
+        signal: controller.signal,
+      },
+    );
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      controller.abort();
     };
   }, []);
 
@@ -55,7 +62,10 @@ const ImproveResumeWidget = observer(() => {
     >
       <div className={'w-full space-y-2'}>
         <div className="flex items-center justify-between w-full">
-          <ResumeScoreBadge />
+          <div className="flex items-center gap-2">
+            <ResumeScoreBadge />
+            <DocumentJobPostingIndicator />
+          </div>
           <CollapsibleTrigger asChild>
             <Button variant="outline" size="sm">
               <span>

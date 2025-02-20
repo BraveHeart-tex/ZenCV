@@ -9,6 +9,7 @@ import {
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
 import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
+import { SectionType } from '@/lib/types/documentBuilder.types';
 
 export const INTERNAL_SECTION_TYPES = {
   PERSONAL_DETAILS: 'personal-details',
@@ -35,14 +36,14 @@ export const NOT_TEMPLATED_SECTION_TYPES = [
   INTERNAL_SECTION_TYPES.SUMMARY,
 ] as const;
 
-export const DELETABLE_INTERNAL_SECTION_TYPES = [
-  INTERNAL_SECTION_TYPES.CUSTOM,
-  INTERNAL_SECTION_TYPES.HOBBIES,
-  INTERNAL_SECTION_TYPES.REFERENCES,
-  INTERNAL_SECTION_TYPES.COURSES,
-  INTERNAL_SECTION_TYPES.LANGUAGES,
-  INTERNAL_SECTION_TYPES.INTERNSHIPS,
-] as const;
+export const DELETABLE_INTERNAL_SECTION_TYPES = new Map<SectionType, boolean>([
+  [INTERNAL_SECTION_TYPES.CUSTOM, true],
+  [INTERNAL_SECTION_TYPES.HOBBIES, true],
+  [INTERNAL_SECTION_TYPES.REFERENCES, true],
+  [INTERNAL_SECTION_TYPES.COURSES, true],
+  [INTERNAL_SECTION_TYPES.LANGUAGES, true],
+  [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
+]);
 
 export const SECTION_DESCRIPTIONS_BY_TYPE = {
   [INTERNAL_SECTION_TYPES.SUMMARY]:
@@ -191,8 +192,6 @@ export const SUGGESTION_ACTION_TYPES = {
   FOCUS_FIELD: 'FOCUS_FIELD',
 } as const;
 
-export const TOGGLE_ITEM_WAIT_MS = 100 as const;
-
 export const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
 
 export const SUGGESTION_TYPES = {
@@ -285,3 +284,23 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   ...item,
   defaultTitle: item.title,
 }));
+
+export const SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER = new Map<
+  SectionType,
+  boolean
+>([
+  [INTERNAL_SECTION_TYPES.SUMMARY, true],
+  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
+  [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
+]);
+
+export const START_WORK_EXPERIENCE_TOUR_DELAY_MS = 300 as const;
+
+export const SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET = new Map<
+  SectionType,
+  boolean
+>([
+  [INTERNAL_SECTION_TYPES.SUMMARY, true],
+  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
+  [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
+]);

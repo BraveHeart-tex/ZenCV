@@ -6,13 +6,36 @@ import DocumentCard from './DocumentCard';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useState, useMemo } from 'react';
+import { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
 
 const DocumentsPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const documents = useLiveQuery(
     async () => {
-      return await clientDb.documents.orderBy('id').reverse().toArray();
+      const documents = await clientDb.documents.toArray();
+
+      const jobPostingIds = [
+        ...new Set(
+          documents.map((doc) => doc.jobPostingId).filter((id) => id !== null),
+        ),
+      ];
+
+      const jobPostingsMap = new Map<DEX_JobPosting['id'], DEX_JobPosting>();
+      if (jobPostingIds.length) {
+        const jobPostings = await clientDb.jobPostings
+          .where('id')
+          .anyOf(jobPostingIds)
+          .toArray();
+        jobPostings.forEach((jp) => jobPostingsMap.set(jp.id, jp));
+      }
+
+      return documents.map((doc) => ({
+        ...doc,
+        jobPosting: doc.jobPostingId
+          ? jobPostingsMap.get(doc.jobPostingId) || null
+          : null,
+      }));
     },
     [],
     null,
@@ -52,8 +75,9 @@ const DocumentsPageClient = () => {
           <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
             You don’t have any documents yet!
           </h2>
-          <p className="text-muted-foreground">
-            Ready to get started? Click below to create your first document.
+          <p className="text-muted-foreground text-center">
+            Ready to get started? Click below to create your first document in
+            just a few clicks.
           </p>
         </div>
         <CreateDocumentDialog />

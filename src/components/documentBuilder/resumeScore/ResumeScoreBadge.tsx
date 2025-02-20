@@ -16,9 +16,11 @@ const ResumeScoreBadge = observer(() => {
       >
         {score}%
       </span>
-      <span className="text-muted-foreground text-sm font-medium">
-        Your Resume Score
-      </span>
+      {!builderRootStore.documentStore.document?.jobPostingId ? (
+        <span className="text-muted-foreground text-sm font-medium">
+          Your Resume Score
+        </span>
+      ) : null}
     </div>
   );
 });

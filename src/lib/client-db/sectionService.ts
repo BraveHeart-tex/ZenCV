@@ -1,6 +1,6 @@
-import { UpdateSpec } from 'dexie';
+import { InsertType, UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
-import { DEX_Section } from './clientDbSchema';
+import { DEX_Document, DEX_Section } from './clientDbSchema';
 
 class SectionService {
   static async updateSection(
@@ -34,6 +34,35 @@ class SectionService {
     }[],
   ) {
     return clientDb.sections.bulkUpdate(keysAndChanges);
+  }
+
+  static async getSectionsByDocumentId(
+    documentId: DEX_Document['id'],
+  ): Promise<DEX_Section[]> {
+    return clientDb.sections.where('documentId').equals(documentId).toArray();
+  }
+
+  static async getSectionIdsByDocumentId(
+    documentId: DEX_Document['id'],
+  ): Promise<number[]> {
+    return clientDb.sections
+      .where('documentId')
+      .equals(documentId)
+      .primaryKeys();
+  }
+
+  static async bulkDeleteSections(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<void> {
+    return clientDb.sections.bulkDelete(sectionIds);
+  }
+
+  static async bulkAddSections(
+    data: InsertType<DEX_Section, 'id'>[],
+  ): Promise<DEX_Section['id'][]> {
+    return clientDb.sections.bulkAdd(data, {
+      allKeys: true,
+    });
   }
 }
 

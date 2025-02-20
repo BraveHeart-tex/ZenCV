@@ -1,4 +1,6 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx';
+import { action, makeAutoObservable, reaction } from 'mobx';
+
+const DIALOG_CONTENT_RESET_DELAY_MS = 150 as const;
 
 interface ShowDialogParams {
   message: string;
@@ -68,16 +70,18 @@ class ConfirmDialogStore {
     this.isOpen = false;
     this.onConfirm = () => {};
     this.onCancel = () => {};
-    setTimeout(() => {
-      runInAction(() => {
+
+    setTimeout(
+      action(() => {
         this.message = '';
         this.title = 'Confirm';
         this.cancelText = 'Cancel';
         this.confirmText = 'Confirm';
         this.doNotAskAgainEnabled = false;
         this.doNotAskAgainChecked = false;
-      });
-    }, 150);
+      }),
+      DIALOG_CONTENT_RESET_DELAY_MS,
+    );
   };
 
   handleDoNotAskAgainCheckedChange = (checked: boolean) => {

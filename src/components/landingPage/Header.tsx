@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
       <div className="h-14 max-w-screen-2xl container flex items-center mx-auto">
         <Link className="flex items-center mr-6 space-x-2" to="/">
           <Icons.logo />

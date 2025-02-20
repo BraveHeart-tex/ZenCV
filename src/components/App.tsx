@@ -32,6 +32,7 @@ const App = () => {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/resume-templates" element={<ResumeTemplatesPage />} />
         </Route>
+
         <Route path={'/builder/:id'} element={<DocumentBuilderPage />} />
       </Routes>
     </BrowserRouter>

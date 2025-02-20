@@ -16,16 +16,18 @@ import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUISto
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
+interface DocumentBuilderPdfViewerProps {
+  children: ReactElement;
+  renderTextLayer?: boolean;
+  renderAnnotationLayer?: boolean;
+}
+
 const DocumentBuilderPdfViewer = observer(
   ({
     children,
     renderTextLayer = false,
     renderAnnotationLayer = false,
-  }: {
-    children: ReactElement;
-    renderTextLayer?: boolean;
-    renderAnnotationLayer?: boolean;
-  }) => {
+  }: DocumentBuilderPdfViewerProps) => {
     const view = builderRootStore.UIStore.currentView;
     const isMobile = useMediaQuery('(max-width: 768px)', false);
     const currentPage = pdfViewerStore.currentPage;
@@ -118,13 +120,13 @@ const DocumentBuilderPdfViewer = observer(
     return (
       <div
         ref={containerRef}
-        className="relative w-full h-full overflow-hidden"
+        className={'relative h-full overflow-hidden w-full'}
       >
         {shouldShowLoader ? <PreviewSkeleton /> : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className="previous-document absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out opacity-50"
+            className="previous-document absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out opacity-50"
             file={previousRenderValue}
             loading={null}
           >
@@ -144,7 +146,7 @@ const DocumentBuilderPdfViewer = observer(
           <Document
             key={render.value}
             className={
-              'absolute inset-0 flex items-center justify-center w-full h-full transition-opacity duration-300 ease-in-out'
+              'absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out'
             }
             file={render.value}
             loading={null}

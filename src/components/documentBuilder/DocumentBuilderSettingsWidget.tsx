@@ -7,6 +7,7 @@ import EditorPreferences from '../appHome/settings/EditorPreferences';
 import { useState } from 'react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { cn } from '@/lib/utils/stringUtils';
+import AuthenticationStatus from '../appHome/settings/AuthenticationStatus';
 
 const DocumentBuilderSettingsWidget = () => {
   const [open, setOpen] = useState(false);
@@ -23,11 +24,12 @@ const DocumentBuilderSettingsWidget = () => {
       description="Manage your application settings and preferences below."
     >
       <div className="space-y-4">
+        <AuthenticationStatus />
+        <Separator />
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
       </div>
-
       <div className={cn(dialogFooterClassNames, 'mt-4')}>
         <Button onClick={() => setOpen(false)} variant="outline">
           Close

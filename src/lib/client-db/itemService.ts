@@ -1,6 +1,11 @@
-import { UpdateSpec } from 'dexie';
+import { InsertType, UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
-import { DEX_Field, DEX_InsertItemModel, DEX_Item } from './clientDbSchema';
+import {
+  DEX_Field,
+  DEX_InsertItemModel,
+  DEX_Item,
+  DEX_Section,
+} from './clientDbSchema';
 
 class ItemService {
   static async deleteItem(itemId: DEX_Item['id']) {
@@ -59,6 +64,30 @@ class ItemService {
         };
       },
     );
+  }
+
+  static async getItemsWithSectionIds(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<DEX_Item[]> {
+    return clientDb.items.where('sectionId').anyOf(sectionIds).toArray();
+  }
+
+  static async getItemIdsBySectionIds(
+    sectionIds: DEX_Section['id'][],
+  ): Promise<DEX_Item['id'][]> {
+    return clientDb.items.where('sectionId').anyOf(sectionIds).primaryKeys();
+  }
+
+  static async bulkDeleteItems(itemIds: DEX_Item['id'][]): Promise<void> {
+    return clientDb.items.bulkDelete(itemIds);
+  }
+
+  static async bulkAddItems(
+    data: InsertType<DEX_Item, 'id'>[],
+  ): Promise<DEX_Item['id'][]> {
+    return clientDb.items.bulkAdd(data, {
+      allKeys: true,
+    });
   }
 }
 

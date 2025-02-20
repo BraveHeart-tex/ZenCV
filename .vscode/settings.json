@@ -1,4 +1,5 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "biome.enabled": false
+  "biome.enabled": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

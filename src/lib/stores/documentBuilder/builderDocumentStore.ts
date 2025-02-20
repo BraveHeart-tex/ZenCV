@@ -21,7 +21,7 @@ export class BuilderDocumentStore {
         };
       }
 
-      const { document, sections, items, fields } = result;
+      const { document, sections, items, fields, aiSuggestions } = result;
 
       runInAction(() => {
         this.document = document;
@@ -36,6 +36,12 @@ export class BuilderDocumentStore {
           .slice()
           .sort((a, b) => a.displayOrder - b.displayOrder);
         this.root.fieldStore.fields = fields;
+        this.root.jobPostingStore.jobPosting = result.jobPosting;
+        if (aiSuggestions) {
+          const { suggestedJobTitle, keywordSuggestions } = aiSuggestions;
+          this.root.aiSuggestionsStore.suggestedJobTitle = suggestedJobTitle;
+          this.root.aiSuggestionsStore.keywordSuggestions = keywordSuggestions;
+        }
       });
     } catch (error) {
       console.error('initializeStore error', error);
@@ -71,8 +77,7 @@ export class BuilderDocumentStore {
     );
 
     runInAction(() => {
-      if (!this.document) return;
-      this.document.templateType = templateType;
+      this.document!.templateType = templateType;
     });
   };
 }

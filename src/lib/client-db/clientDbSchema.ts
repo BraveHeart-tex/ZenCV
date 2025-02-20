@@ -5,6 +5,8 @@ import {
   SectionType,
   SelectType,
 } from '@/lib/types/documentBuilder.types';
+import { JobPostingSchema } from '../validation/jobPosting.schema';
+import { Nullable } from '../types/utils.types';
 
 type IdType = number;
 
@@ -14,6 +16,7 @@ export interface DEX_Document {
   templateType: ResumeTemplate;
   createdAt: string;
   updatedAt: string;
+  jobPostingId: Nullable<IdType>;
 }
 
 export interface DEX_Section {
@@ -106,11 +109,27 @@ export type DEX_InsertFieldModel = Omit<DEX_Field, 'id'>;
 export interface EditorPreferences {
   askBeforeDeletingItem: boolean;
   askBeforeDeletingSection: boolean;
+  showAiSuggestions: boolean;
 }
 
-export type SettingsKey = 'language' | 'editorPreferences';
+export type DEX_SettingsKey = 'language' | 'editorPreferences';
 
-export interface Setting<T = unknown> {
-  key: SettingsKey;
+export interface DEX_Setting<T = unknown> {
+  key: DEX_SettingsKey;
   value: T;
+}
+
+export interface DEX_JobPosting extends JobPostingSchema {
+  id: IdType;
+}
+
+export interface DEX_DocumentWithJobPosting extends DEX_Document {
+  jobPosting: DEX_JobPosting | null;
+}
+
+export interface DEX_AiSuggestions {
+  id: IdType;
+  suggestedJobTitle: string;
+  keywordSuggestions: string[];
+  documentId: DEX_Document['id'];
 }

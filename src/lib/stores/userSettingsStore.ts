@@ -20,6 +20,7 @@ class UserSettingsStore {
   editorPreferences: EditorPreferences = {
     askBeforeDeletingItem: true,
     askBeforeDeletingSection: true,
+    showAiSuggestions: true,
   };
   constructor() {
     makeAutoObservable(this);

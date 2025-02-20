@@ -11,6 +11,7 @@ import ImproveResumeWidget from './resumeScore/ImproveResumeWidget';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
+import TailorForJobPostingBanner from './resumeScore/TailorForJobPostingBanner';
 
 const DocumentBuilderClient = observer(() => {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ const DocumentBuilderClient = observer(() => {
         >
           <ImproveResumeWidget />
         </div>
+        <TailorForJobPostingBanner />
 
         <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
           <DocumentSections />

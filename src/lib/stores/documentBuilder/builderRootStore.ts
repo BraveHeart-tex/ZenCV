@@ -5,6 +5,8 @@ import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
+import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
+import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
 
 export class BuilderRootStore {
   documentStore: BuilderDocumentStore;
@@ -14,6 +16,10 @@ export class BuilderRootStore {
 
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
+
+  aiSuggestionsStore: BuilderAISuggestionsStore;
+  jobPostingStore: BuilderJobPostingStore;
+
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
     this.sectionStore = new BuilderSectionStore(this);
@@ -21,6 +27,8 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
+    this.aiSuggestionsStore = new BuilderAISuggestionsStore(this);
+    this.jobPostingStore = new BuilderJobPostingStore(this);
   }
 
   resetState = () => {
@@ -29,11 +37,14 @@ export class BuilderRootStore {
       this.sectionStore.sections = [];
       this.itemStore.items = [];
       this.fieldStore.fields = [];
-      this.UIStore.collapsedItemId = null;
-      this.UIStore.itemRefs = new Map();
-      this.UIStore.fieldRefs = new Map();
+
       this.templateStore.debouncedResumeStats = { score: 0, suggestions: [] };
       this.templateStore.debouncedTemplateData = null;
+
+      this.jobPostingStore.jobPosting = null;
+
+      this.UIStore.resetState();
+      this.aiSuggestionsStore.resetState();
     });
   };
 }

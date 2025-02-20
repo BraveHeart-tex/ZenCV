@@ -9,13 +9,22 @@ import {
   FIELD_TYPES,
 } from '@/lib/client-db/clientDbSchema';
 import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
+import {
+  getFieldHtmlId,
+  getSectionTypeByItemId,
+} from '@/lib/helpers/documentBuilderHelpers';
 import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils/stringUtils';
 import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
-import { SELECT_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  FIELD_NAMES,
+  INTERNAL_SECTION_TYPES,
+  SELECT_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { SectionType } from '@/lib/types/documentBuilder.types';
+import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -32,7 +41,21 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     if (field.type === FIELD_TYPES.STRING) {
       return (
         <>
-          <Label htmlFor={htmlInputId}>{field.name}</Label>
+          <div
+            className={cn(
+              'flex items-center justify-between gap-8',
+              field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
+                'max-h-[0.875rem]',
+            )}
+          >
+            <Label htmlFor={htmlInputId}>{field.name}</Label>
+            {field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE && (
+              <WantedJobTitleSuggestionPopover
+                fieldId={fieldId}
+                value={field.value}
+              />
+            )}
+          </div>
           <Input
             id={htmlInputId}
             ref={(ref) =>
@@ -69,7 +92,13 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             ?.containerType === CONTAINER_TYPES.COLLAPSIBLE ? (
             <Label htmlFor={htmlInputId}>{field.name}</Label>
           ) : null}
-          <BuilderRichTextEditorInput fieldId={fieldId} />
+          <BuilderRichTextEditorInput
+            fieldId={fieldId}
+            shouldRenderAiWidget={
+              (getSectionTypeByItemId(field.itemId) as SectionType) ===
+              INTERNAL_SECTION_TYPES.SUMMARY
+            }
+          />
         </>
       );
     }
