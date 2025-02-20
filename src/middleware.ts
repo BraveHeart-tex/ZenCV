@@ -28,7 +28,7 @@ export default clerkMiddleware(async (auth, req) => {
           success: false,
           timestamp: Date.now(),
           message:
-            'You have made too many requests please wait a few minutes before trying again.',
+            'Too many requests. Please wait a few minutes and try again.',
           data: null,
         },
         {
