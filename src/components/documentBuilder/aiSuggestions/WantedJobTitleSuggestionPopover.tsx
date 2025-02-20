@@ -13,6 +13,7 @@ import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/interna
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { cn } from '@/lib/utils/stringUtils';
 import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 interface WantedJobTitleSuggestionPopoverProps {
   fieldId: DEX_Field['id'];
@@ -26,8 +27,10 @@ const WantedJobTitleSuggestionPopover = observer(
       builderRootStore.aiSuggestionsStore.suggestedJobTitle;
 
     if (
+      !userSettingsStore.editorPreferences.showAiSuggestions ||
       !suggestedJobTitle ||
-      !builderRootStore.documentStore.document?.jobPostingId
+      !builderRootStore.documentStore.document?.jobPostingId ||
+      value === suggestedJobTitle
     ) {
       return null;
     }
@@ -35,8 +38,6 @@ const WantedJobTitleSuggestionPopover = observer(
     const handleSuggestedTitleClick = async () => {
       await builderRootStore.aiSuggestionsStore.applySuggestedJobTitle(fieldId);
     };
-
-    if (value === suggestedJobTitle) return null;
 
     return (
       <Popover>

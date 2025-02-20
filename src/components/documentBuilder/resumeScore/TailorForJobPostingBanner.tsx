@@ -11,11 +11,17 @@ import {
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import AutoTailorGuidanceDialog from './AutoTailorGuidanceDialog';
 import { useState } from 'react';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 const TailorForJobPostingBanner = observer(() => {
   const [open, setOpen] = useState(false);
 
-  if (builderRootStore.documentStore.document?.jobPostingId) return null;
+  if (
+    builderRootStore.documentStore.document?.jobPostingId ||
+    !userSettingsStore.editorPreferences.showAiSuggestions
+  ) {
+    return null;
+  }
 
   const handleJobPostingDialogClick = (
     event: React.MouseEvent<HTMLButtonElement>,

@@ -28,6 +28,7 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils/stringUtils';
 import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 import { getKeywordSuggestionScrollEventName } from '@/lib/helpers/documentBuilderHelpers';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 interface KeywordSuggestionsWidgetProps {
   sectionId: DEX_Section['id'];
@@ -65,7 +66,10 @@ const KeywordSuggestionsWidget = observer(
       };
     }, [sectionType]);
 
-    if (builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0) {
+    if (
+      builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0 ||
+      !userSettingsStore.editorPreferences.showAiSuggestions
+    ) {
       return null;
     }
 
