@@ -15,6 +15,16 @@ const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
   null,
 );
 
+// For some reason, AI SDK returns the error object as a string
+// so i have to parse it here
+const getErrorMessage = (error: Error): string => {
+  try {
+    return JSON.parse(error.message)?.message;
+  } catch {
+    return 'Something went wrong while generating your summary.';
+  }
+};
+
 export const BuilderAiSuggestionsProvider = ({
   children,
 }: {
@@ -31,9 +41,10 @@ export const BuilderAiSuggestionsProvider = ({
   } = useCompletion({
     api: `${AI_PROCESS_BASE_API_ROUTE}/generate-summary`,
     onError(error) {
-      showErrorToast(error.message, {
+      showErrorToast(getErrorMessage(error), {
         id: toastId.current,
       });
+      toastId.current = undefined;
     },
   });
 
@@ -45,9 +56,10 @@ export const BuilderAiSuggestionsProvider = ({
   } = useCompletion({
     api: `${AI_PROCESS_BASE_API_ROUTE}/improve-summary`,
     onError(error) {
-      showErrorToast(error.message, {
+      showErrorToast(getErrorMessage(error), {
         id: toastId.current,
       });
+      toastId.current = undefined;
     },
   });
 
