@@ -106,7 +106,7 @@ const AuthenticationStatus = () => {
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex items-center justify-end gap-2 my-2">
             <Button
               variant="destructive"
               disabled={loading}

@@ -44,7 +44,9 @@ const ResponsiveDialog = ({
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          {children}
+          <div className="flex-1 w-full h-full max-h-[90vh] overflow-auto">
+            {children}
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -58,7 +60,9 @@ const ResponsiveDialog = ({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4 pb-4">{children}</div>
+        <div className="flex-1 w-full h-full px-4 pb-4 overflow-auto max-h-[90vh]">
+          {children}
+        </div>
       </DrawerContent>
     </Drawer>
   );

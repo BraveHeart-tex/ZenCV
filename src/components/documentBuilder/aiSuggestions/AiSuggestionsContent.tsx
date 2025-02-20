@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { SectionType } from '@/lib/types/documentBuilder.types';
+import { useAuth } from '@clerk/nextjs';
 
 interface AiSuggestionsContentProps {
   setOpen: UseState<boolean>;
@@ -24,10 +25,13 @@ export const aiButtonBaseClassnames =
 
 const AiSuggestionsContent = observer(
   ({ setOpen }: AiSuggestionsContentProps) => {
+    const { isSignedIn } = useAuth();
     const hasWrittenSummary = !!getSummaryValue();
     const { handleWriteProfileSummary, isLoading } = useAiSuggestionHelpers();
 
-    if (!userSettingsStore.editorPreferences.showAiSuggestions) return null;
+    if (!userSettingsStore.editorPreferences.showAiSuggestions || !isSignedIn) {
+      return null;
+    }
 
     const shouldShowTailorSuggestions =
       userSettingsStore.editorPreferences.showAiSuggestions &&

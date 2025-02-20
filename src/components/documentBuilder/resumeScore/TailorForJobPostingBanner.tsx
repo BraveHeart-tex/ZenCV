@@ -16,7 +16,7 @@ import { useAuth } from '@clerk/nextjs';
 import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
 
 const TailorForJobPostingBanner = observer(() => {
-  const [showGuidance, setShowGuidance] = useState(false);
+  const [showGuidanceDialog, setShowGuidanceDialog] = useState(false);
   const { isSignedIn } = useAuth();
 
   if (
@@ -44,7 +44,7 @@ const TailorForJobPostingBanner = observer(() => {
 
     if (!summaryValue && shouldFillWorkExperience) {
       event.preventDefault();
-      setShowGuidance(true);
+      setShowGuidanceDialog(true);
       return;
     }
   };
@@ -52,8 +52,8 @@ const TailorForJobPostingBanner = observer(() => {
   return (
     <>
       <AutoTailorGuidanceDialog
-        open={showGuidance}
-        onOpenChange={setShowGuidance}
+        open={showGuidanceDialog}
+        onOpenChange={setShowGuidanceDialog}
       />
 
       <JobPostingFormDialog

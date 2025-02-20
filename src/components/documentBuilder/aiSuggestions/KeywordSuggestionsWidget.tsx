@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 import { getKeywordSuggestionScrollEventName } from '@/lib/helpers/documentBuilderHelpers';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
+import { useAuth } from '@clerk/nextjs';
 
 interface KeywordSuggestionsWidgetProps {
   sectionId: DEX_Section['id'];
@@ -39,9 +40,17 @@ const KeywordSuggestionsWidget = observer(
   ({ sectionType }: KeywordSuggestionsWidgetProps) => {
     const [open, setOpen] = useState(false);
     const popoverRef = useRef<HTMLButtonElement | null>(null);
+    const { isSignedIn } = useAuth();
 
     useEffect(() => {
       const controller = new AbortController();
+
+      if (
+        !userSettingsStore.editorPreferences.showAiSuggestions ||
+        !isSignedIn
+      ) {
+        controller.abort();
+      }
 
       document.addEventListener(
         getKeywordSuggestionScrollEventName(sectionType),
@@ -64,11 +73,12 @@ const KeywordSuggestionsWidget = observer(
       return () => {
         controller.abort();
       };
-    }, [sectionType]);
+    }, [sectionType, isSignedIn]);
 
     if (
       builderRootStore.aiSuggestionsStore.keywordSuggestions.length === 0 ||
-      !userSettingsStore.editorPreferences.showAiSuggestions
+      !userSettingsStore.editorPreferences.showAiSuggestions ||
+      !isSignedIn
     ) {
       return null;
     }

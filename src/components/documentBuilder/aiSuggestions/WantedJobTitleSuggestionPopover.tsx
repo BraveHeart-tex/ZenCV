@@ -14,6 +14,7 @@ import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { cn } from '@/lib/utils/stringUtils';
 import { aiButtonBaseClassnames } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
+import { useAuth } from '@clerk/nextjs';
 
 interface WantedJobTitleSuggestionPopoverProps {
   fieldId: DEX_Field['id'];
@@ -22,6 +23,7 @@ interface WantedJobTitleSuggestionPopoverProps {
 
 const WantedJobTitleSuggestionPopover = observer(
   ({ fieldId, value }: WantedJobTitleSuggestionPopoverProps) => {
+    const { isSignedIn } = useAuth();
     const jobTitle = builderRootStore.jobPostingStore.jobPosting?.jobTitle;
     const suggestedJobTitle =
       builderRootStore.aiSuggestionsStore.suggestedJobTitle;
@@ -30,7 +32,8 @@ const WantedJobTitleSuggestionPopover = observer(
       !userSettingsStore.editorPreferences.showAiSuggestions ||
       !suggestedJobTitle ||
       !builderRootStore.documentStore.document?.jobPostingId ||
-      value === suggestedJobTitle
+      value === suggestedJobTitle ||
+      !isSignedIn
     ) {
       return null;
     }

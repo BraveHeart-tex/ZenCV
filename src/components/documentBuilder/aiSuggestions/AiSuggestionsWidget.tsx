@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from 'react';
 import SummaryAiSuggestionWidget from './SummaryAiSuggestionWidget';
 import { SUMMARY_GENERATION_EVENT_NAME } from './useAiSuggestionHelpers';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
+import { useAuth } from '@clerk/nextjs';
 
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
@@ -35,11 +36,15 @@ const AiSuggestionsWidget = observer(
     const summaryField = getSummaryField();
     const isProfessionalSummary = fieldId === summaryField?.id;
     const popoverRef = useRef<HTMLDivElement | null>(null);
+    const { isSignedIn } = useAuth();
 
     useEffect(() => {
       const controller = new AbortController();
 
-      if (!userSettingsStore.editorPreferences.showAiSuggestions) {
+      if (
+        !userSettingsStore.editorPreferences.showAiSuggestions ||
+        !isSignedIn
+      ) {
         controller.abort();
       }
 
@@ -72,7 +77,7 @@ const AiSuggestionsWidget = observer(
       return () => {
         controller.abort();
       };
-    }, []);
+    }, [isSignedIn]);
 
     const renderSuggestionWidget = () => {
       if (!suggestion) {
@@ -145,7 +150,9 @@ const AiSuggestionsWidget = observer(
       return null;
     };
 
-    if (!userSettingsStore.editorPreferences.showAiSuggestions) return null;
+    if (!userSettingsStore.editorPreferences.showAiSuggestions || !isSignedIn) {
+      return null;
+    }
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
