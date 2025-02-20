@@ -6,6 +6,7 @@ import GeneralSettings from './GeneralSettings';
 import EditorPreferences from './EditorPreferences';
 import SettingsDangerZone from './SettingsDangerZone';
 import DataImportExport from './DataImportExport';
+import AuthenticationStatus from './AuthenticationStatus';
 
 const SettingsPage = observer(() => {
   return (
@@ -18,6 +19,8 @@ const SettingsPage = observer(() => {
         </div>
       </header>
       <div className="flex flex-col flex-1 w-full max-w-2xl gap-8 p-6 mx-auto">
+        <AuthenticationStatus />
+        <Separator />
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
