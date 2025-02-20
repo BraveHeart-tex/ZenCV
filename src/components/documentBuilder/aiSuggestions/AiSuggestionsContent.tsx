@@ -13,6 +13,7 @@ import { UseState } from '@/lib/types/utils.types';
 import { cn } from '@/lib/utils/stringUtils';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { SectionType } from '@/lib/types/documentBuilder.types';
 
 interface AiSuggestionsContentProps {
   setOpen: UseState<boolean>;
@@ -28,7 +29,8 @@ const AiSuggestionsContent = observer(
 
     if (!userSettingsStore.editorPreferences.showAiSuggestions) return null;
 
-    const hasKeywordsLeft =
+    const shouldShowTailorSuggestions =
+      userSettingsStore.editorPreferences.showAiSuggestions &&
       builderRootStore.aiSuggestionsStore.keywordSuggestions.length &&
       builderRootStore.aiSuggestionsStore.usedKeywords.size !==
         builderRootStore.aiSuggestionsStore.keywordSuggestions.length;
@@ -38,13 +40,11 @@ const AiSuggestionsContent = observer(
       await handleWriteProfileSummary();
     };
 
-    const handleAddWorkExperienceKeywordsClick = () => {
+    const handleAddKeywordsClick = (sectionType: SectionType) => {
       setOpen(false);
 
       const event = new CustomEvent(
-        getKeywordSuggestionScrollEventName(
-          INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-        ),
+        getKeywordSuggestionScrollEventName(sectionType),
       );
 
       setTimeout(() => {
@@ -54,7 +54,7 @@ const AiSuggestionsContent = observer(
 
     return (
       <>
-        {hasKeywordsLeft ? (
+        {shouldShowTailorSuggestions ? (
           <>
             <SuggestionGroupHeading>Tailor Your Resume</SuggestionGroupHeading>
             <AnimatedSuggestionsContainer>
@@ -62,7 +62,18 @@ const AiSuggestionsContent = observer(
                 label={`Add Work Experience keywords (${builderRootStore.aiSuggestionsStore.usedKeywords.size} / ${builderRootStore.aiSuggestionsStore.keywordSuggestions.length})`}
                 icon={<SparklesIcon className="text-white" />}
                 iconContainerClassName={cn(aiButtonBaseClassnames)}
-                onClick={handleAddWorkExperienceKeywordsClick}
+                onClick={() =>
+                  handleAddKeywordsClick(INTERNAL_SECTION_TYPES.WORK_EXPERIENCE)
+                }
+                disabled={isLoading}
+              />
+              <AnimatedSuggestionButton
+                label={`Add Summary keywords (${builderRootStore.aiSuggestionsStore.usedKeywords.size} / ${builderRootStore.aiSuggestionsStore.keywordSuggestions.length})`}
+                icon={<SparklesIcon className="text-white" />}
+                iconContainerClassName={cn(aiButtonBaseClassnames)}
+                onClick={() =>
+                  handleAddKeywordsClick(INTERNAL_SECTION_TYPES.SUMMARY)
+                }
                 disabled={isLoading}
               />
             </AnimatedSuggestionsContainer>
