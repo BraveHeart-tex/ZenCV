@@ -74,7 +74,7 @@ clientDb
   });
 
 clientDb
-  .version(5)
+  .version(6)
   .stores({
     documents: '++id, title, templateType, jobPostingId, createdAt, updatedAt',
     sections:
@@ -82,7 +82,7 @@ clientDb
     items: '++id, sectionId, containerType, displayOrder',
     fields: '++id, itemId, name, type, value, selectType, options',
     settings: 'key',
-    jobPostings: '++id, companyName, jobTitle, roleDescription',
+    jobPostings: '++id, companyName, jobTitle, roleDescription, documentId',
     aiSuggestions: '++id, suggestedJobTitle, keywordSuggestions, documentId',
   })
   .upgrade((transaction) => {

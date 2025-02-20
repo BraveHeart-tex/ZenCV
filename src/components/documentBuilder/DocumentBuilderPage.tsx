@@ -15,6 +15,7 @@ import { startTransition, useEffect } from 'react';
 import { showErrorToast } from '../ui/sonner';
 import LazyMotionWrapper from '../ui/LazyMotionWrapper';
 import { BuilderAiSuggestionsProvider } from '@/hooks/useBuilderAiSuggestions';
+import ProtectedServiceDialog from '../auth/ProtectedServiceDialog';
 
 const DocumentBuilderPage = observer(() => {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const DocumentBuilderPage = observer(() => {
         </div>
         <DocumentBuilderViewToggle />
       </LazyMotionWrapper>
+      <ProtectedServiceDialog />
     </BuilderAiSuggestionsProvider>
   );
 });

@@ -12,9 +12,12 @@ import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBui
 import AutoTailorGuidanceDialog from './AutoTailorGuidanceDialog';
 import { useState } from 'react';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
+import { useAuth } from '@clerk/nextjs';
+import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
 
 const TailorForJobPostingBanner = observer(() => {
-  const [open, setOpen] = useState(false);
+  const [showGuidance, setShowGuidance] = useState(false);
+  const { isSignedIn } = useAuth();
 
   if (
     builderRootStore.documentStore.document?.jobPostingId ||
@@ -26,6 +29,12 @@ const TailorForJobPostingBanner = observer(() => {
   const handleJobPostingDialogClick = (
     event: React.MouseEvent<HTMLButtonElement>,
   ) => {
+    if (!isSignedIn) {
+      event.preventDefault();
+      protectedServiceDialogStore.open();
+      return;
+    }
+
     const summaryValue = getSummaryValue();
     const shouldFillWorkExperience = isWorkExperienceIncomplete(
       builderRootStore.sectionStore.getSectionItemsBySectionType(
@@ -35,14 +44,18 @@ const TailorForJobPostingBanner = observer(() => {
 
     if (!summaryValue && shouldFillWorkExperience) {
       event.preventDefault();
-      setOpen(true);
+      setShowGuidance(true);
       return;
     }
   };
 
   return (
     <>
-      <AutoTailorGuidanceDialog open={open} onOpenChange={setOpen} />
+      <AutoTailorGuidanceDialog
+        open={showGuidance}
+        onOpenChange={setShowGuidance}
+      />
+
       <JobPostingFormDialog
         trigger={
           <Button
