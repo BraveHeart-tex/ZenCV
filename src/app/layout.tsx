@@ -28,6 +28,15 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        {process.env.NODE_ENV === 'development' ? (
+          <head>
+            <script
+              crossOrigin="anonymous"
+              src="//unpkg.com/react-scan/dist/auto.global.js"
+              defer
+            />
+          </head>
+        ) : null}
         <body className={`${inter.className} antialiased`}>
           <ThemeProvider
             attribute="class"

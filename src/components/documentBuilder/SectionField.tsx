@@ -25,6 +25,7 @@ import {
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { SectionType } from '@/lib/types/documentBuilder.types';
 import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
+import { useCallback } from 'react';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -36,6 +37,26 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
   if (!field) return null;
 
   const htmlInputId = getFieldHtmlId(field);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleInputChange = useCallback(
+    action(
+      async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        await builderRootStore.fieldStore.setFieldValue(
+          fieldId,
+          e.target.value,
+        );
+      },
+    ),
+    [fieldId],
+  );
+
+  const setFieldRef = useCallback(
+    (ref: HTMLElement | null) => {
+      if (ref) builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+    },
+    [fieldId],
+  );
 
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {
@@ -58,17 +79,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           </div>
           <Input
             id={htmlInputId}
-            ref={(ref) =>
-              builderRootStore.UIStore.setFieldRef(field.id.toString(), ref)
-            }
+            ref={setFieldRef}
             type="text"
             value={field.value}
-            onChange={action(async (e) => {
-              await builderRootStore.fieldStore.setFieldValue(
-                field.id,
-                e.target.value,
-              );
-            })}
+            onChange={handleInputChange}
             placeholder={field?.placeholder}
           />
         </>
@@ -108,17 +122,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
         <>
           <Label htmlFor={htmlInputId}>{field.name}</Label>
           <Textarea
-            ref={(ref) =>
-              builderRootStore.UIStore.setFieldRef(field?.id.toString(), ref)
-            }
+            ref={setFieldRef}
             id={htmlInputId}
             value={field.value}
-            onChange={action(async (e) => {
-              await builderRootStore.fieldStore.setFieldValue(
-                field.id,
-                e.target.value,
-              );
-            })}
+            onChange={handleInputChange}
             placeholder={field?.placeholder}
           />
         </>
