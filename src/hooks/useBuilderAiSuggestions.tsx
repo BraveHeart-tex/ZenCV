@@ -9,7 +9,7 @@ import { useCompletion } from '@ai-sdk/react';
 import { createContext, useContext, useEffect, useRef } from 'react';
 import { useJobAnalysis } from './useJobAnalysis';
 
-export const AI_PROCESS_BASE_API_ROUTE = '/api/process';
+export const PROCESS_BASE_API_ROUTE = '/api/process';
 
 const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
   null,
@@ -39,7 +39,7 @@ export const BuilderAiSuggestionsProvider = ({
     completion: generatedSummary,
     error: summaryCompletionError,
   } = useCompletion({
-    api: `${AI_PROCESS_BASE_API_ROUTE}/generate-summary`,
+    api: `${PROCESS_BASE_API_ROUTE}/generate-summary`,
     onError(error) {
       showErrorToast(getErrorMessage(error), {
         id: toastId.current,
@@ -54,7 +54,7 @@ export const BuilderAiSuggestionsProvider = ({
     completion: improvedSummary,
     error: summaryImprovementError,
   } = useCompletion({
-    api: `${AI_PROCESS_BASE_API_ROUTE}/improve-summary`,
+    api: `${PROCESS_BASE_API_ROUTE}/improve-summary`,
     onError(error) {
       showErrorToast(getErrorMessage(error), {
         id: toastId.current,

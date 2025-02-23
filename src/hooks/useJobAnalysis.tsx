@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AI_PROCESS_BASE_API_ROUTE } from './useBuilderAiSuggestions';
+import { PROCESS_BASE_API_ROUTE } from './useBuilderAiSuggestions';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import {
   showErrorToast,
@@ -38,17 +38,14 @@ export const useJobAnalysis = () => {
     abortControllerRef.current = controller;
 
     try {
-      const response = await fetch(
-        `${AI_PROCESS_BASE_API_ROUTE}/job-analysis`,
-        {
-          method: 'POST',
-          body: JSON.stringify(values),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          signal: abortControllerRef.current?.signal,
+      const response = await fetch(`${PROCESS_BASE_API_ROUTE}/job-analysis`, {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        signal: abortControllerRef.current?.signal,
+      });
 
       if (!response.ok) {
         const errorBody = await response.json();

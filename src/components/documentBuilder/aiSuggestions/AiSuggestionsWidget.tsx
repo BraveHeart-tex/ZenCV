@@ -24,11 +24,11 @@ import { useAuth } from '@clerk/nextjs';
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
   onAcceptSuggestion?: (suggestion: string) => void;
-  renderTrigger: () => React.ReactNode;
+  trigger: React.ReactNode;
 }
 
 const AiSuggestionsWidget = observer(
-  ({ fieldId, onAcceptSuggestion, renderTrigger }: AISuggestionWidgetProps) => {
+  ({ fieldId, onAcceptSuggestion, trigger }: AISuggestionWidgetProps) => {
     const [open, setOpen] = useState(false);
     const suggestion =
       builderRootStore.aiSuggestionsStore.fieldSuggestions.get(fieldId);
@@ -156,7 +156,7 @@ const AiSuggestionsWidget = observer(
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>{renderTrigger()}</PopoverTrigger>
+        <PopoverTrigger asChild>{trigger}</PopoverTrigger>
         <PopoverContent
           ref={popoverRef}
           avoidCollisions={false}

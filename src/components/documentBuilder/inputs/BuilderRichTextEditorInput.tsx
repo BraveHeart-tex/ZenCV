@@ -10,9 +10,7 @@ import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
 import { Button } from '@/components/ui/button';
 import { SparklesIcon } from 'lucide-react';
-import { cn } from '@/lib/utils/stringUtils';
 import RichTextCharacterCounter from '@/components/documentBuilder/RichTextCharacterCounter';
-import { useCallback } from 'react';
 
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];
@@ -25,41 +23,6 @@ const BuilderRichTextEditorInput = observer(
     if (!field) return null;
 
     const id = getFieldHtmlId(field);
-
-    const renderEditorFooter = useCallback(() => {
-      if (!shouldRenderAiWidget) return null;
-
-      return (
-        <AiSuggestionsWidget
-          fieldId={fieldId}
-          onAcceptSuggestion={(suggestionValue) => {
-            const editorRef = builderRootStore.UIStore.fieldRefs.get(
-              fieldId.toString(),
-            );
-            if (editorRef) {
-              (editorRef as EditorRef)?.setContent(suggestionValue);
-            }
-          }}
-          renderTrigger={() => {
-            return (
-              <div
-                className={cn(
-                  'absolute bottom-0 left-0 xl:left-auto xl:right-0',
-                )}
-              >
-                <Button
-                  variant="outline"
-                  className="xl:border-br-0 xl:border-r-0 xl:rounded-tr-none xl:rounded-bl-none xl:border-l xl:rounded-tl xl:rounded-br border-b-0 border-l-0 rounded-tl-none rounded-br-none"
-                >
-                  <SparklesIcon />
-                  Get AI Suggestion
-                </Button>
-              </div>
-            );
-          }}
-        />
-      );
-    }, [fieldId, shouldRenderAiWidget]);
 
     const handleRichTextChange = action(async (html: string) => {
       await builderRootStore.fieldStore.setFieldValue(fieldId, html);
@@ -75,7 +38,32 @@ const BuilderRichTextEditorInput = observer(
           initialValue={field.value}
           placeholder={field?.placeholder || ''}
           onChange={handleRichTextChange}
-          renderEditorFooter={renderEditorFooter}
+          footer={
+            shouldRenderAiWidget ? (
+              <AiSuggestionsWidget
+                fieldId={fieldId}
+                onAcceptSuggestion={(suggestionValue) => {
+                  const editorRef = builderRootStore.UIStore.fieldRefs.get(
+                    fieldId.toString(),
+                  );
+                  if (editorRef) {
+                    (editorRef as EditorRef)?.setContent(suggestionValue);
+                  }
+                }}
+                trigger={
+                  <div className="xl:left-auto xl:right-0 absolute bottom-0 left-0">
+                    <Button
+                      variant="outline"
+                      className="xl:border-br-0 xl:border-r-0 xl:rounded-tr-none xl:rounded-bl-none xl:border-l xl:rounded-tl xl:rounded-br border-b-0 border-l-0 rounded-tl-none rounded-br-none"
+                    >
+                      <SparklesIcon />
+                      Get AI Suggestion
+                    </Button>
+                  </div>
+                }
+              />
+            ) : null
+          }
         />
         <RichTextCharacterCounter
           fieldValue={field.value}

@@ -12,7 +12,7 @@ export interface RichTextEditorProps {
   onChange?: (html: string) => void;
   ref?: Ref<HTMLDivElement>;
   id?: string;
-  renderEditorFooter?: () => React.ReactNode;
+  footer: React.ReactNode;
 }
 
 export interface EditorRef extends HTMLDivElement {
@@ -28,7 +28,7 @@ const RichTextEditor = ({
   onChange,
   ref,
   id,
-  renderEditorFooter,
+  footer,
 }: RichTextEditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const editor = useEditor({
@@ -92,7 +92,7 @@ const RichTextEditor = ({
             editor={editor}
             className="max-w-none"
           />
-          {renderEditorFooter?.()}
+          {footer}
         </div>
       </div>
     </div>
