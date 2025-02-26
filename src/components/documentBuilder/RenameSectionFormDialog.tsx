@@ -2,9 +2,9 @@
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { FormEvent, useRef, useState } from 'react';
-import { showErrorToast, showSuccessToast } from '../ui/sonner';
-import ResponsiveDialog from '../ui/ResponsiveDialog';
+import { useRef, useState } from 'react';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -13,8 +13,8 @@ import {
 } from '@/components/ui/tooltip';
 import { PencilIcon } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
@@ -30,8 +30,7 @@ const RenameSectionFormDialog = observer(
     const [enteredTitle, setEnteredTitle] = useState(section.title || '');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleRenameSectionSubmit = action(async (event: FormEvent) => {
-      event.preventDefault();
+    const handleRenameSectionSubmit = action(async () => {
       if (!enteredTitle.replaceAll(' ', '').trim()) {
         showErrorToast('New section title cannot be empty.');
         inputRef?.current?.focus();
@@ -69,8 +68,29 @@ const RenameSectionFormDialog = observer(
             <TooltipContent>Rename {`"${section.title}"`}</TooltipContent>
           </Tooltip>
         }
+        footer={
+          <div className={dialogFooterClassNames}>
+            <Button
+              type="button"
+              aria-label="Close rename section dialog"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="button"
+              aria-label="Rename section"
+              disabled={!enteredTitle}
+              onClick={handleRenameSectionSubmit}
+            >
+              Rename
+            </Button>
+          </div>
+        }
       >
-        <form onSubmit={handleRenameSectionSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div className="flex flex-col gap-1">
             <Label htmlFor="newSectionTitle">New Section Title</Label>
             <div className="relative">
@@ -95,25 +115,7 @@ const RenameSectionFormDialog = observer(
               </p>
             )}
           </div>
-          <div className={dialogFooterClassNames}>
-            <Button
-              type="button"
-              aria-label="Close rename section dialog"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="submit"
-              aria-label="Rename section"
-              disabled={!enteredTitle}
-            >
-              Rename
-            </Button>
-          </div>
-        </form>
+        </div>
       </ResponsiveDialog>
     );
   },

@@ -30,8 +30,7 @@ const RenameDocumentDialog = observer(
     const [enteredTitle, setEnteredTitle] = useState(defaultTitle || '');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleRenameSubmit = async (event: React.FormEvent) => {
-      event.preventDefault();
+    const handleRenameSubmit = async () => {
       if (!enteredTitle.replaceAll(' ', '')) {
         {
           showErrorToast('Please enter a name for the document.');
@@ -59,30 +58,7 @@ const RenameDocumentDialog = observer(
         title="Rename Document"
         description={`Enter a new name for '${defaultTitle}'`}
         trigger={trigger}
-      >
-        <form onSubmit={handleRenameSubmit} className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <Label htmlFor="newDocumentTitle">New Document Title</Label>
-            <Input
-              id="newDocumentTitle"
-              type="text"
-              minLength={1}
-              required
-              value={enteredTitle}
-              onChange={(e) => setEnteredTitle(e.target.value)}
-              aria-invalid={enteredTitle ? 'false' : 'true'}
-              ref={inputRef}
-              className={cn(
-                !enteredTitle &&
-                  'border-destructive focus-visible:ring-destructive',
-              )}
-            />
-            {!enteredTitle && (
-              <p className="text-destructive text-xs font-medium">
-                Please enter a document title
-              </p>
-            )}
-          </div>
+        footer={
           <div className={dialogFooterClassNames}>
             <Button
               type="button"
@@ -92,11 +68,38 @@ const RenameDocumentDialog = observer(
             >
               Cancel
             </Button>
-            <Button type="submit" aria-label="Rename" disabled={!enteredTitle}>
+            <Button
+              aria-label="Rename"
+              disabled={!enteredTitle}
+              onClick={handleRenameSubmit}
+            >
               Rename
             </Button>
           </div>
-        </form>
+        }
+      >
+        <div className="flex flex-col gap-1">
+          <Label htmlFor="newDocumentTitle">New Document Title</Label>
+          <Input
+            id="newDocumentTitle"
+            type="text"
+            minLength={1}
+            required
+            value={enteredTitle}
+            onChange={(e) => setEnteredTitle(e.target.value)}
+            aria-invalid={enteredTitle ? 'false' : 'true'}
+            ref={inputRef}
+            className={cn(
+              !enteredTitle &&
+                'border-destructive focus-visible:ring-destructive',
+            )}
+          />
+          {!enteredTitle && (
+            <p className="text-destructive text-xs font-medium">
+              Please enter a document title
+            </p>
+          )}
+        </div>
       </ResponsiveDialog>
     );
   },

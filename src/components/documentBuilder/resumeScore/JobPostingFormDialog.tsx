@@ -121,9 +121,30 @@ const JobPostingFormDialog = observer(
             form.reset(defaultFormValues);
           }
         }}
+        footer={
+          <div className={dialogFooterClassNames}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setOpen(false);
+                form.reset();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" form="job-posting-form">
+              Submit
+            </Button>
+          </div>
+        }
       >
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+            id="job-posting-form"
+          >
             <FormField
               control={form.control}
               name="companyName"
@@ -184,19 +205,6 @@ const JobPostingFormDialog = observer(
                   Use Mock Data
                 </Button>
               )}
-            </div>
-            <div className={dialogFooterClassNames}>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setOpen(false);
-                  form.reset();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Submit</Button>
             </div>
           </form>
         </Form>

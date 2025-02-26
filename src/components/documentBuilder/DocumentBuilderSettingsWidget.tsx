@@ -1,13 +1,13 @@
 import { SettingsIcon } from 'lucide-react';
-import ResponsiveDialog from '../ui/ResponsiveDialog';
-import { Button } from '../ui/button';
-import GeneralSettings from '../appHome/settings/GeneralSettings';
-import { Separator } from '../ui/separator';
-import EditorPreferences from '../appHome/settings/EditorPreferences';
+import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
+import { Button } from '@/components/ui/button';
+import GeneralSettings from '@/components/appHome/settings/GeneralSettings';
+import { Separator } from '@/components/ui/separator';
+import EditorPreferences from '@/components/appHome/settings/EditorPreferences';
 import { useState } from 'react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { cn } from '@/lib/utils/stringUtils';
-import AuthenticationStatus from '../appHome/settings/AuthenticationStatus';
+import AuthenticationStatus from '@/components/appHome/settings/AuthenticationStatus';
 
 const DocumentBuilderSettingsWidget = () => {
   const [open, setOpen] = useState(false);
@@ -22,6 +22,13 @@ const DocumentBuilderSettingsWidget = () => {
       open={open}
       onOpenChange={setOpen}
       description="Manage your application settings and preferences below."
+      footer={
+        <div className={cn(dialogFooterClassNames, 'mt-4')}>
+          <Button onClick={() => setOpen(false)} variant="outline">
+            Close
+          </Button>
+        </div>
+      }
     >
       <div className="space-y-4">
         <AuthenticationStatus />
@@ -29,11 +36,6 @@ const DocumentBuilderSettingsWidget = () => {
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
-      </div>
-      <div className={cn(dialogFooterClassNames, 'mt-4')}>
-        <Button onClick={() => setOpen(false)} variant="outline">
-          Close
-        </Button>
       </div>
     </ResponsiveDialog>
   );

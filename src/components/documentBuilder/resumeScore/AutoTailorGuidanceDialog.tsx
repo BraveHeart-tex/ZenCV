@@ -43,6 +43,12 @@ const AutoTailorGuidanceDialog = observer(
         {...props}
         title="More information is required"
         description="In order to use the auto tailor feature, please do at least on of the following"
+        footer={
+          <div className={dialogFooterClassNames}>
+            <Button variant="outline">Cancel</Button>
+            <Button onClick={handleContinue}>Continue</Button>
+          </div>
+        }
       >
         <div className="space-y-4">
           <ul>
@@ -55,10 +61,6 @@ const AutoTailorGuidanceDialog = observer(
               Add at least one work experience entry
             </li>
           </ul>
-          <div className={dialogFooterClassNames}>
-            <Button variant="outline">Cancel</Button>
-            <Button onClick={handleContinue}>Continue</Button>
-          </div>
         </div>
       </ResponsiveDialog>
     );
