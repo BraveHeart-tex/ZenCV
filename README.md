@@ -1,36 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<h1>ZenCV - Intelligent and Secure Resume Builder <a href="https://zencv.vercel.app" target="_blank">(Live Demo)</a></h1>
 
-## Getting Started
+ZenCV is a modern web application that allows users to create professional-looking resumes in just minutes. The app is completely free, works offline, and ensures maximum privacy by keeping user data stored locally without ever leaving the device.
 
-First, run the development server:
+<img src="./showcase_landing_page.png" alt="ZenCV Landing page"/>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+With ZenCV, users can:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Create an unlimited number of resumes
 
-You can start editing the page by modifying `app/SettingsPage.tsx`. The page auto-updates as you edit the file.
+- Generate customized resumes tailored to specific job listings
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Personalize their resumes with different design templates
 
-## Learn More
+- Optimize their CVs for the targeted position with AI assistance
 
-To learn more about Next.js, take a look at the following resources:
+<img src="./showcase_editor.png" alt="ZenCV Editor Page"/>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+In this project, I:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Developed a fast, SEO-friendly, and user experience-focused interface using Next.js and React
 
-## Deploy on Vercel
+- Enhanced code security and maintainability using TypeScript
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Designed a modern, responsive UI with TailwindCSS
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Integrated Google Gemini AI API to optimize content based on the job position
+
+- Used DexieDB (IndexedDB wrapper) to store data locally on the device, ensuring 100% privacy and offline functionality
