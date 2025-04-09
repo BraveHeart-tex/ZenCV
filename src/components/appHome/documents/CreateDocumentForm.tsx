@@ -87,9 +87,13 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input type="text" {...field} />
+                <Input
+                  type="text"
+                  {...field}
+                  placeholder="ABC Company - Software Engineer"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
