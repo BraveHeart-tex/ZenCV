@@ -65,7 +65,10 @@ const TailorForJobPostingBanner = observer(() => {
           >
             <BrainCircuitIcon />
             <div className="flex-1 text-[0.875rem] text-left">
-              Optimize your resume for the job and land more interviews
+              <span className="md:hidden inline">Get AI Assistance</span>
+              <span className="md:inline hidden">
+                Optimize your resume for the job and land more interviews
+              </span>
             </div>
             <div className="md:flex items-center hidden gap-2">
               Try it <ChevronRightIcon />

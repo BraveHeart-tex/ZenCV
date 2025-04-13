@@ -93,7 +93,7 @@ const AuthenticationStatus = () => {
                 className="sm:mx-0 w-24 h-24 mx-auto rounded-full"
               />
             ) : null}
-            <div className="sm:text-left flex flex-col gap-1 text-center">
+            <div className="sm:text-left flex flex-col gap-1">
               <span className=" w-full font-semibold">
                 {user?.firstName} {user?.lastName}
               </span>
