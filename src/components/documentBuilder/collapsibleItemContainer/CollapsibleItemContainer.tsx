@@ -151,7 +151,7 @@ const CollapsibleSectionItemContainer = observer(
           )}
           <motion.div
             className={cn(
-              'rounded-md border flex flex-col transition-all w-full pt-2',
+              'rounded-md border flex flex-col transition-all w-full pt-2 lg:pt-0',
               open && 'max-h-max',
             )}
           >
