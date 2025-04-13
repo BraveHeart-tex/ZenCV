@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 const DocumentBuilderHeader = observer(() => {
   return (
-    <header className="flex items-center justify-center overflow-hidden">
+    <header className="flex items-center justify-center w-full overflow-hidden">
       <EditableDocumentTitle />
     </header>
   );
