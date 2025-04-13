@@ -67,7 +67,9 @@ const ResponsiveDialog = ({
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="flex-1 px-4 py-2 overflow-y-auto">{children}</div>
+        <div className="flex-1 w-full h-full px-4 py-2 overflow-y-auto">
+          {children}
+        </div>
         {footer ? (
           <DrawerFooter className="lg:gap-0 gap-1 px-4">{footer}</DrawerFooter>
         ) : null}
