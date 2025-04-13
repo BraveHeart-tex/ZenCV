@@ -42,10 +42,9 @@ export type SelectType = ValueOf<typeof SELECT_TYPES>;
 
 export type FieldName = NestedValueOf<typeof FIELD_NAMES>;
 
-export type CollapsibleSectionType = Exclude<
-  SectionType,
-  (typeof FIXED_SECTIONS)[number]
->;
+export type FixedSection = (typeof FIXED_SECTIONS)[number];
+
+export type CollapsibleSectionType = Exclude<SectionType, FixedSection>;
 
 export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
   ValueOfNestedObject<typeof FIELD_NAMES, K>;
