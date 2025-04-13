@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router';
 
 const aiPerks = [
-  'Improve your profile summary or generate a new one',
+  'Generate / Improve your profile summary',
   'Tailor your CV to the job posting',
   'Generate a cover letter',
 ];
@@ -125,12 +125,12 @@ const AuthenticationStatus = () => {
         </div>
       ) : (
         <>
-          <p>Sign in to access AI-powered suggestions: </p>
-          <ul>
+          <p className="text-sm">Sign in to access AI-powered suggestions: </p>
+          <ul className="w-full">
             {aiPerks.map((perk) => (
               <li key={perk} className="flex items-center gap-2">
                 <CheckIcon className="w-4 h-4 text-green-500" />
-                {perk}
+                <span className="text-sm">{perk}</span>
               </li>
             ))}
           </ul>
@@ -143,12 +143,14 @@ const AuthenticationStatus = () => {
               account at any time.
             </span>
           </div>
-          <SignInButton
-            fallbackRedirectUrl={pathname}
-            signUpFallbackRedirectUrl={pathname}
-          >
-            <Button disabled={loading}>Sign in</Button>
-          </SignInButton>
+          <div className="flex justify-end w-full">
+            <SignInButton
+              fallbackRedirectUrl={pathname}
+              signUpFallbackRedirectUrl={pathname}
+            >
+              <Button disabled={loading}>Sign in</Button>
+            </SignInButton>
+          </div>
         </>
       )}
     </div>

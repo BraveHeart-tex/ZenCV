@@ -76,7 +76,11 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
         <Label htmlFor={htmlInputId}>{field.name}</Label>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="xsIcon" className="h-[14px]">
+            <Button
+              variant="ghost"
+              size="xsIcon"
+              className="h-[14px] hidden lg:inline-flex"
+            >
               {isError ? (
                 <CircleAlert className="stroke-destructive" />
               ) : (

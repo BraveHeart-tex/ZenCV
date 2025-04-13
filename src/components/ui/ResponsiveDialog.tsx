@@ -62,17 +62,7 @@ const ResponsiveDialog = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent
-        onInteractOutside={(event) => {
-          if (
-            event.target instanceof Element &&
-            event.target.closest('[data-sonner-toast]')
-          ) {
-            event.preventDefault();
-          }
-        }}
-        className="max-h-[98%] overflow-hidden px-0 w-full"
-      >
+      <DrawerContent className="max-h-[98%] overflow-hidden px-0 w-full">
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>

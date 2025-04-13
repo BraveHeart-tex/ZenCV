@@ -184,7 +184,7 @@ const CollapsibleSectionItemContainer = observer(
                         </Button>
                       </div>
                       <PopoverClose asChild>
-                        <Button className="w-full rounded-none">Cancel</Button>
+                        <Button className="w-full">Cancel</Button>
                       </PopoverClose>
                     </PopoverContent>
                   </Popover>

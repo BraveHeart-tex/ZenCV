@@ -57,20 +57,31 @@ const EditorPreferences = observer(() => {
         {online ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <Label htmlFor="showAiSuggestions">Show AI suggestions</Label>{' '}
+              <Label
+                className={!isSignedIn ? 'opacity-50' : ''}
+                htmlFor="showAiSuggestions"
+              >
+                Show AI suggestions
+              </Label>{' '}
               {!isSignedIn && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="xsIcon" variant="ghost">
-                        <CircleHelpIcon />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>You must be signed in to AI features.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="xsIcon"
+                          variant="ghost"
+                          className="lg:inline-flex hidden"
+                        >
+                          <CircleHelpIcon />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>You must be signed in to AI features.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </>
               )}
             </div>
             <Switch

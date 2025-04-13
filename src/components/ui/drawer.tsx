@@ -47,6 +47,14 @@ const DrawerContent = React.forwardRef<
         className,
       )}
       {...props}
+      onInteractOutside={(event) => {
+        if (
+          event.target instanceof Element &&
+          event.target.closest('[data-sonner-toast]')
+        ) {
+          event.preventDefault();
+        }
+      }}
     >
       <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
       {children}
