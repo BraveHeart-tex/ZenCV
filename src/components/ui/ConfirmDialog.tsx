@@ -107,7 +107,9 @@ const ConfirmDialog = observer(() => {
             <VisuallyHidden>{descriptionContent}</VisuallyHidden>
           )}
         </DrawerHeader>
-        <DoNotAskAgainCheckbox />
+        <div className="px-4">
+          <DoNotAskAgainCheckbox />
+        </div>
         <DrawerFooter className="flex-col-reverse mt-6">
           {actionButtons}
         </DrawerFooter>
