@@ -101,7 +101,7 @@ export const getInitialDocumentInsertBoilerplate = (
     },
     {
       documentId,
-      title: 'Websites & Social Links',
+      title: 'Links',
       type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
       items: [
         {

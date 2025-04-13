@@ -1,8 +1,8 @@
-import { CONTAINER_TYPES, DEX_Document } from '../client-db/clientDbSchema';
-import { INTERNAL_SECTION_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
-import { ValueOf } from '../types/utils.types';
-import { SectionWithFields } from '../client-db/clientDbSchema';
-import { getInsertTemplatesWithValues } from '../misc/fieldTemplates';
+import { CONTAINER_TYPES, DEX_Document } from '@/lib/client-db/clientDbSchema';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { DeepOmit, ValueOf } from '@/lib/types/utils.types';
+import { SectionWithFields } from '@/lib/client-db/clientDbSchema';
+import { getInsertTemplatesWithValues } from '@/lib/misc/fieldTemplates';
 
 export const PREFILL_RESUME_STYLES = {
   STANDARD: 'standard',
@@ -32,18 +32,16 @@ export type PrefilledResumeStyle = ValueOf<typeof PREFILL_RESUME_STYLES>;
 
 const getStandardTemplate = (
   documentId: DEX_Document['id'],
-): SectionWithFields[] => [
+): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
     defaultTitle: 'Personal Details',
-    displayOrder: 1,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
           WANTED_JOB_TITLE: 'Senior Business Analyst',
           FIRST_NAME: 'John',
@@ -60,14 +58,12 @@ const getStandardTemplate = (
   {
     title: 'Summary',
     defaultTitle: 'Summary',
-    displayOrder: 2,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.SUMMARY,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
             '<p>Detail-oriented Senior Business Analyst with over 7 years of experience in driving business solutions and enhancing operational efficiency. Proven expertise in stakeholder engagement, data analysis, and project management. Adept at translating complex business requirements into actionable strategies, leading to significant cost savings and improved performance. Committed to fostering collaboration across teams to achieve organizational goals and deliver exceptional results.</p>',
@@ -78,14 +74,12 @@ const getStandardTemplate = (
   {
     title: 'Work Experience',
     defaultTitle: 'Work Experience',
-    displayOrder: 3,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'Senior Business Analyst',
           EMPLOYER: 'Global Solutions Corp.',
@@ -98,7 +92,6 @@ const getStandardTemplate = (
       },
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 2,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'Business Analyst',
           EMPLOYER: 'Tech Innovations LLC',
@@ -114,14 +107,12 @@ const getStandardTemplate = (
   {
     title: 'Education',
     defaultTitle: 'Education',
-    displayOrder: 4,
     documentId,
     metadata: '',
     type: 'education',
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('EDUCATION', {
           SCHOOL: 'University of Pennsylvania',
           DEGREE: 'Bachelor of Science in Business Administration',
@@ -135,16 +126,37 @@ const getStandardTemplate = (
     ],
   },
   {
+    title: 'Links',
+    defaultTitle: 'Links',
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'Portfolio',
+          LINK: 'https://github.com/BraveHeart-tex',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'LinkedIn',
+          LINK: 'https://www.linkedin.com/in/bora-karaca',
+        }),
+      },
+    ],
+  },
+  {
     title: 'Skills',
     defaultTitle: 'Skills',
-    displayOrder: 5,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SKILLS', {
           SKILL: '',
           EXPERIENCE_LEVEL: '',
@@ -155,14 +167,12 @@ const getStandardTemplate = (
   {
     title: 'Other',
     defaultTitle: 'Custom Section',
-    displayOrder: 6,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.CUSTOM,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('CUSTOM', {
           ACTIVITY_NAME: '',
           CITY: '',
@@ -178,18 +188,16 @@ const getStandardTemplate = (
 
 const getTechFocusedTemplate = (
   documentId: DEX_Document['id'],
-): SectionWithFields[] => [
+): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
     defaultTitle: 'Personal Details',
-    displayOrder: 1,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
           WANTED_JOB_TITLE: 'Software Engineer',
           FIRST_NAME: 'Alex',
@@ -206,14 +214,12 @@ const getTechFocusedTemplate = (
   {
     title: 'Summary',
     defaultTitle: 'Summary',
-    displayOrder: 2,
     metadata: '',
     documentId,
     type: INTERNAL_SECTION_TYPES.SUMMARY,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
             '<p>Innovative Software Engineer with over 5 years of experience in full-stack development and cloud architecture. Proven track record in designing scalable applications and optimizing performance. Skilled in leveraging modern technologies to deliver high-quality software solutions. Passionate about continuous learning and collaboration in agile environments to drive project success and enhance user experience.</p>',
@@ -224,14 +230,12 @@ const getTechFocusedTemplate = (
   {
     title: 'Work Experience',
     defaultTitle: 'Work Experience',
-    displayOrder: 3,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'Senior Software Engineer',
           EMPLOYER: 'Tech Innovations Inc.',
@@ -244,7 +248,6 @@ const getTechFocusedTemplate = (
       },
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 2,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'Software Engineer',
           EMPLOYER: 'Innovative Tech Solutions',
@@ -260,14 +263,12 @@ const getTechFocusedTemplate = (
   {
     title: 'Education',
     defaultTitle: 'Education',
-    displayOrder: 4,
     documentId,
     metadata: '',
     type: 'education',
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('EDUCATION', {
           SCHOOL: 'Stanford University',
           DEGREE: 'Master of Science in Computer Science',
@@ -281,16 +282,37 @@ const getTechFocusedTemplate = (
     ],
   },
   {
+    title: 'Links',
+    defaultTitle: 'Links',
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'Github',
+          LINK: 'https://github.com/BraveHeart-tex',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'LinkedIn',
+          LINK: 'https://www.linkedin.com/in/bora-karaca',
+        }),
+      },
+    ],
+  },
+  {
     title: 'Skills',
     defaultTitle: 'Skills',
-    displayOrder: 5,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SKILLS', {
           SKILL: '',
           EXPERIENCE_LEVEL: '',
@@ -301,14 +323,12 @@ const getTechFocusedTemplate = (
   {
     title: 'Other',
     defaultTitle: 'Custom Section',
-    displayOrder: 6,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.CUSTOM,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('CUSTOM', {
           ACTIVITY_NAME: '',
           CITY: '',
@@ -324,18 +344,16 @@ const getTechFocusedTemplate = (
 
 const getCreativeTemplate = (
   documentId: DEX_Document['id'],
-): SectionWithFields[] => [
+): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
     defaultTitle: 'Personal Details',
-    displayOrder: 1,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('PERSONAL_DETAILS', {
           WANTED_JOB_TITLE: 'UI/UX Designer',
           FIRST_NAME: 'Sarah',
@@ -352,14 +370,12 @@ const getCreativeTemplate = (
   {
     title: 'Summary',
     defaultTitle: 'Summary',
-    displayOrder: 2,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.SUMMARY,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.STATIC,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SUMMARY', {
           SUMMARY:
             '<p>Creative UI/UX Designer with over 5 years of experience in crafting intuitive and visually stunning digital experiences. Skilled in user-centered design principles, I excel at transforming complex ideas into engaging interfaces. My passion for design is matched by my commitment to user research and testing, ensuring that every project not only meets aesthetic standards but also enhances usability and user satisfaction.</p>',
@@ -370,14 +386,12 @@ const getCreativeTemplate = (
   {
     title: 'Work Experience',
     defaultTitle: 'Work Experience',
-    displayOrder: 3,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'Senior UI/UX Designer',
           EMPLOYER: 'Creative Design Studio',
@@ -390,7 +404,6 @@ const getCreativeTemplate = (
       },
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 2,
         fields: getInsertTemplatesWithValues('WORK_EXPERIENCE', {
           JOB_TITLE: 'UI/UX Designer',
           EMPLOYER: 'Innovative Web Solutions',
@@ -406,14 +419,12 @@ const getCreativeTemplate = (
   {
     title: 'Education',
     defaultTitle: 'Education',
-    displayOrder: 4,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.EDUCATION,
     documentId,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('EDUCATION', {
           SCHOOL: 'Rhode Island School of Design',
           DEGREE: 'Bachelor of Fine Arts in Graphic Design',
@@ -427,16 +438,37 @@ const getCreativeTemplate = (
     ],
   },
   {
+    title: 'Links',
+    defaultTitle: 'Links',
+    documentId,
+    metadata: '',
+    type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+    items: [
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'Portfolio',
+          LINK: 'https://github.com/BraveHeart-tex',
+        }),
+      },
+      {
+        containerType: CONTAINER_TYPES.COLLAPSIBLE,
+        fields: getInsertTemplatesWithValues('WEBSITES_SOCIAL_LINKS', {
+          LABEL: 'LinkedIn',
+          LINK: 'https://www.linkedin.com/in/bora-karaca',
+        }),
+      },
+    ],
+  },
+  {
     title: 'Skills',
     defaultTitle: 'Skills',
-    displayOrder: 5,
     metadata: '',
     documentId,
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('SKILLS', {
           SKILL: '',
           EXPERIENCE_LEVEL: '',
@@ -447,14 +479,12 @@ const getCreativeTemplate = (
   {
     title: 'Other',
     defaultTitle: 'Custom Section',
-    displayOrder: 6,
     documentId,
     metadata: '',
     type: INTERNAL_SECTION_TYPES.CUSTOM,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
-        displayOrder: 1,
         fields: getInsertTemplatesWithValues('CUSTOM', {
           ACTIVITY_NAME: '',
           CITY: '',
@@ -474,12 +504,36 @@ export const getTemplateByStyle = (
 ): SectionWithFields[] => {
   switch (style) {
     case PREFILL_RESUME_STYLES.STANDARD:
-      return getStandardTemplate(documentId);
+      return getStandardTemplate(documentId).map(
+        mapSectionAndItemDisplayOrders,
+      );
     case PREFILL_RESUME_STYLES.TECH_FOCUSED:
-      return getTechFocusedTemplate(documentId);
+      return getTechFocusedTemplate(documentId).map(
+        mapSectionAndItemDisplayOrders,
+      );
     case PREFILL_RESUME_STYLES.CREATIVE:
-      return getCreativeTemplate(documentId);
+      return getCreativeTemplate(documentId).map(
+        mapSectionAndItemDisplayOrders,
+      );
     default:
-      return getStandardTemplate(documentId);
+      return getStandardTemplate(documentId).map(
+        mapSectionAndItemDisplayOrders,
+      );
   }
 };
+
+function mapSectionAndItemDisplayOrders(
+  section: DeepOmit<SectionWithFields, 'displayOrder'>,
+  index: number,
+): SectionWithFields {
+  return {
+    ...section,
+    displayOrder: index + 1,
+    items: section.items.map((item, index) => {
+      return {
+        ...item,
+        displayOrder: index + 1,
+      };
+    }),
+  };
+}
