@@ -30,7 +30,7 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="md:py-32 container py-24 mx-auto space-y-16"
+      className="md:py-32 container px-4 py-24 mx-auto space-y-16"
     >
       <div className="mx-auto max-w-[58rem] text-center">
         <h2 className="font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl">
