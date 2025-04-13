@@ -27,6 +27,7 @@ import SectionService from '@/lib/client-db/sectionService';
 import ItemService from '@/lib/client-db/itemService';
 import FieldService from '@/lib/client-db/fieldService';
 import AiSuggestionsService from '@/lib/client-db/aiSuggestionsService';
+import { excludeObjectKeys } from '../utils/objectUtils';
 
 type GetFullDocumentStructureResponse =
   | { success: false; error: string }
@@ -218,6 +219,88 @@ class DocumentService {
     documentId: DEX_Document['id'],
   ): Promise<DEX_Document | null> => {
     return (await clientDb.documents.get(documentId)) || null;
+  };
+
+  static copyDocument = async (documentId: DEX_Document['id']) => {
+    const sourceDocumentStructure =
+      await this.getFullDocumentStructure(documentId);
+
+    if (!sourceDocumentStructure?.success) {
+      throw new Error(
+        'There was a problem copying the document. Please refresh the page and try again.',
+      );
+    }
+
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        const newDocumentId = await clientDb.documents.add({
+          templateType: sourceDocumentStructure.document.templateType,
+          title: `${sourceDocumentStructure.document.title}(copy)`,
+        } as DEX_Document);
+
+        const insertPayload = sourceDocumentStructure.sections.map(
+          (section) => {
+            const items = sourceDocumentStructure.items.filter(
+              (item) => item.sectionId === section.id,
+            );
+
+            return {
+              section: {
+                ...excludeObjectKeys(section, ['id', 'documentId']),
+                documentId: newDocumentId,
+              },
+              items: items.map((item) => {
+                return {
+                  item: excludeObjectKeys(item, ['id', 'sectionId']),
+                  fields: sourceDocumentStructure.fields
+                    .filter((field) => field.itemId === item.id)
+                    .map((field) => excludeObjectKeys(field, ['id', 'itemId'])),
+                };
+              }),
+            };
+          },
+        );
+
+        const sectionInsertIds = await SectionService.bulkAddSections(
+          insertPayload.map((entry) => entry.section),
+        );
+
+        const flatItems: Array<{
+          item: Omit<DEX_Item, 'id'>;
+          fields: Omit<DEX_Field, 'itemId' | 'id'>[];
+        }> = [];
+
+        insertPayload.forEach((entry, sectionIndex) => {
+          const sectionId = sectionInsertIds[sectionIndex] as number;
+          entry.items.forEach((item) => {
+            flatItems.push({
+              item: {
+                ...item.item,
+                sectionId,
+              },
+              fields: item.fields,
+            });
+          });
+        });
+
+        const itemInsertIds = await ItemService.bulkAddItems(
+          flatItems.map((entry) => entry.item),
+        );
+
+        const flatFields = flatItems.flatMap((entry, index) =>
+          entry.fields.map((field) => ({
+            ...field,
+            itemId: itemInsertIds[index] as number,
+          })),
+        );
+
+        await FieldService.bulkAddFields(flatFields);
+
+        return newDocumentId;
+      },
+    );
   };
 }
 

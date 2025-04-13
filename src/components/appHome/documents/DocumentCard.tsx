@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   BriefcaseBusinessIcon,
+  CopyIcon,
   FileSymlink,
   MoreHorizontal,
   Pencil,
@@ -77,6 +78,16 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
     }
   };
 
+  const handleCopyDocument = async () => {
+    try {
+      await DocumentService.copyDocument(document.id);
+      showSuccessToast('Document copied successfully');
+    } catch (error) {
+      console.error(error);
+      showErrorToast((error as Error).message);
+    }
+  };
+
   return (
     <>
       <Card
@@ -112,7 +123,14 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                 <Pencil className="w-4 h-4 mr-2" />
                 Rename
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={handleDelete}>
+              <DropdownMenuItem onSelect={handleCopyDocument}>
+                <CopyIcon className="w-4 h-4 mr-2" />
+                Copy
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={handleDelete}
+                className="text-destructive"
+              >
                 <Trash className="w-4 h-4 mr-2" />
                 Delete
               </DropdownMenuItem>
