@@ -27,8 +27,8 @@ const EditableDocumentTitle = observer(() => {
   });
 
   return (
-    <div className="flex items-center gap-2">
-      <h1 className="scroll-m-20 first:mt-0 md:text-3xl text-2xl font-semibold tracking-tight">
+    <div className="flex items-center gap-2 max-w-[95%]">
+      <h1 className="scroll-m-20 first:mt-0 md:text-3xl overflow-hidden text-2xl font-semibold tracking-tight truncate">
         {documentTitle}
       </h1>
       <RenameDocumentDialog

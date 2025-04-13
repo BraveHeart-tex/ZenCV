@@ -12,6 +12,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
 import TailorForJobPostingBanner from './resumeScore/TailorForJobPostingBanner';
+import { ArrowLeftIcon } from 'lucide-react';
 
 const DocumentBuilderClient = observer(() => {
   const navigate = useNavigate();
@@ -32,16 +33,15 @@ const DocumentBuilderClient = observer(() => {
               navigate('/documents');
               builderRootStore.resetState();
             }}
+            size="icon"
             variant="outline"
           >
-            Documents
+            <ArrowLeftIcon />
           </Button>
+          <DocumentBuilderHeader />
           <DocumentBuilderSettingsWidget />
         </div>
 
-        <div className="max-w-screen-2xl mx-auto">
-          <DocumentBuilderHeader />
-        </div>
         <div
           className={
             'max-w-screen-2xl bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto'
