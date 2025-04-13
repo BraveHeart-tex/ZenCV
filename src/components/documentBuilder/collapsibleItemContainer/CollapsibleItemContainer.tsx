@@ -67,7 +67,6 @@ const CollapsibleSectionItemContainer = observer(
     }, [open, itemId]);
 
     const shouldShowDeleteButton = !isDragging && !isOver && !isSorting;
-    const shouldShowDragButton = !isDragging && !isOver && !isSorting;
 
     const handleDeleteItemClick = action(async () => {
       const shouldNotAskForConfirmation =
@@ -105,7 +104,7 @@ const CollapsibleSectionItemContainer = observer(
       <>
         <div
           className={cn(
-            'group relative w-full touch-none',
+            'group relative w-full',
             isDragging && 'max-h-[17rem] overflow-hidden',
           )}
           ref={(ref) => {
@@ -122,7 +121,18 @@ const CollapsibleSectionItemContainer = observer(
           id={getItemContainerId(itemId)}
           {...attributes}
         >
-          {shouldShowDragButton ? (
+          {isMobileOrTablet ? (
+            <div className="absolute top-0 left-0 z-10">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="cursor-grab touch-none w-8 h-8"
+                {...listeners}
+              >
+                <GripVertical />
+              </Button>
+            </div>
+          ) : (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -138,10 +148,10 @@ const CollapsibleSectionItemContainer = observer(
                 <TooltipContent>Click and drag to move</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          ) : null}
+          )}
           <motion.div
             className={cn(
-              'rounded-md border flex flex-col transition-all w-full',
+              'rounded-md border flex flex-col transition-all w-full pt-2',
               open && 'max-h-max',
             )}
           >
