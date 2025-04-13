@@ -2,7 +2,7 @@
 import { ReactNode, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { showErrorToast } from '@/components/ui/sonner';
+import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { dialogFooterClassNames } from '@/lib/constants';
@@ -31,13 +31,19 @@ const RenameDocumentDialog = observer(
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleRenameSubmit = async () => {
-      if (!enteredTitle.replaceAll(' ', '')) {
+      const normalizedTitle = enteredTitle.trim();
+      if (!normalizedTitle) {
         {
           showErrorToast('Please enter a name for the document.');
           setEnteredTitle('');
           inputRef.current?.focus();
           return;
         }
+      }
+
+      if (normalizedTitle === defaultTitle) {
+        showInfoToast('You made no changes to the title');
+        return;
       }
 
       onSubmit(enteredTitle);

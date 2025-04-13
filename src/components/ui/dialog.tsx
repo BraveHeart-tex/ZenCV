@@ -42,14 +42,14 @@ const DialogContent = React.forwardRef<
         className,
       )}
       {...props}
-      onPointerDownOutside={(e) => {
+      onPointerDownOutside={(event) => {
         if (
-          e.target instanceof Element &&
-          e.target.closest('[data-sonner-toast]')
+          event.target instanceof Element &&
+          event.target.closest('[data-sonner-toast]')
         ) {
-          e.preventDefault();
+          event.preventDefault();
         }
-        props?.onPointerDownOutside?.(e);
+        props?.onPointerDownOutside?.(event);
       }}
     >
       {children}
