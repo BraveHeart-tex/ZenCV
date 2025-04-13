@@ -1,5 +1,5 @@
 'use client';
-import { ReactNode, useRef, useState } from 'react';
+import { FormEvent, ReactNode, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
@@ -13,7 +13,6 @@ interface RenameDocumentDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   defaultTitle: string;
-
   trigger?: ReactNode;
   renderTrigger?: (openDialog: () => void) => ReactNode;
   onSubmit: (enteredTitle: string) => void;
@@ -30,7 +29,8 @@ const RenameDocumentDialog = observer(
     const [enteredTitle, setEnteredTitle] = useState(defaultTitle || '');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleRenameSubmit = async () => {
+    const handleRenameSubmit = async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
       const normalizedTitle = enteredTitle.trim();
       if (!normalizedTitle) {
         {
@@ -75,16 +75,21 @@ const RenameDocumentDialog = observer(
               Cancel
             </Button>
             <Button
+              type="submit"
+              form="rename-document-form"
               aria-label="Rename"
               disabled={!enteredTitle}
-              onClick={handleRenameSubmit}
             >
               Rename
             </Button>
           </div>
         }
       >
-        <div className="flex flex-col gap-1">
+        <form
+          onSubmit={handleRenameSubmit}
+          id="rename-document-form"
+          className="flex flex-col gap-1"
+        >
           <Label htmlFor="newDocumentTitle">New Document Title</Label>
           <Input
             id="newDocumentTitle"
@@ -105,7 +110,7 @@ const RenameDocumentDialog = observer(
               Please enter a document title
             </p>
           )}
-        </div>
+        </form>
       </ResponsiveDialog>
     );
   },
