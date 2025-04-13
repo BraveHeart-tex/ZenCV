@@ -53,7 +53,10 @@ const DraggableSectionContainer = ({
       }}
       {...attributes}
       id={getSectionContainerId(sectionId)}
-      className={cn('grid gap-2 relative group/container', className)}
+      className={cn(
+        'grid gap-2 relative group/container touch-none',
+        className,
+      )}
     >
       {children}
       {shouldShowDragButton ? (
