@@ -12,9 +12,9 @@ import {
   ClipboardCheckIcon,
   ClipboardIcon,
   DiamondPlus,
+  XIcon,
 } from 'lucide-react';
 import { PopoverClose } from '@radix-ui/react-popover';
-import { CloseIcon } from 'next/dist/client/components/react-dev-overlay/internal/icons/CloseIcon';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { observer } from 'mobx-react-lite';
 import {
@@ -102,7 +102,7 @@ const KeywordSuggestionsWidget = observer(
             </div>
             <PopoverClose asChild>
               <Button size="xsIcon" variant="ghost">
-                <CloseIcon />
+                <XIcon />
               </Button>
             </PopoverClose>
           </div>

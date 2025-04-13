@@ -16,7 +16,7 @@ const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
 );
 
 // For some reason, AI SDK returns the error object as a string
-// so i have to parse it here
+// so we have to parse it here
 const getErrorMessage = (error: Error): string => {
   try {
     return JSON.parse(error.message)?.message;
