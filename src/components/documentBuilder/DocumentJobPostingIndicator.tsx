@@ -32,7 +32,7 @@ const DocumentJobPostingIndicator = observer(() => {
   };
 
   return (
-    <div className="group flex items-center w-full gap-2">
+    <div className="group md:flex items-center hidden w-full gap-2">
       <Tooltip>
         <TooltipTrigger className="cursor-default">
           <div className="max-w-36 md:max-w-72 bg-muted whitespace-nowrap flex items-center px-1 space-x-1 overflow-hidden text-xs truncate rounded-md">
