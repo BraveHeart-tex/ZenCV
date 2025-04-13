@@ -1,5 +1,5 @@
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
-import { ArrowLeftIcon, LayoutGridIcon } from 'lucide-react';
+import { ArrowLeftIcon, DownloadIcon, LayoutGridIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 import { observer } from 'mobx-react-lite';
@@ -53,7 +53,8 @@ const DocumentBuilderPreviewHeader = observer(() => {
           })
         }
       >
-        Download PDF
+        <DownloadIcon className="md:hidden" />
+        <span className="md:inline hidden">Download PDF</span>
       </Button>
     </div>
   );
