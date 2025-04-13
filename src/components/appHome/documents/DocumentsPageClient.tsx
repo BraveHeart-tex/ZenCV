@@ -70,14 +70,13 @@ const DocumentsPageClient = () => {
   const noDocumentsCreated = filteredDocuments?.length === 0 && !searchQuery;
   if (noDocumentsCreated) {
     return (
-      <div className="min-h-[100vh] flex-1 rounded-xl md:min-h-min flex flex-col justify-center items-center gap-4">
+      <div className="rounded-xl md:min-h-min flex flex-col items-center justify-center flex-1 h-screen gap-4">
         <div className="flex flex-col gap-2">
           <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
             You don’t have any documents yet!
           </h2>
           <p className="text-muted-foreground text-center">
-            Ready to get started? Click below to create your first document in
-            just a few clicks.
+            Click below to create your first document in just a few clicks.
           </p>
         </div>
         <CreateDocumentDialog />
