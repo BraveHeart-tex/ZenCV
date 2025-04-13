@@ -2,7 +2,7 @@
 import { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
 import { Button } from '@/components/ui/button';
@@ -30,20 +30,23 @@ const RenameSectionFormDialog = observer(
     const [enteredTitle, setEnteredTitle] = useState(section.title || '');
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleRenameSectionSubmit = action(async () => {
-      if (!enteredTitle.replaceAll(' ', '').trim()) {
-        showErrorToast('New section title cannot be empty.');
-        inputRef?.current?.focus();
-        return;
-      }
+    const handleRenameSectionSubmit = action(
+      async (event?: FormEvent<HTMLFormElement>) => {
+        event?.preventDefault();
+        if (!enteredTitle.replaceAll(' ', '').trim()) {
+          showErrorToast('New section title cannot be empty.');
+          inputRef?.current?.focus();
+          return;
+        }
 
-      await builderRootStore.sectionStore.renameSection(
-        sectionId,
-        enteredTitle,
-      );
-      showSuccessToast('Section renamed successfully');
-      setOpen(false);
-    });
+        await builderRootStore.sectionStore.renameSection(
+          sectionId,
+          enteredTitle,
+        );
+        showSuccessToast('Section renamed successfully');
+        setOpen(false);
+      },
+    );
 
     return (
       <ResponsiveDialog
@@ -80,17 +83,21 @@ const RenameSectionFormDialog = observer(
             </Button>
 
             <Button
-              type="button"
+              type="submit"
+              form="rename-section-form"
               aria-label="Rename section"
               disabled={!enteredTitle}
-              onClick={handleRenameSectionSubmit}
             >
               Rename
             </Button>
           </div>
         }
       >
-        <div className="space-y-4">
+        <form
+          id="rename-section-form"
+          onSubmit={handleRenameSectionSubmit}
+          className="space-y-4"
+        >
           <div className="flex flex-col gap-1">
             <Label htmlFor="newSectionTitle">New Section Title</Label>
             <div className="relative">
@@ -115,7 +122,7 @@ const RenameSectionFormDialog = observer(
               </p>
             )}
           </div>
-        </div>
+        </form>
       </ResponsiveDialog>
     );
   },

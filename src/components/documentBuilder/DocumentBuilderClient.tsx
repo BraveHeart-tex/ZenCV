@@ -22,7 +22,7 @@ const DocumentBuilderClient = observer(() => {
     <TooltipProvider>
       <div
         className={cn(
-          'bg-background min-h-screen px-6 md:p-12 py-14 pt-4 md:pt-4 relative w-1/2 hide-scrollbar',
+          'bg-background min-h-screen px-2 md:px-6 md:p-12 py-14 pt-4 md:pt-4 relative w-1/2 hide-scrollbar',
           view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
           view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block',
         )}
