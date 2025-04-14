@@ -96,43 +96,56 @@ export const generateResumeSummaryPrompt = ({
 };
 
 export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
-  const { summary, workExperiences, jobPosting } = data;
+  const { summary, workExperiences, jobPosting, refinementPrompt } = data;
   const experiencesText = generateExperienceText(workExperiences);
 
   const jobPostingSection = jobPosting
     ? `
-  **Target Position:**
-  - **Company:** ${jobPosting.companyName}
-  - **Position:** ${jobPosting.jobTitle}
-  
-  **Job Description:**  
-  ${jobPosting.roleDescription}
-  `
+**Target Role:**
+- **Company:** ${jobPosting.companyName}
+- **Position:** ${jobPosting.jobTitle}
+
+**Job Description:**  
+${jobPosting.roleDescription}
+`
     : '';
 
-  return `### Role:
-  You are a **resume-writing expert** specializing in **improving** professional summaries to make them more impactful and aligned with career goals.
+  const refinementSection = refinementPrompt?.trim()
+    ? `
+### Additional Instructions:
+${refinementPrompt.trim()}
+`
+    : '';
 
-  ### Task:
-  **Enhance** the given professional summary while ensuring it:
-  - **Strengthens** achievements with specific results and measurable impacts.
-  - **Incorporates** industry-relevant keywords and technical expertise.
-  - **Emphasizes** leadership, problem-solving, and career progression.
-  - **Highlights** unique value propositions that differentiate the candidate.
-  ${jobPosting ? '- **Aligns** with the target job’s qualifications and expectations.' : ''}
+  return `
+### Role:
+You are an expert **resume writer**. Your task is to **enhance and improve** an existing professional summary to increase its effectiveness and alignment with the candidate's goals.
 
-  ### Input:
-  **Current Summary:**  
-  ${summary}
-  
-  **Candidate's Work Experience:**  
-  ${experiencesText}${jobPostingSection}
+### Objective:
+Improve the summary to ensure it:
+- Communicates **impactful achievements** with specific and measurable outcomes.
+- Emphasizes **career progression, leadership, and technical depth**.
+- Uses **relevant industry keywords** and a **professional, confident tone**.
+- Stands out by highlighting the candidate’s **unique strengths**.
+${jobPosting ? '- Is clearly tailored to the **target job description** and role expectations.' : ''}
+- Is concise, polished, and **resume-ready**.
 
-  ### Output Format:
-  - Respond **only** with the improved summary as a **single string**.
-  - **Do not** include introductions, explanations, or extra formatting.
-  - The response must be **immediately usable** as the candidate’s professional summary.
-  `;
+${refinementSection}
+
+### Input:
+**Current Summary:**  
+${summary}
+
+**Candidate's Work Experience:**  
+${experiencesText}
+
+${jobPostingSection}
+
+### Output Instructions:
+- Respond with the **text only**, exactly as it should appear in a resume.
+- **Do not** include any headings, notes, surrounding quotes, or explanations.
+- The output must be **ready to paste directly into a resume**.
+`.trim();
 };
 
 export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {

@@ -24,7 +24,10 @@ export const useAiSuggestionHelpers = () => {
   const { completeSummary, improveSummary, isLoading, analyzeJob } =
     useBuilderAiSuggestions();
 
-  const handleProfileSummaryUpdate = (summaryValue: string) => {
+  const handleProfileSummaryUpdate = (
+    summaryValue: string,
+    refinementPrompt?: string,
+  ) => {
     const body: GenerateSummarySchema = {
       workExperiences: prepareWorkExperienceEntries(),
       customPrompt: userSettingsStore.modelSettings.customGenerateSummaryPrompt,
@@ -34,7 +37,12 @@ export const useAiSuggestionHelpers = () => {
 
     if (summaryValue) {
       improveSummary('', {
-        body: { ...body, summary: summaryValue, jobPosting },
+        body: {
+          ...body,
+          summary: summaryValue,
+          jobPosting,
+          refinementPrompt: refinementPrompt || '',
+        },
       });
     } else {
       completeSummary('', { body: { ...body, jobPosting } });
@@ -46,7 +54,7 @@ export const useAiSuggestionHelpers = () => {
     document.dispatchEvent(event);
   };
 
-  const handleWriteProfileSummary = async () => {
+  const handleWriteProfileSummary = async (refinementPrompt?: string) => {
     const workExperienceSectionId = getWorkExperienceSectionId();
     if (!workExperienceSectionId) return;
 
@@ -72,7 +80,10 @@ export const useAiSuggestionHelpers = () => {
 
     const summaryField = getSummaryField();
 
-    handleProfileSummaryUpdate(summaryField?.value || '');
+    handleProfileSummaryUpdate(
+      summaryField?.value || '',
+      refinementPrompt || '',
+    );
     dispatchSummaryGenerationEvent();
   };
 

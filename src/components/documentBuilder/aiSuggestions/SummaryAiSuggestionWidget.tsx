@@ -2,8 +2,11 @@ import { Button } from '@/components/ui/button';
 import { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { observer } from 'mobx-react-lite';
 import { useAiSuggestionHelpers } from './useAiSuggestionHelpers';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { CUSTOM_PROMPT_MAX_LENGTH } from '@/lib/constants';
 
 interface SummaryAiSuggestionWidgetProps {
   summaryField: DEX_Field;
@@ -11,8 +14,14 @@ interface SummaryAiSuggestionWidgetProps {
 
 const SummaryAiSuggestionWidget = observer(
   ({ summaryField }: SummaryAiSuggestionWidgetProps) => {
+    const [refinementPrompt, setRefinementPrompt] = useState('');
+
     const ref = useRef<HTMLDivElement>(null);
     const { handleWriteProfileSummary, isLoading } = useAiSuggestionHelpers();
+
+    const handleImproveSummary = () => {
+      handleWriteProfileSummary(refinementPrompt);
+    };
 
     return (
       <>
@@ -25,6 +34,22 @@ const SummaryAiSuggestionWidget = observer(
             summary with AI
           </p>
         </div>
+        {summaryField?.value ? (
+          <div className="space-y-1">
+            <Label htmlFor="refinementPrompt">Refinement Prompt</Label>
+            <Textarea
+              rows={10}
+              id="refinementPrompt"
+              value={refinementPrompt}
+              onChange={(event) => setRefinementPrompt(event.target.value)}
+              maxLength={CUSTOM_PROMPT_MAX_LENGTH}
+              className="resize-none"
+            />
+            <p className="text-muted-foreground text-xs text-right">
+              {refinementPrompt.length} / {CUSTOM_PROMPT_MAX_LENGTH} characters
+            </p>
+          </div>
+        ) : null}
         {isLoading ? (
           <div className="flex items-center justify-center gap-2">
             <Loader2Icon className="animate-spin" />
@@ -35,15 +60,15 @@ const SummaryAiSuggestionWidget = observer(
             {summaryField?.value ? (
               <Button
                 variant="outline"
-                onClick={handleWriteProfileSummary}
-                disabled={isLoading}
+                onClick={handleImproveSummary}
+                disabled={isLoading || !refinementPrompt}
               >
                 Improve
               </Button>
             ) : (
               <Button
                 variant="outline"
-                onClick={handleWriteProfileSummary}
+                onClick={() => handleWriteProfileSummary()}
                 disabled={isLoading}
               >
                 Generate
