@@ -15,6 +15,8 @@ import {
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { startWorkExperienceTour } from './aiSuggestions.utils';
 import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
+import { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
+import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
@@ -23,8 +25,9 @@ export const useAiSuggestionHelpers = () => {
     useBuilderAiSuggestions();
 
   const handleProfileSummaryUpdate = (summaryValue: string) => {
-    const body = {
+    const body: GenerateSummarySchema = {
       workExperiences: prepareWorkExperienceEntries(),
+      customPrompt: userSettingsStore.modelSettings.customGenerateSummaryPrompt,
     };
 
     const jobPosting = builderRootStore.jobPostingStore.jobPosting || undefined;

@@ -3,6 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 import { clientDb } from '@/lib/client-db/clientDb';
+import { CUSTOM_PROMPT_MAX_LENGTH } from '@/lib/constants';
 import userSettingsStore from '@/lib/stores/userSettingsStore';
 import { useUser } from '@clerk/nextjs';
 import { action } from 'mobx';
@@ -47,8 +48,13 @@ const ModelCustomizationSettings = observer(() => {
           id="customPrompt"
           value={userSettingsStore.modelSettings.customGenerateSummaryPrompt}
           onChange={handlePromptChange}
+          maxLength={CUSTOM_PROMPT_MAX_LENGTH}
           placeholder='E.g. "Emphasize my full-stack development experience", "Use a professional yet friendly tone", or "Focus on achievements in team leadership and Agile delivery".'
         />
+        <p className="text-muted-foreground text-sm text-right">
+          {userSettingsStore.modelSettings.customGenerateSummaryPrompt.length} /{' '}
+          {CUSTOM_PROMPT_MAX_LENGTH} characters
+        </p>
       </div>
     </div>
   );

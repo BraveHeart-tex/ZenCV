@@ -1,7 +1,7 @@
-import { GenerateSummarySchema } from '../validation/generateSummary.schema';
-import { ImproveSummaryData } from '../validation/improveSummary.schema';
-import { JobPostingSchema } from '../validation/jobPosting.schema';
-import { WorkExperience } from '../validation/workExperience.schema';
+import { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
+import { ImproveSummaryData } from '@/lib/validation/improveSummary.schema';
+import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
+import { WorkExperience } from '@/lib/validation/workExperience.schema';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
 
 const generateExperienceText = (workExperiences: WorkExperience[]) =>
@@ -12,10 +12,17 @@ const generateExperienceText = (workExperiences: WorkExperience[]) =>
     })
     .join('\n\n');
 
-export const generateResumeSummaryPrompt = (
-  workExperiences: GenerateSummarySchema['workExperiences'],
-  jobPosting?: GenerateSummarySchema['jobPosting'],
-): string => {
+interface GenerateResumeSummaryPromptParams {
+  workExperiences: GenerateSummarySchema['workExperiences'];
+  jobPosting?: GenerateSummarySchema['jobPosting'];
+  customPrompt?: string;
+}
+
+export const generateResumeSummaryPrompt = ({
+  workExperiences,
+  jobPosting,
+  customPrompt,
+}: GenerateResumeSummaryPromptParams): string => {
   const experiencesText = generateExperienceText(workExperiences);
 
   const jobPostingSection = jobPosting
@@ -29,27 +36,63 @@ export const generateResumeSummaryPrompt = (
       `
     : '';
 
-  return `### Role:
-      You are a **resume-writing expert** specializing in creating compelling professional summaries that highlight achievements, skills, and impact.
+  if (customPrompt?.trim()) {
+    return `
+    ### Role:
+    You are a professional AI assistant helping to craft resume summaries that are impactful, relevant, and aligned with job requirements.
     
-      ### Task:
-      Generate a **3-5 sentence** professional summary that:
-      - Showcases **key achievements, skills, and measurable impacts**.
-      - Maintains a **confident, professional tone**.
-      - Incorporates **industry-relevant keywords**.
-      - ${jobPosting ? 'Aligns with the **target role’s qualifications and job description**.' : 'Emphasizes the candidate’s unique value propositions.'}
-      - Highlights **leadership, technical expertise, and problem-solving skills** when applicable.
-      - Is **concise, direct, and impactful**.
+    ### Custom Instructions:
+    ${customPrompt.trim()}
     
-      ### Input:
-      **Candidate's Work Experience:**
-      ${experiencesText}${jobPostingSection}
+    ### Input:
+    **Candidate's Work Experience:**
+    ${experiencesText}
     
-      ### Output Format:
-      - Respond **only** with the generated summary as a **single string**.
-      - **Do not** include introductions, explanations, or extra formatting.
-      - The response must be **immediately usable** as the candidate’s professional summary.
-      `;
+    ${jobPosting ? `**Target Job Description:**\n${jobPostingSection}` : ''}
+    
+    ### Guidelines:
+    - Respond with a **3-5 sentence** resume summary.
+    - Focus on **skills, achievements, and measurable impact**.
+    - Align with the **tone and focus** requested above.
+    - Maintain a **professional, confident tone**.
+    - Avoid generic fluff or vague statements.
+    - Use **industry-relevant keywords**.
+    - Avoid repeating job titles or basic duties.
+    
+    ### Output Format:
+    - Respond **only** with the summary text (no headings, labels, or Markdown).
+    - Your response must be **directly usable** in a resume to attract employers.
+    `.trim();
+  }
+
+  return `
+  ### Role:
+  You are a professional **resume-writing expert**. Your task is to craft powerful, concise, and targeted resume summaries that position candidates as top-tier professionals.
+  
+  ### Objective:
+  Write a **3-5 sentence** professional summary that:
+  - Highlights **key achievements**, **technical or leadership skills**, and **quantifiable impact**.
+  - Uses a **confident, polished, and professional tone**.
+  - Includes **industry-relevant keywords** and avoids filler language.
+  - ${
+    jobPosting
+      ? 'Is tailored to the **target role**, aligning with the job description and required qualifications.'
+      : 'Emphasizes the candidate’s **unique strengths**, **domain expertise**, and **career highlights**.'
+  }
+  - Avoids generic descriptions of duties or soft skills.
+  - Reads like it belongs at the top of a competitive, modern resume.
+  
+  ### Input:
+  **Candidate's Work Experience:**
+  ${experiencesText}
+  
+  ${jobPosting ? `**Target Job Posting:**\n${jobPostingSection}` : ''}
+  
+  ### Output Instructions:
+  - Respond **only** with the final resume summary.
+  - **Do not** include headings, labels, formatting (like Markdown), or any explanations.
+  - The summary should be **immediately usable** in a resume and designed to attract recruiters and hiring managers.
+  `.trim();
 };
 
 export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {

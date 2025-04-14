@@ -21,10 +21,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const prompt = generateResumeSummaryPrompt(
-      validationResult.data.workExperiences,
-      validationResult.data?.jobPosting,
-    );
+    const prompt = generateResumeSummaryPrompt({
+      workExperiences: validationResult.data?.workExperiences,
+      jobPosting: validationResult.data?.jobPosting,
+      customPrompt: validationResult.data?.customPrompt,
+    });
 
     const result = streamText({
       model: defaultAiModel,
