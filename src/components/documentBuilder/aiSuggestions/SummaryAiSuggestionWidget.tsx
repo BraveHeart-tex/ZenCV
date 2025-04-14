@@ -23,6 +23,8 @@ const SummaryAiSuggestionWidget = observer(
       handleWriteProfileSummary(refinementPrompt);
     };
 
+    const shouldShowImproveContent = !!summaryField?.value;
+
     return (
       <>
         <div className="space-y-1" ref={ref}>
@@ -30,11 +32,11 @@ const SummaryAiSuggestionWidget = observer(
             Professional Summary
           </h3>
           <p className="text-muted-foreground text-sm">
-            {summaryField?.value ? 'Improve your' : 'Generate a brand-new'}{' '}
-            summary with AI
+            {shouldShowImproveContent ? 'Improve your' : 'Generate a brand-new'}{' '}
+            summary with AI.
           </p>
         </div>
-        {summaryField?.value ? (
+        {shouldShowImproveContent ? (
           <div className="space-y-1">
             <Label htmlFor="refinementPrompt">Refinement Prompt</Label>
             <Textarea
@@ -44,6 +46,7 @@ const SummaryAiSuggestionWidget = observer(
               onChange={(event) => setRefinementPrompt(event.target.value)}
               maxLength={CUSTOM_PROMPT_MAX_LENGTH}
               className="resize-none"
+              placeholder="Give the AI specific instructions to highlight what matters most to you."
             />
             <p className="text-muted-foreground text-xs text-right">
               {refinementPrompt.length} / {CUSTOM_PROMPT_MAX_LENGTH} characters
