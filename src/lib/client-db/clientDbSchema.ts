@@ -112,7 +112,10 @@ export interface EditorPreferences {
   showAiSuggestions: boolean;
 }
 
-export type DEX_SettingsKey = 'language' | 'editorPreferences';
+export type DEX_SettingsKey =
+  | 'language'
+  | 'editorPreferences'
+  | 'customGenerateSummaryPrompt';
 
 export interface DEX_Setting<T = unknown> {
   key: DEX_SettingsKey;

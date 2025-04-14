@@ -7,6 +7,7 @@ import EditorPreferences from './EditorPreferences';
 import SettingsDangerZone from './SettingsDangerZone';
 import DataImportExport from './DataImportExport';
 import AuthenticationStatus from './AuthenticationStatus';
+import ModelCustomizationSettings from './ModelCustomizationSettings';
 
 const SettingsPage = observer(() => {
   return (
@@ -24,6 +25,8 @@ const SettingsPage = observer(() => {
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
+        <Separator />
+        <ModelCustomizationSettings />
         <Separator />
         <DataImportExport />
         <Separator />
