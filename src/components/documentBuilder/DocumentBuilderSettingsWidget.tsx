@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { cn } from '@/lib/utils/stringUtils';
 import AuthenticationStatus from '@/components/appHome/settings/AuthenticationStatus';
+import ModelCustomizationSettings from '../appHome/settings/ModelCustomizationSettings';
 
 const DocumentBuilderSettingsWidget = () => {
   const [open, setOpen] = useState(false);
@@ -36,6 +37,8 @@ const DocumentBuilderSettingsWidget = () => {
         <GeneralSettings />
         <Separator />
         <EditorPreferences />
+        <Separator />
+        <ModelCustomizationSettings />
       </div>
     </ResponsiveDialog>
   );
