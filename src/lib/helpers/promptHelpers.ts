@@ -151,49 +151,60 @@ ${jobPostingSection}
 export const generateJobAnalysisPrompt = (data: JobPostingSchema) => {
   const { companyName, jobTitle, roleDescription } = data;
 
-  return `You are an expert job market analyst specializing in dissecting job descriptions to identify key requirements, responsibilities, and qualifications. Your expertise lies in providing clear, actionable insights that help candidates understand the role and align their qualifications effectively.
+  return `
+You are a **job market analyst** specializing in dissecting job descriptions to extract **clear, actionable insights** for resume tailoring.
 
-  Your task is to analyze the following job posting and provide suggestions in a specific format that will help candidates tailor their resume effectively.
+---
 
-  Job Details:
-  Company: ${companyName}
-  Position: ${jobTitle}
+### Task
+Analyze the following job posting and return:
+1. **A standardized job title** that best describes the role.
+2. **A clean, line-separated list of unique, relevant skills** (max 15) extracted from the job description — including:
+   - Hard skills (tech/tools/languages)
+   - Domain knowledge (methodologies, frameworks)
+   - Soft skills (only if clearly emphasized)
 
-  Job Description:
-  ${roleDescription}
+---
 
-  Based on the job description, provide suggestions in the following format:
+### Job Posting
+**Company:** ${companyName}  
+**Position:** ${jobTitle}
 
-  1. Suggested Job Title: A standardized job title that best matches the role description
-  2. Keyword Suggestions: A list of only the most relevant and specific skills that directly match the job requirements. Each skill must be explicitly mentioned or strongly implied in the job description. List each skill on a new line with a hyphen (-) prefix. Include a balanced mix of:
-      - Technical skills (programming languages, tools, platforms)
-      - Domain knowledge (industry-specific expertise, methodologies)
-      - Soft skills (only if specifically emphasized in the description)
-      Maximum 15 unique skills total.
+**Job Description:**  
+${roleDescription}
 
-  Skill Selection Rules:
-  1. Each skill MUST be explicitly mentioned or clearly implied in the job description
-  2. NO duplicate skills or variations of the same skill
-     Examples of duplicates to avoid:
-     - "React" vs "ReactJS" vs "React.js" (use only "React")
-     - "Node.js" vs "NodeJS" vs "Node" (use only "Node.js")
-     - "UI/UX" vs "User Interface Design" (choose the more specific term)
-  3. Use standard industry formatting for technical terms:
-     - JavaScript (not Javascript or javascript)
-     - Node.js (not NodeJS or Node)
-     - TypeScript (not Typescript or typescript)
-  4. Prioritize specific technical skills over generic terms
-  5. Only include soft skills that are explicitly emphasized
-  6. Each skill must be unique and distinct in meaning
+---
 
-  Format your response exactly as shown below:
-  Suggested Job Title: [Single standardized title]
+### ✍️ Response Format
+Respond *exactly* as shown:
 
-  Keyword Suggestions:
-  - [Skill 1]
-  - [Skill 2]
-  - [Skill 3]
-  (etc...)
+**Suggested Job Title:**  
+[Single best-fit title]
 
-  Note: Ensure each skill is truly unique and provides distinct value. Do not list skills that overlap in meaning or represent the same core competency. Respond with a list of unique skills without any duplicates.`;
+**Keyword Suggestions:**  
+Skill 1  
+Skill 2  
+Skill 3  
+... up to 15 max
+
+---
+
+### Skill Selection Rules
+- Only include skills that are **explicitly mentioned** or **strongly implied** in the job description.
+- Avoid **duplicates or variants** (e.g., use only “React” not “ReactJS” or “React.js”).
+- Use **standard industry spelling and capitalization**, e.g.:
+  - JavaScript (not javascript)
+  - Node.js (not NodeJS)
+  - TypeScript (not typescript)
+- Prefer **specific tools or technologies** over vague terms (e.g., “PostgreSQL” over “databases”).
+- Include **soft skills only if clearly emphasized** (e.g., “strong communication” or “cross-functional collaboration”).
+- Do **not** prefix skills with symbols, numbers, or dashes — just list each skill on a new line.
+
+---
+
+### Output Constraints
+- **Do not** include extra explanations, headings, or markdown.
+- Return only the content in the specified format: title + skill list.
+- Make sure each skill is **distinct**, correctly spelled, and properly capitalized.
+  `.trim();
 };
