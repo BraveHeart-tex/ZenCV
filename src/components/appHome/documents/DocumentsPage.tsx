@@ -10,7 +10,7 @@ const DocumentsPage = () => {
         <div className="flex items-center gap-2 px-3">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-4 mr-2" />
-          <span>Documents</span>
+          <span className="font-medium">Documents</span>
         </div>
       </header>
       <div className="flex flex-col flex-1 gap-4 p-4">

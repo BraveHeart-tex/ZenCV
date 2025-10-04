@@ -22,7 +22,6 @@ export default ts.config(
   js.configs.recommended,
   ...ts.configs.recommended,
   prettier,
-  ...compat.extends('plugin:@typescript-eslint/recommended'),
   ...compat.extends('next/core-web-vitals'),
   ...compat.extends('prettier'),
   {

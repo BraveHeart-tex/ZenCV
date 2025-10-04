@@ -1,26 +1,12 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { BrowserRouter, Route, Routes } from 'react-router';
-
-const LandingPage = dynamic(
-  () => import('@/components/landingPage/LandingPage'),
-);
-const DocumentsPage = dynamic(
-  () => import('@/components/appHome/documents/DocumentsPage'),
-);
-const ApplicationLayoutWithSidebar = dynamic(
-  () => import('@/components/appHome/ApplicationLayoutWithSidebar'),
-);
-const SettingsPage = dynamic(
-  () => import('@/components/appHome/settings/SettingsPage'),
-);
-const ResumeTemplatesPage = dynamic(
-  () => import('@/components/appHome/resumeTemplates/ResumeTemplatesPage'),
-);
-const DocumentBuilderPage = dynamic(
-  () => import('@/components/documentBuilder/DocumentBuilderPage'),
-);
+import ApplicationLayoutWithSidebar from './appHome/ApplicationLayoutWithSidebar';
+import DocumentsPage from './appHome/documents/DocumentsPage';
+import ResumeTemplatesPage from './appHome/resumeTemplates/ResumeTemplatesPage';
+import SettingsPage from './appHome/settings/SettingsPage';
+import DocumentBuilderPage from './documentBuilder/DocumentBuilderPage';
+import LandingPage from './landingPage/LandingPage';
 
 const App = () => {
   return (

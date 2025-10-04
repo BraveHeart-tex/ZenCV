@@ -16,7 +16,7 @@ const SettingsPage = observer(() => {
         <div className="flex items-center gap-2 px-3">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-4 mr-2" />
-          <span>Settings</span>
+          <span className="font-medium">Settings</span>
         </div>
       </header>
       <div className="flex flex-col flex-1 w-full max-w-2xl gap-8 p-6 mx-auto">
