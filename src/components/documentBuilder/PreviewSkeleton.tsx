@@ -5,6 +5,7 @@ import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUISto
 
 const PreviewSkeleton = () => {
   const view = builderRootStore.UIStore.currentView;
+
   return (
     <div
       className={cn(
@@ -27,4 +28,5 @@ const PreviewSkeleton = () => {
     </div>
   );
 };
+
 export default PreviewSkeleton;

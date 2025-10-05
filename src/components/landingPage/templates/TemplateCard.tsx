@@ -3,21 +3,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import TemplateImageDialog from './TemplateImageDialog';
 import { TemplateOption } from '@/lib/types/documentBuilder.types';
-import { useNavigate } from 'react-router';
 import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { useRouter } from 'next/navigation';
 
 interface TemplateCardProps {
   template: TemplateOption;
 }
 
 const TemplateCard = ({ template }: TemplateCardProps) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const handleUseTemplate = async () => {
     await createAndNavigateToDocument({
       title: 'Untitled',
       templateType: template.value,
       onSuccess(documentId) {
-        navigate(`/builder/${documentId}`);
+        router.push(`/builder/${documentId}`);
       },
     });
   };

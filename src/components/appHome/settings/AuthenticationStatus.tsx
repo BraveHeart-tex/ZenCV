@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import {
   showErrorToast,
@@ -9,7 +10,7 @@ import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/nextjs';
 import { CheckIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { useLocation } from 'react-router';
+import { usePathname } from 'next/navigation';
 
 const aiPerks = [
   'Generate / Improve your profile summary',
@@ -20,8 +21,7 @@ const aiPerks = [
 const AuthenticationStatus = () => {
   const [loading, setLoading] = useState(false);
   const { isSignedIn, user } = useUser();
-  const location = useLocation();
-  const pathname = location.pathname;
+  const pathname = usePathname();
   const { signOut } = useClerk();
 
   const handleDeleteClerkAccount = () => {

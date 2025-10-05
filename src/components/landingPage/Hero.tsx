@@ -1,7 +1,7 @@
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 import { ArrowRight } from 'lucide-react';
-import { Link } from 'react-router';
+import Link from 'next/link';
 
 export default function Hero() {
   return (
@@ -22,7 +22,7 @@ export default function Hero() {
         </p>
         <div className="sm:flex-row flex flex-col items-center justify-center gap-4 pt-4">
           <Link
-            to="/documents"
+            href="/documents"
             className={cn(
               buttonVariants({
                 variant: 'default',
@@ -34,7 +34,7 @@ export default function Hero() {
             Start Building
             <ArrowRight className="w-4 h-4 ml-2" />
           </Link>
-          <a
+          <Link
             href="#templates"
             className={cn(
               buttonVariants({
@@ -45,7 +45,7 @@ export default function Hero() {
             )}
           >
             View Templates
-          </a>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,15 +1,13 @@
-'use client';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { observer } from 'mobx-react-lite';
-import GeneralSettings from './GeneralSettings';
-import EditorPreferences from './EditorPreferences';
-import SettingsDangerZone from './SettingsDangerZone';
-import DataImportExport from './DataImportExport';
-import AuthenticationStatus from './AuthenticationStatus';
-import ModelCustomizationSettings from './ModelCustomizationSettings';
+import GeneralSettings from '@/components/appHome/settings/GeneralSettings';
+import EditorPreferences from '@/components/appHome/settings/EditorPreferences';
+import SettingsDangerZone from '@/components/appHome/settings/SettingsDangerZone';
+import DataImportExport from '@/components/appHome/settings/DataImportExport';
+import AuthenticationStatus from '@/components/appHome/settings/AuthenticationStatus';
+import ModelCustomizationSettings from '@/components/appHome/settings/ModelCustomizationSettings';
 
-const SettingsPage = observer(() => {
+const SettingsPage = () => {
   return (
     <SidebarInset>
       <header className="shrink-0 flex items-center h-16 gap-2 border-b">
@@ -27,13 +25,12 @@ const SettingsPage = observer(() => {
         <EditorPreferences />
         <Separator />
         <ModelCustomizationSettings />
-        <Separator />
         <DataImportExport />
         <Separator />
         <SettingsDangerZone />
       </div>
     </SidebarInset>
   );
-});
+};
 
 export default SettingsPage;

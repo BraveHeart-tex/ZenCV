@@ -4,11 +4,10 @@ import ResponsiveDialog from '../ui/ResponsiveDialog';
 import { observer } from 'mobx-react-lite';
 import { Button } from '../ui/button';
 import { SignInButton, SignUpButton } from '@clerk/nextjs';
-import { useLocation } from 'react-router';
+import { usePathname } from 'next/navigation';
 
 const ProtectedServiceDialog = observer(() => {
-  const location = useLocation();
-  const pathname = location.pathname;
+  const pathname = usePathname();
 
   return (
     <ResponsiveDialog

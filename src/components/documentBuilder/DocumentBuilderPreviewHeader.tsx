@@ -20,7 +20,7 @@ const DocumentBuilderPreviewHeader = observer(() => {
         'flex items-center justify-between xl:justify-end mb-2 mx-auto w-full'
       }
       style={{
-        width: pdfViewerStore.pdfDimensions?.width,
+        width: pdfViewerStore.pdfDimensions?.width ?? '75%',
       }}
     >
       <Button

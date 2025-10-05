@@ -14,10 +14,12 @@ import {
 import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
 import { useAuth } from '@clerk/nextjs';
+import ClientOnly from '@/components/misc/ClientOnly';
 
 const EditorPreferences = observer(() => {
   const { online } = useNetworkState();
   const { isSignedIn } = useAuth();
+
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold">Editor Preferences</h2>
@@ -54,52 +56,54 @@ const EditorPreferences = observer(() => {
             }
           />
         </div>
-        {online ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
-              <Label
-                className={!isSignedIn ? 'opacity-50' : ''}
-                htmlFor="showAiSuggestions"
-              >
-                Show AI suggestions
-              </Label>{' '}
-              {!isSignedIn && (
-                <>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          size="xsIcon"
-                          variant="ghost"
-                          className="lg:inline-flex hidden"
-                        >
-                          <CircleHelpIcon />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>You must be signed in to AI features.</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </>
-              )}
+        <ClientOnly>
+          {online ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <Label
+                  className={!isSignedIn ? 'opacity-50' : ''}
+                  htmlFor="showAiSuggestions"
+                >
+                  Show AI suggestions
+                </Label>{' '}
+                {!isSignedIn && (
+                  <>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            size="xsIcon"
+                            variant="ghost"
+                            className="lg:inline-flex hidden"
+                          >
+                            <CircleHelpIcon />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>You must be signed in to AI features.</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </>
+                )}
+              </div>
+              <Switch
+                disabled={!isSignedIn}
+                id="showAiSuggestions"
+                checked={
+                  userSettingsStore.editorPreferences.showAiSuggestions &&
+                  isSignedIn
+                }
+                onCheckedChange={(checked) =>
+                  UserSettingsService.handleEditorPreferenceChange(
+                    'showAiSuggestions',
+                    checked,
+                  )
+                }
+              />
             </div>
-            <Switch
-              disabled={!isSignedIn}
-              id="showAiSuggestions"
-              checked={
-                userSettingsStore.editorPreferences.showAiSuggestions &&
-                isSignedIn
-              }
-              onCheckedChange={(checked) =>
-                UserSettingsService.handleEditorPreferenceChange(
-                  'showAiSuggestions',
-                  checked,
-                )
-              }
-            />
-          </div>
-        ) : null}
+          ) : null}
+        </ClientOnly>
       </div>
     </div>
   );

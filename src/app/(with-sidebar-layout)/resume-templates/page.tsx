@@ -1,9 +1,7 @@
-'use client';
-
 import TemplateCard from '@/components/landingPage/templates/TemplateCard';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { templateOptionsWithImages } from './resumeTemplates.constants';
+import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 
 const ResumeTemplatesPage = () => {
   return (

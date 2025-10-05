@@ -1,6 +1,5 @@
 'use client';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { useNavigate } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { observer } from 'mobx-react-lite';
 import DocumentBuilderHeader from '@/components/documentBuilder/DocumentBuilderHeader';
@@ -13,9 +12,10 @@ import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUISto
 import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
 import TailorForJobPostingBanner from './resumeScore/TailorForJobPostingBanner';
 import { ArrowLeftIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const DocumentBuilderClient = observer(() => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const view = builderRootStore.UIStore.currentView;
 
   return (
@@ -30,7 +30,7 @@ const DocumentBuilderClient = observer(() => {
         <div className="flex items-center justify-between w-full gap-4">
           <Button
             onClick={() => {
-              navigate('/documents');
+              router.push('/documents');
               builderRootStore.resetState();
             }}
             size="icon"
