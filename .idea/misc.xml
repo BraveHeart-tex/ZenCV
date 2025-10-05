@@ -9,16 +9,6 @@
       </MTProjectMetadataState>
     </option>
   </component>
-  <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <created>1716719011500</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1716719011500</updated>
-      <workItem from="1716719017301" duration="363000" />
-    </task>
-    <servers />
-  </component>
   <component name="TimeTrackingManager">
     <option name="totallyTimeSpent" value="363000" />
   </component>
