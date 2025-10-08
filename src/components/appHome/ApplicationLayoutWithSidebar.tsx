@@ -1,16 +1,20 @@
-'use client';
 import AppSidebar from '@/components/appHome/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { getCookieValue } from '@/lib/helpers/documentBuilderHelpers';
-import { Outlet } from 'react-router';
+import { ReactNode } from 'react';
+import { cookies } from 'next/headers';
 
-const ApplicationLayoutWithSidebar = () => {
-  const defaultOpen = getCookieValue('sidebar:state') === 'true';
+const ApplicationLayoutWithSidebar = async ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-      <Outlet />
+      {children}
     </SidebarProvider>
   );
 };

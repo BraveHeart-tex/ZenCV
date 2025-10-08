@@ -11,11 +11,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link } from 'react-router';
+
 import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
 import CreateDocumentDialog from './documents/CreateDocumentDialog';
 import AppColorModeToggle from './AppColorModeToggle';
+import Link from 'next/link';
+import ClientOnly from '@/components/misc/ClientOnly';
 
 const items = [
   {
@@ -42,7 +44,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link to="/">
+              <Link href="/">
                 <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
                   <Icons.logo />
                 </div>
@@ -70,7 +72,7 @@ const AppSidebar = () => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link to={item.url}>
+                    <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -84,7 +86,9 @@ const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <AppColorModeToggle shouldShowSidebarButton />
+            <ClientOnly>
+              <AppColorModeToggle shouldShowSidebarButton />
+            </ClientOnly>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { showErrorToast } from '@/components/ui/sonner';
-import { useNavigate } from 'react-router';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
@@ -30,6 +29,7 @@ import {
   createNewDocumentSchema,
 } from '@/lib/validation/createDocument.schema';
 import { UseState } from '@/lib/types/utils.types';
+import { useRouter } from 'next/navigation';
 
 const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
   (key) => ({
@@ -43,7 +43,7 @@ interface CreateDocumentFormProps {
 }
 
 const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const form = useForm<CreateDocumentFormData>({
     resolver: zodResolver(createNewDocumentSchema),
@@ -67,7 +67,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       templateType: template,
       selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
       onSuccess(documentId) {
-        navigate(`/builder/${documentId}`);
+        router.push(`/builder/${documentId}`);
         setOpen(false);
         form.reset();
       },

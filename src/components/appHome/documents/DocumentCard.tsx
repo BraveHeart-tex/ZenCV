@@ -21,9 +21,9 @@ import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import RenameDocumentDialog from './RenameDocumentDialog';
 import { useState } from 'react';
 import { action } from 'mobx';
-import { useNavigate } from 'react-router';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import DocumentService from '@/lib/client-db/documentService';
+import { useRouter } from 'next/navigation';
 
 interface DocumentCardProps {
   document: DEX_DocumentWithJobPosting;
@@ -32,7 +32,7 @@ interface DocumentCardProps {
 const DocumentCard = ({ document }: DocumentCardProps) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleDelete = (event: Event) => {
     event.stopImmediatePropagation();
@@ -95,7 +95,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         className="bg-background border-border hover:border-border-hover w-full transition-colors border cursor-pointer"
         onMouseDown={() => {
           if (isOpen) return;
-          navigate(`/builder/${document.id}`);
+          router.push(`/builder/${document.id}`);
         }}
       >
         <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
@@ -114,7 +114,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onSelect={() => navigate(`/builder/${document.id}`)}
+                onSelect={() => router.push(`/builder/${document.id}`)}
               >
                 <FileSymlink className="w-4 h-4 mr-2" />
                 Edit in CV Builder
