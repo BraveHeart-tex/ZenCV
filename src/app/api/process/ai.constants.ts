@@ -1,3 +1,3 @@
-import { google } from '@ai-sdk/google';
+import { groq } from '@ai-sdk/groq';
 
-export const defaultAiModel = google('gemini-2.0-flash-001');
+export const defaultAiModel = groq('openai/gpt-oss-20b');

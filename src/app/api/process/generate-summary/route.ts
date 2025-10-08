@@ -3,6 +3,7 @@ import { generateSummarySchema } from '@/lib/validation/generateSummary.schema';
 import { NextResponse } from 'next/server';
 import { streamText } from 'ai';
 import { defaultAiModel } from '../ai.constants';
+import { z } from 'zod';
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          fieldErrors: validationResult?.error?.flatten(),
+          fieldErrors: z.treeifyError(validationResult.error),
           timestamp: Date.now(),
           message: 'Please provide valid data.',
         },
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
       prompt,
     });
 
-    return result.toDataStreamResponse({
+    return result.toUIMessageStreamResponse({
       status: 200,
     });
   } catch (error) {
