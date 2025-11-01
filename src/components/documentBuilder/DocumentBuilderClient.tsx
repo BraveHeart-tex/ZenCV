@@ -18,6 +18,13 @@ const DocumentBuilderClient = observer(() => {
   const router = useRouter();
   const view = builderRootStore.UIStore.currentView;
 
+  const handleBack = () => {
+    router.push('/documents');
+    setTimeout(() => {
+      builderRootStore.resetState();
+    }, 100);
+  };
+
   return (
     <TooltipProvider>
       <div
@@ -28,14 +35,7 @@ const DocumentBuilderClient = observer(() => {
         )}
       >
         <div className="flex items-center justify-between w-full gap-4">
-          <Button
-            onClick={() => {
-              router.push('/documents');
-              builderRootStore.resetState();
-            }}
-            size="icon"
-            variant="outline"
-          >
+          <Button onClick={handleBack} size="icon" variant="outline">
             <ArrowLeftIcon />
           </Button>
           <DocumentBuilderHeader />
