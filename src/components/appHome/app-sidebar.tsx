@@ -19,7 +19,7 @@ import AppColorModeToggle from './AppColorModeToggle';
 import Link from 'next/link';
 import ClientOnly from '@/components/misc/ClientOnly';
 
-const items = [
+const appLinks = [
   {
     title: 'Documents',
     url: '/documents',
@@ -69,10 +69,10 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {appLinks.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url}>
+                    <Link href={item.url} prefetch={true}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
