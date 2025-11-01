@@ -8,7 +8,6 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { observer } from 'mobx-react-lite';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import TemplateGallery from '@/components/documentBuilder/templateGallery/TemplateGallery';
-import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { startTransition, useEffect } from 'react';
 import { showErrorToast } from '@/components/ui/sonner';
 import LazyMotionWrapper from '@/components/ui/LazyMotionWrapper';
@@ -24,13 +23,6 @@ const DocumentBuilderPage = observer(() => {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const documentId = params?.id ? +params?.id : null;
-
-  useEffect(() => {
-    return () => {
-      builderRootStore.resetState();
-      pdfViewerStore.resetState();
-    };
-  }, []);
 
   useEffect(() => {
     if (
