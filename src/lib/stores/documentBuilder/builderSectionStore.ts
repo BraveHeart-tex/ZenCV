@@ -198,6 +198,10 @@ export class BuilderSectionStore {
     });
   }
 
+  get orderedSections() {
+    return this.sections.toSorted((a, b) => a.displayOrder - b.displayOrder);
+  }
+
   getSectionItemsBySectionType = (type: SectionType) => {
     const section = this.root.sectionStore.sections.find(
       (s) => s.type === type,
