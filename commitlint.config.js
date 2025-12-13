@@ -15,6 +15,7 @@ const config = {
         'test',
         'revert',
         'perf',
+        'security',
       ],
     ],
   },
