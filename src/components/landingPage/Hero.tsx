@@ -1,7 +1,7 @@
-import { buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib/utils/stringUtils';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils/stringUtils';
 
 export default function Hero() {
   return (
@@ -30,6 +30,7 @@ export default function Hero() {
                 className: 'min-w-[200px]',
               }),
             )}
+            prefetch={true}
           >
             Start Building
             <ArrowRight className="w-4 h-4 ml-2" />

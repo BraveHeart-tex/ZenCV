@@ -18,6 +18,7 @@ const Cta = () => {
             size: 'lg',
             className: 'mt-4',
           })}
+          prefetch={true}
         >
           Start Building
         </Link>

@@ -1,10 +1,9 @@
-import { buttonVariants } from '@/components/ui/button';
-
-import { Icons } from '../misc/icons';
-import { ModeToggle } from '../ui/mode-toggle';
-import { APP_NAME } from '@/lib/appConfig';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
+import { APP_NAME } from '@/lib/appConfig';
+import { Icons } from '../misc/icons';
+import { ModeToggle } from '../ui/mode-toggle';
 
 export default function Header() {
   return (
@@ -37,6 +36,7 @@ export default function Header() {
             className={buttonVariants({
               variant: 'default',
             })}
+            prefetch={true}
           >
             Start Building
             <ArrowRight className="w-4 h-4 ml-2" />
