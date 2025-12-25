@@ -15,15 +15,3 @@ With ZenCV, users can:
 - Optimize their CVs for the targeted position with AI assistance
 
 <img src="./showcase_editor.png" alt="ZenCV Editor Page"/>
-
-In this project, I:
-
-- Developed a fast, SEO-friendly, and user experience-focused interface using Next.js and React
-
-- Enhanced code security and maintainability using TypeScript
-
-- Designed a modern, responsive UI with TailwindCSS
-
-- Integrated Google Gemini AI API to optimize content based on the job position
-
-- Used DexieDB (IndexedDB wrapper) to store data locally on the device, ensuring 100% privacy and offline functionality
