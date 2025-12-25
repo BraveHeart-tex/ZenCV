@@ -1,12 +1,4 @@
 'use client';
-import { DEX_DocumentWithJobPosting } from '@/lib/client-db/clientDbSchema';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
   BriefcaseBusinessIcon,
   CopyIcon,
@@ -15,15 +7,23 @@ import {
   Pencil,
   Trash,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import RenameDocumentDialog from './RenameDocumentDialog';
-import { useState } from 'react';
 import { action } from 'mobx';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import DocumentService from '@/lib/client-db/documentService';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import type { DEX_DocumentWithJobPosting } from '@/lib/client-db/clientDbSchema';
+import DocumentService from '@/lib/client-db/documentService';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import RenameDocumentDialog from './RenameDocumentDialog';
 
 interface DocumentCardProps {
   document: DEX_DocumentWithJobPosting;
@@ -56,6 +56,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
   };
 
   const prefetchDocumentData = action(async () => {
+    router.prefetch(`/documents/${document.id}`);
     await builderRootStore.documentStore.initializeStore(document.id);
   });
 
