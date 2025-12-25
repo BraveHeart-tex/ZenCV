@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const TEMPLATE_DATA_DEBOUNCE_MS = 500 as const;
 
@@ -6,7 +6,7 @@ type Callback<T extends unknown[]> = (...args: T) => void;
 
 export const useDebouncedCallback = <T extends unknown[]>(
   callback: Callback<T>,
-  delay: number = TEMPLATE_DATA_DEBOUNCE_MS,
+  delay: number = TEMPLATE_DATA_DEBOUNCE_MS
 ) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -20,7 +20,7 @@ export const useDebouncedCallback = <T extends unknown[]>(
         callback(...args);
       }, delay);
     },
-    [callback, delay],
+    [callback, delay]
   );
 
   useEffect(() => {

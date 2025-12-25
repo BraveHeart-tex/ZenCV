@@ -1,13 +1,13 @@
+import { Text, View } from '@react-pdf/renderer';
+import Html from 'react-pdf-html';
+import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
 } from './manhattan.styles';
-import { Text, View } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import Html from 'react-pdf-html';
-import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 
-const ManhattanSummarySection = ({
+export const ManhattanSummarySection = ({
   summarySection,
 }: {
   summarySection: PdfTemplateData['summarySection'];
@@ -34,5 +34,3 @@ const ManhattanSummarySection = ({
     </View>
   );
 };
-
-export default ManhattanSummarySection;

@@ -1,21 +1,9 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { showErrorToast } from '@/components/ui/sonner';
-import { dialogFooterClassNames } from '@/lib/constants';
-import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
-import { Checkbox } from '@/components/ui/checkbox';
-import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -24,25 +12,37 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
-  CreateDocumentFormData,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { showErrorToast } from '@/components/ui/sonner';
+import { dialogFooterClassNames } from '@/lib/constants';
+import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
+import type { UseState } from '@/lib/types/utils.types';
+import {
+  type CreateDocumentFormData,
   createNewDocumentSchema,
 } from '@/lib/validation/createDocument.schema';
-import { UseState } from '@/lib/types/utils.types';
-import { useRouter } from 'next/navigation';
 
 const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
   (key) => ({
     label: key.charAt(0).toUpperCase() + key.slice(1).toLowerCase(),
     value: INTERNAL_TEMPLATE_TYPES[key as keyof typeof INTERNAL_TEMPLATE_TYPES],
-  }),
+  })
 );
 
 interface CreateDocumentFormProps {
   setOpen: UseState<boolean>;
 }
 
-const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
+export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
   const router = useRouter();
 
   const form = useForm<CreateDocumentFormData>({
@@ -73,7 +73,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       },
       onError() {
         showErrorToast(
-          'Something went wrong while creating the document. Please try again later.',
+          'Something went wrong while creating the document. Please try again later.'
         );
       },
     });
@@ -81,18 +81,18 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
         <FormField
           control={form.control}
-          name="title"
+          name='title'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
                 <Input
-                  type="text"
+                  type='text'
                   {...field}
-                  placeholder="ABC Company - Software Engineer"
+                  placeholder='ABC Company - Software Engineer'
                 />
               </FormControl>
               <FormMessage />
@@ -101,7 +101,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
         />
         <FormField
           control={form.control}
-          name="template"
+          name='template'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Template</FormLabel>
@@ -111,8 +111,8 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger className="w-full" id="template">
-                    <SelectValue placeholder="Resume Template" />
+                  <SelectTrigger className='w-full' id='template'>
+                    <SelectValue placeholder='Resume Template' />
                   </SelectTrigger>
                   <SelectContent>
                     {resumeTemplateSelectOptions.map((option) => (
@@ -129,9 +129,9 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
         />
         <FormField
           control={form.control}
-          name="shouldUseSampleData"
+          name='shouldUseSampleData'
           render={({ field }) => (
-            <FormItem className="flex items-center gap-2 space-y-0">
+            <FormItem className='flex items-center gap-2 space-y-0'>
               <FormControl>
                 <Checkbox
                   checked={field.value}
@@ -148,7 +148,7 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
         {form.watch('shouldUseSampleData') && (
           <FormField
             control={form.control}
-            name="selectedPrefillStyle"
+            name='selectedPrefillStyle'
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Sample Data Type</FormLabel>
@@ -158,8 +158,8 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className="w-full" id="sample-data-type">
-                      <SelectValue placeholder="Select sample data type" />
+                    <SelectTrigger className='w-full' id='sample-data-type'>
+                      <SelectValue placeholder='Select sample data type' />
                     </SelectTrigger>
                     <SelectContent>
                       {sampleDataOptions.map((option) => (
@@ -177,18 +177,16 @@ const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
         )}
         <div className={dialogFooterClassNames}>
           <Button
-            type="button"
-            variant="outline"
-            aria-label="Close create document dialog"
+            type='button'
+            variant='outline'
+            aria-label='Close create document dialog'
             onClick={() => setOpen(false)}
           >
             Cancel
           </Button>
-          <Button type="submit">Create</Button>
+          <Button type='submit'>Create</Button>
         </div>
       </form>
     </Form>
   );
 };
-
-export default CreateDocumentForm;

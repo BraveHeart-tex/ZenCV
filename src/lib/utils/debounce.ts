@@ -7,10 +7,11 @@
  * @param {number} wait - The number of milliseconds to delay.
  * @returns {(...args: Parameters<T>) => void} A debounced version of the provided function.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function debounce<T extends (...args: any[]) => unknown>(
+
+// biome-ignore lint/suspicious/noExplicitAny: any is fine here
+export function debounce<T extends (...args: any[]) => unknown>(
   func: T,
-  wait: number,
+  wait: number
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 

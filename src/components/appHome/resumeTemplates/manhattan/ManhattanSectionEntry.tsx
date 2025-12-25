@@ -1,8 +1,8 @@
-import { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { Text, View } from '@react-pdf/renderer';
-import { MANHATTAN_FONT_SIZE } from './manhattan.styles';
-import { pdfHtmlRenderers } from '../resumeTemplates.constants';
 import { Html } from 'react-pdf-html';
+import type { WithEntryId } from '@/lib/types/documentBuilder.types';
+import { pdfHtmlRenderers } from '../resumeTemplates.constants';
+import { MANHATTAN_FONT_SIZE } from './manhattan.styles';
 
 interface ManhattanSectionEntryProps<T extends Record<string, string>> {
   entry: WithEntryId<T>;
@@ -10,7 +10,7 @@ interface ManhattanSectionEntryProps<T extends Record<string, string>> {
   subtitleKey: keyof T;
 }
 
-const ManhattanSectionEntry = <T extends Record<string, string>>({
+export const ManhattanSectionEntry = <T extends Record<string, string>>({
   entry,
   titleKey,
   subtitleKey,
@@ -89,4 +89,3 @@ const ManhattanSectionEntry = <T extends Record<string, string>>({
     </View>
   );
 };
-export default ManhattanSectionEntry;

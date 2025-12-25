@@ -1,8 +1,11 @@
-import { CONTAINER_TYPES, DEX_Document } from '@/lib/client-db/clientDbSchema';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { DeepOmit, ValueOf } from '@/lib/types/utils.types';
-import { SectionWithFields } from '@/lib/client-db/clientDbSchema';
+import {
+  CONTAINER_TYPES,
+  type DEX_Document,
+  type SectionWithFields,
+} from '@/lib/client-db/clientDbSchema';
 import { getInsertTemplatesWithValues } from '@/lib/misc/fieldTemplates';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { DeepOmit, ValueOf } from '@/lib/types/utils.types';
 
 export const PREFILL_RESUME_STYLES = {
   STANDARD: 'standard',
@@ -31,7 +34,7 @@ export const sampleDataOptions: {
 export type PrefilledResumeStyle = ValueOf<typeof PREFILL_RESUME_STYLES>;
 
 const getStandardTemplate = (
-  documentId: DEX_Document['id'],
+  documentId: DEX_Document['id']
 ): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
@@ -187,7 +190,7 @@ const getStandardTemplate = (
 ];
 
 const getTechFocusedTemplate = (
-  documentId: DEX_Document['id'],
+  documentId: DEX_Document['id']
 ): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
@@ -343,7 +346,7 @@ const getTechFocusedTemplate = (
 ];
 
 const getCreativeTemplate = (
-  documentId: DEX_Document['id'],
+  documentId: DEX_Document['id']
 ): DeepOmit<SectionWithFields, 'displayOrder'>[] => [
   {
     title: 'Personal Details',
@@ -500,31 +503,31 @@ const getCreativeTemplate = (
 
 export const getTemplateByStyle = (
   style: PrefilledResumeStyle,
-  documentId: DEX_Document['id'],
+  documentId: DEX_Document['id']
 ): SectionWithFields[] => {
   switch (style) {
     case PREFILL_RESUME_STYLES.STANDARD:
       return getStandardTemplate(documentId).map(
-        mapSectionAndItemDisplayOrders,
+        mapSectionAndItemDisplayOrders
       );
     case PREFILL_RESUME_STYLES.TECH_FOCUSED:
       return getTechFocusedTemplate(documentId).map(
-        mapSectionAndItemDisplayOrders,
+        mapSectionAndItemDisplayOrders
       );
     case PREFILL_RESUME_STYLES.CREATIVE:
       return getCreativeTemplate(documentId).map(
-        mapSectionAndItemDisplayOrders,
+        mapSectionAndItemDisplayOrders
       );
     default:
       return getStandardTemplate(documentId).map(
-        mapSectionAndItemDisplayOrders,
+        mapSectionAndItemDisplayOrders
       );
   }
 };
 
 function mapSectionAndItemDisplayOrders(
   section: DeepOmit<SectionWithFields, 'displayOrder'>,
-  index: number,
+  index: number
 ): SectionWithFields {
   return {
     ...section,

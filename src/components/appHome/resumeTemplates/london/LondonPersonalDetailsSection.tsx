@@ -1,9 +1,9 @@
-import { londonTemplateStyles } from './london.styles';
 import { Text, View } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import SeparatedPDFText from '../SeparatedPdfText';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { SeparatedPDFText } from '../SeparatedPdfText';
+import { londonTemplateStyles } from './london.styles';
 
-const LondonPersonalDetailsSection = ({
+export const LondonPersonalDetailsSection = ({
   personalDetails,
 }: {
   personalDetails: PdfTemplateData['personalDetails'];
@@ -30,7 +30,7 @@ const LondonPersonalDetailsSection = ({
       </Text>
 
       <SeparatedPDFText
-        separator=" • "
+        separator=' • '
         fields={contactDetails}
         style={{
           ...londonTemplateStyles.documentDescription,
@@ -40,5 +40,3 @@ const LondonPersonalDetailsSection = ({
     </View>
   );
 };
-
-export default LondonPersonalDetailsSection;

@@ -1,12 +1,12 @@
-import {
+import type {
   FieldInsertTemplate,
   FieldName,
   ResumeTemplate,
   SectionType,
   SelectType,
 } from '@/lib/types/documentBuilder.types';
-import { JobPostingSchema } from '../validation/jobPosting.schema';
-import { Nullable } from '../types/utils.types';
+import type { Nullable } from '../types/utils.types';
+import type { JobPostingSchema } from '../validation/jobPosting.schema';
 
 type IdType = number;
 

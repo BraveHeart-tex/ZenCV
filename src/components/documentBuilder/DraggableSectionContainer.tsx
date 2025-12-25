@@ -2,9 +2,9 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type React from 'react';
-import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
 
 interface DraggableSectionContainerProps {
   sectionId: DEX_Section['id'];
@@ -12,7 +12,7 @@ interface DraggableSectionContainerProps {
   className?: string;
 }
 
-const DraggableSectionContainer = ({
+export const DraggableSectionContainer = ({
   sectionId,
   children,
   className,
@@ -27,7 +27,7 @@ const DraggableSectionContainer = ({
         setNodeRef(ref);
         builderRootStore.UIStore.setElementRef(
           getSectionContainerId(sectionId),
-          ref,
+          ref
         );
       }}
       style={{
@@ -42,5 +42,3 @@ const DraggableSectionContainer = ({
     </section>
   );
 };
-
-export default DraggableSectionContainer;

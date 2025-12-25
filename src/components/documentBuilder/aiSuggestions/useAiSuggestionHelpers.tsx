@@ -5,18 +5,18 @@ import {
   getOrCreateWorkExperienceItem,
   getSummaryField,
   getWorkExperienceSectionId,
-  prepareWorkExperienceEntries,
   isWorkExperienceIncomplete,
+  prepareWorkExperienceEntries,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   INTERNAL_SECTION_TYPES,
   START_WORK_EXPERIENCE_TOUR_DELAY_MS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
+import type { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
+import type { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 import { startWorkExperienceTour } from './aiSuggestions.utils';
-import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
 
 export const SUMMARY_GENERATION_EVENT_NAME = 'summaryGeneration';
 
@@ -26,7 +26,7 @@ export const useAiSuggestionHelpers = () => {
 
   const handleProfileSummaryUpdate = (
     summaryValue: string,
-    refinementPrompt?: string,
+    refinementPrompt?: string
   ) => {
     const body: GenerateSummarySchema = {
       workExperiences: prepareWorkExperienceEntries(),
@@ -67,13 +67,13 @@ export const useAiSuggestionHelpers = () => {
     if (
       isWorkExperienceIncomplete(
         builderRootStore.sectionStore.getSectionItemsBySectionType(
-          INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-        ),
+          INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
+        )
       )
     ) {
       setTimeout(
         () => startWorkExperienceTour(itemId),
-        START_WORK_EXPERIENCE_TOUR_DELAY_MS,
+        START_WORK_EXPERIENCE_TOUR_DELAY_MS
       );
       return;
     }
@@ -82,7 +82,7 @@ export const useAiSuggestionHelpers = () => {
 
     handleProfileSummaryUpdate(
       summaryField?.value || '',
-      refinementPrompt || '',
+      refinementPrompt || ''
     );
     dispatchSummaryGenerationEvent();
   };

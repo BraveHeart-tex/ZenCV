@@ -1,16 +1,16 @@
 'use client';
-import { observer } from 'mobx-react-lite';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Upload, Download } from 'lucide-react';
-import { clientDb } from '@/lib/client-db/clientDb';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { Input } from '@/components/ui/input';
-import { useRef } from 'react';
+import { Download, Upload } from 'lucide-react';
 import { action, runInAction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import { clientDb } from '@/lib/client-db/clientDb';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 
-const DataImportExport = observer(() => {
+export const DataImportExport = observer(() => {
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +32,7 @@ const DataImportExport = observer(() => {
 
       if (missingTables.length > 0) {
         throw new Error(
-          `Uploaded data is missing required tables: ${missingTables.join(', ')}`,
+          `Uploaded data is missing required tables: ${missingTables.join(', ')}`
         );
       }
 
@@ -56,7 +56,7 @@ const DataImportExport = observer(() => {
             clientDb.fields.bulkPut(data.fields),
             clientDb.settings.bulkPut(data.settings),
           ]);
-        },
+        }
       );
 
       showSuccessToast('Data imported successfully');
@@ -65,7 +65,7 @@ const DataImportExport = observer(() => {
       showErrorToast(
         error instanceof Error
           ? `Failed to import data: ${error.message}`
-          : 'Failed to import data. Please check the file format.',
+          : 'Failed to import data. Please check the file format.'
       );
     }
 
@@ -102,36 +102,36 @@ const DataImportExport = observer(() => {
       showErrorToast(
         error instanceof Error
           ? `Failed to export data: ${error.message}`
-          : 'Failed to export data',
+          : 'Failed to export data'
       );
     }
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Data Import/Export</h2>
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="import">Import Data</Label>
-          <div className="flex items-center gap-2">
+    <div className='space-y-4'>
+      <h2 className='text-lg font-semibold'>Data Import/Export</h2>
+      <div className='space-y-4'>
+        <div className='space-y-2'>
+          <Label htmlFor='import'>Import Data</Label>
+          <div className='flex items-center gap-2'>
             <Button
-              variant="outline"
-              className="w-full"
+              variant='outline'
+              className='w-full'
               onClick={() => {
                 if (importInputRef.current) {
                   importInputRef.current.click();
                 }
               }}
             >
-              <Upload className="w-4 h-4 mr-2" />
+              <Upload className='w-4 h-4 mr-2' />
               Import from JSON
             </Button>
             <Input
               ref={importInputRef}
-              type="file"
-              id="import"
-              accept=".json"
-              className="hidden"
+              type='file'
+              id='import'
+              accept='.json'
+              className='hidden'
               onChange={action((event) => {
                 if (!event.target.files?.[0]) return;
                 confirmDialogStore.showDialog({
@@ -153,10 +153,10 @@ const DataImportExport = observer(() => {
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <Label>Export Data</Label>
-          <Button variant="outline" className="w-full" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant='outline' className='w-full' onClick={handleExport}>
+            <Download className='w-4 h-4 mr-2' />
             Export as JSON
           </Button>
         </div>
@@ -164,5 +164,3 @@ const DataImportExport = observer(() => {
     </div>
   );
 });
-
-export default DataImportExport;

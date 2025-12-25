@@ -1,8 +1,8 @@
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { ResumeLanguagesSection } from '../shared/ResumeLanguagesSection';
 import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
-import ResumeLanguagesSection from '../shared/ResumeLanguagesSection';
 
-const LondonLanguagesSection = ({
+export const LondonLanguagesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -15,5 +15,3 @@ const LondonLanguagesSection = ({
     />
   );
 };
-
-export default LondonLanguagesSection;

@@ -1,10 +1,10 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import ManhattanSectionEntry from './ManhattanSectionEntry';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { ManhattanSectionEntry } from './ManhattanSectionEntry';
+import { manhattanTemplateStyles } from './manhattan.styles';
 
-const ManhattanEducationSection = ({
+export const ManhattanEducationSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -20,13 +20,11 @@ const ManhattanEducationSection = ({
           <ManhattanSectionEntry
             entry={entry}
             key={entry.entryId}
-            subtitleKey="school"
-            titleKey="degree"
+            subtitleKey='school'
+            titleKey='degree'
           />
         ))}
       </View>
     </View>
   );
 };
-
-export default ManhattanEducationSection;

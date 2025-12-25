@@ -1,13 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-
 import { File } from 'lucide-react';
-import { AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';
-import { useState } from 'react';
-import * as motion from 'motion/react-m';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { action } from 'mobx';
+import { AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';
+import * as motion from 'motion/react-m';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 const motionConfig = {
@@ -31,7 +30,7 @@ const motionConfig = {
   transition: { duration: 0.3 },
 };
 
-const DocumentBuilderViewToggle = () => {
+export const DocumentBuilderViewToggle = () => {
   const view = builderRootStore.UIStore.currentView;
   const [shouldShowButtonText, setShouldShowButtonText] = useState(false);
   const { scrollYProgress } = useScroll();
@@ -45,8 +44,8 @@ const DocumentBuilderViewToggle = () => {
 
   return (
     <Button
-      className="right-5 bottom-2 xl:hidden hover:bg-opacity-95 py-7 fixed z-50 flex items-center gap-2 px-5 text-base transition-all ease-in-out rounded-full"
-      size="lg"
+      className='right-5 bottom-2 xl:hidden hover:bg-opacity-95 py-7 fixed z-50 flex items-center gap-2 px-5 text-base transition-all ease-in-out rounded-full'
+      size='lg'
       onClick={action(() => {
         builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.PREVIEW;
       })}
@@ -55,7 +54,7 @@ const DocumentBuilderViewToggle = () => {
         {shouldShowButtonText && (
           <motion.div
             {...motionConfig}
-            className="text-primary-foreground font-medium"
+            className='text-primary-foreground font-medium'
           >
             Preview & Download
           </motion.div>
@@ -65,5 +64,3 @@ const DocumentBuilderViewToggle = () => {
     </Button>
   );
 };
-
-export default DocumentBuilderViewToggle;

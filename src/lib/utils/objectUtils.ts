@@ -1,18 +1,18 @@
 export const getKeyByValue = (
   object: Record<string, unknown>,
-  value: unknown,
+  value: unknown
 ) => {
   return Object.keys(object).find((key) => object[key] === value);
 };
 
 export const getChangedValues = <T extends Record<string, unknown>>(
   previousData: T,
-  newData: T,
+  newData: T
 ): Partial<T> => {
   const changed: Partial<T> = {};
 
   for (const key in newData) {
-    if (Object.prototype.hasOwnProperty.call(newData, key)) {
+    if (Object.hasOwn(newData, key)) {
       const previousValue = previousData[key];
       const newValue = newData[key];
 
@@ -24,7 +24,7 @@ export const getChangedValues = <T extends Record<string, unknown>>(
       ) {
         const nestedChanges = getChangedValues(
           previousValue as T,
-          newValue as T,
+          newValue as T
         );
         if (Object.keys(nestedChanges).length > 0) {
           changed[key] = nestedChanges as never;

@@ -1,15 +1,25 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { CONTAINER_TYPES, DEX_Item } from '@/lib/client-db/clientDbSchema';
-import HidableFieldContainer from './HidableFieldContainer';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
-import { cn } from '@/lib/utils/stringUtils';
-import CollapsibleSectionItemContainer from './collapsibleItemContainer/CollapsibleItemContainer';
+import { CONTAINER_TYPES, type DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   INTERNAL_SECTION_TYPES,
   MAX_VISIBLE_FIELDS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { cn } from '@/lib/utils/stringUtils';
+import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
+import { HidableFieldContainer } from './HidableFieldContainer';
+
+export const SectionItem = observer(
+  ({ itemId }: { itemId: DEX_Item['id'] }) => {
+    const item = builderRootStore.itemStore.getItemById(itemId);
+
+    if (!item) return null;
+
+    return <ContainerElement item={item} />;
+  }
+);
 
 const ContainerElement = ({ item }: { item: DEX_Item }) => {
   const { renderFields } = useFieldMapper();
@@ -35,20 +45,10 @@ const ContainerElement = ({ item }: { item: DEX_Item }) => {
         builderRootStore.sectionStore.getSectionById(item.sectionId)?.type ===
           INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
           'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6',
-        fields.length === 2 && 'grid grid-cols-2 gap-4',
+        fields.length === 2 && 'grid grid-cols-2 gap-4'
       )}
     >
       {renderFields(fields)}
     </div>
   );
 };
-
-const SectionItem = observer(({ itemId }: { itemId: DEX_Item['id'] }) => {
-  const item = builderRootStore.itemStore.getItemById(itemId)!;
-
-  if (!item) return null;
-
-  return <ContainerElement item={item} />;
-});
-
-export default SectionItem;

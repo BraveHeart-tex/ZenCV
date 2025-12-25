@@ -1,8 +1,8 @@
-import { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
-import { ImproveSummaryData } from '@/lib/validation/improveSummary.schema';
-import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { WorkExperience } from '@/lib/validation/workExperience.schema';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
+import type { GenerateSummarySchema } from '@/lib/validation/generateSummary.schema';
+import type { ImproveSummaryData } from '@/lib/validation/improveSummary.schema';
+import type { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
+import type { WorkExperience } from '@/lib/validation/workExperience.schema';
 
 const generateExperienceText = (workExperiences: WorkExperience[]) =>
   workExperiences

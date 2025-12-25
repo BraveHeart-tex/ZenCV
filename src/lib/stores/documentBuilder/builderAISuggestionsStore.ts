@@ -1,12 +1,12 @@
 import { makeAutoObservable, ObservableMap, reaction, runInAction } from 'mobx';
-import { builderRootStore, BuilderRootStore } from './builderRootStore';
-import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
-import { AISuggestion } from '@/lib/types/documentBuilder.types';
+import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import { getSummaryField } from '@/lib/helpers/documentBuilderHelpers';
-import { JobAnalysisResult } from '@/lib/validation/jobAnalysisResult.schema';
-import debounce from '@/lib/utils/debounce';
 import { SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { AISuggestion } from '@/lib/types/documentBuilder.types';
+import { debounce } from '@/lib/utils/debounce';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
+import type { JobAnalysisResult } from '@/lib/validation/jobAnalysisResult.schema';
+import { type BuilderRootStore, builderRootStore } from './builderRootStore';
 
 const KEYWORD_CHECK_REACTION_DELAY_MS = 500 as const;
 
@@ -46,12 +46,12 @@ export class BuilderAISuggestionsStore {
       () => {
         return {
           values: this.richTextFieldsWithKeywordChecks.map((field) =>
-            removeHTMLTags(field.value).toLowerCase(),
+            removeHTMLTags(field.value).toLowerCase()
           ),
           keywords: this.keywordSuggestions,
         };
       },
-      ({ values }) => checkUsedKeywords(values),
+      ({ values }) => checkUsedKeywords(values)
     );
   };
 
@@ -79,7 +79,7 @@ export class BuilderAISuggestionsStore {
 
     await builderRootStore.fieldStore.setFieldValue(
       fieldId,
-      this.suggestedJobTitle,
+      this.suggestedJobTitle
     );
 
     runInAction(() => {
@@ -90,14 +90,14 @@ export class BuilderAISuggestionsStore {
   get richTextFieldsWithKeywordChecks() {
     return this.root.sectionStore.sections
       .filter((section) =>
-        SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type),
+        SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type)
       )
       .flatMap((section) => {
         const items = this.root.itemStore.getItemsBySectionId(section.id);
         return items.flatMap((item) =>
           this.root.fieldStore
             .getFieldsByItemId(item.id)
-            .filter((field) => field.type === FIELD_TYPES.RICH_TEXT),
+            .filter((field) => field.type === FIELD_TYPES.RICH_TEXT)
         );
       });
   }

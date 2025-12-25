@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-function useLocalStorage<T>(
+export function useLocalStorage<T>(
   key: string,
-  initialValue: T,
+  initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
@@ -25,7 +25,7 @@ function useLocalStorage<T>(
         console.error('Error setting localStorage key:', key, error);
       }
     },
-    [key, storedValue],
+    [key, storedValue]
   );
 
   useEffect(() => {
@@ -40,7 +40,7 @@ function useLocalStorage<T>(
           console.error(
             'Error parsing localStorage change:',
             event.newValue,
-            error,
+            error
           );
         }
       }
@@ -55,5 +55,3 @@ function useLocalStorage<T>(
 
   return [storedValue, setValue];
 }
-
-export default useLocalStorage;

@@ -1,14 +1,14 @@
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BriefcaseBusinessIcon, Edit2Icon, TrashIcon } from 'lucide-react';
-import { observer } from 'mobx-react-lite';
-import { Button } from '../ui/button';
-import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { showErrorToast, showSuccessToast } from '../ui/sonner';
 import { runInAction } from 'mobx';
-import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
-import JobPostingFormDialog from './resumeScore/JobPostingFormDialog';
+import { observer } from 'mobx-react-lite';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { Button } from '../ui/button';
+import { showErrorToast, showSuccessToast } from '../ui/sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { JobPostingFormDialog } from './resumeScore/JobPostingFormDialog';
 
-const DocumentJobPostingIndicator = observer(() => {
+export const DocumentJobPostingIndicator = observer(() => {
   if (!builderRootStore.jobPostingStore.jobPosting) return null;
 
   const handleDeleteJobPosting = () => {
@@ -32,12 +32,12 @@ const DocumentJobPostingIndicator = observer(() => {
   };
 
   return (
-    <div className="group md:flex items-center hidden w-full gap-2">
+    <div className='group md:flex items-center hidden w-full gap-2'>
       <Tooltip>
-        <TooltipTrigger className="cursor-default">
-          <div className="max-w-36 md:max-w-72 bg-muted whitespace-nowrap flex items-center px-1 space-x-1 overflow-hidden text-xs truncate rounded-md">
-            <div className="bg-background p-1 rounded-md">
-              <BriefcaseBusinessIcon className="w-3 h-3" />
+        <TooltipTrigger className='cursor-default'>
+          <div className='max-w-36 md:max-w-72 bg-muted whitespace-nowrap flex items-center px-1 space-x-1 overflow-hidden text-xs truncate rounded-md'>
+            <div className='bg-background p-1 rounded-md'>
+              <BriefcaseBusinessIcon className='w-3 h-3' />
             </div>
             <span>
               {builderRootStore.jobPostingStore.jobPosting.jobTitle} at{' '}
@@ -53,21 +53,21 @@ const DocumentJobPostingIndicator = observer(() => {
         </TooltipContent>
       </Tooltip>
       <JobPostingFormDialog
-        mode="edit"
+        mode='edit'
         trigger={
           <Button
-            className="group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none"
-            variant="ghost"
-            size="icon"
+            className='group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none'
+            variant='ghost'
+            size='icon'
           >
             <Edit2Icon />
           </Button>
         }
       />
       <Button
-        className="group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none"
-        variant="ghost"
-        size="icon"
+        className='group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none'
+        variant='ghost'
+        size='icon'
         onClick={handleDeleteJobPosting}
       >
         <TrashIcon />
@@ -75,5 +75,3 @@ const DocumentJobPostingIndicator = observer(() => {
     </div>
   );
 });
-
-export default DocumentJobPostingIndicator;

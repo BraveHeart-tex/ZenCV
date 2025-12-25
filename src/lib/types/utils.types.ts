@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 export type ValueOf<T> = T[keyof T];
 
@@ -12,7 +12,7 @@ export type Nullable<T> = T | null;
 
 export type UseState<T> = Dispatch<SetStateAction<T>>;
 
-/* eslint-disable  @typescript-eslint/no-explicit-any */
+// biome-ignore lint/suspicious/noExplicitAny: any is fine here
 export type DeepOmit<T, K extends keyof any> = T extends any[]
   ? DeepOmit<T[number], K>[]
   : T extends object

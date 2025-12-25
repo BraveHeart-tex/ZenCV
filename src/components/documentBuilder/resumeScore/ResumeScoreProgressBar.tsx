@@ -3,13 +3,13 @@ import { Progress } from '@/components/ui/progress';
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
-const ResumeScoreProgressBar = observer(() => {
+export const ResumeScoreProgressBar = observer(() => {
   const score = builderRootStore.templateStore.debouncedResumeStats.score;
   const colors = getScoreColor(score);
 
   return (
     <Progress
-      className="h-1"
+      className='h-1'
       value={score}
       indicatorStyles={{
         backgroundColor: colors.backgroundColor,
@@ -17,5 +17,3 @@ const ResumeScoreProgressBar = observer(() => {
     />
   );
 });
-
-export default ResumeScoreProgressBar;

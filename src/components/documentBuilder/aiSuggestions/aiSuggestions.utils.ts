@@ -1,9 +1,9 @@
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
-import { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { genericErrorMessage } from '@/lib/constants';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import shepherdStore from '@/lib/stores/documentBuilder/shepherdStore';
+import { shepherdStore } from '@/lib/stores/documentBuilder/shepherdStore';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 
 const shouldAddJobEntryErrorMessage =
@@ -18,7 +18,7 @@ export const startWorkExperienceTour = (itemId: DEX_Item['id']) => {
   }
 
   const element = builderRootStore.UIStore.itemRefs.get(
-    getItemContainerId(itemId),
+    getItemContainerId(itemId)
   );
   if (!element) {
     console.warn('Element not found');

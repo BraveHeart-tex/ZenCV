@@ -1,12 +1,12 @@
 'use client';
-import DocumentSection from '@/components/documentBuilder/DocumentSection';
-import PersonalDetailSectionSkeleton from '@/components/documentBuilder/PersonalDetailSectionSkeleton';
-import ProfessionalSummarySkeleton from '@/components/documentBuilder/ProfessionalSummarySkeleton';
-import SectionsDndContext from '@/components/documentBuilder/SectionsDndContext';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { observer } from 'mobx-react-lite';
+import { DocumentSection } from '@/components/documentBuilder/DocumentSection';
+import { PersonalDetailSectionSkeleton } from '@/components/documentBuilder/PersonalDetailSectionSkeleton';
+import { ProfessionalSummarySkeleton } from '@/components/documentBuilder/ProfessionalSummarySkeleton';
+import { SectionsDndContext } from '@/components/documentBuilder/SectionsDndContext';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
-const DocumentSections = observer(() => {
+export const DocumentSections = observer(() => {
   const sections = builderRootStore.sectionStore.orderedSections;
 
   if (sections.length === 0) {
@@ -26,5 +26,3 @@ const DocumentSections = observer(() => {
     </SectionsDndContext>
   );
 });
-
-export default DocumentSections;

@@ -1,15 +1,14 @@
 'use client';
 
-import type React from 'react';
 import {
+  closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -17,8 +16,9 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { action } from 'mobx';
+import type React from 'react';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface ItemsDndContextProps {
@@ -26,7 +26,7 @@ interface ItemsDndContextProps {
   items: DEX_Item[];
 }
 
-const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
+export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
   const handleDragEnd = action(async (event: DragEndEvent) => {
     const activeId = event.active.id;
     const overId = event?.over?.id;
@@ -47,7 +47,7 @@ const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   return (
@@ -62,5 +62,3 @@ const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     </DndContext>
   );
 };
-
-export default ItemsDndContext;

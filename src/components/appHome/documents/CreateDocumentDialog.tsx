@@ -1,16 +1,16 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { FilePlusIcon } from 'lucide-react';
-import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
-import CreateDocumentForm from './CreateDocumentForm';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { CreateDocumentForm } from './CreateDocumentForm';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon';
 }
 
-const CreateDocumentDialog = ({
+export const CreateDocumentDialog = ({
   triggerVariant = 'default',
 }: CreateDocumentDialogProps) => {
   const [open, setOpen] = useState(false);
@@ -26,7 +26,7 @@ const CreateDocumentDialog = ({
 
     if (triggerVariant === 'sidebar') {
       return (
-        <SidebarMenuButton variant="outline">
+        <SidebarMenuButton variant='outline'>
           <FilePlusIcon /> Create Document
         </SidebarMenuButton>
       );
@@ -34,7 +34,7 @@ const CreateDocumentDialog = ({
 
     if (triggerVariant === 'icon') {
       return (
-        <Button variant="outline" size="icon">
+        <Button variant='outline' size='icon'>
           <FilePlusIcon />
         </Button>
       );
@@ -43,8 +43,8 @@ const CreateDocumentDialog = ({
 
   return (
     <ResponsiveDialog
-      title="Create new document"
-      description="Use the form below to create a document"
+      title='Create new document'
+      description='Use the form below to create a document'
       trigger={renderTrigger()}
       open={open}
       onOpenChange={setOpen}
@@ -53,4 +53,3 @@ const CreateDocumentDialog = ({
     </ResponsiveDialog>
   );
 };
-export default CreateDocumentDialog;

@@ -1,14 +1,14 @@
 'use client';
-import { clientDb } from '@/lib/client-db/clientDb';
 import { useLiveQuery } from 'dexie-react-hooks';
-import CreateDocumentDialog from './CreateDocumentDialog';
-import DocumentCard from './DocumentCard';
-import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
+import { useMemo, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { clientDb } from '@/lib/client-db/clientDb';
+import type { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
+import { CreateDocumentDialog } from './CreateDocumentDialog';
+import { DocumentCard } from './DocumentCard';
 
-const DocumentsPageClient = () => {
+export const DocumentsPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const documents = useLiveQuery(
@@ -17,7 +17,7 @@ const DocumentsPageClient = () => {
 
       const jobPostingIds = [
         ...new Set(
-          documents.map((doc) => doc.jobPostingId).filter((id) => id !== null),
+          documents.map((doc) => doc.jobPostingId).filter((id) => id !== null)
         ),
       ];
 
@@ -27,7 +27,9 @@ const DocumentsPageClient = () => {
           .where('id')
           .anyOf(jobPostingIds)
           .toArray();
-        jobPostings.forEach((jp) => jobPostingsMap.set(jp.id, jp));
+        jobPostings.forEach((jp) => {
+          jobPostingsMap.set(jp.id, jp);
+        });
       }
 
       return documents.map((doc) => ({
@@ -38,7 +40,7 @@ const DocumentsPageClient = () => {
       }));
     },
     [],
-    null,
+    null
   );
 
   const filteredDocuments = useMemo(() => {
@@ -46,23 +48,23 @@ const DocumentsPageClient = () => {
     if (!searchQuery) return documents;
 
     return documents.filter((doc) =>
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      doc.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [documents, searchQuery]);
 
   if (!documents) {
     return (
-      <div className="flex flex-col gap-6">
-        <div className="md:max-w-lg relative w-full">
-          <Search className="text-muted-foreground left-2 top-2 absolute w-5 h-5" />
+      <div className='flex flex-col gap-6'>
+        <div className='md:max-w-lg relative w-full'>
+          <Search className='text-muted-foreground left-2 top-2 absolute w-5 h-5' />
           <Input
-            placeholder="Search documents..."
-            className="w-full pl-8"
+            placeholder='Search documents...'
+            className='w-full pl-8'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="text-muted-foreground text-center">Loading...</div>
+        <div className='text-muted-foreground text-center'>Loading...</div>
       </div>
     );
   }
@@ -70,12 +72,12 @@ const DocumentsPageClient = () => {
   const noDocumentsCreated = filteredDocuments?.length === 0 && !searchQuery;
   if (noDocumentsCreated) {
     return (
-      <div className="rounded-xl md:min-h-min flex flex-col items-center justify-center flex-1 h-screen gap-4">
-        <div className="flex flex-col gap-2">
-          <h2 className="scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center">
+      <div className='rounded-xl md:min-h-min flex flex-col items-center justify-center flex-1 h-screen gap-4'>
+        <div className='flex flex-col gap-2'>
+          <h2 className='scroll-m-20 first:mt-0 text-3xl font-semibold tracking-tight text-center'>
             You don’t have any documents yet!
           </h2>
-          <p className="text-muted-foreground text-center">
+          <p className='text-muted-foreground text-center'>
             Click below to create your first document in just a few clicks.
           </p>
         </div>
@@ -87,21 +89,21 @@ const DocumentsPageClient = () => {
   const renderDocuments = () => {
     if (filteredDocuments?.length === 0 && searchQuery) {
       return (
-        <div className="text-muted-foreground text-center">
+        <div className='text-muted-foreground text-center'>
           No documents found matching your search.
         </div>
       );
     }
 
     return (
-      <div className="flex flex-col gap-4">
-        <div className=" flex items-center gap-2">
-          <CreateDocumentDialog triggerVariant="icon" />
-          <h2 className="text-2xl font-semibold tracking-tight">
+      <div className='flex flex-col gap-4'>
+        <div className=' flex items-center gap-2'>
+          <CreateDocumentDialog triggerVariant='icon' />
+          <h2 className='text-2xl font-semibold tracking-tight'>
             Your Documents
           </h2>
         </div>
-        <div className="md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid w-full grid-cols-1 gap-4">
+        <div className='md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid w-full grid-cols-1 gap-4'>
           {filteredDocuments?.map((document) => (
             <DocumentCard key={document.id} document={document} />
           ))}
@@ -111,12 +113,12 @@ const DocumentsPageClient = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="md:max-w-lg relative w-full">
-        <Search className="text-muted-foreground left-2 top-2 absolute w-5 h-5" />
+    <div className='flex flex-col gap-6'>
+      <div className='md:max-w-lg relative w-full'>
+        <Search className='text-muted-foreground left-2 top-2 absolute w-5 h-5' />
         <Input
-          placeholder="Search documents..."
-          className="w-full pl-8"
+          placeholder='Search documents...'
+          className='w-full pl-8'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -125,5 +127,3 @@ const DocumentsPageClient = () => {
     </div>
   );
 };
-
-export default DocumentsPageClient;

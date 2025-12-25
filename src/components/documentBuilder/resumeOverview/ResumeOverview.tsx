@@ -1,21 +1,21 @@
 'use client';
+import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import ResumeOverViewContent from './ResumeOverViewContent';
-import ResumeOverviewTrigger from './ResumeOverviewTrigger';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   getItemContainerId,
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
-import { autorun } from 'mobx';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { ResumeOverViewContent } from './ResumeOverViewContent';
+import { ResumeOverviewTrigger } from './ResumeOverviewTrigger';
 
 export interface FocusState {
   sectionId: string | null;
   itemId: string | null;
 }
 
-const ResumeOverview = observer(() => {
+export const ResumeOverview = observer(() => {
   const [visible, setVisible] = useState(false);
   const [focusState, setFocusState] = useState<FocusState>({
     sectionId: null,
@@ -43,6 +43,7 @@ const ResumeOverview = observer(() => {
 
         builderRootStore.UIStore.itemRefs.forEach((el) => {
           if (!el) return;
+
           const rect = el.getBoundingClientRect();
           const elementCenter = rect.top + rect.height / 2;
           const distance = Math.abs(viewportCenter - elementCenter);
@@ -52,18 +53,20 @@ const ResumeOverview = observer(() => {
           }
         });
 
-        if (closestItem) {
-          const foundItem = items.find(
-            (item) => getItemContainerId(item.id) === closestItem!.id,
-          );
+        if (!closestItem) return;
 
-          if (foundItem) {
-            setFocusState({
-              sectionId: getSectionContainerId(foundItem?.sectionId),
-              itemId: (closestItem as { id: string }).id,
-            });
-          }
-        }
+        const { id: closestItemId } = closestItem;
+
+        const foundItem = items.find(
+          (item) => getItemContainerId(item.id) === closestItemId
+        );
+
+        if (!foundItem) return;
+
+        setFocusState({
+          sectionId: getSectionContainerId(foundItem.sectionId),
+          itemId: closestItemId,
+        });
       };
 
       window.addEventListener('scroll', handleScroll, {
@@ -79,8 +82,9 @@ const ResumeOverview = observer(() => {
   }, []);
 
   return (
-    <div
-      className="group fixed right-0 top-[25%] z-[500] flex items-start"
+    <button
+      type='button'
+      className='group fixed right-0 top-[25%] z-[500] flex items-start'
       onMouseEnter={() => {
         setVisible(true);
       }}
@@ -90,8 +94,6 @@ const ResumeOverview = observer(() => {
     >
       <ResumeOverviewTrigger focusState={focusState} visible={visible} />
       <ResumeOverViewContent focusState={focusState} visible={visible} />
-    </div>
+    </button>
   );
 });
-
-export default ResumeOverview;

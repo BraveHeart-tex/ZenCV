@@ -1,11 +1,11 @@
-import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
+import type {
   FieldInsertTemplate,
   TopLevelFieldName,
 } from '@/lib/types/documentBuilder.types';
@@ -271,14 +271,14 @@ const fieldNamesToTemplates: Record<TopLevelFieldName, FieldInsertTemplate[]> =
 
 export const getInsertTemplatesWithValues = <T extends TopLevelFieldName>(
   key: T,
-  mapping: Record<keyof (typeof FIELD_NAMES)[T], string>,
+  mapping: Record<keyof (typeof FIELD_NAMES)[T], string>
 ) => {
   return fieldNamesToTemplates[key].map((field) => {
     const fieldNameKey = getKeyByValue(FIELD_NAMES[key], field.name);
 
     if (!fieldNameKey)
       throw new Error(
-        `Field name ${field.name} not found in FIELD_NAMES[${key}]`,
+        `Field name ${field.name} not found in FIELD_NAMES[${key}]`
       );
 
     return {

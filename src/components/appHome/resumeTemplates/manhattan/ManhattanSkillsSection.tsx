@@ -1,17 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
 import {
-  MANHATTAN_FONT_SIZE,
-  manhattanTemplateStyles,
-} from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import {
   getSectionMetadata,
   getSkillsSectionEntries,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import {
+  MANHATTAN_FONT_SIZE,
+  manhattanTemplateStyles,
+} from './manhattan.styles';
 
-const ManhattanSkillsSection = ({
+export const ManhattanSkillsSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -22,13 +22,13 @@ const ManhattanSkillsSection = ({
   const showExperienceLevel =
     getSectionMetadata(
       section,
-      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
     ) === CHECKED_METADATA_VALUE;
 
   const isCommaSeparated =
     getSectionMetadata(
       section,
-      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED
     ) === CHECKED_METADATA_VALUE;
 
   const renderSkills = () => {
@@ -43,7 +43,7 @@ const ManhattanSkillsSection = ({
             {sectionEntries
               .map(
                 (entry) =>
-                  `${entry.name} ${showExperienceLevel && entry.level ? `(${entry.level})` : ''}`,
+                  `${entry.name} ${showExperienceLevel && entry.level ? `(${entry.level})` : ''}`
               )
               .join(', ')}
           </Text>
@@ -93,5 +93,3 @@ const ManhattanSkillsSection = ({
     </View>
   );
 };
-
-export default ManhattanSkillsSection;

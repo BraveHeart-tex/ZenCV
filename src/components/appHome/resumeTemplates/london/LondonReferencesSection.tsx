@@ -1,14 +1,14 @@
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { Text, View } from '@react-pdf/renderer';
+import { CHECKED_METADATA_VALUE } from '@/lib/constants';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import {
   getReferencesSectionEntries,
   getSectionMetadata,
 } from '../resumeTemplates.helpers';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
 import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
-import { Text, View } from '@react-pdf/renderer';
 
-const LondonReferencesSection = ({
+export const LondonReferencesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -18,7 +18,7 @@ const LondonReferencesSection = ({
   const hideReferences =
     getSectionMetadata(
       section,
-      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
+      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
     ) === CHECKED_METADATA_VALUE;
 
   if (!sectionEntries.length) return null;
@@ -78,4 +78,3 @@ const LondonReferencesSection = ({
     </View>
   );
 };
-export default LondonReferencesSection;

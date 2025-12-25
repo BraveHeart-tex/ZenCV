@@ -1,9 +1,9 @@
-import { manhattanTemplateStyles } from './manhattan.styles';
 import { Text, View } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import SeparatedPDFText from '../SeparatedPdfText';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { SeparatedPDFText } from '../SeparatedPdfText';
+import { manhattanTemplateStyles } from './manhattan.styles';
 
-const ManhattanPersonalDetailsSection = ({
+export const ManhattanPersonalDetailsSection = ({
   personalDetails,
 }: {
   personalDetails: PdfTemplateData['personalDetails'];
@@ -40,7 +40,7 @@ const ManhattanPersonalDetailsSection = ({
         </Text>
       )}
       <SeparatedPDFText
-        separator=" | "
+        separator=' | '
         fields={contactDetails}
         style={{
           ...manhattanTemplateStyles.documentDescription,
@@ -50,5 +50,3 @@ const ManhattanPersonalDetailsSection = ({
     </View>
   );
 };
-
-export default ManhattanPersonalDetailsSection;

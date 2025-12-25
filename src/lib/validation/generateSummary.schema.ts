@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { workExperienceSchema } from './workExperience.schema';
-import { jobPostingSchema } from './jobPosting.schema';
 import { CUSTOM_PROMPT_MAX_LENGTH } from '../constants';
+import { jobPostingSchema } from './jobPosting.schema';
+import { workExperienceSchema } from './workExperience.schema';
 
 export const generateSummarySchema = z.object({
   workExperiences: z
@@ -13,7 +13,7 @@ export const generateSummarySchema = z.object({
     .string()
     .max(
       CUSTOM_PROMPT_MAX_LENGTH,
-      `Custom prompt cannot be longer than ${CUSTOM_PROMPT_MAX_LENGTH} characters`,
+      `Custom prompt cannot be longer than ${CUSTOM_PROMPT_MAX_LENGTH} characters`
     )
     .optional(),
 });

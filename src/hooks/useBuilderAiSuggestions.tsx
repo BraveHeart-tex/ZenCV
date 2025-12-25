@@ -1,3 +1,5 @@
+import { useCompletion } from '@ai-sdk/react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import {
   showErrorToast,
   showLoadingToast,
@@ -5,14 +7,12 @@ import {
 } from '@/components/ui/sonner';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import type { AiSuggestionsContext } from '@/lib/types/documentBuilder.types';
-import { useCompletion } from '@ai-sdk/react';
-import { createContext, useContext, useEffect, useRef } from 'react';
 import { useJobAnalysis } from './useJobAnalysis';
 
 export const PROCESS_BASE_API_ROUTE = '/api/process';
 
 const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
-  null,
+  null
 );
 
 // For some reason, AI SDK returns the error object as a string
@@ -87,7 +87,7 @@ export const BuilderAiSuggestionsProvider = ({
   useEffect(() => {
     if (!generatedSummary && !improvedSummary) return;
     builderRootStore.aiSuggestionsStore.setSummarySuggestion(
-      generatedSummary || improvedSummary,
+      generatedSummary || improvedSummary
     );
   }, [generatedSummary, improvedSummary]);
 
@@ -113,7 +113,7 @@ export const useBuilderAiSuggestions = () => {
   const context = useContext(BuilderAiSuggestionsContext);
   if (!context) {
     throw new Error(
-      'useBuilderAiSuggestions must be used within a BuilderAiSuggestionsProvider',
+      'useBuilderAiSuggestions must be used within a BuilderAiSuggestionsProvider'
     );
   }
   return context;

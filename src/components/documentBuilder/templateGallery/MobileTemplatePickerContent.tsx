@@ -1,37 +1,37 @@
-import { Button } from '@/components/ui/button';
+import { observer } from 'mobx-react-lite';
+import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { Button } from '@/components/ui/button';
 import {
   Carousel,
   CarouselContent,
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import MobileTemplatePickerItem from './MobileTemplatePickerItem';
-import { observer } from 'mobx-react-lite';
-import { AnimatePresence } from 'motion/react';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { MobileTemplatePickerItem } from './MobileTemplatePickerItem';
 
-const MobileTemplatePickerContent = observer(() => {
+export const MobileTemplatePickerContent = observer(() => {
   const isOpen = builderRootStore.UIStore.isMobileTemplateSelectorVisible;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0">
+    <div className='fixed bottom-0 left-0 right-0'>
       <AnimatePresence>
         {isOpen ? (
           <motion.div
-            className="bg-background xl:hidden px-4 py-6 border-t"
+            className='bg-background xl:hidden px-4 py-6 border-t'
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Template</h3>
+            <div className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-lg font-semibold'>Template</h3>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant='ghost'
+                  size='sm'
                   onClick={() => {
                     builderRootStore.UIStore.toggleTemplateSelectorBottomMenu();
                   }}
@@ -39,14 +39,14 @@ const MobileTemplatePickerContent = observer(() => {
                   Close
                 </Button>
               </div>
-              <div className="relative">
+              <div className='relative'>
                 <Carousel
                   opts={{
                     align: 'start',
                   }}
-                  className="w-full"
+                  className='w-full'
                 >
-                  <CarouselContent className="px-2">
+                  <CarouselContent className='px-2'>
                     {templateOptionsWithImages.map((template) => (
                       <MobileTemplatePickerItem
                         template={template}
@@ -54,8 +54,8 @@ const MobileTemplatePickerContent = observer(() => {
                       />
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="sm:flex hidden" />
-                  <CarouselNext className="sm:flex hidden" />
+                  <CarouselPrevious className='sm:flex hidden' />
+                  <CarouselNext className='sm:flex hidden' />
                 </Carousel>
               </div>
             </div>
@@ -67,5 +67,3 @@ const MobileTemplatePickerContent = observer(() => {
     </div>
   );
 });
-
-export default MobileTemplatePickerContent;

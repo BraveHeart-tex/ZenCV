@@ -16,11 +16,11 @@ export const jobPostingSchema = z.object({
     .min(1, 'Role is required')
     .min(
       200,
-      'For best results, role description must be at least 200 characters long',
+      'For best results, role description must be at least 200 characters long'
     )
     .max(
       JOB_POSTING_DESCRIPTION_LIMIT,
-      `Role description cannot be longer than ${JOB_POSTING_DESCRIPTION_LIMIT} characters`,
+      `Role description cannot be longer than ${JOB_POSTING_DESCRIPTION_LIMIT} characters`
     ),
 });
 

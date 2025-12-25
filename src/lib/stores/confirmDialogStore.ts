@@ -39,7 +39,7 @@ class ConfirmDialogStore {
           await this.onClose();
           this.onClose = () => {};
         }
-      },
+      }
     );
   }
 
@@ -80,7 +80,7 @@ class ConfirmDialogStore {
         this.doNotAskAgainEnabled = false;
         this.doNotAskAgainChecked = false;
       }),
-      DIALOG_CONTENT_RESET_DELAY_MS,
+      DIALOG_CONTENT_RESET_DELAY_MS
     );
   };
 

@@ -1,8 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
-import { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { FieldName } from '@/lib/types/documentBuilder.types';
-import FieldService from '@/lib/client-db/fieldService';
+import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { updateField } from '@/lib/client-db/fieldService';
+import type { FieldName } from '@/lib/types/documentBuilder.types';
+import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderFieldStore {
   root: BuilderRootStore;
@@ -24,7 +24,7 @@ export class BuilderFieldStore {
   setFieldValue = async (
     fieldId: DEX_Field['id'],
     value: string,
-    shouldSaveToStore = true,
+    shouldSaveToStore = true
   ) => {
     const field = this.fields.find((field) => field.id === fieldId);
     if (!field) return;
@@ -34,7 +34,7 @@ export class BuilderFieldStore {
     });
 
     if (shouldSaveToStore) {
-      await FieldService.updateField(fieldId, value);
+      await updateField(fieldId, value);
     }
   };
 

@@ -1,8 +1,12 @@
-import { BuilderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
-import { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import JobPostingService from '@/lib/client-db/jobPostingService';
+import type { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
+import {
+  addJobPosting,
+  removeJobPostingByDocumentId,
+  updateJobPosting,
+} from '@/lib/client-db/jobPostingService';
+import type { BuilderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import type { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
 
 export class BuilderJobPostingStore {
   root: BuilderRootStore;
@@ -29,7 +33,7 @@ export class BuilderJobPostingStore {
     }
 
     try {
-      await JobPostingService.updateJobPosting(this.jobPosting.id, data);
+      await updateJobPosting(this.jobPosting.id, data);
       runInAction(() => {
         if (this.jobPosting) {
           Object.assign(this.jobPosting, data);
@@ -65,9 +69,7 @@ export class BuilderJobPostingStore {
     }
 
     try {
-      await JobPostingService.removeJobPostingByDocumentId(
-        this.root.documentStore.document.id,
-      );
+      await removeJobPostingByDocumentId(this.root.documentStore.document.id);
       runInAction(() => {
         if (this.root.documentStore.document) {
           this.root.documentStore.document.jobPostingId = null;
@@ -98,9 +100,9 @@ export class BuilderJobPostingStore {
     }
 
     try {
-      const jobPostingId = await JobPostingService.addJobPosting(
+      const jobPostingId = await addJobPosting(
         data,
-        this.root.documentStore.document.id,
+        this.root.documentStore.document.id
       );
       runInAction(() => {
         if (this.root.documentStore.document) {

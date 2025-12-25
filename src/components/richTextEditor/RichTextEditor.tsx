@@ -2,8 +2,8 @@
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Ref, useImperativeHandle, useRef } from 'react';
-import RichTextEditorMenubar from '@/components/richTextEditor/RichTextEditorMenubar';
+import { type Ref, useImperativeHandle, useRef } from 'react';
+import { RichTextEditorMenubar } from '@/components/richTextEditor/RichTextEditorMenubar';
 
 export interface RichTextEditorProps {
   initialValue?: string;
@@ -21,7 +21,7 @@ export interface EditorRef extends HTMLDivElement {
   setContent: (content: string) => void;
 }
 
-const RichTextEditor = ({
+export const RichTextEditor = ({
   initialValue,
   placeholder,
   onChange,
@@ -82,15 +82,15 @@ const RichTextEditor = ({
   }));
 
   return (
-    <div className="w-full" ref={containerRef}>
-      <div className="border-input bg-background border rounded-md">
+    <div className='w-full' ref={containerRef}>
+      <div className='border-input bg-background border rounded-md'>
         <RichTextEditorMenubar editor={editor} />
-        <div className="min-h-[200px] overflow-auto relative pb-10">
+        <div className='min-h-[200px] overflow-auto relative pb-10'>
           <EditorContent
             id={id}
             ref={ref}
             editor={editor}
-            className="max-w-none"
+            className='max-w-none'
           />
           {footer}
         </div>
@@ -98,7 +98,5 @@ const RichTextEditor = ({
     </div>
   );
 };
-
-export default RichTextEditor;
 
 RichTextEditor.displayName = 'RichTextEditor';

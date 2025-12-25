@@ -1,4 +1,4 @@
-import DocumentsPage from '@/components/appHome/documents/DocumentsPage';
+import { DocumentsPage } from '@/components/appHome/documents/DocumentsPage';
 
 const Page = () => {
   return <DocumentsPage />;

@@ -5,7 +5,7 @@ export const getMonthFromFieldValue = (fieldValue: string) => {
 };
 
 export const getYearFromFieldValue = (fieldValue: string) => {
-  return Number.parseInt(fieldValue.split(' ')[1] as string);
+  return Number.parseInt(fieldValue.split(' ')[1] as string, 10);
 };
 
 export const CURRENT_MONTH = MONTHS[new Date().getMonth()] ?? '';

@@ -20,16 +20,20 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import type { DEX_DocumentWithJobPosting } from '@/lib/client-db/clientDbSchema';
-import DocumentService from '@/lib/client-db/documentService';
+import {
+  copyDocument,
+  deleteDocument,
+  renameDocument,
+} from '@/lib/client-db/documentService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import RenameDocumentDialog from './RenameDocumentDialog';
+import { RenameDocumentDialog } from './RenameDocumentDialog';
 
 interface DocumentCardProps {
   document: DEX_DocumentWithJobPosting;
 }
 
-const DocumentCard = ({ document }: DocumentCardProps) => {
+export const DocumentCard = ({ document }: DocumentCardProps) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -41,7 +45,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
       message: 'Are you sure you want to delete this document?',
       onConfirm: action(async () => {
         try {
-          await DocumentService.deleteDocument(document.id);
+          await deleteDocument(document.id);
           showSuccessToast('Document deleted successfully.');
           if (builderRootStore.documentStore?.document?.id === document.id) {
             builderRootStore.resetState();
@@ -62,10 +66,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
 
   const handleRenameSubmit = async (enteredTitle: string) => {
     try {
-      const result = await DocumentService.renameDocument(
-        document.id,
-        enteredTitle,
-      );
+      const result = await renameDocument(document.id, enteredTitle);
       if (!result) {
         showErrorToast('An error occurred while renaming the document.');
         return;
@@ -81,7 +82,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
 
   const handleCopyDocument = async () => {
     try {
-      await DocumentService.copyDocument(document.id);
+      await copyDocument(document.id);
       showSuccessToast('Document copied successfully');
     } catch (error) {
       console.error(error);
@@ -93,62 +94,62 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
     <>
       <Card
         onMouseEnter={prefetchDocumentData}
-        className="bg-background border-border hover:border-border-hover w-full transition-colors border cursor-pointer"
+        className='bg-background border-border hover:border-border-hover w-full transition-colors border cursor-pointer'
         onMouseDown={() => {
           if (isOpen) return;
           router.push(`/builder/${document.id}`);
         }}
       >
-        <CardHeader className="flex flex-row items-center justify-between p-3 space-y-0">
-          <CardTitle className="flex-1 mr-2 font-medium truncate">
+        <CardHeader className='flex flex-row items-center justify-between p-3 space-y-0'>
+          <CardTitle className='flex-1 mr-2 font-medium truncate'>
             {document.title}
           </CardTitle>
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground w-7 h-7 p-0"
+                variant='ghost'
+                className='text-muted-foreground hover:text-foreground w-7 h-7 p-0'
               >
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="w-4 h-4" />
+                <span className='sr-only'>Open menu</span>
+                <MoreHorizontal className='w-4 h-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align='end'>
               <DropdownMenuItem
                 onSelect={() => router.push(`/builder/${document.id}`)}
               >
-                <FileSymlink className="w-4 h-4 mr-2" />
+                <FileSymlink className='w-4 h-4 mr-2' />
                 Edit in CV Builder
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
-                <Pencil className="w-4 h-4 mr-2" />
+                <Pencil className='w-4 h-4 mr-2' />
                 Rename
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={handleCopyDocument}>
-                <CopyIcon className="w-4 h-4 mr-2" />
+                <CopyIcon className='w-4 h-4 mr-2' />
                 Copy
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={handleDelete}
-                className="text-destructive"
+                className='text-destructive'
               >
-                <Trash className="w-4 h-4 mr-2" />
+                <Trash className='w-4 h-4 mr-2' />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </CardHeader>
-        <CardContent className="p-3 pt-0 space-y-2">
+        <CardContent className='p-3 pt-0 space-y-2'>
           {document.jobPosting ? (
-            <div className="bg-muted whitespace-nowrap flex items-center w-full gap-2 px-1 overflow-hidden text-xs truncate rounded-md">
-              <div className="bg-background p-1 rounded-md">
-                <BriefcaseBusinessIcon className="w-3 h-3" />
+            <div className='bg-muted whitespace-nowrap flex items-center w-full gap-2 px-1 overflow-hidden text-xs truncate rounded-md'>
+              <div className='bg-background p-1 rounded-md'>
+                <BriefcaseBusinessIcon className='w-3 h-3' />
               </div>
               {document.jobPosting.jobTitle} at{' '}
               {document.jobPosting.companyName}
             </div>
           ) : null}
-          <p className="text-muted-foreground text-sm font-medium">
+          <p className='text-muted-foreground text-sm font-medium'>
             Updated{' '}
             {new Intl.DateTimeFormat(navigator.language, {
               day: '2-digit',
@@ -169,5 +170,3 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
     </>
   );
 };
-
-export default DocumentCard;

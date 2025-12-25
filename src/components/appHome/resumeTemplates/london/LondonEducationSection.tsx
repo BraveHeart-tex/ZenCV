@@ -1,10 +1,10 @@
 import { Text, View } from '@react-pdf/renderer';
-import { londonTemplateStyles } from './london.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import LondonSectionEntry from './LondonSectionEntry';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { LondonSectionEntry } from './LondonSectionEntry';
+import { londonTemplateStyles } from './london.styles';
 
-const LondonEducationSection = ({
+export const LondonEducationSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -19,12 +19,10 @@ const LondonEducationSection = ({
         <LondonSectionEntry
           entry={entry}
           key={entry.entryId}
-          titleKey="school"
-          subtitleKey="degree"
+          titleKey='school'
+          subtitleKey='degree'
         />
       ))}
     </View>
   );
 };
-
-export default LondonEducationSection;

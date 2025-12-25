@@ -1,23 +1,21 @@
 import { Document, Page } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-
-import ManhattanWorkExperienceSection from './ManhattanWorkExperienceSection';
-
-import ManhattanCoursesSection from './ManhattanCoursesSection';
-import ManhattanEducationSection from './ManhattanEducationSection';
-import ManhattanLinksSection from './ManhattanLinksSection';
-import ManhattanLanguagesSection from './ManhattanLanguagesSection';
-import ManhattanInternshipsSection from './ManhattanInternshipsSection';
-import ManhattanHobbiesSection from './ManhattanHobbiesSection';
-import ManhattanCustomSection from './ManhattanCustomSection';
-import ManhattanSkillsSection from './ManhattanSkillsSection';
-import ManhattanReferencesSection from './ManhattanReferencesSection';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { ManhattanCoursesSection } from './ManhattanCoursesSection';
+import { ManhattanCustomSection } from './ManhattanCustomSection';
+import { ManhattanEducationSection } from './ManhattanEducationSection';
+import { ManhattanHobbiesSection } from './ManhattanHobbiesSection';
+import { ManhattanInternshipsSection } from './ManhattanInternshipsSection';
+import { ManhattanLanguagesSection } from './ManhattanLanguagesSection';
+import { ManhattanLinksSection } from './ManhattanLinksSection';
+import { ManhattanPersonalDetailsSection } from './ManhattanPersonalDetailsSection';
+import { ManhattanReferencesSection } from './ManhattanReferencesSection';
+import { ManhattanSkillsSection } from './ManhattanSkillsSection';
+import { ManhattanSummarySection } from './ManhattanSummarySection';
+import { ManhattanWorkExperienceSection } from './ManhattanWorkExperienceSection';
 import { manhattanTemplateStyles } from './manhattan.styles';
-import ManhattanPersonalDetailsSection from './ManhattanPersonalDetailsSection';
-import ManhattanSummarySection from './ManhattanSummarySection';
 
-const ManhattanTemplate = ({
+export const ManhattanTemplate = ({
   templateData,
 }: {
   templateData: PdfTemplateData;
@@ -78,7 +76,7 @@ const ManhattanTemplate = ({
 
   return (
     <Document>
-      <Page size="A4" style={manhattanTemplateStyles.page}>
+      <Page size='A4' style={manhattanTemplateStyles.page}>
         <ManhattanPersonalDetailsSection personalDetails={personalDetails} />
         <ManhattanSummarySection summarySection={summarySection} />
         {renderSections()}
@@ -86,5 +84,3 @@ const ManhattanTemplate = ({
     </Document>
   );
 };
-
-export default ManhattanTemplate;

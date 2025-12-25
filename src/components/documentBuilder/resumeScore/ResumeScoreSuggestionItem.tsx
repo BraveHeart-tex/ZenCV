@@ -1,19 +1,19 @@
 'use client';
-import { observer } from 'mobx-react-lite';
-import {
-  OTHER_SECTION_OPTIONS,
-  SUGGESTION_ACTION_TYPES,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
-import { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
 import { action } from 'mobx';
-import { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { observer } from 'mobx-react-lite';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import {
   getTextColorForBackground,
   scrollItemIntoView,
 } from '@/lib/helpers/documentBuilderHelpers';
+import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import AnimatedSuggestionButton from './AnimatedSuggestionButton';
+import {
+  OTHER_SECTION_OPTIONS,
+  SUGGESTION_ACTION_TYPES,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
+import { AnimatedSuggestionButton } from './AnimatedSuggestionButton';
 
 const scoreValueBgColor = '#388e3c'; // Green
 const scoreValueTextColor = getTextColorForBackground(scoreValueBgColor);
@@ -24,7 +24,7 @@ interface ResumeScoreSuggestionItemProps {
   setOpen: (open: boolean) => void;
 }
 
-const ResumeScoreSuggestionItem = observer(
+export const ResumeScoreSuggestionItem = observer(
   ({ suggestion, setOpen }: ResumeScoreSuggestionItemProps) => {
     const handleSuggestionClick = action(async () => {
       setOpen(false);
@@ -35,12 +35,12 @@ const ResumeScoreSuggestionItem = observer(
         const elementRef =
           builderRootStore.UIStore.getFieldRefByFieldNameAndSection(
             fieldName,
-            sectionType,
+            sectionType
           );
 
         if (!elementRef) {
           console.warn(
-            `No element ref found for field ${fieldName} in section ${sectionType}`,
+            `No element ref found for field ${fieldName} in section ${sectionType}`
           );
           return;
         }
@@ -51,12 +51,12 @@ const ResumeScoreSuggestionItem = observer(
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
         const section = builderRootStore.sectionStore.sections.find(
-          (section) => section.type === suggestion.sectionType,
+          (section) => section.type === suggestion.sectionType
         );
 
         if (!section) {
           const sectionOption = OTHER_SECTION_OPTIONS.find(
-            (sectionOption) => sectionOption.type === suggestion.sectionType,
+            (sectionOption) => sectionOption.type === suggestion.sectionType
           );
           if (!sectionOption) return;
 
@@ -75,7 +75,7 @@ const ResumeScoreSuggestionItem = observer(
           .reduce(
             (best, item) => {
               const fields = builderRootStore.fieldStore.getFieldsByItemId(
-                item.id,
+                item.id
               );
               if (fields.every((field) => !field.value)) {
                 return !best || item.displayOrder < best?.displayOrder
@@ -84,7 +84,7 @@ const ResumeScoreSuggestionItem = observer(
               }
               return best;
             },
-            null as DEX_Item | null,
+            null as DEX_Item | null
           );
 
         if (firstEmptySectionItem) {
@@ -93,7 +93,7 @@ const ResumeScoreSuggestionItem = observer(
         }
 
         const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
-          section.id,
+          section.id
         );
         if (!addedItemId) return;
 
@@ -111,7 +111,5 @@ const ResumeScoreSuggestionItem = observer(
         scoreValueTextColor={scoreValueTextColor}
       />
     );
-  },
+  }
 );
-
-export default ResumeScoreSuggestionItem;

@@ -1,23 +1,21 @@
 'use client';
-import DocumentsPageClient from '@/components/appHome/documents/DocumentsPageClient';
+import { DocumentsPageClient } from '@/components/appHome/documents/DocumentsPageClient';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
-const DocumentsPage = () => {
+export const DocumentsPage = () => {
   return (
     <SidebarInset>
-      <header className="shrink-0 flex items-center h-16 gap-2 border-b">
-        <div className="flex items-center gap-2 px-3">
+      <header className='shrink-0 flex items-center h-16 gap-2 border-b'>
+        <div className='flex items-center gap-2 px-3'>
           <SidebarTrigger />
-          <Separator orientation="vertical" className="h-4 mr-2" />
-          <span className="font-medium">Documents</span>
+          <Separator orientation='vertical' className='h-4 mr-2' />
+          <span className='font-medium'>Documents</span>
         </div>
       </header>
-      <div className="flex flex-col flex-1 gap-4 p-4">
+      <div className='flex flex-col flex-1 gap-4 p-4'>
         <DocumentsPageClient />
       </div>
     </SidebarInset>
   );
 };
-
-export default DocumentsPage;

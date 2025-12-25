@@ -1,7 +1,7 @@
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { Link, type Styles, Text, View } from '@react-pdf/renderer';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ValueOf } from '@/lib/types/utils.types';
 import { getLinksSectionEntries } from '../resumeTemplates.helpers';
-import { Text, View, Link, Styles } from '@react-pdf/renderer';
-import { ValueOf } from '@/lib/types/utils.types';
 
 interface ResumeLinksSectionStyles {
   section: ValueOf<Styles>;
@@ -16,7 +16,7 @@ interface ResumeLinksSectionProps {
   separator?: string;
 }
 
-const ResumeLinksSection = ({
+export const ResumeLinksSection = ({
   section,
   styles,
   fontSize,
@@ -61,5 +61,3 @@ const ResumeLinksSection = ({
     </View>
   );
 };
-
-export default ResumeLinksSection;

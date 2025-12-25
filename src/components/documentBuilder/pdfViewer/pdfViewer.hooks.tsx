@@ -1,7 +1,9 @@
-import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import type { AsyncState } from 'react-use/lib/useAsyncFn';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 
-const usePdfViewerHelpers = (render: AsyncState<string | null | undefined>) => {
+export const usePdfViewerHelpers = (
+  render: AsyncState<string | null | undefined>
+) => {
   const currentPage = pdfViewerStore.currentPage;
   const previousRenderValue = pdfViewerStore.previousRenderValue;
 
@@ -26,5 +28,3 @@ const usePdfViewerHelpers = (render: AsyncState<string | null | undefined>) => {
     shouldShowPreviousDocument,
   };
 };
-
-export default usePdfViewerHelpers;

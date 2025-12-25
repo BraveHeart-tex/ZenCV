@@ -10,7 +10,7 @@ export const createNewDocumentSchema = z
       .max(100, 'Title cannot be more than 100 characters')
       .refine(
         (title) => title.replaceAll(' ', '').length > 0,
-        'Please enter a valid title',
+        'Please enter a valid title'
       ),
     template: z
       .union([

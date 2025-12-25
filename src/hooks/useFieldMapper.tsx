@@ -1,6 +1,6 @@
-import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
-import SectionField from '@/components/documentBuilder/SectionField';
-import { DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
+import { SectionField } from '@/components/documentBuilder/SectionField';
+import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
 
 export const useFieldMapper = () => {
   const renderFields = (fields: DEX_Field[]) => {
@@ -11,8 +11,8 @@ export const useFieldMapper = () => {
 
       if (isDateField && nextFieldIsDate) {
         return (
-          <div key={field.id} className="w-full">
-            <div className="lg:flex lg:items-center grid gap-4">
+          <div key={field.id} className='w-full'>
+            <div className='lg:flex lg:items-center grid gap-4'>
               <DateFieldInput fieldId={field.id} />
               <DateFieldInput fieldId={fields[index + 1].id} />
             </div>

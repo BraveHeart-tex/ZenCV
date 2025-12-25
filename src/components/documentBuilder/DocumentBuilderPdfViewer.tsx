@@ -1,17 +1,17 @@
 'use client';
 
-import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
-import { ReactElement, useMemo, useRef, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import PreviewSkeleton from '@/components/documentBuilder/PreviewSkeleton';
 import { useAsync } from 'react-use';
+import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { runInAction } from 'mobx';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -22,7 +22,7 @@ interface DocumentBuilderPdfViewerProps {
   renderAnnotationLayer?: boolean;
 }
 
-const DocumentBuilderPdfViewer = observer(
+export const DocumentBuilderPdfViewer = observer(
   ({
     children,
     renderTextLayer = false,
@@ -38,6 +38,7 @@ const DocumentBuilderPdfViewer = observer(
       height: 0,
     });
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: will analyze the deps here
     useEffect(() => {
       const updateDimensions = () => {
         if (containerRef.current) {
@@ -53,7 +54,7 @@ const DocumentBuilderPdfViewer = observer(
     }, [view]);
 
     const pdfDimensions = useMemo(() => {
-      const aspectRatio = 1.414; // A4 Page Aspect Ratio
+      const aspectRatio = Math.SQRT2; // A4 Page Aspect Ratio
       const maxWidth = containerDimensions.width * 0.98; // 98 % of the container width
       const maxHeight = containerDimensions.height;
 
@@ -76,7 +77,7 @@ const DocumentBuilderPdfViewer = observer(
     }, [pdfDimensions]);
 
     const renderData = JSON.stringify(
-      builderRootStore.templateStore.debouncedTemplateData,
+      builderRootStore.templateStore.debouncedTemplateData
     );
 
     const render = useAsync(async () => {
@@ -90,7 +91,7 @@ const DocumentBuilderPdfViewer = observer(
         }
 
         const blob = await pdf(
-          children as ReactElement<DocumentProps>,
+          children as ReactElement<DocumentProps>
         ).toBlob();
         return URL.createObjectURL(blob);
       } catch (error) {
@@ -126,7 +127,7 @@ const DocumentBuilderPdfViewer = observer(
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className="previous-document absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out opacity-50"
+            className='previous-document absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out opacity-50'
             file={previousRenderValue}
             loading={null}
           >
@@ -168,7 +169,5 @@ const DocumentBuilderPdfViewer = observer(
         )}
       </div>
     );
-  },
+  }
 );
-
-export default DocumentBuilderPdfViewer;
