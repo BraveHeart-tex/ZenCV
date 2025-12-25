@@ -1,4 +1,6 @@
 import { Cog, Files, FileUser } from 'lucide-react';
+import Link from 'next/link';
+import ClientOnly from '@/components/misc/ClientOnly';
 import {
   Sidebar,
   SidebarContent,
@@ -11,13 +13,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-
-import { Icons } from '../misc/icons';
 import { APP_NAME } from '@/lib/appConfig';
-import CreateDocumentDialog from './documents/CreateDocumentDialog';
+import { Icons } from '../misc/icons';
 import AppColorModeToggle from './AppColorModeToggle';
-import Link from 'next/link';
-import ClientOnly from '@/components/misc/ClientOnly';
+import CreateDocumentDialog from './documents/CreateDocumentDialog';
 
 const appLinks = [
   {
@@ -44,7 +43,7 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link href="/">
+              <Link href="/" prefetch={true}>
                 <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
                   <Icons.logo />
                 </div>

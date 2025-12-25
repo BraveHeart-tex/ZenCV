@@ -1,14 +1,5 @@
 'use client';
-import { useMemo, useRef } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Input } from '@/components/ui/input';
-import { action } from 'mobx';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { PopoverClose } from '@radix-ui/react-popover';
 import {
   CalendarIcon,
   ChevronLeftIcon,
@@ -16,10 +7,25 @@ import {
   CircleAlert,
   CircleHelp,
 } from 'lucide-react';
-import { MONTHS } from '@/lib/constants';
-import { PopoverClose } from '@radix-ui/react-popover';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useMemo, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { MONTHS } from '@/lib/constants';
 import {
   CURRENT_MONTH,
   CURRENT_YEAR,
@@ -27,15 +33,9 @@ import {
   getYearFromFieldValue,
   isValidDateFormat,
 } from '@/lib/helpers/dateInputHelpers';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
-import { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { cn } from '@/lib/utils/stringUtils';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { cn } from '@/lib/utils/stringUtils';
 
 const PRESENT = 'Present';
 
@@ -116,6 +116,10 @@ const DateFieldInput = observer(({ fieldId }: { fieldId: DEX_Field['id'] }) => {
               false,
             );
           })}
+          data-1p-ignore="true"
+          data-lpignore="true"
+          data-protonpass-ignore="true"
+          data-bwignore="true"
           onBlur={handleBlur}
           className={cn('pl-10', isError && 'focus-visible:ring-destructive')}
         />

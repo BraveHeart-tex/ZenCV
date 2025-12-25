@@ -1,16 +1,16 @@
 'use client';
-import RichTextEditor, {
-  EditorRef,
-} from '@/components/richTextEditor/RichTextEditor';
-import { observer } from 'mobx-react-lite';
-import { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { action } from 'mobx';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
-import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
-import { Button } from '@/components/ui/button';
 import { SparklesIcon } from 'lucide-react';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import RichTextCharacterCounter from '@/components/documentBuilder/RichTextCharacterCounter';
+import RichTextEditor, {
+  type EditorRef,
+} from '@/components/richTextEditor/RichTextEditor';
+import { Button } from '@/components/ui/button';
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import AiSuggestionsWidget from '../aiSuggestions/AiSuggestionsWidget';
 
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];

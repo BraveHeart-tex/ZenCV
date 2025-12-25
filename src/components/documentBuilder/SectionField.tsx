@@ -1,31 +1,31 @@
 'use client';
-import { observer } from 'mobx-react-lite';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useCallback } from 'react';
+import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
+import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
+import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
+import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import {
   CONTAINER_TYPES,
-  DEX_Field,
+  type DEX_Field,
   FIELD_TYPES,
 } from '@/lib/client-db/clientDbSchema';
-import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
 import {
   getFieldHtmlId,
   getSectionTypeByItemId,
 } from '@/lib/helpers/documentBuilderHelpers';
-import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils/stringUtils';
-import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { SectionType } from '@/lib/types/documentBuilder.types';
-import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
-import { useCallback } from 'react';
+import type { SectionType } from '@/lib/types/documentBuilder.types';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface SectionFieldProps {
   fieldId: DEX_Field['id'];
@@ -34,9 +34,7 @@ interface SectionFieldProps {
 const SectionField = observer(({ fieldId }: SectionFieldProps) => {
   const field = builderRootStore.fieldStore.getFieldById(fieldId);
 
-  if (!field) return null;
-
-  const htmlInputId = getFieldHtmlId(field);
+  const htmlInputId = field ? getFieldHtmlId(field) : '';
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleInputChange = useCallback(
@@ -57,6 +55,8 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     },
     [fieldId],
   );
+
+  if (!field) return null;
 
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {
@@ -84,6 +84,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             value={field.value}
             onChange={handleInputChange}
             placeholder={field?.placeholder}
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-protonpass-ignore="true"
+            data-bwignore="true"
           />
         </>
       );
@@ -127,6 +131,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             value={field.value}
             onChange={handleInputChange}
             placeholder={field?.placeholder}
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-protonpass-ignore="true"
+            data-bwignore="true"
           />
         </>
       );
