@@ -75,8 +75,11 @@
     "vaul": "1.1.2",
     "zod": "4.1.12"
   },
-  "overrides": {
-    "glob": "^11.1.0"
+  "pnpm": {
+    "overrides": {
+      "glob": "^11.1.0",
+      "js-yaml": "^4.1.1"
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "19.6.1",
