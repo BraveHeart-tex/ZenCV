@@ -1,37 +1,37 @@
 import { SettingsIcon } from 'lucide-react';
-import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
-import { Button } from '@/components/ui/button';
-import GeneralSettings from '@/components/appHome/settings/GeneralSettings';
-import { Separator } from '@/components/ui/separator';
-import EditorPreferences from '@/components/appHome/settings/EditorPreferences';
 import { useState } from 'react';
+import { AuthenticationStatus } from '@/components/appHome/settings/AuthenticationStatus';
+import { EditorPreferences } from '@/components/appHome/settings/EditorPreferences';
+import { GeneralSettings } from '@/components/appHome/settings/GeneralSettings';
+import { Button } from '@/components/ui/button';
+import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
+import { Separator } from '@/components/ui/separator';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { cn } from '@/lib/utils/stringUtils';
-import AuthenticationStatus from '@/components/appHome/settings/AuthenticationStatus';
-import ModelCustomizationSettings from '../appHome/settings/ModelCustomizationSettings';
+import { ModelCustomizationSettings } from '../appHome/settings/ModelCustomizationSettings';
 
-const DocumentBuilderSettingsWidget = () => {
+export const DocumentBuilderSettingsWidget = () => {
   const [open, setOpen] = useState(false);
   return (
     <ResponsiveDialog
       trigger={
-        <Button variant="ghost" size="icon">
+        <Button variant='ghost' size='icon'>
           <SettingsIcon />
         </Button>
       }
-      title="Settings"
+      title='Settings'
       open={open}
       onOpenChange={setOpen}
-      description="Manage your application settings and preferences below."
+      description='Manage your application settings and preferences below.'
       footer={
         <div className={cn(dialogFooterClassNames, 'mt-4')}>
-          <Button onClick={() => setOpen(false)} variant="outline">
+          <Button onClick={() => setOpen(false)} variant='outline'>
             Close
           </Button>
         </div>
       }
     >
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <AuthenticationStatus />
         <Separator />
         <GeneralSettings />
@@ -43,5 +43,3 @@ const DocumentBuilderSettingsWidget = () => {
     </ResponsiveDialog>
   );
 };
-
-export default DocumentBuilderSettingsWidget;

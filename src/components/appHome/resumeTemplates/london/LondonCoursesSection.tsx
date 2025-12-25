@@ -1,10 +1,10 @@
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
-import { londonTemplateStyles } from './london.styles';
 import { Text, View } from '@react-pdf/renderer';
-import LondonSectionEntry from './LondonSectionEntry';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
+import { LondonSectionEntry } from './LondonSectionEntry';
+import { londonTemplateStyles } from './london.styles';
 
-const LondonCoursesSection = ({
+export const LondonCoursesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -20,12 +20,11 @@ const LondonCoursesSection = ({
           <LondonSectionEntry
             entry={entry}
             key={entry.entryId}
-            titleKey="course"
-            subtitleKey="institution"
+            titleKey='course'
+            subtitleKey='institution'
           />
         ))}
       </View>
     </View>
   );
 };
-export default LondonCoursesSection;

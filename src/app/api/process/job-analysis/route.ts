@@ -1,8 +1,8 @@
+import { generateObject } from 'ai';
+import { NextResponse } from 'next/server';
 import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { generateObject } from 'ai';
-import { NextResponse } from 'next/server';
 import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         },
         {
           status: 400,
-        },
+        }
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       },
       {
         status: 200,
-      },
+      }
     );
   } catch (error) {
     console.error('/api/process/job-analysis error', error);
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       },
       {
         status: 500,
-      },
+      }
     );
   }
 }

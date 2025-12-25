@@ -1,10 +1,10 @@
 import { Text, View } from '@react-pdf/renderer';
-import { manhattanTemplateStyles } from './manhattan.styles';
 import { getInternshipsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import ManhattanSectionEntry from './ManhattanSectionEntry';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { ManhattanSectionEntry } from './ManhattanSectionEntry';
+import { manhattanTemplateStyles } from './manhattan.styles';
 
-const ManhattanInternshipsSection = ({
+export const ManhattanInternshipsSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -21,13 +21,11 @@ const ManhattanInternshipsSection = ({
           <ManhattanSectionEntry
             entry={entry}
             key={entry.entryId}
-            titleKey="employer"
-            subtitleKey="jobTitle"
+            titleKey='employer'
+            subtitleKey='jobTitle'
           />
         ))}
       </View>
     </View>
   );
 };
-
-export default ManhattanInternshipsSection;

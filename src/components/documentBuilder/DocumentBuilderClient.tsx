@@ -1,20 +1,20 @@
 'use client';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
+import { ArrowLeftIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import DocumentBuilderHeader from '@/components/documentBuilder/DocumentBuilderHeader';
-import DocumentSections from '@/components/documentBuilder/DocumentSections';
-import AddSectionWidget from '@/components/documentBuilder/AddSectionWidget';
-import { cn } from '@/lib/utils/stringUtils';
-import ImproveResumeWidget from './resumeScore/ImproveResumeWidget';
+import { useRouter } from 'next/navigation';
+import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget';
+import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
+import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
+import { Button } from '@/components/ui/button';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
-import DocumentBuilderSettingsWidget from './DocumentBuilderSettingsWidget';
-import TailorForJobPostingBanner from './resumeScore/TailorForJobPostingBanner';
-import { ArrowLeftIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils/stringUtils';
+import { DocumentBuilderSettingsWidget } from './DocumentBuilderSettingsWidget';
+import { ImproveResumeWidget } from './resumeScore/ImproveResumeWidget';
+import { TailorForJobPostingBanner } from './resumeScore/TailorForJobPostingBanner';
 
-const DocumentBuilderClient = observer(() => {
+export const DocumentBuilderClient = observer(() => {
   const router = useRouter();
   const view = builderRootStore.UIStore.currentView;
 
@@ -31,11 +31,11 @@ const DocumentBuilderClient = observer(() => {
         className={cn(
           'bg-background min-h-screen px-2 md:px-6 md:p-12 py-14 pt-4 md:pt-4 relative w-1/2 hide-scrollbar',
           view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
-          view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block',
+          view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block'
         )}
       >
-        <div className="flex items-center justify-between w-full gap-4">
-          <Button onClick={handleBack} size="icon" variant="outline">
+        <div className='flex items-center justify-between w-full gap-4'>
+          <Button onClick={handleBack} size='icon' variant='outline'>
             <ArrowLeftIcon />
           </Button>
           <DocumentBuilderHeader />
@@ -51,7 +51,7 @@ const DocumentBuilderClient = observer(() => {
         </div>
         <TailorForJobPostingBanner />
 
-        <div className="max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4">
+        <div className='max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4'>
           <DocumentSections />
           <AddSectionWidget />
         </div>
@@ -59,5 +59,3 @@ const DocumentBuilderClient = observer(() => {
     </TooltipProvider>
   );
 });
-
-export default DocumentBuilderClient;

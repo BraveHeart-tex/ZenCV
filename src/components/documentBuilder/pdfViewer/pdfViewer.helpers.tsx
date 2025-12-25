@@ -1,14 +1,14 @@
-import LondonTemplate from '@/components/appHome/resumeTemplates/london/LondonTemplate';
-import ManhattanTemplate from '@/components/appHome/resumeTemplates/manhattan/ManhattanTemplate';
+import { LondonTemplate } from '@/components/appHome/resumeTemplates/london/LondonTemplate';
+import { ManhattanTemplate } from '@/components/appHome/resumeTemplates/manhattan/ManhattanTemplate';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
+import type {
   PdfTemplateData,
   ResumeTemplate,
 } from '@/lib/types/documentBuilder.types';
 
 export const getPdfTemplateByType = (
   templateType: ResumeTemplate,
-  pdfTemplateData: PdfTemplateData,
+  pdfTemplateData: PdfTemplateData
 ) => {
   if (templateType === INTERNAL_TEMPLATE_TYPES.MANHATTAN) {
     return <ManhattanTemplate templateData={pdfTemplateData} />;
@@ -18,5 +18,6 @@ export const getPdfTemplateByType = (
     return <LondonTemplate templateData={pdfTemplateData} />;
   }
 
+  // biome-ignore lint/complexity/noUselessFragments: Fragment is fine here
   return <></>;
 };

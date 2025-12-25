@@ -1,6 +1,6 @@
 import { Cog, Files, FileUser } from 'lucide-react';
 import Link from 'next/link';
-import ClientOnly from '@/components/misc/ClientOnly';
+import { ClientOnly } from '@/components/misc/ClientOnly';
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +15,8 @@ import {
 } from '@/components/ui/sidebar';
 import { APP_NAME } from '@/lib/appConfig';
 import { Icons } from '../misc/icons';
-import AppColorModeToggle from './AppColorModeToggle';
-import CreateDocumentDialog from './documents/CreateDocumentDialog';
+import { AppColorModeToggle } from './AppColorModeToggle';
+import { CreateDocumentDialog } from './documents/CreateDocumentDialog';
 
 const appLinks = [
   {
@@ -36,18 +36,18 @@ const appLinks = [
   },
 ];
 
-const AppSidebar = () => {
+export const AppSidebar = () => {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible='icon'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip={APP_NAME}>
-              <Link href="/" prefetch={true}>
-                <div className="aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg">
+            <SidebarMenuButton size='lg' asChild tooltip={APP_NAME}>
+              <Link href='/' prefetch={true}>
+                <div className='aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg'>
                   <Icons.logo />
                 </div>
-                <span className="font-semibold leading-none">{APP_NAME}</span>
+                <span className='font-semibold leading-none'>{APP_NAME}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -59,7 +59,7 @@ const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <CreateDocumentDialog triggerVariant="sidebar" />
+                <CreateDocumentDialog triggerVariant='sidebar' />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
@@ -94,5 +94,3 @@ const AppSidebar = () => {
     </Sidebar>
   );
 };
-
-export default AppSidebar;

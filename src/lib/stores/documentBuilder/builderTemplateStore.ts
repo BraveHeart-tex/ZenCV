@@ -1,11 +1,13 @@
 import { autorun, computed, makeAutoObservable, runInAction, toJS } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
-import {
+import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type {
   PdfTemplateData,
   ResumeStats,
   ResumeSuggestion,
 } from '@/lib/types/documentBuilder.types';
-import { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { debounce } from '@/lib/utils/debounce';
+import type { BuilderRootStore } from './builderRootStore';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
@@ -17,8 +19,6 @@ import {
   SUGGESTION_TYPES,
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from './documentBuilder.constants';
-import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import debounce from '@/lib/utils/debounce';
 
 export class BuilderTemplateStore {
   root: BuilderRootStore;
@@ -69,8 +69,8 @@ export class BuilderTemplateStore {
       .filter(
         (section) =>
           !singleEntrySectionTypes.includes(
-            section.type as (typeof singleEntrySectionTypes)[number],
-          ),
+            section.type as (typeof singleEntrySectionTypes)[number]
+          )
       )
       .slice()
       .sort(sortByDisplayOrder)
@@ -95,7 +95,7 @@ export class BuilderTemplateStore {
         firstName: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME),
         lastName: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME),
         jobTitle: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+          FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE
         ),
         address: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.ADDRESS),
         city: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.CITY),
@@ -104,7 +104,7 @@ export class BuilderTemplateStore {
       },
       summarySection: {
         sectionName: this.root.sectionStore.getSectionNameByType(
-          INTERNAL_SECTION_TYPES.SUMMARY,
+          INTERNAL_SECTION_TYPES.SUMMARY
         ),
         summary: getFieldValueByName(FIELD_NAMES.SUMMARY.SUMMARY),
       },
@@ -122,8 +122,8 @@ export class BuilderTemplateStore {
         this.root.fieldStore
           .getFieldsByItemId(item.id)
           .some(
-            (field) => (!fieldName || field.name === fieldName) && field.value,
-          ),
+            (field) => (!fieldName || field.name === fieldName) && field.value
+          )
       );
 
     SECTION_SUGGESTION_CONFIG.forEach(
@@ -144,15 +144,15 @@ export class BuilderTemplateStore {
             fieldName,
           });
         }
-      },
+      }
     );
 
     const skillsItems = this.root.sectionStore.getSectionItemsBySectionType(
-      INTERNAL_SECTION_TYPES.SKILLS,
+      INTERNAL_SECTION_TYPES.SKILLS
     );
     if (skillsItems) {
       const addedSkills = skillsItems.filter((item) =>
-        hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL),
+        hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL)
       );
       score += addedSkills.length * RESUME_SCORE_CONFIG.SKILL;
       if (score < 100 && addedSkills.length < SUGGESTED_SKILLS_COUNT) {
@@ -167,11 +167,11 @@ export class BuilderTemplateStore {
     }
 
     const languageItems = this.root.sectionStore.getSectionItemsBySectionType(
-      INTERNAL_SECTION_TYPES.LANGUAGES,
+      INTERNAL_SECTION_TYPES.LANGUAGES
     );
     if (languageItems) {
       const addedLanguages = languageItems.filter((item) =>
-        hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE),
+        hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE)
       );
       score += addedLanguages.length * RESUME_SCORE_CONFIG.LANGUAGE;
       if (!addedLanguages.length) {

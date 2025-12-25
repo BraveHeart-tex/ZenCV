@@ -1,8 +1,12 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
-import { DEX_Document } from '@/lib/client-db/clientDbSchema';
-import { ResumeTemplate } from '@/lib/types/documentBuilder.types';
-import DocumentService from '@/lib/client-db/documentService';
+import type { DEX_Document } from '@/lib/client-db/clientDbSchema';
+import {
+  changeDocumentTemplateType,
+  getFullDocumentStructure,
+  renameDocument,
+} from '@/lib/client-db/documentService';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderDocumentStore {
   root: BuilderRootStore;
@@ -14,7 +18,7 @@ export class BuilderDocumentStore {
 
   initializeStore = async (documentId: DEX_Document['id']) => {
     try {
-      const result = await DocumentService.getFullDocumentStructure(documentId);
+      const result = await getFullDocumentStructure(documentId);
       if (!result?.success) {
         return {
           error: result?.error,
@@ -54,7 +58,7 @@ export class BuilderDocumentStore {
   renameDocument = async (newValue: string) => {
     if (!this.document) return;
     try {
-      await DocumentService.renameDocument(this.document.id, newValue);
+      await renameDocument(this.document.id, newValue);
       runInAction(() => {
         if (!this.document) return;
         this.document.title = newValue;
@@ -71,13 +75,11 @@ export class BuilderDocumentStore {
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
     if (!this.document || this.document.templateType === templateType) return;
 
-    await DocumentService.changeDocumentTemplateType(
-      this.document.id,
-      templateType,
-    );
+    await changeDocumentTemplateType(this.document.id, templateType);
 
     runInAction(() => {
-      this.document!.templateType = templateType;
+      if (!this.document) return;
+      this.document.templateType = templateType;
     });
   };
 }

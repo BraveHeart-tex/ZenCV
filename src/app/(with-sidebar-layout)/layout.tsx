@@ -1,5 +1,5 @@
-import ApplicationLayoutWithSidebar from '@/components/appHome/ApplicationLayoutWithSidebar';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import { ApplicationLayoutWithSidebar } from '@/components/appHome/ApplicationLayoutWithSidebar';
 
 const SidebarLayout = ({ children }: { children: ReactNode }) => {
   return (

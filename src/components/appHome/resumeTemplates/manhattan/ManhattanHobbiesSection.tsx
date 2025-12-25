@@ -1,12 +1,12 @@
 import { Text, View } from '@react-pdf/renderer';
+import { getHobbiesSectionValue } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
 } from './manhattan.styles';
-import { getHobbiesSectionValue } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 
-const ManhattanHobbiesSection = ({
+export const ManhattanHobbiesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -30,5 +30,3 @@ const ManhattanHobbiesSection = ({
     </View>
   );
 };
-
-export default ManhattanHobbiesSection;

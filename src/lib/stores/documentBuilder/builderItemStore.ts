@@ -1,9 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
-import { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
+import {
+  addItemFromTemplate,
+  bulkUpdateItems,
+  deleteItem,
+} from '@/lib/client-db/itemService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
-import { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
-import ItemService from '@/lib/client-db/itemService';
+import type { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
+import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderItemStore {
   root: BuilderRootStore;
@@ -31,11 +35,11 @@ export class BuilderItemStore {
     if (!section) return;
 
     const template = getItemInsertTemplate(
-      section.type as TemplatedSectionType,
+      section.type as TemplatedSectionType
     );
     if (!template) return;
 
-    const result = await ItemService.addItemFromTemplate({
+    const result = await addItemFromTemplate({
       ...template,
       sectionId,
       displayOrder: this.items.reduce(
@@ -43,7 +47,7 @@ export class BuilderItemStore {
           currentItem.displayOrder > displayOrder
             ? currentItem.displayOrder
             : displayOrder,
-        1,
+        1
       ),
     });
 
@@ -65,11 +69,11 @@ export class BuilderItemStore {
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
-        (field) => field.itemId !== itemId,
+        (field) => field.itemId !== itemId
       );
     });
 
-    await ItemService.deleteItem(itemId);
+    await deleteItem(itemId);
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {
@@ -98,11 +102,11 @@ export class BuilderItemStore {
 
     if (changedItems.length) {
       try {
-        await ItemService.bulkUpdateItems(
+        await bulkUpdateItems(
           changedItems.map((item) => ({
             key: item.id,
             changes: { displayOrder: item.displayOrder },
-          })),
+          }))
         );
       } catch (error) {
         console.error('bulkUpdateItems error', error);

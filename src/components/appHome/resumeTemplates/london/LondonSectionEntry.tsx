@@ -1,8 +1,8 @@
 import { Text, View } from '@react-pdf/renderer';
-import { LONDON_FONT_SIZE } from './london.styles';
-import { WithEntryId } from '@/lib/types/documentBuilder.types';
 import Html from 'react-pdf-html';
 import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import type { WithEntryId } from '@/lib/types/documentBuilder.types';
+import { LONDON_FONT_SIZE } from './london.styles';
 
 type LondonSectionEntryProps<T extends Record<string, string>> = {
   entry: WithEntryId<T>;
@@ -10,7 +10,7 @@ type LondonSectionEntryProps<T extends Record<string, string>> = {
   subtitleKey: keyof T;
 };
 
-const LondonSectionEntry = <T extends Record<string, string>>({
+export const LondonSectionEntry = <T extends Record<string, string>>({
   entry,
   titleKey,
   subtitleKey,
@@ -84,5 +84,3 @@ const LondonSectionEntry = <T extends Record<string, string>>({
     </View>
   );
 };
-
-export default LondonSectionEntry;

@@ -10,5 +10,4 @@ class ShepherdStore {
   }
 }
 
-const shepherdStore = new ShepherdStore();
-export default shepherdStore;
+export const shepherdStore = new ShepherdStore();

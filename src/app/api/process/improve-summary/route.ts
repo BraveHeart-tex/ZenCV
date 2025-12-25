@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
 import { streamText } from 'ai';
-import { improveSummarySchema } from '@/lib/validation/improveSummary.schema';
-import { generateImproveSummaryPrompt } from '@/lib/helpers/promptHelpers';
-import { defaultAiModel } from '../ai.constants';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { generateImproveSummaryPrompt } from '@/lib/helpers/promptHelpers';
+import { improveSummarySchema } from '@/lib/validation/improveSummary.schema';
+import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
           timestamp: Date.now(),
           message: 'Please provide valid data.',
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       },
       {
         status: 500,
-      },
+      }
     );
   }
 }

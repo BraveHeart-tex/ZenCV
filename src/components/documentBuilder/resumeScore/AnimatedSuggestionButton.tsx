@@ -1,5 +1,5 @@
-import React from 'react';
 import * as motion from 'motion/react-m';
+import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 
@@ -15,7 +15,7 @@ interface AnimatedSuggestionButtonProps {
   disabled?: boolean;
 }
 
-const AnimatedSuggestionButton = ({
+export const AnimatedSuggestionButton = ({
   onClick,
   icon,
   label,
@@ -28,13 +28,13 @@ const AnimatedSuggestionButton = ({
 }: AnimatedSuggestionButtonProps) => {
   return (
     <Button
-      size="sm"
+      size='sm'
       asChild
-      variant="ghost"
+      variant='ghost'
       className={cn(`justify-start p-0 py-0`, className)}
     >
       <motion.button
-        className="hover:bg-muted flex items-center gap-2 rounded-md"
+        className='hover:bg-muted flex items-center gap-2 rounded-md'
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -46,7 +46,7 @@ const AnimatedSuggestionButton = ({
       >
         {scoreValue !== undefined && (
           <motion.span
-            className="w-[2.5rem] h-max p-1 text-xs rounded-md"
+            className='w-[2.5rem] h-max p-1 text-xs rounded-md'
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             style={{
@@ -61,14 +61,14 @@ const AnimatedSuggestionButton = ({
           <span
             className={cn(
               'w-[2.5rem] h-max p-1 text-xs rounded-md flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4',
-              iconContainerClassName,
+              iconContainerClassName
             )}
           >
             {icon}
           </span>
         )}
         <motion.span
-          className="text-sm font-medium"
+          className='text-sm font-medium'
           initial={{ opacity: 0, x: -5 }}
           animate={{ opacity: 1, x: 0 }}
         >
@@ -78,5 +78,3 @@ const AnimatedSuggestionButton = ({
     </Button>
   );
 };
-
-export default AnimatedSuggestionButton;

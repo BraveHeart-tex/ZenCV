@@ -1,21 +1,21 @@
 'use client';
-import { Button } from '@/components/ui/button';
+import { useAuth } from '@clerk/nextjs';
 import { BrainCircuitIcon, ChevronRightIcon } from 'lucide-react';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { observer } from 'mobx-react-lite';
-import JobPostingFormDialog from './JobPostingFormDialog';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   getSummaryValue,
   isWorkExperienceIncomplete,
 } from '@/lib/helpers/documentBuilderHelpers';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import AutoTailorGuidanceDialog from './AutoTailorGuidanceDialog';
-import { useState } from 'react';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
-import { useAuth } from '@clerk/nextjs';
 import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
+import { AutoTailorGuidanceDialog } from './AutoTailorGuidanceDialog';
+import { JobPostingFormDialog } from './JobPostingFormDialog';
 
-const TailorForJobPostingBanner = observer(() => {
+export const TailorForJobPostingBanner = observer(() => {
   const [showGuidanceDialog, setShowGuidanceDialog] = useState(false);
   const { isSignedIn } = useAuth();
 
@@ -27,7 +27,7 @@ const TailorForJobPostingBanner = observer(() => {
   }
 
   const handleJobPostingDialogClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
+    event: React.MouseEvent<HTMLButtonElement>
   ) => {
     if (!isSignedIn) {
       event.preventDefault();
@@ -38,8 +38,8 @@ const TailorForJobPostingBanner = observer(() => {
     const summaryValue = getSummaryValue();
     const shouldFillWorkExperience = isWorkExperienceIncomplete(
       builderRootStore.sectionStore.getSectionItemsBySectionType(
-        INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
-      ),
+        INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
+      )
     );
 
     if (!summaryValue && shouldFillWorkExperience) {
@@ -59,18 +59,18 @@ const TailorForJobPostingBanner = observer(() => {
       <JobPostingFormDialog
         trigger={
           <Button
-            variant="ghost"
-            className="bg-background md:h-16 flex items-center w-full gap-2 p-4 border rounded-md"
+            variant='ghost'
+            className='bg-background md:h-16 flex items-center w-full gap-2 p-4 border rounded-md'
             onClick={handleJobPostingDialogClick}
           >
             <BrainCircuitIcon />
-            <div className="flex-1 text-[0.875rem] text-left">
-              <span className="md:hidden inline">Get AI Assistance</span>
-              <span className="md:inline hidden">
+            <div className='flex-1 text-[0.875rem] text-left'>
+              <span className='md:hidden inline'>Get AI Assistance</span>
+              <span className='md:inline hidden'>
                 Optimize your resume for the job and land more interviews
               </span>
             </div>
-            <div className="md:flex items-center hidden gap-2">
+            <div className='md:flex items-center hidden gap-2'>
               Try it <ChevronRightIcon />
             </div>
           </Button>
@@ -79,5 +79,3 @@ const TailorForJobPostingBanner = observer(() => {
     </>
   );
 });
-
-export default TailorForJobPostingBanner;

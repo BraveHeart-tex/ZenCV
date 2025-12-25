@@ -1,17 +1,17 @@
 import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
-import ResumeScoreSuggestionItem from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
+import { AiSuggestionsContent } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
+import { ResumeScoreSuggestionItem } from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import AnimatedSuggestionsContainer from './SuggestionsContainer';
-import SuggestionGroupHeading from './SuggestionGroupHeading';
-import AiSuggestionsContent from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
-import { UseState } from '@/lib/types/utils.types';
+import type { UseState } from '@/lib/types/utils.types';
+import { SuggestionGroupHeading } from './SuggestionGroupHeading';
+import { AnimatedSuggestionsContainer } from './SuggestionsContainer';
 
 interface ResumeScoreSuggestionContentProps {
   setOpen: UseState<boolean>;
 }
 
-const ResumeScoreSuggestionContent = observer(
+export const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
     const suggestions =
       builderRootStore.templateStore.debouncedResumeStats.suggestions;
@@ -25,9 +25,9 @@ const ResumeScoreSuggestionContent = observer(
           duration: 0.3,
           ease: 'easeInOut',
         }}
-        className="overflow-hidden"
+        className='overflow-hidden'
       >
-        <div className="py-4">
+        <div className='py-4'>
           <AiSuggestionsContent setOpen={setOpen} />
           {suggestions.length > 0 ? (
             <>
@@ -48,7 +48,5 @@ const ResumeScoreSuggestionContent = observer(
         </div>
       </motion.div>
     );
-  },
+  }
 );
-
-export default ResumeScoreSuggestionContent;

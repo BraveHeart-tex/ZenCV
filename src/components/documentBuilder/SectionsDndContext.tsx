@@ -1,14 +1,13 @@
 'use client';
-import type React from 'react';
 import {
+  closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
-  closestCenter,
   useSensor,
   useSensors,
-  DragEndEvent,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -17,16 +16,16 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { action } from 'mobx';
-
-import { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
+import type React from 'react';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import type { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
   sections: SectionWithParsedMetadata[];
 }
 
-const SectionsDndContext = ({
+export const SectionsDndContext = ({
   children,
   sections,
 }: SectionsDndContextProps) => {
@@ -37,7 +36,7 @@ const SectionsDndContext = ({
     if (!overId || activeId === overId) return;
 
     const activeIndex = sections.findIndex(
-      (section) => section.id === activeId,
+      (section) => section.id === activeId
     );
     const overIndex = sections.findIndex((section) => section.id === overId);
 
@@ -53,7 +52,7 @@ const SectionsDndContext = ({
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    }),
+    })
   );
 
   return (
@@ -68,5 +67,3 @@ const SectionsDndContext = ({
     </DndContext>
   );
 };
-
-export default SectionsDndContext;

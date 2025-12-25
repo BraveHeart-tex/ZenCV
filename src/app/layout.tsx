@@ -3,9 +3,9 @@ import '@/styles/shepherd.css';
 import '@/styles/tiptap.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/ui/theme-provider';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toaster } from '@/components/ui/sonner';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import { ThemeProvider } from '@/components/ui/theme-provider';
 import { APP_NAME } from '@/lib/appConfig';
 import 'shepherd.js/dist/css/shepherd.css';
 import { ClerkProvider } from '@clerk/nextjs';
@@ -27,11 +27,11 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html lang='en' suppressHydrationWarning>
         <body className={`${inter.className} antialiased`}>
           <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
+            attribute='class'
+            defaultTheme='system'
             enableSystem
             disableTransitionOnChange
           >

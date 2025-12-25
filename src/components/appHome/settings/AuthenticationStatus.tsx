@@ -1,4 +1,9 @@
 'use client';
+import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/nextjs';
+import { CheckIcon } from 'lucide-react';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   showErrorToast,
@@ -6,11 +11,6 @@ import {
   showSuccessToast,
 } from '@/components/ui/sonner';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/nextjs';
-import { CheckIcon } from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
 
 const aiPerks = [
   'Generate / Improve your profile summary',
@@ -18,7 +18,7 @@ const aiPerks = [
   'Generate a cover letter',
 ];
 
-const AuthenticationStatus = () => {
+export const AuthenticationStatus = () => {
   const [loading, setLoading] = useState(false);
   const { isSignedIn, user } = useUser();
   const pathname = usePathname();
@@ -66,7 +66,7 @@ const AuthenticationStatus = () => {
             'An error occurred while deleting your account. Please try again later.',
             {
               id: loadingToastId,
-            },
+            }
           );
           console.error(error);
         } finally {
@@ -79,36 +79,36 @@ const AuthenticationStatus = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Authentication Status</h2>
+    <div className='space-y-6'>
+      <h2 className='text-lg font-semibold'>Authentication Status</h2>
       {isSignedIn ? (
         <div>
-          <div className="sm:flex-row flex flex-col gap-4">
+          <div className='sm:flex-row flex flex-col gap-4'>
             {user.imageUrl ? (
               <Image
                 src={user.imageUrl}
                 alt={user.firstName || ''}
                 width={96}
                 height={96}
-                className="sm:mx-0 w-24 h-24 mx-auto rounded-full"
+                className='sm:mx-0 w-24 h-24 mx-auto rounded-full'
               />
             ) : null}
-            <div className="sm:text-left flex flex-col gap-1">
-              <span className=" w-full font-semibold">
+            <div className='sm:text-left flex flex-col gap-1'>
+              <span className=' w-full font-semibold'>
                 {user?.firstName} {user?.lastName}
               </span>
-              <span className="text-muted-foreground text-sm">
+              <span className='text-muted-foreground text-sm'>
                 Only used for ensuring fair usage of AI features.
               </span>
-              <span className="text-muted-foreground text-sm">
+              <span className='text-muted-foreground text-sm'>
                 No data is used for tracking. You can sign out or delete your
                 account at any time.
               </span>
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2 my-2">
+          <div className='flex items-center justify-end gap-2 my-2'>
             <Button
-              variant="destructive"
+              variant='destructive'
               disabled={loading}
               onClick={handleDeleteClerkAccount}
             >
@@ -125,25 +125,25 @@ const AuthenticationStatus = () => {
         </div>
       ) : (
         <>
-          <p className="text-sm">Sign in to access AI-powered suggestions: </p>
-          <ul className="w-full">
+          <p className='text-sm'>Sign in to access AI-powered suggestions: </p>
+          <ul className='w-full'>
             {aiPerks.map((perk) => (
-              <li key={perk} className="flex items-center gap-2">
-                <CheckIcon className="w-4 h-4 text-green-500" />
-                <span className="text-sm">{perk}</span>
+              <li key={perk} className='flex items-center gap-2'>
+                <CheckIcon className='w-4 h-4 text-green-500' />
+                <span className='text-sm'>{perk}</span>
               </li>
             ))}
           </ul>
-          <div className="flex flex-col">
-            <span className="text-muted-foreground text-sm">
+          <div className='flex flex-col'>
+            <span className='text-muted-foreground text-sm'>
               Only used for ensuring fair usage of AI features.
             </span>
-            <span className="text-muted-foreground text-sm">
+            <span className='text-muted-foreground text-sm'>
               No data is used for tracking. You can sign out or delete your
               account at any time.
             </span>
           </div>
-          <div className="flex justify-end w-full">
+          <div className='flex justify-end w-full'>
             <SignInButton
               fallbackRedirectUrl={pathname}
               signUpFallbackRedirectUrl={pathname}
@@ -156,5 +156,3 @@ const AuthenticationStatus = () => {
     </div>
   );
 };
-
-export default AuthenticationStatus;

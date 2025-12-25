@@ -32,36 +32,36 @@ interface SidebarColorModeToggleProps {
   shouldShowSidebarButton?: boolean;
 }
 
-const AppColorModeToggle = ({
+export const AppColorModeToggle = ({
   shouldShowSidebarButton,
 }: SidebarColorModeToggleProps) => {
   const { theme, setTheme } = useTheme();
 
   const renderTriggerContent = () => {
     const selectedOption = themeOptions.find(
-      (themeOption) => themeOption.value === theme,
+      (themeOption) => themeOption.value === theme
     );
 
     if (!selectedOption) return;
 
     const content = (
-      <div className="flex items-center gap-2">
-        <selectedOption.icon className="h-[1.2rem] w-[1.2rem]" />
+      <div className='flex items-center gap-2'>
+        <selectedOption.icon className='h-[1.2rem] w-[1.2rem]' />
         {selectedOption.label}
-        <span className="sr-only">Select color theme</span>
+        <span className='sr-only'>Select color theme</span>
       </div>
     );
 
     if (shouldShowSidebarButton) {
       return (
-        <SidebarMenuButton variant="outline" className="justify-start w-full">
+        <SidebarMenuButton variant='outline' className='justify-start w-full'>
           {content}
         </SidebarMenuButton>
       );
     }
 
     return (
-      <Button variant={'outline'} className="justify-start w-full">
+      <Button variant={'outline'} className='justify-start w-full'>
         {content}
       </Button>
     );
@@ -77,9 +77,9 @@ const AppColorModeToggle = ({
           <DropdownMenuItem
             onClick={() => setTheme(option.value)}
             key={option.value}
-            className="flex items-center gap-2"
+            className='flex items-center gap-2'
           >
-            {<option.icon className="h-[1.2rem] w-[1.2rem]" />}
+            {<option.icon className='h-[1.2rem] w-[1.2rem]' />}
             {option.label}
           </DropdownMenuItem>
         ))}
@@ -87,5 +87,3 @@ const AppColorModeToggle = ({
     </DropdownMenu>
   );
 };
-
-export default AppColorModeToggle;

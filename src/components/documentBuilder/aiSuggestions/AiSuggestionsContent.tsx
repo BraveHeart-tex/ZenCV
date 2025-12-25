@@ -1,20 +1,20 @@
-import SuggestionGroupHeading from '@/components/documentBuilder/resumeScore/SuggestionGroupHeading';
-import AnimatedSuggestionsContainer from '@/components/documentBuilder/resumeScore/SuggestionsContainer';
-import AnimatedSuggestionButton from '@/components/documentBuilder/resumeScore/AnimatedSuggestionButton';
+import { useAuth } from '@clerk/nextjs';
 import { SparklesIcon } from 'lucide-react';
+import { observer } from 'mobx-react-lite';
+import { useAiSuggestionHelpers } from '@/components/documentBuilder/aiSuggestions/useAiSuggestionHelpers';
+import { AnimatedSuggestionButton } from '@/components/documentBuilder/resumeScore/AnimatedSuggestionButton';
+import { SuggestionGroupHeading } from '@/components/documentBuilder/resumeScore/SuggestionGroupHeading';
+import { AnimatedSuggestionsContainer } from '@/components/documentBuilder/resumeScore/SuggestionsContainer';
 import {
   getKeywordSuggestionScrollEventName,
   getSummaryValue,
 } from '@/lib/helpers/documentBuilderHelpers';
-import { useAiSuggestionHelpers } from '@/components/documentBuilder/aiSuggestions/useAiSuggestionHelpers';
-import { observer } from 'mobx-react-lite';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
-import { UseState } from '@/lib/types/utils.types';
-import { cn } from '@/lib/utils/stringUtils';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { SectionType } from '@/lib/types/documentBuilder.types';
-import { useAuth } from '@clerk/nextjs';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
+import type { SectionType } from '@/lib/types/documentBuilder.types';
+import type { UseState } from '@/lib/types/utils.types';
+import { cn } from '@/lib/utils/stringUtils';
 
 interface AiSuggestionsContentProps {
   setOpen: UseState<boolean>;
@@ -23,7 +23,7 @@ interface AiSuggestionsContentProps {
 export const aiButtonBaseClassnames =
   'dark:bg-purple-900 hover:bg-purple-800 bg-purple-700 rounded-md';
 
-const AiSuggestionsContent = observer(
+export const AiSuggestionsContent = observer(
   ({ setOpen }: AiSuggestionsContentProps) => {
     const { isSignedIn } = useAuth();
     const hasWrittenSummary = !!getSummaryValue();
@@ -48,7 +48,7 @@ const AiSuggestionsContent = observer(
       setOpen(false);
 
       const event = new CustomEvent(
-        getKeywordSuggestionScrollEventName(sectionType),
+        getKeywordSuggestionScrollEventName(sectionType)
       );
 
       setTimeout(() => {
@@ -64,7 +64,7 @@ const AiSuggestionsContent = observer(
             <AnimatedSuggestionsContainer>
               <AnimatedSuggestionButton
                 label={`Add Work Experience keywords (${builderRootStore.aiSuggestionsStore.usedKeywords.size} / ${builderRootStore.aiSuggestionsStore.keywordSuggestions.length})`}
-                icon={<SparklesIcon className="text-white" />}
+                icon={<SparklesIcon className='text-white' />}
                 iconContainerClassName={cn(aiButtonBaseClassnames)}
                 onClick={() =>
                   handleAddKeywordsClick(INTERNAL_SECTION_TYPES.WORK_EXPERIENCE)
@@ -73,7 +73,7 @@ const AiSuggestionsContent = observer(
               />
               <AnimatedSuggestionButton
                 label={`Add Summary keywords (${builderRootStore.aiSuggestionsStore.usedKeywords.size} / ${builderRootStore.aiSuggestionsStore.keywordSuggestions.length})`}
-                icon={<SparklesIcon className="text-white" />}
+                icon={<SparklesIcon className='text-white' />}
                 iconContainerClassName={cn(aiButtonBaseClassnames)}
                 onClick={() =>
                   handleAddKeywordsClick(INTERNAL_SECTION_TYPES.SUMMARY)
@@ -87,7 +87,7 @@ const AiSuggestionsContent = observer(
         <AnimatedSuggestionsContainer>
           <AnimatedSuggestionButton
             label={`${hasWrittenSummary ? 'Improve' : 'Generate'} your profile summary`}
-            icon={<SparklesIcon className="text-white" />}
+            icon={<SparklesIcon className='text-white' />}
             iconContainerClassName={cn(aiButtonBaseClassnames)}
             onClick={handleWriteSummaryClick}
             disabled={isLoading}
@@ -95,7 +95,5 @@ const AiSuggestionsContent = observer(
         </AnimatedSuggestionsContainer>
       </>
     );
-  },
+  }
 );
-
-export default AiSuggestionsContent;

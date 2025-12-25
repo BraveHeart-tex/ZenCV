@@ -1,9 +1,9 @@
-import AppSidebar from '@/components/appHome/app-sidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
+import type { ReactNode } from 'react';
+import { AppSidebar } from '@/components/appHome/app-sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
-const ApplicationLayoutWithSidebar = async ({
+export const ApplicationLayoutWithSidebar = async ({
   children,
 }: {
   children: ReactNode;
@@ -18,5 +18,3 @@ const ApplicationLayoutWithSidebar = async ({
     </SidebarProvider>
   );
 };
-
-export default ApplicationLayoutWithSidebar;

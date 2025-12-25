@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
-import { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
-import { Nullable, ValueOf } from '@/lib/types/utils.types';
+import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
+import type { Nullable, ValueOf } from '@/lib/types/utils.types';
+import type { BuilderRootStore } from './builderRootStore';
 
 export const BUILDER_CURRENT_VIEWS = {
   BUILDER: 'builder',
@@ -46,10 +46,10 @@ export class BuilderUIStore {
 
   getFieldRefByFieldNameAndSection = (
     fieldName: FieldName,
-    sectionType: SectionType,
+    sectionType: SectionType
   ) => {
     const section = this.root.sectionStore.sections.find(
-      (section) => section.type === sectionType,
+      (section) => section.type === sectionType
     );
     if (!section) return;
 

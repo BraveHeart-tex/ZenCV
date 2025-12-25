@@ -1,15 +1,15 @@
-import Dexie, { EntityTable } from 'dexie';
-import {
+import Dexie, { type EntityTable } from 'dexie';
+import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
+import type {
+  DEX_AiSuggestions,
   DEX_Document,
   DEX_Field,
   DEX_Item,
-  DEX_Section,
-  EditorPreferences,
   DEX_JobPosting,
+  DEX_Section,
   DEX_Setting,
-  DEX_AiSuggestions,
+  EditorPreferences,
 } from './clientDbSchema';
-import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 
 export const clientDb = new Dexie('cv-builder-db') as Dexie & {
   documents: EntityTable<DEX_Document, 'id'>;

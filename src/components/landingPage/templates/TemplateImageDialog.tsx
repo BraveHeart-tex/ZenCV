@@ -1,3 +1,6 @@
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import Image from 'next/image';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -7,12 +10,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { TemplateOption } from '@/lib/types/documentBuilder.types';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import Image from 'next/image';
-import { useState } from 'react';
+import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
-const TemplateImageDialog = ({ template }: { template: TemplateOption }) => {
+export const TemplateImageDialog = ({
+  template,
+}: {
+  template: TemplateOption;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -22,51 +26,51 @@ const TemplateImageDialog = ({ template }: { template: TemplateOption }) => {
           alt={`${template.name} template`}
           width={300}
           height={400}
-          className="object-cover w-full cursor-pointer"
+          className='object-cover w-full cursor-pointer'
           onClick={() => setIsOpen(true)}
         />
       </DialogTrigger>
-      <DialogContent className="max-w-[90vw] lg:max-w-[70vw] max-h-[90vh] w-full h-full overflow-y-auto">
+      <DialogContent className='max-w-[90vw] lg:max-w-[70vw] max-h-[90vh] w-full h-full overflow-y-auto'>
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>{template.name}</DialogTitle>
             <DialogDescription>{template.description}</DialogDescription>
           </DialogHeader>
         </VisuallyHidden>
-        <div className="lg:flex-row bg-background flex flex-col w-full h-full">
-          <div className="lg:w-1/2 w-full h-[40vh] lg:h-[80vh]">
+        <div className='lg:flex-row bg-background flex flex-col w-full h-full'>
+          <div className='lg:w-1/2 w-full h-[40vh] lg:h-[80vh]'>
             <Image
               src={template.image}
               alt={`${template.name} template image`}
               width={1920}
               height={1080}
-              className="object-contain w-full h-full"
+              className='object-contain w-full h-full'
             />
           </div>
-          <div className="lg:w-1/2 lg:p-6 flex flex-col w-full h-full p-2">
-            <div className="flex-1 min-h-0">
-              <h2 className="lg:mb-4 lg:text-2xl mb-2 text-xl font-bold">
+          <div className='lg:w-1/2 lg:p-6 flex flex-col w-full h-full p-2'>
+            <div className='flex-1 min-h-0'>
+              <h2 className='lg:mb-4 lg:text-2xl mb-2 text-xl font-bold'>
                 {template.name}
               </h2>
-              <p className="text-muted-foreground lg:mb-6 mb-4 text-sm">
+              <p className='text-muted-foreground lg:mb-6 mb-4 text-sm'>
                 {template.description}
               </p>
-              <div className="flex flex-wrap items-center gap-2">
-                {template.tags.map((tag, index) => (
+              <div className='flex flex-wrap items-center gap-2'>
+                {template.tags.map((tag) => (
                   <span
-                    key={index}
-                    className="bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full"
+                    key={tag}
+                    className='bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-full'
                   >
                     {tag}
                   </span>
                 ))}
               </div>
             </div>
-            <div className="mt-auto space-y-2">
-              <Button className="w-full">Use this template</Button>
+            <div className='mt-auto space-y-2'>
+              <Button className='w-full'>Use this template</Button>
               <Button
-                variant="outline"
-                className="w-full"
+                variant='outline'
+                className='w-full'
                 onClick={() => setIsOpen(false)}
               >
                 Cancel
@@ -78,5 +82,3 @@ const TemplateImageDialog = ({ template }: { template: TemplateOption }) => {
     </Dialog>
   );
 };
-
-export default TemplateImageDialog;

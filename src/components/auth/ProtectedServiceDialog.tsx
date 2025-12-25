@@ -1,12 +1,12 @@
 'use client';
-import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
-import ResponsiveDialog from '../ui/ResponsiveDialog';
-import { observer } from 'mobx-react-lite';
-import { Button } from '../ui/button';
 import { SignInButton, SignUpButton } from '@clerk/nextjs';
+import { observer } from 'mobx-react-lite';
 import { usePathname } from 'next/navigation';
+import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
+import { Button } from '../ui/button';
+import { ResponsiveDialog } from '../ui/ResponsiveDialog';
 
-const ProtectedServiceDialog = observer(() => {
+export const ProtectedServiceDialog = observer(() => {
   const pathname = usePathname();
 
   return (
@@ -22,16 +22,16 @@ const ProtectedServiceDialog = observer(() => {
       </p>
       <div className={'w-full flex items-center gap-2 mt-4 justify-between'}>
         <div>
-          <Button onClick={protectedServiceDialogStore.close} variant="outline">
+          <Button onClick={protectedServiceDialogStore.close} variant='outline'>
             Close
           </Button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <SignUpButton
             fallbackRedirectUrl={pathname}
             signInFallbackRedirectUrl={pathname}
           >
-            <Button variant="secondary">Sign Up</Button>
+            <Button variant='secondary'>Sign Up</Button>
           </SignUpButton>
           <SignInButton
             fallbackRedirectUrl={pathname}
@@ -44,5 +44,3 @@ const ProtectedServiceDialog = observer(() => {
     </ResponsiveDialog>
   );
 });
-
-export default ProtectedServiceDialog;

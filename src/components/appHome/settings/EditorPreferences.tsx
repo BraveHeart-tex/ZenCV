@@ -1,104 +1,93 @@
 'use client';
+import { useAuth } from '@clerk/nextjs';
+import { CircleHelpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { useNetworkState } from 'react-use';
+import { ClientOnly } from '@/components/misc/ClientOnly';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
-import UserSettingsService from '@/lib/client-db/userSettingsService';
-import { useNetworkState } from 'react-use';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Button } from '@/components/ui/button';
-import { CircleHelpIcon } from 'lucide-react';
-import { useAuth } from '@clerk/nextjs';
-import ClientOnly from '@/components/misc/ClientOnly';
+import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 
-const EditorPreferences = observer(() => {
+export const EditorPreferences = observer(() => {
   const { online } = useNetworkState();
   const { isSignedIn } = useAuth();
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Editor Preferences</h2>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="askBeforeDeletingItem">
+    <div className='space-y-6'>
+      <h2 className='text-lg font-semibold'>Editor Preferences</h2>
+      <div className='space-y-4'>
+        <div className='flex items-center justify-between'>
+          <Label htmlFor='askBeforeDeletingItem'>
             Ask before deleting an item
           </Label>
           <Switch
-            id="askBeforeDeletingItem"
+            id='askBeforeDeletingItem'
             checked={userSettingsStore.editorPreferences.askBeforeDeletingItem}
             onCheckedChange={(checked) =>
-              UserSettingsService.handleEditorPreferenceChange(
-                'askBeforeDeletingItem',
-                checked,
-              )
+              handleEditorPreferenceChange('askBeforeDeletingItem', checked)
             }
           />
         </div>
-        <div className="flex items-center justify-between">
-          <Label htmlFor="askBeforeDeletingSection">
+        <div className='flex items-center justify-between'>
+          <Label htmlFor='askBeforeDeletingSection'>
             Ask before deleting a section
           </Label>
           <Switch
-            id="askBeforeDeletingSection"
+            id='askBeforeDeletingSection'
             checked={
               userSettingsStore.editorPreferences.askBeforeDeletingSection
             }
             onCheckedChange={(checked) =>
-              UserSettingsService.handleEditorPreferenceChange(
-                'askBeforeDeletingSection',
-                checked,
-              )
+              handleEditorPreferenceChange('askBeforeDeletingSection', checked)
             }
           />
         </div>
         <ClientOnly>
           {online ? (
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-1'>
                 <Label
                   className={!isSignedIn ? 'opacity-50' : ''}
-                  htmlFor="showAiSuggestions"
+                  htmlFor='showAiSuggestions'
                 >
                   Show AI suggestions
                 </Label>{' '}
                 {!isSignedIn && (
-                  <>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            size="xsIcon"
-                            variant="ghost"
-                            className="lg:inline-flex hidden"
-                          >
-                            <CircleHelpIcon />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>You must be signed in to AI features.</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size='xsIcon'
+                          variant='ghost'
+                          className='lg:inline-flex hidden'
+                        >
+                          <CircleHelpIcon />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>You must be signed in to AI features.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
               <Switch
                 disabled={!isSignedIn}
-                id="showAiSuggestions"
+                id='showAiSuggestions'
                 checked={
                   userSettingsStore.editorPreferences.showAiSuggestions &&
                   isSignedIn
                 }
                 onCheckedChange={(checked) =>
-                  UserSettingsService.handleEditorPreferenceChange(
-                    'showAiSuggestions',
-                    checked,
-                  )
+                  handleEditorPreferenceChange('showAiSuggestions', checked)
                 }
               />
             </div>
@@ -108,5 +97,3 @@ const EditorPreferences = observer(() => {
     </div>
   );
 });
-
-export default EditorPreferences;

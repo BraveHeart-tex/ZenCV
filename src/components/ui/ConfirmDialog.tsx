@@ -1,6 +1,12 @@
 'use client';
-import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { Button } from './button';
 import {
   Dialog,
   DialogContent,
@@ -9,12 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from './dialog';
-import { Button } from './button';
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { action } from 'mobx';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import {
   Drawer,
   DrawerContent,
@@ -24,18 +24,18 @@ import {
   DrawerTitle,
 } from './drawer';
 
-const ConfirmDialog = observer(() => {
+export const ConfirmDialog = observer(() => {
   const isDesktop = useMediaQuery('(min-width: 768px)', false);
 
   const isOpen = confirmDialogStore.isOpen;
   const onClose = confirmDialogStore.hideDialog;
 
   const descriptionContent = isDesktop ? (
-    <DialogDescription className="text-muted-foreground mt-2">
+    <DialogDescription className='text-muted-foreground mt-2'>
       {confirmDialogStore.message}
     </DialogDescription>
   ) : (
-    <DrawerDescription className="text-muted-foreground mt-2">
+    <DrawerDescription className='text-muted-foreground mt-2'>
       {confirmDialogStore.message}
     </DrawerDescription>
   );
@@ -43,20 +43,20 @@ const ConfirmDialog = observer(() => {
   const actionButtons = (
     <>
       <Button
-        type="button"
-        variant="outline"
+        type='button'
+        variant='outline'
         onClick={action(() => {
           confirmDialogStore?.onCancel?.();
           onClose();
         })}
-        className="bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors"
+        className='bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors'
       >
         {confirmDialogStore.cancelText}
       </Button>
       <Button
-        type="submit"
+        type='submit'
         onClick={action(() => confirmDialogStore.onConfirm())}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+        className='bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'
       >
         {confirmDialogStore.confirmText}
       </Button>
@@ -71,9 +71,9 @@ const ConfirmDialog = observer(() => {
           onClose();
         })}
       >
-        <DialogContent className="bg-background border-border">
+        <DialogContent className='bg-background border-border'>
           <DialogHeader>
-            <DialogTitle className="text-foreground text-xl font-semibold">
+            <DialogTitle className='text-foreground text-xl font-semibold'>
               {confirmDialogStore.title}
             </DialogTitle>
             {confirmDialogStore.message ? (
@@ -83,7 +83,7 @@ const ConfirmDialog = observer(() => {
             )}
           </DialogHeader>
           <DoNotAskAgainCheckbox />
-          <DialogFooter className="mt-6">{actionButtons}</DialogFooter>
+          <DialogFooter className='mt-6'>{actionButtons}</DialogFooter>
         </DialogContent>
       </Dialog>
     );
@@ -96,9 +96,9 @@ const ConfirmDialog = observer(() => {
         onClose();
       })}
     >
-      <DrawerContent className="bg-background border-border">
+      <DrawerContent className='bg-background border-border'>
         <DrawerHeader>
-          <DrawerTitle className="text-foreground text-xl font-semibold">
+          <DrawerTitle className='text-foreground text-xl font-semibold'>
             {confirmDialogStore.title}
           </DrawerTitle>
           {confirmDialogStore.message ? (
@@ -107,10 +107,10 @@ const ConfirmDialog = observer(() => {
             <VisuallyHidden>{descriptionContent}</VisuallyHidden>
           )}
         </DrawerHeader>
-        <div className="px-4">
+        <div className='px-4'>
           <DoNotAskAgainCheckbox />
         </div>
-        <DrawerFooter className="flex-col-reverse mt-6">
+        <DrawerFooter className='flex-col-reverse mt-6'>
           {actionButtons}
         </DrawerFooter>
       </DrawerContent>
@@ -122,17 +122,15 @@ const DoNotAskAgainCheckbox = observer(() => {
   if (!confirmDialogStore.doNotAskAgainEnabled) return null;
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className='flex items-center space-x-2'>
       <Checkbox
-        id="doNotAskAgain"
+        id='doNotAskAgain'
         checked={confirmDialogStore.doNotAskAgainChecked}
         onCheckedChange={action((checked) => {
           confirmDialogStore.handleDoNotAskAgainCheckedChange(!!checked);
         })}
       />
-      <Label htmlFor="doNotAskAgain">Do not ask again</Label>
+      <Label htmlFor='doNotAskAgain'>Do not ask again</Label>
     </div>
   );
 });
-
-export default ConfirmDialog;

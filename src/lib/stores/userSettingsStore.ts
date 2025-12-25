@@ -1,7 +1,7 @@
-import { makeAutoObservable, runInAction } from 'mobx';
 import { liveQuery } from 'dexie';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { clientDb } from '@/lib/client-db/clientDb';
-import { EditorPreferences } from '../client-db/clientDbSchema';
+import type { EditorPreferences } from '../client-db/clientDbSchema';
 
 type Language = 'en-US' | 'tr-TR';
 
@@ -47,7 +47,7 @@ class UserSettingsStore {
   }
 
   private applySettingsFromDb(
-    partialSettings: Partial<Record<string, unknown>>,
+    partialSettings: Partial<Record<string, unknown>>
   ) {
     this.generalSettings.language =
       (partialSettings.language as Language) ??
@@ -68,7 +68,7 @@ class UserSettingsStore {
       next: (settings) => {
         runInAction(() => {
           const settingsMap = Object.fromEntries(
-            settings.map((s) => [s.key, s.value]),
+            settings.map((s) => [s.key, s.value])
           ) as Partial<Record<keyof UserSettingsState | string, unknown>>;
 
           this.applySettingsFromDb(settingsMap);
@@ -80,5 +80,4 @@ class UserSettingsStore {
   }
 }
 
-const userSettingsStore = new UserSettingsStore();
-export default userSettingsStore;
+export const userSettingsStore = new UserSettingsStore();

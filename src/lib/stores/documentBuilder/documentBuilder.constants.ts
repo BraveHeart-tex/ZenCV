@@ -6,10 +6,10 @@ import {
   LanguagesIcon,
   SlidersHorizontalIcon,
 } from 'lucide-react';
+import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
 import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
-import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
-import { SectionType } from '@/lib/types/documentBuilder.types';
+import type { SectionType } from '@/lib/types/documentBuilder.types';
 
 export const INTERNAL_SECTION_TYPES = {
   PERSONAL_DETAILS: 'personal-details',

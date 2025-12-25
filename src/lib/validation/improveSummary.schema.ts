@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { workExperienceSchema } from './workExperience.schema';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
 import { CUSTOM_PROMPT_MAX_LENGTH } from '../constants';
+import { workExperienceSchema } from './workExperience.schema';
 
 export const improveSummarySchema = z.object({
   summary: z
@@ -17,7 +17,7 @@ export const improveSummarySchema = z.object({
     .string()
     .max(
       CUSTOM_PROMPT_MAX_LENGTH,
-      `Refinement prompt cannot be longer than ${CUSTOM_PROMPT_MAX_LENGTH} characters`,
+      `Refinement prompt cannot be longer than ${CUSTOM_PROMPT_MAX_LENGTH} characters`
     ),
 });
 

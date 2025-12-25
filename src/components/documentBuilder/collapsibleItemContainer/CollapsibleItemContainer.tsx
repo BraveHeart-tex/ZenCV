@@ -1,49 +1,49 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import * as motion from 'motion/react-m';
-import { AnimatePresence } from 'motion/react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
   ChevronDownIcon,
   EllipsisIcon,
+  GripVertical,
   PencilIcon,
   TrashIcon,
 } from 'lucide-react';
-import { GripVertical } from 'lucide-react';
-import type React from 'react';
-import { useMedia } from 'react-use';
-import { observer } from 'mobx-react-lite';
-import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { action, runInAction } from 'mobx';
-import { showSuccessToast } from '@/components/ui/sonner';
-import { DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
-import CollapsibleItemHeader from './CollapsibleItemHeader';
-import CollapsibleItemMobileContent from './CollapsibleItemMobileContent';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { observer } from 'mobx-react-lite';
+import { AnimatePresence } from 'motion/react';
+import * as motion from 'motion/react-m';
+import type React from 'react';
 import { useEffect } from 'react';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
-import UserSettingsService from '@/lib/client-db/userSettingsService';
+import { useMedia } from 'react-use';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { showSuccessToast } from '@/components/ui/sonner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
+import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
+import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
+import { CollapsibleItemHeader } from './CollapsibleItemHeader';
+import { CollapsibleItemMobileContent } from './CollapsibleItemMobileContent';
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
   itemId: DEX_Item['id'];
 }
 
-const CollapsibleSectionItemContainer = observer(
+export const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
     const open = itemId === builderRootStore.UIStore.collapsedItemId;
@@ -91,9 +91,9 @@ const CollapsibleSectionItemContainer = observer(
             confirmDialogStore.hideDialog();
           });
 
-          UserSettingsService.handleEditorPreferenceChange(
+          handleEditorPreferenceChange(
             'askBeforeDeletingItem',
-            confirmDialogStore.doNotAskAgainChecked ? false : true,
+            !confirmDialogStore.doNotAskAgainChecked
           );
         },
         doNotAskAgainEnabled: true,
@@ -105,13 +105,13 @@ const CollapsibleSectionItemContainer = observer(
         <div
           className={cn(
             'group relative w-full',
-            isDragging && 'max-h-[17rem] overflow-hidden',
+            isDragging && 'max-h-[17rem] overflow-hidden'
           )}
           ref={(ref) => {
             setNodeRef(ref);
             builderRootStore.UIStore.setElementRef(
               getItemContainerId(itemId),
-              ref,
+              ref
             );
           }}
           style={{
@@ -122,11 +122,11 @@ const CollapsibleSectionItemContainer = observer(
           {...attributes}
         >
           {isMobileOrTablet ? (
-            <div className="absolute top-0 left-0 z-10">
+            <div className='absolute top-0 left-0 z-10'>
               <Button
-                variant="ghost"
-                size="icon"
-                className="cursor-grab touch-none w-8 h-8"
+                variant='ghost'
+                size='icon'
+                className='cursor-grab touch-none w-8 h-8'
                 {...listeners}
               >
                 <GripVertical />
@@ -137,9 +137,9 @@ const CollapsibleSectionItemContainer = observer(
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="cursor-grab lg:pointer-events-none lg:group-hover:pointer-events-auto lg:opacity-0 lg:group-hover:opacity-100 absolute -left-7 lg:-left-8 top-[19px] z-10 w-8 h-8 text-muted-foreground transition-all"
+                    variant='ghost'
+                    size='icon'
+                    className='cursor-grab lg:pointer-events-none lg:group-hover:pointer-events-auto lg:opacity-0 lg:group-hover:opacity-100 absolute -left-7 lg:-left-8 top-[19px] z-10 w-8 h-8 text-muted-foreground transition-all'
                     {...listeners}
                   >
                     <GripVertical />
@@ -152,14 +152,14 @@ const CollapsibleSectionItemContainer = observer(
           <motion.div
             className={cn(
               'rounded-md border flex flex-col transition-all w-full pt-2 lg:pt-0',
-              open && 'max-h-max',
+              open && 'max-h-max'
             )}
           >
-            <div className="flex items-center justify-center w-full h-full">
-              <div className="group flex items-center justify-between w-full h-full">
+            <div className='flex items-center justify-center w-full h-full'>
+              <div className='group flex items-center justify-between w-full h-full'>
                 <Button
-                  variant="ghost"
-                  className="hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent"
+                  variant='ghost'
+                  className='hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent'
                   onClick={() => {
                     if (isDragging || isSorting || isOver) return;
                     builderRootStore.UIStore.toggleItem(itemId);
@@ -170,31 +170,31 @@ const CollapsibleSectionItemContainer = observer(
                 {isMobileOrTablet ? (
                   <Popover>
                     <PopoverTrigger>
-                      <EllipsisIcon className="group text-muted-foreground mr-2 transition-all" />
+                      <EllipsisIcon className='group text-muted-foreground mr-2 transition-all' />
                     </PopoverTrigger>
-                    <PopoverContent className="p-0">
-                      <div className="flex flex-col">
+                    <PopoverContent className='p-0'>
+                      <div className='flex flex-col'>
                         <Button
-                          variant="ghost"
-                          className="flex items-center justify-start w-full gap-2 py-6 border-b rounded-none"
+                          variant='ghost'
+                          className='flex items-center justify-start w-full gap-2 py-6 border-b rounded-none'
                           onClick={() =>
                             builderRootStore.UIStore.toggleItem(itemId)
                           }
                         >
-                          <PencilIcon className="text-primary" size={18} />
-                          <span className="text-sm">Edit</span>
+                          <PencilIcon className='text-primary' size={18} />
+                          <span className='text-sm'>Edit</span>
                         </Button>
                         <Button
-                          variant="ghost"
-                          className="flex items-center justify-start w-full gap-2 py-6"
+                          variant='ghost'
+                          className='flex items-center justify-start w-full gap-2 py-6'
                           onClick={handleDeleteItemClick}
                         >
-                          <TrashIcon className="text-primary" size={18} />
-                          <span className="text-sm">Delete</span>
+                          <TrashIcon className='text-primary' size={18} />
+                          <span className='text-sm'>Delete</span>
                         </Button>
                       </div>
                       <PopoverClose asChild>
-                        <Button className="w-full">Cancel</Button>
+                        <Button className='w-full'>Cancel</Button>
                       </PopoverClose>
                     </PopoverContent>
                   </Popover>
@@ -203,7 +203,7 @@ const CollapsibleSectionItemContainer = observer(
                     onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
                     className={cn(
                       'mr-2 group-hover:text-primary text-muted-foreground transition-all cursor-pointer',
-                      open ? 'rotate-180' : 'rotate-0',
+                      open ? 'rotate-180' : 'rotate-0'
                     )}
                   />
                 )}
@@ -231,7 +231,7 @@ const CollapsibleSectionItemContainer = observer(
                       },
                     }}
                   >
-                    <div className="grid grid-cols-2 gap-4 p-4">{children}</div>
+                    <div className='grid grid-cols-2 gap-4 p-4'>{children}</div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -246,8 +246,8 @@ const CollapsibleSectionItemContainer = observer(
                       'hidden absolute -right-9 top-4 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all ease-out lg:flex'
                     }
                     onClick={handleDeleteItemClick}
-                    size="icon"
-                    variant="ghost"
+                    size='icon'
+                    variant='ghost'
                   >
                     <TrashIcon />
                   </Button>
@@ -265,7 +265,5 @@ const CollapsibleSectionItemContainer = observer(
         ) : null}
       </>
     );
-  },
+  }
 );
-
-export default CollapsibleSectionItemContainer;

@@ -1,17 +1,21 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { BuilderRootStore } from './builderRootStore';
+import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
+import { clientDb } from '@/lib/client-db/clientDb';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
+  bulkUpdateSections,
+  deleteSection,
+  updateSection,
+} from '@/lib/client-db/sectionService';
+import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
+import type {
   MetadataValue,
   ParsedSectionMetadata,
   SectionMetadataKey,
   SectionType,
   SectionWithParsedMetadata,
 } from '@/lib/types/documentBuilder.types';
-import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
-import { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
-import { clientDb } from '@/lib/client-db/clientDb';
-import SectionService from '@/lib/client-db/sectionService';
+import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderSectionStore {
   root: BuilderRootStore;
@@ -35,7 +39,7 @@ export class BuilderSectionStore {
 
     const changedSections = newDisplayOrders.filter((newOrder) => {
       const prevItem = this.sections.find(
-        (section) => section.id === newOrder.id,
+        (section) => section.id === newOrder.id
       );
       return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
@@ -51,13 +55,13 @@ export class BuilderSectionStore {
 
     if (changedSections.length) {
       try {
-        await SectionService.bulkUpdateSections(
+        await bulkUpdateSections(
           changedSections.map((section) => ({
             key: section.id,
             changes: {
               displayOrder: section.displayOrder,
             },
-          })),
+          }))
         );
       } catch (error) {
         console.error('bulkUpdateSections error', error);
@@ -80,7 +84,7 @@ export class BuilderSectionStore {
         const sectionDto = {
           displayOrder: this.sections.reduce(
             (acc, curr) => Math.max(acc, curr.displayOrder),
-            1,
+            1
           ),
           title: option.title,
           defaultTitle: option.defaultTitle,
@@ -105,7 +109,7 @@ export class BuilderSectionStore {
           itemId,
           sectionId,
         };
-      },
+      }
     );
   };
 
@@ -119,24 +123,24 @@ export class BuilderSectionStore {
 
     runInAction(() => {
       this.sections = this.sections.filter(
-        (section) => section.id !== sectionId,
+        (section) => section.id !== sectionId
       );
       this.root.itemStore.items = this.root.itemStore.items.filter(
-        (item) => item.sectionId !== sectionId,
+        (item) => item.sectionId !== sectionId
       );
       this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
-        (field) => itemIdsToKeep.includes(field.itemId),
+        (field) => itemIdsToKeep.includes(field.itemId)
       );
     });
 
-    await SectionService.deleteSection(sectionId);
+    await deleteSection(sectionId);
   };
 
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
 
-    await SectionService.updateSection(sectionId, {
+    await updateSection(sectionId, {
       title: value,
     });
 
@@ -146,7 +150,7 @@ export class BuilderSectionStore {
   };
 
   getSectionMetadataOptions = (
-    sectionId: DEX_Section['id'],
+    sectionId: DEX_Section['id']
   ): ParsedSectionMetadata[] => {
     const section = this.getSectionById(sectionId);
     if (!section || !section?.metadata) return [];
@@ -158,13 +162,13 @@ export class BuilderSectionStore {
     data: {
       key: SectionMetadataKey;
       value: MetadataValue;
-    },
+    }
   ) => {
     const section = this.getSectionById(sectionId);
     if (!section) return;
 
     const metadata = section.metadata.find(
-      (metadata) => metadata.key === data.key,
+      (metadata) => metadata.key === data.key
     );
 
     runInAction(() => {
@@ -173,12 +177,12 @@ export class BuilderSectionStore {
       }
     });
 
-    await SectionService.updateSection(sectionId, {
+    await updateSection(sectionId, {
       metadata: JSON.stringify(
         section.metadata.map((metadata) => ({
           ...metadata,
           value: metadata.key === data.key ? data.value : metadata.value,
-        })),
+        }))
       ),
     });
   };
@@ -204,7 +208,7 @@ export class BuilderSectionStore {
 
   getSectionItemsBySectionType = (type: SectionType) => {
     const section = this.root.sectionStore.sections.find(
-      (s) => s.type === type,
+      (s) => s.type === type
     );
     return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
   };

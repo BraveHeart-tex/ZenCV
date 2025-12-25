@@ -1,15 +1,15 @@
 'use client';
-import { action } from 'mobx';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { observer } from 'mobx-react-lite';
-import RenameDocumentDialog from '../appHome/documents/RenameDocumentDialog';
-import { useState } from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { Button } from '../ui/button';
 import { PencilIcon } from 'lucide-react';
+import { action } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { RenameDocumentDialog } from '../appHome/documents/RenameDocumentDialog';
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
-const EditableDocumentTitle = observer(() => {
+export const EditableDocumentTitle = observer(() => {
   const [open, setOpen] = useState(false);
   const documentTitle = builderRootStore.documentStore.document?.title || '';
 
@@ -21,14 +21,14 @@ const EditableDocumentTitle = observer(() => {
     } catch (error) {
       console.error(error);
       showErrorToast(
-        'An error occurred while renaming the document. Please try again.',
+        'An error occurred while renaming the document. Please try again.'
       );
     }
   });
 
   return (
-    <div className="flex items-center gap-2 max-w-[95%]">
-      <h1 className="scroll-m-20 first:mt-0 md:text-3xl overflow-hidden text-2xl font-semibold tracking-tight truncate">
+    <div className='flex items-center gap-2 max-w-[95%]'>
+      <h1 className='scroll-m-20 first:mt-0 md:text-3xl overflow-hidden text-2xl font-semibold tracking-tight truncate'>
         {documentTitle}
       </h1>
       <RenameDocumentDialog
@@ -40,8 +40,8 @@ const EditableDocumentTitle = observer(() => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                size="icon"
-                variant="ghost"
+                size='icon'
+                variant='ghost'
                 onClick={() => {
                   setOpen(true);
                 }}
@@ -56,5 +56,3 @@ const EditableDocumentTitle = observer(() => {
     </div>
   );
 });
-
-export default EditableDocumentTitle;

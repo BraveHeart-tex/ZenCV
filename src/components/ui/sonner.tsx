@@ -1,8 +1,8 @@
 'use client';
 
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useTheme } from 'next-themes';
-import { ExternalToast, Toaster as Sonner, toast } from 'sonner';
+import { type ExternalToast, Toaster as Sonner, toast } from 'sonner';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -13,7 +13,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme={theme as ToasterProps['theme']}
-      className="toaster group"
+      className='toaster group'
       richColors
       closeButton
       toastOptions={{

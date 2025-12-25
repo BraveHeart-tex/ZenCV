@@ -1,15 +1,14 @@
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { Switch } from '../ui/switch';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import { action } from 'mobx';
-import { Label } from '../ui/label';
-import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-
-import { ParsedSectionMetadata } from '@/lib/types/documentBuilder.types';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import type { ParsedSectionMetadata } from '@/lib/types/documentBuilder.types';
+import { Label } from '../ui/label';
+import { Switch } from '../ui/switch';
 
 const MetadataSwitch = observer(
   ({
@@ -30,10 +29,10 @@ const MetadataSwitch = observer(
         });
       })}
     />
-  ),
+  )
 );
 
-const SectionMetadataOption = ({
+export const SectionMetadataOption = ({
   sectionId,
   option,
 }: {
@@ -41,11 +40,9 @@ const SectionMetadataOption = ({
   option: ParsedSectionMetadata;
 }) => {
   return (
-    <div className="first:mt-2 flex items-center gap-2">
+    <div className='first:mt-2 flex items-center gap-2'>
       <MetadataSwitch sectionId={sectionId} option={option} />
       <Label htmlFor={option.key}>{option.label}</Label>
     </div>
   );
 };
-
-export default SectionMetadataOption;

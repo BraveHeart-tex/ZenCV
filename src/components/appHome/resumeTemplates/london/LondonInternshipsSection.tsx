@@ -1,10 +1,10 @@
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { getInternshipsSectionEntries } from '../resumeTemplates.helpers';
-import { londonTemplateStyles } from './london.styles';
 import { Text, View } from '@react-pdf/renderer';
-import LondonSectionEntry from './LondonSectionEntry';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getInternshipsSectionEntries } from '../resumeTemplates.helpers';
+import { LondonSectionEntry } from './LondonSectionEntry';
+import { londonTemplateStyles } from './london.styles';
 
-const LondonInternshipsSection = ({
+export const LondonInternshipsSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -21,13 +21,11 @@ const LondonInternshipsSection = ({
           <LondonSectionEntry
             entry={entry}
             key={entry.entryId}
-            titleKey="employer"
-            subtitleKey="jobTitle"
+            titleKey='employer'
+            subtitleKey='jobTitle'
           />
         ))}
       </View>
     </View>
   );
 };
-
-export default LondonInternshipsSection;

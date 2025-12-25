@@ -1,25 +1,25 @@
 'use client';
+import { useAuth } from '@clerk/nextjs';
+import { action, runInAction } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import {
   getSummaryField,
   setSummaryFieldValue,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { action, runInAction } from 'mobx';
-import { observer } from 'mobx-react-lite';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { useEffect, useRef, useState } from 'react';
-import SummaryAiSuggestionWidget from './SummaryAiSuggestionWidget';
+import { userSettingsStore } from '@/lib/stores/userSettingsStore';
+import { SummaryAiSuggestionWidget } from './SummaryAiSuggestionWidget';
 import { SUMMARY_GENERATION_EVENT_NAME } from './useAiSuggestionHelpers';
-import userSettingsStore from '@/lib/stores/userSettingsStore';
-import { useAuth } from '@clerk/nextjs';
 
 interface AISuggestionWidgetProps {
   fieldId: DEX_Field['id'];
@@ -27,7 +27,7 @@ interface AISuggestionWidgetProps {
   trigger: React.ReactNode;
 }
 
-const AiSuggestionsWidget = observer(
+export const AiSuggestionsWidget = observer(
   ({ fieldId, onAcceptSuggestion, trigger }: AISuggestionWidgetProps) => {
     const [open, setOpen] = useState(false);
     const suggestion =
@@ -71,7 +71,7 @@ const AiSuggestionsWidget = observer(
         },
         {
           signal: controller.signal,
-        },
+        }
       );
 
       return () => {
@@ -83,7 +83,7 @@ const AiSuggestionsWidget = observer(
       if (!suggestion) {
         if (isProfessionalSummary) {
           return (
-            <div className="space-y-4">
+            <div className='space-y-4'>
               <SummaryAiSuggestionWidget summaryField={summaryField} />
             </div>
           );
@@ -93,21 +93,21 @@ const AiSuggestionsWidget = observer(
       if (suggestion?.type === 'text') {
         return (
           <div>
-            <div className="flex flex-col gap-4">
-              <div className="space-y-1">
-                <h3 className="scroll-m-20 text-xl font-semibold tracking-tight">
+            <div className='flex flex-col gap-4'>
+              <div className='space-y-1'>
+                <h3 className='scroll-m-20 text-xl font-semibold tracking-tight'>
                   {suggestion.title}
                 </h3>
-                <p className="text-muted-foreground text-sm">
+                <p className='text-muted-foreground text-sm'>
                   {suggestion.description}
                 </p>
               </div>
-              <span className="flex-1 max-h-[12.5rem] xl:max-h-[19rem] overflow-auto p-2 bg-muted rounded-md">
+              <span className='flex-1 max-h-[12.5rem] xl:max-h-[19rem] overflow-auto p-2 bg-muted rounded-md'>
                 {suggestion.value}
               </span>
-              <div className="flex items-center justify-end gap-2">
+              <div className='flex items-center justify-end gap-2'>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={() => {
                     confirmDialogStore.showDialog({
                       title: 'Are you sure you want to cancel?',
@@ -120,7 +120,7 @@ const AiSuggestionsWidget = observer(
                         runInAction(() => {
                           confirmDialogStore.hideDialog();
                           builderRootStore.aiSuggestionsStore.fieldSuggestions.delete(
-                            fieldId,
+                            fieldId
                           );
                         });
                       },
@@ -133,7 +133,7 @@ const AiSuggestionsWidget = observer(
                   onClick={action(async () => {
                     setOpen(false);
                     builderRootStore.aiSuggestionsStore.fieldSuggestions.delete(
-                      fieldId,
+                      fieldId
                     );
                     await setSummaryFieldValue(suggestion.value);
                     onAcceptSuggestion?.(suggestion.value);
@@ -161,14 +161,13 @@ const AiSuggestionsWidget = observer(
           ref={popoverRef}
           avoidCollisions={false}
           side={isMobile ? 'top' : 'top'}
-          align="start"
-          className="max-w-[80vw] w-max lg:max-w-lg"
+          align='start'
+          className='max-w-[80vw] w-max lg:max-w-lg'
           asChild
         >
           {renderSuggestionWidget()}
         </PopoverContent>
       </Popover>
     );
-  },
+  }
 );
-export default AiSuggestionsWidget;

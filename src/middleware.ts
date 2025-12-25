@@ -26,7 +26,7 @@ export default clerkMiddleware(async (auth, req) => {
             message: 'You must be signed in to use this service.',
             data: null,
           },
-          { status: 401 },
+          { status: 401 }
         );
       }
 
@@ -45,7 +45,7 @@ export default clerkMiddleware(async (auth, req) => {
               'Too many requests. Please wait a few minutes and try again.',
             data: null,
           },
-          { status: 429 },
+          { status: 429 }
         );
       }
     }
@@ -64,7 +64,7 @@ export default clerkMiddleware(async (auth, req) => {
         message: 'Internal server error. Please try again later.',
         data: null,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 });

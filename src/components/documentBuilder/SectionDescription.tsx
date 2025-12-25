@@ -1,10 +1,10 @@
 'use client';
 import { observer } from 'mobx-react-lite';
-import { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
-const SectionDescription = observer(
+export const SectionDescription = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const sectionType =
       builderRootStore.sectionStore.getSectionById(sectionId)?.type;
@@ -15,8 +15,6 @@ const SectionDescription = observer(
 
     if (!description) return null;
 
-    return <p className="text-muted-foreground text-sm">{description}</p>;
-  },
+    return <p className='text-muted-foreground text-sm'>{description}</p>;
+  }
 );
-
-export default SectionDescription;

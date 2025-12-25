@@ -1,3 +1,12 @@
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import {
   Dialog,
@@ -8,15 +17,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './dialog';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
 
 interface ResponsiveDialogProps {
   open?: boolean;
@@ -28,7 +28,7 @@ interface ResponsiveDialogProps {
   footer?: React.ReactNode;
 }
 
-const ResponsiveDialog = ({
+export const ResponsiveDialog = ({
   open,
   onOpenChange = () => {},
   trigger,
@@ -43,14 +43,14 @@ const ResponsiveDialog = ({
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="max-h-[98%] overflow-hidden px-0 w-full">
-          <DialogHeader className="px-6">
+        <DialogContent className='max-h-[98%] overflow-hidden px-0 w-full'>
+          <DialogHeader className='px-6'>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
-          <div className="flex-1 px-6 py-2 overflow-y-auto">{children}</div>
+          <div className='flex-1 px-6 py-2 overflow-y-auto'>{children}</div>
           {footer ? (
-            <DialogFooter className="lg:gap-0 gap-1 px-6">
+            <DialogFooter className='lg:gap-0 gap-1 px-6'>
               {footer}
             </DialogFooter>
           ) : null}
@@ -62,20 +62,18 @@ const ResponsiveDialog = ({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent className="max-h-[98%] overflow-hidden px-0 w-full">
+      <DrawerContent className='max-h-[98%] overflow-hidden px-0 w-full'>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className="flex-1 w-full h-full px-4 py-2 overflow-y-auto">
+        <div className='flex-1 w-full h-full px-4 py-2 overflow-y-auto'>
           {children}
         </div>
         {footer ? (
-          <DrawerFooter className="lg:gap-0 gap-1 px-4">{footer}</DrawerFooter>
+          <DrawerFooter className='lg:gap-0 gap-1 px-4'>{footer}</DrawerFooter>
         ) : null}
       </DrawerContent>
     </Drawer>
   );
 };
-
-export default ResponsiveDialog;

@@ -1,6 +1,6 @@
-import { ValueOf } from '@/lib/types/utils.types';
-import { Styles, Text } from '@react-pdf/renderer';
+import { type Styles, Text } from '@react-pdf/renderer';
 import React from 'react';
+import type { ValueOf } from '@/lib/types/utils.types';
 
 interface SeparatedPDFTextProps {
   style: ValueOf<Styles>;
@@ -8,7 +8,7 @@ interface SeparatedPDFTextProps {
   separator?: string;
 }
 
-const SeparatedPDFText = ({
+export const SeparatedPDFText = ({
   style,
   fields,
   separator = ', ',
@@ -26,5 +26,3 @@ const SeparatedPDFText = ({
     </Text>
   );
 };
-
-export default SeparatedPDFText;

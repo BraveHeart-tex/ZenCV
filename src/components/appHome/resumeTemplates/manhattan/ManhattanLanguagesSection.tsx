@@ -1,12 +1,12 @@
+import { getLanguagesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { ResumeLanguagesSection } from '../shared/ResumeLanguagesSection';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
 } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { getLanguagesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import ResumeLanguagesSection from '../shared/ResumeLanguagesSection';
 
-const ManhattanLanguagesSection = ({
+export const ManhattanLanguagesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -22,5 +22,3 @@ const ManhattanLanguagesSection = ({
     />
   );
 };
-
-export default ManhattanLanguagesSection;

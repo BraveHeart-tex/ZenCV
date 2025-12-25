@@ -1,8 +1,14 @@
-import {
+import type { UseCompletionHelpers } from '@ai-sdk/react';
+import type {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
+import type {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import {
+import type {
   FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
@@ -13,19 +19,13 @@ import {
   SUGGESTION_ACTION_TYPES,
   SUGGESTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  DEX_Field,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
-import {
+import type {
   NestedValueOf,
   ValueOf,
   ValueOfNestedObject,
 } from '@/lib/types/utils.types';
-import type { UseCompletionHelpers } from '@ai-sdk/react';
-import { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
-import { JobPostingSchema } from '../validation/jobPosting.schema';
+import type { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
+import type { JobPostingSchema } from '../validation/jobPosting.schema';
 
 export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
@@ -145,6 +145,6 @@ export interface AiSuggestionsContext {
   improvedSummary: UseCompletionHelpers['completion'];
 
   analyzeJob: (
-    values: JobPostingSchema,
+    values: JobPostingSchema
   ) => Promise<JobAnalysisResult | undefined>;
 }

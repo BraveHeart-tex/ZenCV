@@ -1,8 +1,8 @@
-import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { TemplateOption } from '@/lib/types/documentBuilder.types';
 import { Link, Text, View } from '@react-pdf/renderer';
-import { ComponentProps } from 'react';
-import Html from 'react-pdf-html';
+import type { ComponentProps } from 'react';
+import type Html from 'react-pdf-html';
+import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
 export const PDF_BODY_FONT_SIZE = 11 as const;
 export const DOCUMENT_TITLE_FONT_SIZE = 14 as const;

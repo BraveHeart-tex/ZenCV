@@ -2,10 +2,10 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useCallback } from 'react';
-import WantedJobTitleSuggestionPopover from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
-import DocumentBuilderSelectInput from '@/components/documentBuilder/DocumentBuilderSelectInput';
-import BuilderRichTextEditorInput from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
-import DateFieldInput from '@/components/documentBuilder/inputs/DateFieldInput';
+import { WantedJobTitleSuggestionPopover } from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
+import { DocumentBuilderSelectInput } from '@/components/documentBuilder/DocumentBuilderSelectInput';
+import { BuilderRichTextEditorInput } from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
+import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -31,29 +31,29 @@ interface SectionFieldProps {
   fieldId: DEX_Field['id'];
 }
 
-const SectionField = observer(({ fieldId }: SectionFieldProps) => {
+export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
   const field = builderRootStore.fieldStore.getFieldById(fieldId);
 
   const htmlInputId = field ? getFieldHtmlId(field) : '';
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: Will analyze this
   const handleInputChange = useCallback(
     action(
       async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         await builderRootStore.fieldStore.setFieldValue(
           fieldId,
-          e.target.value,
+          e.target.value
         );
-      },
+      }
     ),
-    [fieldId],
+    [fieldId]
   );
 
   const setFieldRef = useCallback(
     (ref: HTMLElement | null) => {
       if (ref) builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
     },
-    [fieldId],
+    [fieldId]
   );
 
   if (!field) return null;
@@ -66,7 +66,7 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             className={cn(
               'flex items-center justify-between gap-8',
               field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
-                'max-h-[0.875rem]',
+                'max-h-[0.875rem]'
             )}
           >
             <Label htmlFor={htmlInputId}>{field.name}</Label>
@@ -80,14 +80,14 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <Input
             id={htmlInputId}
             ref={setFieldRef}
-            type="text"
+            type='text'
             value={field.value}
             onChange={handleInputChange}
             placeholder={field?.placeholder}
-            data-1p-ignore="true"
-            data-lpignore="true"
-            data-protonpass-ignore="true"
-            data-bwignore="true"
+            data-1p-ignore='true'
+            data-lpignore='true'
+            data-protonpass-ignore='true'
+            data-bwignore='true'
           />
         </>
       );
@@ -131,10 +131,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             value={field.value}
             onChange={handleInputChange}
             placeholder={field?.placeholder}
-            data-1p-ignore="true"
-            data-lpignore="true"
-            data-protonpass-ignore="true"
-            data-bwignore="true"
+            data-1p-ignore='true'
+            data-lpignore='true'
+            data-protonpass-ignore='true'
+            data-bwignore='true'
           />
         </>
       );
@@ -147,12 +147,10 @@ const SectionField = observer(({ fieldId }: SectionFieldProps) => {
         'flex flex-col gap-2',
         (field.type === FIELD_TYPES.RICH_TEXT ||
           field.type === FIELD_TYPES.TEXTAREA) &&
-          'col-span-2',
+          'col-span-2'
       )}
     >
       {renderInput()}
     </div>
   );
 });
-
-export default SectionField;

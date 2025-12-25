@@ -1,13 +1,12 @@
 'use client';
 
-import * as React from 'react';
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
-
-import { cn } from '@/lib/utils/stringUtils';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils/stringUtils';
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -56,14 +55,14 @@ const Carousel = React.forwardRef<
       children,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [carouselRef, api] = useEmblaCarousel(
       {
         ...opts,
         axis: orientation === 'horizontal' ? 'x' : 'y',
       },
-      plugins,
+      plugins
     );
     const [canScrollPrev, setCanScrollPrev] = React.useState(false);
     const [canScrollNext, setCanScrollNext] = React.useState(false);
@@ -95,7 +94,7 @@ const Carousel = React.forwardRef<
           scrollNext();
         }
       },
-      [scrollPrev, scrollNext],
+      [scrollPrev, scrollNext]
     );
 
     React.useEffect(() => {
@@ -134,19 +133,20 @@ const Carousel = React.forwardRef<
           canScrollNext,
         }}
       >
+        {/** biome-ignore lint/a11y/useSemanticElements: usage of div is fine here */}
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
           className={cn('relative', className)}
-          role="region"
-          aria-roledescription="carousel"
+          aria-roledescription='carousel'
+          role='region'
           {...props}
         >
           {children}
         </div>
       </CarouselContext.Provider>
     );
-  },
+  }
 );
 Carousel.displayName = 'Carousel';
 
@@ -157,13 +157,13 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel();
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
+    <div ref={carouselRef} className='overflow-hidden'>
       <div
         ref={ref}
         className={cn(
           'flex',
           orientation === 'horizontal' ? '-ml-4' : '-mt-4 flex-col',
-          className,
+          className
         )}
         {...props}
       />
@@ -179,14 +179,15 @@ const CarouselItem = React.forwardRef<
   const { orientation } = useCarousel();
 
   return (
+    // biome-ignore lint/a11y/useSemanticElements: this is fine here
     <div
       ref={ref}
-      role="group"
-      aria-roledescription="slide"
+      role='group'
+      aria-roledescription='slide'
       className={cn(
         'min-w-0 shrink-0 grow-0 basis-full',
         orientation === 'horizontal' ? 'pl-4' : 'pt-4',
-        className,
+        className
       )}
       {...props}
     />
@@ -210,14 +211,14 @@ const CarouselPrevious = React.forwardRef<
         orientation === 'horizontal'
           ? '-left-12 top-1/2 -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
-        className,
+        className
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft className="w-4 h-4" />
-      <span className="sr-only">Previous slide</span>
+      <ArrowLeft className='w-4 h-4' />
+      <span className='sr-only'>Previous slide</span>
     </Button>
   );
 });
@@ -239,14 +240,14 @@ const CarouselNext = React.forwardRef<
         orientation === 'horizontal'
           ? '-right-12 top-1/2 -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
-        className,
+        className
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight className="w-4 h-4" />
-      <span className="sr-only">Next slide</span>
+      <ArrowRight className='w-4 h-4' />
+      <span className='sr-only'>Next slide</span>
     </Button>
   );
 });

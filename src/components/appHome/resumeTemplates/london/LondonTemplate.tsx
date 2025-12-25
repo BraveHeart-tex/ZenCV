@@ -1,21 +1,21 @@
 import { Document, Page } from '@react-pdf/renderer';
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import LondonPersonalDetailsSection from './LondonPersonalDetailsSection';
-import { londonTemplateStyles } from './london.styles';
-import LondonSummarySection from './LondonSummarySection';
-import LondonEducationSection from './LondonEducationSection';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import LondonWorkExperienceSection from './LondonWorkExperienceSection';
-import LondonLinksSection from './LondonLinksSection';
-import LondonLanguagesSection from './LondonLanguagesSection';
-import LondonInternshipsSection from './LondonInternshipsSection';
-import LondonSkillsSection from './LondonSkillsSection';
-import LondonCoursesSection from './LondonCoursesSection';
-import LondonCustomSection from './LondonCustomSection';
-import LondonReferencesSection from './LondonReferencesSection';
-import LondonHobbiesSection from './LondonHobbiesSection';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { LondonCoursesSection } from './LondonCoursesSection';
+import { LondonCustomSection } from './LondonCustomSection';
+import { LondonEducationSection } from './LondonEducationSection';
+import { LondonHobbiesSection } from './LondonHobbiesSection';
+import { LondonInternshipsSection } from './LondonInternshipsSection';
+import { LondonLanguagesSection } from './LondonLanguagesSection';
+import { LondonLinksSection } from './LondonLinksSection';
+import { LondonPersonalDetailsSection } from './LondonPersonalDetailsSection';
+import { LondonReferencesSection } from './LondonReferencesSection';
+import { LondonSkillsSection } from './LondonSkillsSection';
+import { LondonSummarySection } from './LondonSummarySection';
+import { LondonWorkExperienceSection } from './LondonWorkExperienceSection';
+import { londonTemplateStyles } from './london.styles';
 
-const LondonTemplate = ({
+export const LondonTemplate = ({
   templateData,
 }: {
   templateData: PdfTemplateData;
@@ -72,7 +72,7 @@ const LondonTemplate = ({
 
   return (
     <Document>
-      <Page size="A4" style={londonTemplateStyles.page}>
+      <Page size='A4' style={londonTemplateStyles.page}>
         <LondonPersonalDetailsSection personalDetails={personalDetails} />
         <LondonSummarySection summarySection={summarySection} />
         {renderSections()}
@@ -80,5 +80,3 @@ const LondonTemplate = ({
     </Document>
   );
 };
-
-export default LondonTemplate;

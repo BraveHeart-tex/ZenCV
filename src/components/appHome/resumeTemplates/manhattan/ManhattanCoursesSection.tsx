@@ -1,12 +1,12 @@
 import { Text, View } from '@react-pdf/renderer';
+import { getCoursesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
 } from './manhattan.styles';
-import { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import { getCoursesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 
-const ManhattanCoursesSection = ({
+export const ManhattanCoursesSection = ({
   section,
 }: {
   section: TemplateDataSection;
@@ -73,5 +73,3 @@ const ManhattanCoursesSection = ({
     </View>
   );
 };
-
-export default ManhattanCoursesSection;

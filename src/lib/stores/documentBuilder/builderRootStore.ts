@@ -1,12 +1,12 @@
 import { runInAction } from 'mobx';
+import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
+import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
 import { BuilderDocumentStore } from './builderDocumentStore';
 import { BuilderFieldStore } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
-import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
-import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
 
 export class BuilderRootStore {
   documentStore: BuilderDocumentStore;

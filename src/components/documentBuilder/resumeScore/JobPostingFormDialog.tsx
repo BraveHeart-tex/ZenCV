@@ -1,18 +1,9 @@
 'use client';
-import { observer } from 'mobx-react-lite';
-import { Button } from '@/components/ui/button';
-import ResponsiveDialog from '@/components/ui/ResponsiveDialog';
-import { useEffect, useState } from 'react';
-import { dialogFooterClassNames } from '@/lib/constants';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import {
-  JOB_POSTING_DESCRIPTION_LIMIT,
-  jobPostingSchema,
-  JobPostingSchema,
-} from '@/lib/validation/jobPosting.schema';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -21,11 +12,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { Input } from '@/components/ui/input';
+import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
 import { showErrorToast, showInfoToast } from '@/components/ui/sonner';
-import { getChangedValues } from '@/lib/utils/objectUtils';
-import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
+import { Textarea } from '@/components/ui/textarea';
+import { dialogFooterClassNames } from '@/lib/constants';
 import { mockJobPostingData } from '@/lib/mockData';
+import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { getChangedValues } from '@/lib/utils/objectUtils';
+import {
+  JOB_POSTING_DESCRIPTION_LIMIT,
+  type JobPostingSchema,
+  jobPostingSchema,
+} from '@/lib/validation/jobPosting.schema';
+import { useAiSuggestionHelpers } from '../aiSuggestions/useAiSuggestionHelpers';
 
 interface JobPostingFormDialogProps {
   trigger: React.ReactNode;
@@ -38,7 +38,7 @@ const defaultFormValues: JobPostingSchema = {
   roleDescription: '',
 };
 
-const JobPostingFormDialog = observer(
+export const JobPostingFormDialog = observer(
   ({ trigger, mode = 'create' }: JobPostingFormDialogProps) => {
     const [open, setOpen] = useState(false);
     const { handleJobAnalysis } = useAiSuggestionHelpers();
@@ -56,7 +56,7 @@ const JobPostingFormDialog = observer(
       ) {
         form.reset(builderRootStore.jobPostingStore.jobPosting);
       }
-    }, [open, mode]);
+    }, [open, mode, form.reset]);
 
     const handleJobResult = (result: { success: boolean; message: string }) => {
       if (!result?.success) {
@@ -112,8 +112,8 @@ const JobPostingFormDialog = observer(
     return (
       <ResponsiveDialog
         trigger={trigger}
-        title="Tailor for Job Posting"
-        description="Most resumes never reach human eyes. Optimize yours to stand out and get more interviews."
+        title='Tailor for Job Posting'
+        description='Most resumes never reach human eyes. Optimize yours to stand out and get more interviews.'
         open={open}
         onOpenChange={(isOpen) => {
           setOpen(isOpen);
@@ -124,8 +124,8 @@ const JobPostingFormDialog = observer(
         footer={
           <div className={dialogFooterClassNames}>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={() => {
                 setOpen(false);
                 form.reset();
@@ -133,7 +133,7 @@ const JobPostingFormDialog = observer(
             >
               Cancel
             </Button>
-            <Button type="submit" form="job-posting-form">
+            <Button type='submit' form='job-posting-form'>
               Submit
             </Button>
           </div>
@@ -142,17 +142,17 @@ const JobPostingFormDialog = observer(
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="job-posting-form"
+            className='space-y-4'
+            id='job-posting-form'
           >
             <FormField
               control={form.control}
-              name="companyName"
+              name='companyName'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
                   <FormControl>
-                    <Input type="text" {...field} />
+                    <Input type='text' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -160,12 +160,12 @@ const JobPostingFormDialog = observer(
             />
             <FormField
               control={form.control}
-              name="jobTitle"
+              name='jobTitle'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Job Title</FormLabel>
                   <FormControl>
-                    <Input type="text" {...field} />
+                    <Input type='text' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,16 +174,16 @@ const JobPostingFormDialog = observer(
             <div>
               <FormField
                 control={form.control}
-                name="roleDescription"
+                name='roleDescription'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role Description</FormLabel>
                     <FormControl>
                       <Textarea rows={6} {...field} />
                     </FormControl>
-                    <div className="flex items-center justify-between w-full gap-8">
+                    <div className='flex items-center justify-between w-full gap-8'>
                       <FormMessage />
-                      <div className="whitespace-nowrap pt-1 ml-auto text-xs text-right">
+                      <div className='whitespace-nowrap pt-1 ml-auto text-xs text-right'>
                         {form.watch('roleDescription').length} /{' '}
                         {JOB_POSTING_DESCRIPTION_LIMIT}
                       </div>
@@ -199,8 +199,8 @@ const JobPostingFormDialog = observer(
                   onClick={() => {
                     form.reset(mockJobPostingData);
                   }}
-                  type="button"
-                  variant="outline"
+                  type='button'
+                  variant='outline'
                 >
                   Use Mock Data
                 </Button>
@@ -210,7 +210,5 @@ const JobPostingFormDialog = observer(
         </Form>
       </ResponsiveDialog>
     );
-  },
+  }
 );
-
-export default JobPostingFormDialog;

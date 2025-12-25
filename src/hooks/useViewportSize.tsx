@@ -11,7 +11,7 @@ const visualViewport =
 export const useViewportSize = () => {
   const [mounted, setMounted] = useState(false);
   const [size, setSize] = useState<ViewportSize>(() =>
-    !mounted ? { width: 0, height: 0 } : getViewportSize(),
+    !mounted ? { width: 0, height: 0 } : getViewportSize()
   );
 
   useEffect(() => {

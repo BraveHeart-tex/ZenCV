@@ -1,9 +1,8 @@
 'use client';
 
+import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { Label } from '@/components/ui/label';
-import { DEX_Field, SelectField } from '@/lib/client-db/clientDbSchema';
 import {
   Select,
   SelectContent,
@@ -11,18 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { action } from 'mobx';
+import type { DEX_Field, SelectField } from '@/lib/client-db/clientDbSchema';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
-const DocumentBuilderSelectInput = observer(
+export const DocumentBuilderSelectInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
     const field = builderRootStore.fieldStore.getFieldById(
-      fieldId,
-    )! as SelectField;
+      fieldId
+    ) as SelectField;
+
+    if (!field) {
+      return null;
+    }
+
     const htmlInputId = getFieldHtmlId(field);
 
     return (
-      <div className="flex flex-col gap-2">
+      <div className='flex flex-col gap-2'>
         <Label htmlFor={htmlInputId}>{field.name}</Label>
         <Select
           value={field.value}
@@ -31,7 +36,7 @@ const DocumentBuilderSelectInput = observer(
           })}
         >
           <SelectTrigger
-            className="w-full"
+            className='w-full'
             id={htmlInputId}
             ref={(ref) =>
               builderRootStore.UIStore.setFieldRef(field.id.toString(), ref)
@@ -49,7 +54,5 @@ const DocumentBuilderSelectInput = observer(
         </Select>
       </div>
     );
-  },
+  }
 );
-
-export default DocumentBuilderSelectInput;

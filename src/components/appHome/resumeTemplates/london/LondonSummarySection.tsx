@@ -1,10 +1,10 @@
-import { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
 import { Text, View } from '@react-pdf/renderer';
 import { Html } from 'react-pdf-html';
+import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { pdfHtmlRenderers } from '../resumeTemplates.constants';
+import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
 
-const LondonSummarySection = ({
+export const LondonSummarySection = ({
   summarySection,
 }: {
   summarySection: PdfTemplateData['summarySection'];
@@ -31,4 +31,3 @@ const LondonSummarySection = ({
     </View>
   );
 };
-export default LondonSummarySection;
