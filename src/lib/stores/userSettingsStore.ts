@@ -13,7 +13,7 @@ interface ModelSettings {
   customGenerateSummaryPrompt: string;
 }
 
-export interface UserSettingsState {
+interface UserSettingsState {
   generalSettings: GeneralSettings;
   editorPreferences: EditorPreferences;
   modelSettings: ModelSettings;

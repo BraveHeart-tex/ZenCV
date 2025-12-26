@@ -5,7 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { type Ref, useImperativeHandle, useRef } from 'react';
 import { RichTextEditorMenubar } from '@/components/richTextEditor/RichTextEditorMenubar';
 
-export interface RichTextEditorProps {
+interface RichTextEditorProps {
   initialValue?: string;
   placeholder?: string;
   onChange?: (html: string) => void;

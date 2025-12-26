@@ -105,14 +105,14 @@ export interface ResumeSuggestion {
   fieldName?: FieldName;
 }
 
-export type SuggestionActionType = ValueOf<typeof SUGGESTION_ACTION_TYPES>;
+type SuggestionActionType = ValueOf<typeof SUGGESTION_ACTION_TYPES>;
 
 export interface ResumeStats {
   score: number;
   suggestions: (ResumeSuggestion & { key: string })[];
 }
 
-export type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;
+type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;
 
 export type ResumeTemplate = ValueOf<typeof INTERNAL_TEMPLATE_TYPES>;
 
@@ -124,7 +124,7 @@ export interface TemplateOption {
   value: ResumeTemplate;
 }
 
-export interface AISuggestionBase {
+interface AISuggestionBase {
   title?: string;
   description?: string;
 }

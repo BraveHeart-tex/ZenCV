@@ -230,7 +230,7 @@ export async function changeDocumentTemplateType(
   return updateDocument(documentId, { templateType });
 }
 
-export async function getDocumentById(
+async function getDocumentById(
   documentId: DEX_Document['id']
 ): Promise<DEX_Document | null> {
   return (await clientDb.documents.get(documentId)) || null;

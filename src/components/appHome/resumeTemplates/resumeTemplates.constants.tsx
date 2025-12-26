@@ -4,10 +4,6 @@ import type Html from 'react-pdf-html';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
-export const PDF_BODY_FONT_SIZE = 11 as const;
-export const DOCUMENT_TITLE_FONT_SIZE = 14 as const;
-export const SECTION_LABEL_FONT_SIZE = 9 as const;
-
 export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
   i: (props) => {
     return (

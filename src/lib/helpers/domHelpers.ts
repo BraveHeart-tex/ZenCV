@@ -1,4 +1,4 @@
-export const isElementCentered = (element: HTMLElement) => {
+const isElementCentered = (element: HTMLElement) => {
   if (!element) return false;
 
   const rect = element.getBoundingClientRect();

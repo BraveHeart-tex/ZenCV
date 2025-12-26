@@ -170,8 +170,6 @@ export const builderSectionTitleClassNames =
 
 export const highlightedElementClassName = 'highlighted-element';
 
-export const CLASSNAME_TOGGLE_WAIT_MS = 1000 as const;
-
 export const RESUME_SCORE_CONFIG = {
   WORK_EXPERIENCE: 25,
   EDUCATION: 15,

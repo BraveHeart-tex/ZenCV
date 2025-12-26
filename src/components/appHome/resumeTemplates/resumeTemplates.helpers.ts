@@ -23,7 +23,7 @@ export const findValueInItemFields = (
   return fields.find((field) => field.name === fieldName)?.value || '';
 };
 
-export const getRenderableEntries = <T extends Record<string, unknown>>(
+const getRenderableEntries = <T extends Record<string, unknown>>(
   entries: WithEntryId<T>[]
 ) => {
   return entries.filter((entry) => {

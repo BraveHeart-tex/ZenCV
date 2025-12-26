@@ -150,7 +150,7 @@ export const getFieldHtmlId = (field: DEX_Field) => {
   return `${field.itemId}-${field.name}`;
 };
 
-export type ItemTemplateType = Omit<DEX_Item, 'id' | 'sectionId'> & {
+type ItemTemplateType = Omit<DEX_Item, 'id' | 'sectionId'> & {
   fields: FieldInsertTemplate[];
 };
 
@@ -209,12 +209,6 @@ export const getItemInsertTemplate = (sectionType: TemplatedSectionType) => {
   };
 
   return templateMap[sectionType];
-};
-
-export const getCookieValue = (cookieName: string) => {
-  const cookies = document.cookie.split('; ');
-  const cookie = cookies.find((row) => row.startsWith(`${cookieName}=`));
-  return cookie ? cookie.split('=')[1] : null;
 };
 
 export const getTriggerContent = (
@@ -613,10 +607,7 @@ export const downloadPDF = ({
   link.click();
 };
 
-export const hasFilledFields = (
-  items: DEX_Item[],
-  fieldNames?: FieldName[]
-) => {
+const hasFilledFields = (items: DEX_Item[], fieldNames?: FieldName[]) => {
   return items.some((item) => {
     return builderRootStore.fieldStore
       .getFieldsByItemId(item.id)

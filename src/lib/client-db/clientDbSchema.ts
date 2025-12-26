@@ -90,7 +90,7 @@ export type DEX_Field =
   | RichTextField
   | TextareaField;
 
-export interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
+interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
   fields: FieldInsertTemplate[];
 }
 
@@ -112,7 +112,7 @@ export interface EditorPreferences {
   showAiSuggestions: boolean;
 }
 
-export type DEX_SettingsKey =
+type DEX_SettingsKey =
   | 'language'
   | 'editorPreferences'
   | 'customGenerateSummaryPrompt';
