@@ -38,20 +38,23 @@ export const DocumentBuilderPdfViewer = observer(
       height: 0,
     });
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: will analyze the deps here
     useEffect(() => {
+      if (!containerRef.current) return;
+
+      const element = containerRef.current;
+
       const updateDimensions = () => {
-        if (containerRef.current) {
-          const { width, height } =
-            containerRef.current.getBoundingClientRect();
-          setContainerDimensions({ width, height });
-        }
+        const { width, height } = element.getBoundingClientRect();
+        setContainerDimensions({ width, height });
       };
 
+      const observer = new ResizeObserver(updateDimensions);
+      observer.observe(element);
+
       updateDimensions();
-      window.addEventListener('resize', updateDimensions);
-      return () => window.removeEventListener('resize', updateDimensions);
-    }, [view]);
+
+      return () => observer.disconnect();
+    }, []);
 
     const pdfDimensions = useMemo(() => {
       const aspectRatio = Math.SQRT2; // A4 Page Aspect Ratio
@@ -74,7 +77,7 @@ export const DocumentBuilderPdfViewer = observer(
         height: pdfDimensions.pdfHeight,
         width: pdfDimensions.pdfWidth,
       });
-    }, [pdfDimensions]);
+    }, [pdfDimensions.pdfHeight, pdfDimensions.pdfWidth]);
 
     const renderData = JSON.stringify(
       builderRootStore.templateStore.debouncedTemplateData
