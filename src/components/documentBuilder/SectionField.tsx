@@ -36,7 +36,6 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
 
   const htmlInputId = field ? getFieldHtmlId(field) : '';
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: TODO: Will analyze this
   const handleInputChange = useCallback(
     action(
       async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -46,7 +45,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
         );
       }
     ),
-    [fieldId]
+    []
   );
 
   const setFieldRef = useCallback(
