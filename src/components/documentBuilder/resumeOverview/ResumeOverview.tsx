@@ -82,8 +82,7 @@ export const ResumeOverview = observer(() => {
   }, []);
 
   return (
-    <button
-      type='button'
+    <article
       className='group fixed right-0 top-[25%] z-[500] flex items-start'
       onMouseEnter={() => {
         setVisible(true);
@@ -94,6 +93,6 @@ export const ResumeOverview = observer(() => {
     >
       <ResumeOverviewTrigger focusState={focusState} visible={visible} />
       <ResumeOverViewContent focusState={focusState} visible={visible} />
-    </button>
+    </article>
   );
 });
