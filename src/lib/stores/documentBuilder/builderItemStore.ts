@@ -40,6 +40,14 @@ export class BuilderItemStore {
     return map;
   }
 
+  areAllItemsCollapsible = computedFn(
+    (sectionId: DEX_Section['id']): boolean => {
+      return (this.itemsBySectionId.get(sectionId) ?? []).every(
+        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
+      );
+    }
+  );
+
   getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
     return this.itemsById.get(itemId);
   };
@@ -57,6 +65,10 @@ export class BuilderItemStore {
         .map((item) => item.id);
     }).get();
   }
+
+  setItems = (items: DEX_Item[]) => {
+    this.items = items;
+  };
 
   addNewItemEntry = async (sectionId: DEX_Section['id']) => {
     const section = this.root.sectionStore.getSectionById(sectionId);
@@ -156,17 +168,5 @@ export class BuilderItemStore {
         });
       }
     }
-  };
-
-  areAllItemsCollapsible = computedFn(
-    (sectionId: DEX_Section['id']): boolean => {
-      return (this.itemsBySectionId.get(sectionId) ?? []).every(
-        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
-      );
-    }
-  );
-
-  setItems = (items: DEX_Item[]) => {
-    this.items = items;
   };
 }

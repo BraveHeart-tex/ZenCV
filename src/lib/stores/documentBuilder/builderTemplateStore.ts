@@ -28,50 +28,18 @@ import {
 } from './documentBuilder.constants';
 
 export class BuilderTemplateStore {
-  private disposers: (() => void)[] = [];
-  private isActive = false;
-
   root: BuilderRootStore;
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
+
+  private disposers: (() => void)[] = [];
+  private isActive = false;
 
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
     this.setupReactions();
   }
-
-  private setupReactions = () => {
-    const debouncedTemplateUpdate = debounce((data: PdfTemplateData) => {
-      runInAction(() => {
-        this.debouncedTemplateData = data;
-      });
-    }, TEMPLATE_DATA_DEBOUNCE_MS);
-
-    const debouncedStatsUpdate = debounce((data: ResumeStats) => {
-      runInAction(() => {
-        this.debouncedResumeStats = data;
-      });
-    }, TEMPLATE_DATA_DEBOUNCE_MS);
-
-    const disposer1 = reaction(
-      () => this.pdfTemplateData,
-      (data) => {
-        debouncedTemplateUpdate(data);
-      },
-      { fireImmediately: true }
-    );
-
-    const disposer2 = reaction(
-      () => this.resumeStats,
-      (data) => {
-        debouncedStatsUpdate(data);
-      },
-      { fireImmediately: true }
-    );
-
-    this.disposers.push(disposer1, disposer2);
-  };
 
   @computed
   get pdfTemplateData() {
@@ -222,6 +190,38 @@ export class BuilderTemplateStore {
   resetState = () => {
     this.debouncedTemplateData = null;
     this.debouncedResumeStats = { score: 0, suggestions: [] };
+  };
+
+  private setupReactions = () => {
+    const debouncedTemplateUpdate = debounce((data: PdfTemplateData) => {
+      runInAction(() => {
+        this.debouncedTemplateData = data;
+      });
+    }, TEMPLATE_DATA_DEBOUNCE_MS);
+
+    const debouncedStatsUpdate = debounce((data: ResumeStats) => {
+      runInAction(() => {
+        this.debouncedResumeStats = data;
+      });
+    }, TEMPLATE_DATA_DEBOUNCE_MS);
+
+    const disposer1 = reaction(
+      () => this.pdfTemplateData,
+      (data) => {
+        debouncedTemplateUpdate(data);
+      },
+      { fireImmediately: true }
+    );
+
+    const disposer2 = reaction(
+      () => this.resumeStats,
+      (data) => {
+        debouncedStatsUpdate(data);
+      },
+      { fireImmediately: true }
+    );
+
+    this.disposers.push(disposer1, disposer2);
   };
 
   private dispose = () => {

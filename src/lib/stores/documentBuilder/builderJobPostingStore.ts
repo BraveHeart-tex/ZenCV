@@ -17,6 +17,10 @@ export class BuilderJobPostingStore {
     makeAutoObservable(this);
   }
 
+  setJobPosting = (jobPosting: DEX_JobPosting | null) => {
+    this.jobPosting = jobPosting;
+  };
+
   updateJobPosting = async (data: Partial<JobPostingSchema>) => {
     if (!this.root.documentStore.document) {
       return {
@@ -125,9 +129,5 @@ export class BuilderJobPostingStore {
           'An error occurred while adding the job posting. Please try again.',
       };
     }
-  };
-
-  setJobPosting = (jobPosting: DEX_JobPosting | null) => {
-    this.jobPosting = jobPosting;
   };
 }

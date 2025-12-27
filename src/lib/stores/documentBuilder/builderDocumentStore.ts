@@ -22,6 +22,10 @@ export class BuilderDocumentStore {
     });
   }
 
+  setDocument = (document: DEX_Document) => {
+    this.document = document;
+  };
+
   initializeStore = async (
     documentId: DEX_Document['id']
   ): Promise<StoreResult> => {
@@ -97,10 +101,6 @@ export class BuilderDocumentStore {
         }
       });
     }
-  };
-
-  setDocument = (document: DEX_Document) => {
-    this.document = document;
   };
 
   private setTitle = (title: string) => {

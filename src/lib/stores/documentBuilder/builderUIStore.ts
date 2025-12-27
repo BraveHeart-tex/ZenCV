@@ -28,22 +28,9 @@ export class BuilderUIStore {
     makeAutoObservable(this);
   }
 
-  setElementRef = (key: string, value: Nullable<HTMLElement>) => {
-    this.itemRefs.set(key, value);
-  };
-
-  toggleTemplateSelectorBottomMenu = () => {
-    this.isMobileTemplateSelectorVisible =
-      !this.isMobileTemplateSelectorVisible;
-  };
-
-  setFieldRef = (key: string, value: Nullable<HTMLElement>) => {
-    this.fieldRefs.set(key, value);
-  };
-
-  toggleItem = (itemId: DEX_Item['id']) => {
-    this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
-  };
+  isItemOpen = computedFn((id: DEX_Item['id']) => {
+    return this.collapsedItemId === id;
+  });
 
   getFieldRefByFieldNameAndSection = (
     fieldName: FieldName,
@@ -102,9 +89,22 @@ export class BuilderUIStore {
     });
   };
 
-  isItemOpen = computedFn((id: DEX_Item['id']) => {
-    return this.collapsedItemId === id;
-  });
+  setElementRef = (key: string, value: Nullable<HTMLElement>) => {
+    this.itemRefs.set(key, value);
+  };
+
+  toggleTemplateSelectorBottomMenu = () => {
+    this.isMobileTemplateSelectorVisible =
+      !this.isMobileTemplateSelectorVisible;
+  };
+
+  setFieldRef = (key: string, value: Nullable<HTMLElement>) => {
+    this.fieldRefs.set(key, value);
+  };
+
+  toggleItem = (itemId: DEX_Item['id']) => {
+    this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
+  };
 
   resetState = () => {
     this.collapsedItemId = null;
