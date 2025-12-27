@@ -46,9 +46,14 @@ export class BuilderRootStore {
     });
   };
 
+  startSession = () => {
+    this.templateStore.start();
+    this.aiSuggestionsStore.start();
+  };
+
   dispose = () => {
-    this.templateStore.dispose();
-    this.aiSuggestionsStore.dispose();
+    this.templateStore.stop();
+    this.aiSuggestionsStore.stop();
   };
 }
 

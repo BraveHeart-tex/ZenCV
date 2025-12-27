@@ -54,6 +54,8 @@ export class BuilderDocumentStore {
         }
       });
 
+      this.root.startSession();
+
       return {
         success: true,
       };

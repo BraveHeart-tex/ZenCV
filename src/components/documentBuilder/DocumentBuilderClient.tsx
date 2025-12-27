@@ -2,6 +2,7 @@
 import { ArrowLeftIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
+import { startTransition } from 'react';
 import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget';
 import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
 import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
@@ -20,8 +21,11 @@ export const DocumentBuilderClient = observer(() => {
 
   const handleBack = () => {
     router.push('/documents');
-    builderRootStore.resetState();
-    builderRootStore.dispose();
+
+    startTransition(() => {
+      builderRootStore.resetState();
+      builderRootStore.dispose();
+    });
   };
 
   return (

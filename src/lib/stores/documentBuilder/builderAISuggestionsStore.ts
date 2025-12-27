@@ -12,6 +12,8 @@ const KEYWORD_CHECK_REACTION_DELAY_MS = 500 as const;
 
 export class BuilderAISuggestionsStore {
   private disposers: (() => void)[] = [];
+  private isActive = false;
+
   root: BuilderRootStore;
   suggestedJobTitle: string | null = null;
   keywordSuggestions: string[] = [];
@@ -23,7 +25,6 @@ export class BuilderAISuggestionsStore {
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
-    this.setupReactions();
   }
 
   private setupReactions = () => {
@@ -56,6 +57,13 @@ export class BuilderAISuggestionsStore {
     );
 
     this.disposers.push(disposer);
+  };
+
+  private dispose = () => {
+    this.disposers.forEach((disposer) => {
+      disposer();
+    });
+    this.disposers = [];
   };
 
   setSummarySuggestion(generatedSummary: string) {
@@ -111,10 +119,15 @@ export class BuilderAISuggestionsStore {
     this.usedKeywords.clear();
   };
 
-  dispose = () => {
-    this.disposers.forEach((disposer) => {
-      disposer();
-    });
-    this.disposers = [];
+  start = () => {
+    if (this.isActive) return;
+    this.isActive = true;
+    this.setupReactions();
+  };
+
+  stop = () => {
+    if (!this.isActive) return;
+    this.isActive = false;
+    this.dispose();
   };
 }

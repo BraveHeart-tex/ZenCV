@@ -1,4 +1,11 @@
-import { autorun, computed, makeAutoObservable, runInAction, toJS } from 'mobx';
+import {
+  autorun,
+  computed,
+  makeAutoObservable,
+  reaction,
+  runInAction,
+  toJS,
+} from 'mobx';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
@@ -22,6 +29,8 @@ import {
 
 export class BuilderTemplateStore {
   private disposers: (() => void)[] = [];
+  private isActive = false;
+
   root: BuilderRootStore;
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
@@ -45,13 +54,21 @@ export class BuilderTemplateStore {
       });
     }, TEMPLATE_DATA_DEBOUNCE_MS);
 
-    const disposer1 = autorun(() => {
-      debouncedTemplateUpdate(this.pdfTemplateData);
-    });
+    const disposer1 = reaction(
+      () => this.pdfTemplateData,
+      (data) => {
+        debouncedTemplateUpdate(data);
+      },
+      { fireImmediately: true }
+    );
 
-    const disposer2 = autorun(() => {
-      debouncedStatsUpdate(this.resumeStats);
-    });
+    const disposer2 = reaction(
+      () => this.resumeStats,
+      (data) => {
+        debouncedStatsUpdate(data);
+      },
+      { fireImmediately: true }
+    );
 
     this.disposers.push(disposer1, disposer2);
   };
@@ -207,10 +224,22 @@ export class BuilderTemplateStore {
     this.debouncedResumeStats = { score: 0, suggestions: [] };
   };
 
-  dispose = () => {
+  private dispose = () => {
     this.disposers.forEach((dispose) => {
       dispose();
     });
     this.disposers = [];
+  };
+
+  start = () => {
+    if (this.isActive) return;
+    this.isActive = true;
+    this.setupReactions();
+  };
+
+  stop = () => {
+    if (!this.isActive) return;
+    this.isActive = false;
+    this.dispose();
   };
 }
