@@ -219,9 +219,7 @@ export class BuilderSectionStore {
   }
 
   getSectionItemsBySectionType = (type: SectionType) => {
-    const section = this.root.sectionStore.sections.find(
-      (s) => s.type === type
-    );
+    const section = this.sections.find((s) => s.type === type);
     return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
   };
 }
