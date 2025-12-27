@@ -3,7 +3,7 @@
 import { observer } from 'mobx-react-lite';
 import dynamic from 'next/dynamic';
 import { useParams, useRouter } from 'next/navigation';
-import { startTransition, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ProtectedServiceDialog } from '@/components/auth/ProtectedServiceDialog';
 import { DocumentBuilderViewToggle } from '@/components/documentBuilder/builderViewOptions/DocumentBuilderViewToggle';
 import { DocumentBuilderClient } from '@/components/documentBuilder/DocumentBuilderClient';
@@ -54,14 +54,16 @@ const DocumentBuilderPage = observer(() => {
       return;
     }
 
-    startTransition(async () => {
+    const init = async () => {
       const result =
         await builderRootStore.documentStore.initializeStore(documentId);
-      if (result?.error) {
+      if (!result?.success) {
         showErrorToast(result.error);
         router.push('/documents');
       }
-    });
+    };
+
+    init();
   }, [documentId, router]);
 
   if (

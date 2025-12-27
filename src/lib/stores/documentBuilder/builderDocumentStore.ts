@@ -5,7 +5,10 @@ import {
   getFullDocumentStructure,
   renameDocument,
 } from '@/lib/client-db/documentService';
-import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import type {
+  ResumeTemplate,
+  StoreResult,
+} from '@/lib/types/documentBuilder.types';
 import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderDocumentStore {
@@ -16,11 +19,14 @@ export class BuilderDocumentStore {
     makeAutoObservable(this);
   }
 
-  initializeStore = async (documentId: DEX_Document['id']) => {
+  initializeStore = async (
+    documentId: DEX_Document['id']
+  ): Promise<StoreResult> => {
     try {
       const result = await getFullDocumentStructure(documentId);
       if (!result?.success) {
         return {
+          success: false,
           error: result?.error,
         };
       }
@@ -47,25 +53,41 @@ export class BuilderDocumentStore {
           this.root.aiSuggestionsStore.keywordSuggestions = keywordSuggestions;
         }
       });
+
+      return {
+        success: true,
+      };
     } catch (error) {
       console.error('initializeStore error', error);
       return {
+        success: false,
         error: 'An error occurred while initializing the document store.',
       };
     }
   };
 
-  renameDocument = async (newValue: string) => {
-    if (!this.document) return;
+  renameDocument = async (newValue: string): Promise<StoreResult> => {
+    if (!this.document) {
+      return {
+        success: false,
+        error: 'Document not found.',
+      };
+    }
+
     try {
       await renameDocument(this.document.id, newValue);
       runInAction(() => {
         if (!this.document) return;
         this.document.title = newValue;
       });
+
+      return {
+        success: true,
+      };
     } catch (error) {
       console.error('renameDocument error', error);
       return {
+        success: false,
         error:
           'An error occurred while renaming the document. Please try again.',
       };

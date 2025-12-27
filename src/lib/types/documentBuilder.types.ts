@@ -148,3 +148,7 @@ export interface AiSuggestionsContext {
     values: JobPostingSchema
   ) => Promise<JobAnalysisResult | undefined>;
 }
+
+export type StoreResult<T = void> =
+  | { success: true; data?: T }
+  | { success: false; error: string };

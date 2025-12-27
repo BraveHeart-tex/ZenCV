@@ -14,6 +14,7 @@ import type {
   SectionMetadataKey,
   SectionType,
   SectionWithParsedMetadata,
+  StoreResult,
 } from '@/lib/types/documentBuilder.types';
 import type { BuilderRootStore } from './builderRootStore';
 
@@ -29,8 +30,12 @@ export class BuilderSectionStore {
     return this.sections.find((section) => section.id === sectionId);
   };
 
-  reOrderSections = async (sections: SectionWithParsedMetadata[]) => {
-    if (sections.length === 0) return;
+  reOrderSections = async (
+    sections: SectionWithParsedMetadata[]
+  ): Promise<StoreResult> => {
+    if (sections.length === 0) {
+      return { success: false, error: 'No sections to reorder' };
+    }
 
     const newDisplayOrders = sections.map((section, index) => ({
       id: section.id,
@@ -63,10 +68,15 @@ export class BuilderSectionStore {
             },
           }))
         );
+
+        return { success: true };
       } catch (error) {
         console.error('bulkUpdateSections error', error);
+        return { success: false, error: 'Failed to reorder sections' };
       }
     }
+
+    return { success: true };
   };
 
   addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
