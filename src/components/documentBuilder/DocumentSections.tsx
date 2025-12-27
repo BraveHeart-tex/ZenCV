@@ -7,9 +7,9 @@ import { SectionsDndContext } from '@/components/documentBuilder/SectionsDndCont
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 export const DocumentSections = observer(() => {
-  const sections = builderRootStore.sectionStore.orderedSections;
+  const sectionIds = builderRootStore.sectionStore.orderedSectionIds;
 
-  if (sections.length === 0) {
+  if (sectionIds.length === 0) {
     return (
       <>
         <PersonalDetailSectionSkeleton />
@@ -19,9 +19,9 @@ export const DocumentSections = observer(() => {
   }
 
   return (
-    <SectionsDndContext sections={sections}>
-      {sections.map((section) => (
-        <DocumentSection sectionId={section.id} key={section.id} />
+    <SectionsDndContext sectionIds={sectionIds}>
+      {sectionIds.map((id) => (
+        <DocumentSection sectionId={id} key={id} />
       ))}
     </SectionsDndContext>
   );

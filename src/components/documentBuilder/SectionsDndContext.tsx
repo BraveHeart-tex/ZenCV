@@ -17,17 +17,17 @@ import {
 } from '@dnd-kit/sortable';
 import { action } from 'mobx';
 import type React from 'react';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import type { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
-  sections: SectionWithParsedMetadata[];
+  sectionIds: DEX_Section['id'][];
 }
 
 export const SectionsDndContext = ({
   children,
-  sections,
+  sectionIds,
 }: SectionsDndContextProps) => {
   const handleDragEnd = action(async (event: DragEndEvent) => {
     const activeId = event.active.id;
@@ -35,14 +35,12 @@ export const SectionsDndContext = ({
 
     if (!overId || activeId === overId) return;
 
-    const activeIndex = sections.findIndex(
-      (section) => section.id === activeId
-    );
-    const overIndex = sections.findIndex((section) => section.id === overId);
+    const activeIndex = sectionIds.indexOf(activeId as DEX_Section['id']);
+    const overIndex = sectionIds.indexOf(overId as DEX_Section['id']);
 
     if (activeIndex === -1 || overIndex === -1) return;
 
-    const newSections = arrayMove(sections, activeIndex, overIndex);
+    const newSections = arrayMove(sectionIds, activeIndex, overIndex);
 
     await builderRootStore.sectionStore.reOrderSections(newSections);
   });
@@ -61,7 +59,10 @@ export const SectionsDndContext = ({
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={sections} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={sectionIds}
+        strategy={verticalListSortingStrategy}
+      >
         {children}
       </SortableContext>
     </DndContext>

@@ -52,14 +52,14 @@ export class BuilderSectionStore {
   });
 
   reOrderSections = async (
-    sections: SectionWithParsedMetadata[]
+    sectionIds: DEX_Section['id'][]
   ): Promise<StoreResult> => {
-    if (sections.length === 0) {
+    if (sectionIds.length === 0) {
       return { success: false, error: 'No sections to reorder' };
     }
 
-    const newDisplayOrders = sections.map((section, index) => ({
-      id: section.id,
+    const newDisplayOrders = sectionIds.map((id, index) => ({
+      id,
       displayOrder: index + 1,
     }));
 
@@ -264,8 +264,11 @@ export class BuilderSectionStore {
   }
 
   @computed
-  get orderedSections() {
-    return this.sections.toSorted((a, b) => a.displayOrder - b.displayOrder);
+  get orderedSectionIds() {
+    return this.sections
+      .slice()
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((s) => s.id);
   }
 
   getSectionItemsBySectionType = (type: SectionType) => {
