@@ -33,7 +33,7 @@ export default clerkMiddleware(async (auth, req) => {
       requestId,
       method,
       url,
-      ip: req.ip,
+      ip: req.headers.get('x-forwarded-for') ?? 'unknown',
       userAgent: req.headers.get('user-agent'),
     });
 
