@@ -37,7 +37,6 @@ export class BuilderTemplateStore {
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
-    this.setupReactions();
   }
 
   @computed
