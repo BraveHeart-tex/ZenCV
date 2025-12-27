@@ -1,9 +1,9 @@
 import {
+  comparer,
   computed,
   makeAutoObservable,
   reaction,
   runInAction,
-  toJS,
 } from 'mobx';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
@@ -39,61 +39,72 @@ export class BuilderTemplateStore {
     makeAutoObservable(this);
   }
 
-  @computed
-  get pdfTemplateData() {
-    const singleEntrySectionTypes = [
-      INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-      INTERNAL_SECTION_TYPES.SUMMARY,
-    ];
+  get personalDetails() {
+    return {
+      firstName: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME
+      ),
+      lastName: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME
+      ),
+      jobTitle: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE
+      ),
+      address: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.ADDRESS
+      ),
+      city: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.CITY
+      ),
+      phone: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.PHONE
+      ),
+      email: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.PERSONAL_DETAILS.EMAIL
+      ),
+    };
+  }
 
-    const sections = toJS(this.root.sectionStore.sections);
-    const items = toJS(this.root.itemStore.items);
-    const fields = toJS(this.root.fieldStore.fields);
+  get summarySection() {
+    return {
+      sectionName: this.root.sectionStore.getSectionNameByType(
+        INTERNAL_SECTION_TYPES.SUMMARY
+      ),
+      summary: this.root.fieldStore.getFieldValueByName(
+        FIELD_NAMES.SUMMARY.SUMMARY
+      ),
+    };
+  }
 
-    const mappedSections: PdfTemplateData['sections'] = sections
+  get mappedSections() {
+    return this.root.sectionStore.sections
       .filter(
         (section) =>
-          !singleEntrySectionTypes.includes(
-            section.type as (typeof singleEntrySectionTypes)[number]
-          )
+          ![
+            INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+            INTERNAL_SECTION_TYPES.SUMMARY,
+          ].includes(section.type as any)
       )
       .slice()
       .sort(sortByDisplayOrder)
-      .map((section) => {
-        return {
-          ...section,
-          items: items
-            .slice()
-            .sort(sortByDisplayOrder)
-            .filter((item) => item.sectionId === section.id)
-            .map((item) => ({
-              ...item,
-              fields: fields.filter((field) => field.itemId === item.id),
-            })),
-        };
-      });
+      .map((section) => ({
+        ...section,
+        items: this.root.itemStore.items
+          .filter((item) => item.sectionId === section.id)
+          .sort(sortByDisplayOrder)
+          .map((item) => ({
+            ...item,
+            fields: this.root.fieldStore.getFieldsByItemId(item.id),
+          })),
+      }));
+  }
 
-    const getFieldValueByName = this.root.fieldStore.getFieldValueByName;
-
+  @computed
+  get pdfTemplateData() {
     return {
-      personalDetails: {
-        firstName: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME),
-        lastName: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME),
-        jobTitle: getFieldValueByName(
-          FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE
-        ),
-        address: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.ADDRESS),
-        city: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.CITY),
-        phone: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.PHONE),
-        email: getFieldValueByName(FIELD_NAMES.PERSONAL_DETAILS.EMAIL),
-      },
-      summarySection: {
-        sectionName: this.root.sectionStore.getSectionNameByType(
-          INTERNAL_SECTION_TYPES.SUMMARY
-        ),
-        summary: getFieldValueByName(FIELD_NAMES.SUMMARY.SUMMARY),
-      },
-      sections: mappedSections,
+      personalDetails: this.personalDetails,
+      summarySection: this.summarySection,
+      sections: this.mappedSections,
     };
   }
 
@@ -208,7 +219,7 @@ export class BuilderTemplateStore {
       (data) => {
         debouncedTemplateUpdate(data);
       },
-      { fireImmediately: true }
+      { fireImmediately: true, equals: comparer.structural }
     );
 
     const disposer2 = reaction(
@@ -216,10 +227,13 @@ export class BuilderTemplateStore {
       (data) => {
         debouncedStatsUpdate(data);
       },
-      { fireImmediately: true }
+      { fireImmediately: true, equals: comparer.structural }
     );
 
-    this.disposers.push(disposer1, disposer2);
+    this.disposers.push(disposer1, disposer2, () => {
+      debouncedStatsUpdate.cancel();
+      debouncedTemplateUpdate.cancel();
+    });
   };
 
   private dispose = () => {
