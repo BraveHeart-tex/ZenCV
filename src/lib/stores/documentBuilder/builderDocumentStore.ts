@@ -15,9 +15,12 @@ import type { BuilderRootStore } from './builderRootStore';
 export class BuilderDocumentStore {
   root: BuilderRootStore;
   document: DEX_Document | null = null;
+
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      root: false,
+    });
   }
 
   initializeStore = async (
@@ -77,32 +80,25 @@ export class BuilderDocumentStore {
       };
     }
 
-    const documentId = this.document.id;
-    const prev = this.document.title;
+    const { id, title: prev } = this.document;
 
-    runInAction(() => {
-      if (!this.document || this.document.id !== documentId) return;
-      this.document.title = newValue;
-    });
+    runInAction(() => this.setTitle(newValue));
 
     try {
-      await renameDocument(documentId, newValue);
-
+      await renameDocument(id, newValue);
       return {
         success: true,
       };
     } catch (error) {
       console.error('renameDocument error', error);
-
       runInAction(() => {
-        if (!this.document || this.document.id !== documentId) return;
-        this.document.title = prev;
+        if (this.document?.id === id) {
+          this.setTitle(prev);
+        }
       });
-
       return {
         success: false,
-        error:
-          'An error occurred while renaming the document. Please try again.',
+        error: 'An error occurred while renaming the document.',
       };
     }
   };
@@ -110,23 +106,29 @@ export class BuilderDocumentStore {
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
     if (!this.document || this.document.templateType === templateType) return;
 
-    const documentId = this.document.id;
-    const prev = this.document.templateType;
+    const { id, templateType: prev } = this.document;
 
-    runInAction(() => {
-      if (!this.document || this.document.id !== documentId) return;
-      this.document.templateType = templateType;
-    });
+    runInAction(() => this.setTemplateType(templateType));
 
     try {
-      await changeDocumentTemplateType(documentId, templateType);
+      await changeDocumentTemplateType(id, templateType);
     } catch (error) {
       console.error('changeDocumentTemplateType error', error);
-
       runInAction(() => {
-        if (!this.document || this.document.id !== documentId) return;
-        this.document.templateType = prev;
+        if (this.document?.id === id) {
+          this.setTemplateType(prev);
+        }
       });
     }
+  };
+
+  private setTitle = (title: string) => {
+    if (!this.document) return;
+    this.document.title = title;
+  };
+
+  private setTemplateType = (templateType: ResumeTemplate) => {
+    if (!this.document) return;
+    this.document.templateType = templateType;
   };
 }
