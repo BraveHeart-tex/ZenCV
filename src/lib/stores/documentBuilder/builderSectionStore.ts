@@ -16,6 +16,7 @@ import type {
   SectionWithParsedMetadata,
   StoreResult,
 } from '@/lib/types/documentBuilder.types';
+import { safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderSectionStore {
@@ -109,7 +110,7 @@ export class BuilderSectionStore {
           this.sections.push({
             ...sectionDto,
             id: sectionId,
-            metadata: option?.metadata ? JSON.parse(option?.metadata) : [],
+            metadata: safeParse(option.metadata, []),
           });
         });
 

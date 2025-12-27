@@ -1,3 +1,5 @@
+import { fa } from 'zod/v4/locales';
+
 export const getKeyByValue = (
   object: Record<string, unknown>,
   value: unknown
@@ -47,4 +49,16 @@ export function excludeObjectKeys<
     delete result[key];
   }
   return result;
+}
+
+export function safeParse<T>(value: string | null | undefined, fallback: T): T {
+  if (value == null || value.trim() === '') {
+    return fallback;
+  }
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
 }

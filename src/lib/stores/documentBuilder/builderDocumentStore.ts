@@ -9,6 +9,7 @@ import type {
   ResumeTemplate,
   StoreResult,
 } from '@/lib/types/documentBuilder.types';
+import { safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderDocumentStore {
@@ -40,7 +41,7 @@ export class BuilderDocumentStore {
           .sort((a, b) => a.displayOrder - b.displayOrder)
           .map((section) => ({
             ...section,
-            metadata: JSON.parse(section?.metadata || '[]'),
+            metadata: safeParse(section?.metadata, []),
           }));
         this.root.itemStore.items = items
           .slice()
