@@ -1,5 +1,3 @@
-import { fa } from 'zod/v4/locales';
-
 export const getKeyByValue = (
   object: Record<string, unknown>,
   value: unknown
@@ -61,4 +59,20 @@ export function safeParse<T>(value: string | null | undefined, fallback: T): T {
   } catch {
     return fallback;
   }
+}
+
+export function groupBy<T, K extends keyof T>(
+  array: readonly T[],
+  key: K
+): Record<PropertyKey, T[]> {
+  return array.reduce<Record<PropertyKey, T[]>>((acc, item) => {
+    const groupKey = item[key] as PropertyKey;
+
+    if (!acc[groupKey]) {
+      acc[groupKey] = [];
+    }
+
+    acc[groupKey].push(item);
+    return acc;
+  }, {});
 }

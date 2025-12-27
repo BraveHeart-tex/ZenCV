@@ -16,7 +16,7 @@ import type {
   SectionWithParsedMetadata,
   StoreResult,
 } from '@/lib/types/documentBuilder.types';
-import { safeParse } from '@/lib/utils/objectUtils';
+import { groupBy, safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderSectionStore {
@@ -26,6 +26,11 @@ export class BuilderSectionStore {
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
+  }
+
+  @computed
+  get sectionsByType() {
+    return groupBy(this.sections, 'type');
   }
 
   @computed
@@ -255,7 +260,7 @@ export class BuilderSectionStore {
   }
 
   getSectionItemsBySectionType = (type: SectionType) => {
-    const section = this.sections.find((s) => s.type === type);
+    const section = this.sectionsByType[type]?.[0];
     return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
   };
 

@@ -24,15 +24,25 @@ export class BuilderItemStore {
     return new Map(this.items.map((item) => [item.id, item]));
   }
 
+  @computed
+  get itemsBySectionId() {
+    const map = new Map<DEX_Section['id'], DEX_Item[]>();
+    for (const item of this.items) {
+      const arr = map.get(item.sectionId) ?? [];
+      arr.push(item);
+      map.set(item.sectionId, arr);
+    }
+    return map;
+  }
+
   getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
     return this.itemsById.get(itemId);
   };
 
   getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
-    return this.items
-      .filter((item) => item.sectionId === sectionId)
-      .slice()
-      .sort((a, b) => a.displayOrder - b.displayOrder);
+    return (this.itemsBySectionId.get(sectionId) ?? []).toSorted(
+      (a, b) => a.displayOrder - b.displayOrder
+    );
   };
 
   addNewItemEntry = async (sectionId: DEX_Section['id']) => {
