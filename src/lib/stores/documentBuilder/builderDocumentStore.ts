@@ -76,15 +76,16 @@ export class BuilderDocumentStore {
       };
     }
 
+    const documentId = this.document.id;
     const prev = this.document.title;
 
     runInAction(() => {
-      if (!this.document) return;
+      if (!this.document || this.document.id !== documentId) return;
       this.document.title = newValue;
     });
 
     try {
-      await renameDocument(this.document.id, newValue);
+      await renameDocument(documentId, newValue);
 
       return {
         success: true,
@@ -93,7 +94,7 @@ export class BuilderDocumentStore {
       console.error('renameDocument error', error);
 
       runInAction(() => {
-        if (!this.document) return;
+        if (!this.document || this.document.id !== documentId) return;
         this.document.title = prev;
       });
 
@@ -108,20 +109,21 @@ export class BuilderDocumentStore {
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
     if (!this.document || this.document.templateType === templateType) return;
 
+    const documentId = this.document.id;
     const prev = this.document.templateType;
 
     runInAction(() => {
-      if (!this.document) return;
+      if (!this.document || this.document.id !== documentId) return;
       this.document.templateType = templateType;
     });
 
     try {
-      await changeDocumentTemplateType(this.document.id, templateType);
+      await changeDocumentTemplateType(documentId, templateType);
     } catch (error) {
       console.error('changeDocumentTemplateType error', error);
 
       runInAction(() => {
-        if (!this.document) return;
+        if (!this.document || this.document.id !== documentId) return;
         this.document.templateType = prev;
       });
     }
