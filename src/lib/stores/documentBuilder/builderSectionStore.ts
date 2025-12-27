@@ -50,6 +50,10 @@ export class BuilderSectionStore {
       return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
 
+    if (changedSections.length === 0) return { success: true };
+
+    const prevSections = this.sections;
+
     runInAction(() => {
       this.sections.forEach((section) => {
         const newOrder = newDisplayOrders.find((o) => o.id === section.id);
@@ -59,25 +63,24 @@ export class BuilderSectionStore {
       });
     });
 
-    if (changedSections.length) {
-      try {
-        await bulkUpdateSections(
-          changedSections.map((section) => ({
-            key: section.id,
-            changes: {
-              displayOrder: section.displayOrder,
-            },
-          }))
-        );
+    try {
+      await bulkUpdateSections(
+        changedSections.map((section) => ({
+          key: section.id,
+          changes: {
+            displayOrder: section.displayOrder,
+          },
+        }))
+      );
 
-        return { success: true };
-      } catch (error) {
-        console.error('bulkUpdateSections error', error);
-        return { success: false, error: 'Failed to reorder sections' };
-      }
+      return { success: true };
+    } catch (error) {
+      console.error('bulkUpdateSections error', error);
+      runInAction(() => {
+        this.sections = prevSections;
+      });
+      return { success: false, error: 'Failed to reorder sections' };
     }
-
-    return { success: true };
   };
 
   addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
@@ -132,6 +135,10 @@ export class BuilderSectionStore {
       .filter((item) => item.sectionId !== sectionId)
       .map((item) => item.id);
 
+    const prevSections = this.sections;
+    const prevItems = this.root.itemStore.items;
+    const prevFields = this.root.fieldStore.fields;
+
     runInAction(() => {
       this.sections = this.sections.filter(
         (section) => section.id !== sectionId
@@ -144,20 +151,38 @@ export class BuilderSectionStore {
       );
     });
 
-    await deleteSection(sectionId);
+    try {
+      await deleteSection(sectionId);
+    } catch (error) {
+      console.error('Error deleting section:', error);
+      runInAction(() => {
+        this.sections = prevSections;
+        this.root.itemStore.items = prevItems;
+        this.root.fieldStore.fields = prevFields;
+      });
+    }
   };
 
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) return;
 
-    await updateSection(sectionId, {
-      title: value,
-    });
+    const prevTitle = section.title;
 
     runInAction(() => {
       section.title = value;
     });
+
+    try {
+      await updateSection(sectionId, {
+        title: value,
+      });
+    } catch (error) {
+      console.error('Error updating section title:', error);
+      runInAction(() => {
+        section.title = prevTitle;
+      });
+    }
   };
 
   getSectionMetadataOptions = (
@@ -188,14 +213,18 @@ export class BuilderSectionStore {
       }
     });
 
-    await updateSection(sectionId, {
-      metadata: JSON.stringify(
-        section.metadata.map((metadata) => ({
-          ...metadata,
-          value: metadata.key === data.key ? data.value : metadata.value,
-        }))
-      ),
-    });
+    try {
+      await updateSection(sectionId, {
+        metadata: JSON.stringify(
+          section.metadata.map((metadata) => ({
+            ...metadata,
+            value: metadata.key === data.key ? data.value : metadata.value,
+          }))
+        ),
+      });
+    } catch (error) {
+      console.error('Error updating section metadata:', error);
+    }
   };
 
   getSectionNameByType = (sectionType: SectionType): string => {
