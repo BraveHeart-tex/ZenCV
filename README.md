@@ -2,7 +2,7 @@
 
 ZenCV is a modern web application that allows users to create professional-looking resumes in just minutes. The app is completely free, works offline, and ensures maximum privacy by keeping user data stored locally without ever leaving the device.
 
-<img src="./showcase_landing_page.png" alt="ZenCV Landing page"/>
+<img src="./docs/images/showcase_landing_page.png" alt="ZenCV Landing page"/>
 
 With ZenCV, users can:
 
@@ -14,4 +14,4 @@ With ZenCV, users can:
 
 - Optimize their CVs for the targeted position with AI assistance
 
-<img src="./showcase_editor.png" alt="ZenCV Editor Page"/>
+<img src="./docs/images/showcase_editor.png" alt="ZenCV Editor Page"/>
