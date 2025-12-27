@@ -45,6 +45,22 @@ class UserSettingsStore {
     this.startListening();
   }
 
+  private startListening() {
+    liveQuery(() => clientDb.settings.toArray()).subscribe({
+      next: (settings) => {
+        runInAction(() => {
+          const settingsMap = Object.fromEntries(
+            settings.map((s) => [s.key, s.value])
+          ) as Partial<Record<keyof UserSettingsState | string, unknown>>;
+
+          this.applySettingsFromDb(settingsMap);
+        });
+      },
+      error: (err) =>
+        console.error('UserSettingsStore startListening error:', err),
+    });
+  }
+
   private applySettingsFromDb(
     partialSettings: Partial<Record<string, unknown>>
   ) {
@@ -60,22 +76,6 @@ class UserSettingsStore {
     this.modelSettings.customGenerateSummaryPrompt =
       (partialSettings.customGenerateSummaryPrompt as string) ??
       defaultSettings.modelSettings.customGenerateSummaryPrompt;
-  }
-
-  private startListening() {
-    liveQuery(() => clientDb.settings.toArray()).subscribe({
-      next: (settings) => {
-        runInAction(() => {
-          const settingsMap = Object.fromEntries(
-            settings.map((s) => [s.key, s.value])
-          ) as Partial<Record<keyof UserSettingsState | string, unknown>>;
-
-          this.applySettingsFromDb(settingsMap);
-        });
-      },
-      error: (err) =>
-        console.error('UserSettingsStore startListening error:', err),
-    });
   }
 }
 

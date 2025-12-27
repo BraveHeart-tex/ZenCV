@@ -53,6 +53,10 @@ class ConfirmDialogStore {
     this.onClose = onClose;
   };
 
+  handleDoNotAskAgainCheckedChange = (checked: boolean) => {
+    this.doNotAskAgainChecked = checked;
+  };
+
   hideDialog = async () => {
     this.isOpen = false;
 
@@ -72,10 +76,6 @@ class ConfirmDialogStore {
       }),
       DIALOG_CONTENT_RESET_DELAY_MS
     );
-  };
-
-  handleDoNotAskAgainCheckedChange = (checked: boolean) => {
-    this.doNotAskAgainChecked = checked;
   };
 }
 

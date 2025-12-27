@@ -40,6 +40,24 @@ export class BuilderSectionStore {
     return new Map(this.sections.map((section) => [section.id, section]));
   }
 
+  @computed
+  get sectionsWithItems() {
+    return this.sections.map((section) => {
+      return {
+        ...section,
+        items: this.root.itemStore.getItemsBySectionId(section.id),
+      };
+    });
+  }
+
+  @computed
+  get orderedSectionIds() {
+    return this.sections
+      .slice()
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((s) => s.id);
+  }
+
   getSectionById = (sectionId: DEX_Section['id']) => {
     return this.sectionsById.get(sectionId);
   };
@@ -50,6 +68,29 @@ export class BuilderSectionStore {
       (section?.type ?? '') as (typeof FIXED_SECTIONS)[number]
     );
   });
+
+  getSectionMetadataOptions = (
+    sectionId: DEX_Section['id']
+  ): ParsedSectionMetadata[] => {
+    const section = this.getSectionById(sectionId);
+    if (!section || !section?.metadata) return [];
+    return section?.metadata || [];
+  };
+
+  getSectionNameByType = (sectionType: SectionType): string => {
+    return (
+      this.sections.find((section) => section.type === sectionType)?.title || ''
+    );
+  };
+
+  getSectionItemsBySectionType = (type: SectionType) => {
+    const section = this.sectionsByType[type]?.[0];
+    return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
+  };
+
+  setSections = (sections: SectionWithParsedMetadata[]) => {
+    this.sections = sections;
+  };
 
   reOrderSections = async (
     sectionIds: DEX_Section['id'][]
@@ -205,14 +246,6 @@ export class BuilderSectionStore {
     }
   };
 
-  getSectionMetadataOptions = (
-    sectionId: DEX_Section['id']
-  ): ParsedSectionMetadata[] => {
-    const section = this.getSectionById(sectionId);
-    if (!section || !section?.metadata) return [];
-    return section?.metadata || [];
-  };
-
   updateSectionMetadata = async (
     sectionId: DEX_Section['id'],
     data: {
@@ -245,38 +278,5 @@ export class BuilderSectionStore {
     } catch (error) {
       console.error('Error updating section metadata:', error);
     }
-  };
-
-  getSectionNameByType = (sectionType: SectionType): string => {
-    return (
-      this.sections.find((section) => section.type === sectionType)?.title || ''
-    );
-  };
-
-  @computed
-  get sectionsWithItems() {
-    return this.sections.map((section) => {
-      return {
-        ...section,
-        items: this.root.itemStore.getItemsBySectionId(section.id),
-      };
-    });
-  }
-
-  @computed
-  get orderedSectionIds() {
-    return this.sections
-      .slice()
-      .sort((a, b) => a.displayOrder - b.displayOrder)
-      .map((s) => s.id);
-  }
-
-  getSectionItemsBySectionType = (type: SectionType) => {
-    const section = this.sectionsByType[type]?.[0];
-    return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
-  };
-
-  setSections = (sections: SectionWithParsedMetadata[]) => {
-    this.sections = sections;
   };
 }

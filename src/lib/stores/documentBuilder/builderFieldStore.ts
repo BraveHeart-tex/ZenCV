@@ -38,6 +38,14 @@ export class BuilderFieldStore {
     return this.fieldsByItemId.get(itemId) || [];
   };
 
+  getFieldValueByName = (fieldName: FieldName): string => {
+    return this.fields.find((field) => field.name === fieldName)?.value || '';
+  };
+
+  setFields = (fields: DEX_Field[]) => {
+    this.fields = fields;
+  };
+
   setFieldValue = async (
     fieldId: DEX_Field['id'],
     value: string,
@@ -70,13 +78,5 @@ export class BuilderFieldStore {
     }
 
     return { success: true };
-  };
-
-  getFieldValueByName = (fieldName: FieldName): string => {
-    return this.fields.find((field) => field.name === fieldName)?.value || '';
-  };
-
-  setFields = (fields: DEX_Field[]) => {
-    this.fields = fields;
   };
 }
