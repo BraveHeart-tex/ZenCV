@@ -19,7 +19,6 @@ interface UserSettingsState {
   modelSettings: ModelSettings;
 }
 
-// ✅ Default values for fallback
 const defaultSettings: UserSettingsState = {
   generalSettings: {
     language: 'en-US',

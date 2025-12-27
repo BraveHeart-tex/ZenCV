@@ -21,8 +21,8 @@ import {
 } from './documentBuilder.constants';
 
 export class BuilderTemplateStore {
+  private disposers: (() => void)[] = [];
   root: BuilderRootStore;
-
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
 
@@ -45,13 +45,24 @@ export class BuilderTemplateStore {
       });
     }, TEMPLATE_DATA_DEBOUNCE_MS);
 
-    autorun(() => {
+    const disposer1 = autorun(() => {
       debouncedTemplateUpdate(this.pdfTemplateData);
     });
 
-    autorun(() => {
+    const disposer2 = autorun(() => {
       debouncedStatsUpdate(this.resumeStats);
     });
+
+    this.disposers.push(disposer1, disposer2);
+  };
+
+  resetState = () => {
+    this.disposers.forEach((dispose) => {
+      dispose();
+    });
+    this.disposers = [];
+    this.debouncedTemplateData = null;
+    this.debouncedResumeStats = { score: 0, suggestions: [] };
   };
 
   @computed

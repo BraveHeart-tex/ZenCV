@@ -38,13 +38,11 @@ export class BuilderRootStore {
       this.itemStore.items = [];
       this.fieldStore.fields = [];
 
-      this.templateStore.debouncedResumeStats = { score: 0, suggestions: [] };
-      this.templateStore.debouncedTemplateData = null;
-
       this.jobPostingStore.jobPosting = null;
 
       this.UIStore.resetState();
       this.aiSuggestionsStore.resetState();
+      this.templateStore.resetState();
     });
   };
 }
