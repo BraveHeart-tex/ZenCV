@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { computed, makeAutoObservable, runInAction } from 'mobx';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
@@ -193,6 +193,7 @@ export class BuilderSectionStore {
     );
   };
 
+  @computed
   get sectionsWithItems() {
     return this.sections.map((section) => {
       return {
@@ -202,6 +203,7 @@ export class BuilderSectionStore {
     });
   }
 
+  @computed
   get orderedSections() {
     return this.sections.toSorted((a, b) => a.displayOrder - b.displayOrder);
   }
