@@ -76,18 +76,27 @@ export class BuilderDocumentStore {
       };
     }
 
+    const prev = this.document.title;
+
+    runInAction(() => {
+      if (!this.document) return;
+      this.document.title = newValue;
+    });
+
     try {
       await renameDocument(this.document.id, newValue);
-      runInAction(() => {
-        if (!this.document) return;
-        this.document.title = newValue;
-      });
 
       return {
         success: true,
       };
     } catch (error) {
       console.error('renameDocument error', error);
+
+      runInAction(() => {
+        if (!this.document) return;
+        this.document.title = prev;
+      });
+
       return {
         success: false,
         error:
@@ -99,11 +108,22 @@ export class BuilderDocumentStore {
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
     if (!this.document || this.document.templateType === templateType) return;
 
-    await changeDocumentTemplateType(this.document.id, templateType);
+    const prev = this.document.templateType;
 
     runInAction(() => {
       if (!this.document) return;
       this.document.templateType = templateType;
     });
+
+    try {
+      await changeDocumentTemplateType(this.document.id, templateType);
+    } catch (error) {
+      console.error('changeDocumentTemplateType error', error);
+
+      runInAction(() => {
+        if (!this.document) return;
+        this.document.templateType = prev;
+      });
+    }
   };
 }
