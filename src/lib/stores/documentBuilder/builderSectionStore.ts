@@ -22,13 +22,19 @@ import type { BuilderRootStore } from './builderRootStore';
 export class BuilderSectionStore {
   root: BuilderRootStore;
   sections: SectionWithParsedMetadata[] = [];
+
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
   }
 
+  @computed
+  get sectionsById() {
+    return new Map(this.sections.map((section) => [section.id, section]));
+  }
+
   getSectionById = (sectionId: DEX_Section['id']) => {
-    return this.sections.find((section) => section.id === sectionId);
+    return this.sectionsById.get(sectionId);
   };
 
   reOrderSections = async (

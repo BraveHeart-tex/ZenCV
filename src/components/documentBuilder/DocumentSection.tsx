@@ -43,22 +43,26 @@ export const DocumentSection = observer(
   }
 );
 
-const ContainerElement = ({
-  children,
-  sectionId,
-}: PropsWithChildren & { sectionId: DEX_Section['id'] }) => {
-  if (
-    FIXED_SECTIONS.includes(
-      builderRootStore.sectionStore.getSectionById(sectionId)
-        ?.type as (typeof FIXED_SECTIONS)[number]
-    )
-  ) {
-    return <section id={getSectionContainerId(sectionId)}>{children}</section>;
-  }
+const ContainerElement = observer(
+  ({
+    children,
+    sectionId,
+  }: PropsWithChildren & { sectionId: DEX_Section['id'] }) => {
+    if (
+      FIXED_SECTIONS.includes(
+        builderRootStore.sectionStore.getSectionById(sectionId)
+          ?.type as (typeof FIXED_SECTIONS)[number]
+      )
+    ) {
+      return (
+        <section id={getSectionContainerId(sectionId)}>{children}</section>
+      );
+    }
 
-  return (
-    <DraggableSectionContainer sectionId={sectionId}>
-      {children}
-    </DraggableSectionContainer>
-  );
-};
+    return (
+      <DraggableSectionContainer sectionId={sectionId}>
+        {children}
+      </DraggableSectionContainer>
+    );
+  }
+);
