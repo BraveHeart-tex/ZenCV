@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { computed, makeAutoObservable, runInAction } from 'mobx';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
@@ -13,12 +13,29 @@ export class BuilderFieldStore {
     makeAutoObservable(this);
   }
 
+  @computed
+  get fieldsById() {
+    return new Map(this.fields.map((field) => [field.id, field]));
+  }
+
+  @computed
+  get fieldsByItemId() {
+    return this.fields.reduce((acc, curr) => {
+      const itemId = curr.itemId;
+      if (!acc.has(itemId)) {
+        acc.set(itemId, []);
+      }
+      acc.get(itemId)?.push(curr);
+      return acc;
+    }, new Map<DEX_Item['id'], DEX_Field[]>());
+  }
+
   getFieldById = (fieldId: DEX_Field['id']) => {
-    return this.fields.find((field) => field.id === fieldId);
+    return this.fieldsById.get(fieldId);
   };
 
   getFieldsByItemId = (itemId: DEX_Item['id']) => {
-    return this.fields.filter((field) => field.itemId === itemId);
+    return this.fieldsByItemId.get(itemId) || [];
   };
 
   setFieldValue = async (

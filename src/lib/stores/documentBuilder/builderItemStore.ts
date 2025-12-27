@@ -14,6 +14,11 @@ export class BuilderItemStore {
 
   items: DEX_Item[] = [];
 
+  constructor(root: BuilderRootStore) {
+    this.root = root;
+    makeAutoObservable(this);
+  }
+
   @computed
   get itemsById() {
     return new Map(this.items.map((item) => [item.id, item]));
@@ -22,11 +27,6 @@ export class BuilderItemStore {
   getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
     return this.itemsById.get(itemId);
   };
-
-  constructor(root: BuilderRootStore) {
-    this.root = root;
-    makeAutoObservable(this);
-  }
 
   getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
     return this.items
