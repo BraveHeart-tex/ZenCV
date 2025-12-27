@@ -40,10 +40,15 @@ export class BuilderItemStore {
   };
 
   getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
-    return (this.itemsBySectionId.get(sectionId) ?? []).toSorted(
-      (a, b) => a.displayOrder - b.displayOrder
-    );
+    return this.itemsBySectionId.get(sectionId) ?? [];
   };
+
+  getOrderedItemsBySectionId(sectionId: DEX_Section['id']) {
+    return computed(() => {
+      const items = this.itemsBySectionId.get(sectionId) ?? [];
+      return items.slice().sort((a, b) => a.displayOrder - b.displayOrder);
+    }).get();
+  }
 
   addNewItemEntry = async (sectionId: DEX_Section['id']) => {
     const section = this.root.sectionStore.getSectionById(sectionId);
@@ -102,11 +107,11 @@ export class BuilderItemStore {
     }
   };
 
-  reOrderSectionItems = async (items: DEX_Item[]) => {
-    if (items.length === 0) return;
+  reOrderSectionItems = async (itemIds: DEX_Item['id'][]) => {
+    if (itemIds.length === 0) return;
 
-    const newDisplayOrders = items.map((item, index) => ({
-      id: item.id,
+    const newDisplayOrders = itemIds.map((id, index) => ({
+      id,
       displayOrder: index + 1,
     }));
 

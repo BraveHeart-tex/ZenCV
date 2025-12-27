@@ -13,12 +13,12 @@ import {
   type DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { FIXED_SECTIONS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 export const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const items = builderRootStore.itemStore.getItemsBySectionId(sectionId);
+    const items =
+      builderRootStore.itemStore.getOrderedItemsBySectionId(sectionId);
 
     return (
       <ContainerElement sectionId={sectionId}>
@@ -27,13 +27,10 @@ export const DocumentSection = observer(
           <SectionDescription sectionId={sectionId} />
           <SectionMetadataOptions sectionId={sectionId} />
         </div>
-        <ItemsDndContext items={items}>
-          {items
-            .slice()
-            .sort((a, b) => a.displayOrder - b.displayOrder)
-            .map((item) => (
-              <SectionItem itemId={item.id} key={item.id} />
-            ))}
+        <ItemsDndContext items={items.map((item) => item.id)}>
+          {items.map((item) => (
+            <SectionItem itemId={item.id} key={item.id} />
+          ))}
         </ItemsDndContext>
         {items.every(
           (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
@@ -48,12 +45,7 @@ const ContainerElement = observer(
     children,
     sectionId,
   }: PropsWithChildren & { sectionId: DEX_Section['id'] }) => {
-    if (
-      FIXED_SECTIONS.includes(
-        builderRootStore.sectionStore.getSectionById(sectionId)
-          ?.type as (typeof FIXED_SECTIONS)[number]
-      )
-    ) {
+    if (builderRootStore.sectionStore.isSectionFixed(sectionId)) {
       return (
         <section id={getSectionContainerId(sectionId)}>{children}</section>
       );

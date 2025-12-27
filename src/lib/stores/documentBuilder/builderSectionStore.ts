@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, runInAction } from 'mobx';
+import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
@@ -18,6 +19,7 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { groupBy, safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
+import { FIXED_SECTIONS } from './documentBuilder.constants';
 
 export class BuilderSectionStore {
   root: BuilderRootStore;
@@ -41,6 +43,13 @@ export class BuilderSectionStore {
   getSectionById = (sectionId: DEX_Section['id']) => {
     return this.sectionsById.get(sectionId);
   };
+
+  isSectionFixed = computedFn((sectionId: DEX_Section['id']) => {
+    const section = this.getSectionById(sectionId);
+    return FIXED_SECTIONS.includes(
+      (section?.type ?? '') as (typeof FIXED_SECTIONS)[number]
+    );
+  });
 
   reOrderSections = async (
     sections: SectionWithParsedMetadata[]

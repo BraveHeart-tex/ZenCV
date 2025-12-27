@@ -23,7 +23,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 
 interface ItemsDndContextProps {
   children: React.ReactNode;
-  items: DEX_Item[];
+  items: DEX_Item['id'][];
 }
 
 export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
@@ -33,8 +33,8 @@ export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
 
     if (!overId || activeId === overId) return;
 
-    const activeIndex = items.findIndex((item) => item.id === activeId);
-    const overIndex = items.findIndex((item) => item.id === overId);
+    const activeIndex = items.indexOf(activeId as DEX_Item['id']);
+    const overIndex = items.indexOf(overId as DEX_Item['id']);
 
     if (activeIndex === -1 || overIndex === -1) return;
 
