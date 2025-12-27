@@ -45,6 +45,11 @@ export class BuilderRootStore {
       this.templateStore.resetState();
     });
   };
+
+  dispose = () => {
+    this.templateStore.dispose();
+    this.aiSuggestionsStore.dispose();
+  };
 }
 
 export const builderRootStore = new BuilderRootStore();

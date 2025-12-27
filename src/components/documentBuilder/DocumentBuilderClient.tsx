@@ -20,9 +20,8 @@ export const DocumentBuilderClient = observer(() => {
 
   const handleBack = () => {
     router.push('/documents');
-    setTimeout(() => {
-      builderRootStore.resetState();
-    }, 100);
+    builderRootStore.resetState();
+    builderRootStore.dispose();
   };
 
   return (

@@ -8,6 +8,7 @@ import {
   Trash,
 } from 'lucide-react';
 import { action } from 'mobx';
+import { b } from 'motion/react-m';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
           showSuccessToast('Document deleted successfully.');
           if (builderRootStore.documentStore?.document?.id === document.id) {
             builderRootStore.resetState();
+            builderRootStore.dispose();
           }
         } catch (error) {
           console.error(error);

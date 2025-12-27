@@ -56,15 +56,6 @@ export class BuilderTemplateStore {
     this.disposers.push(disposer1, disposer2);
   };
 
-  resetState = () => {
-    this.disposers.forEach((dispose) => {
-      dispose();
-    });
-    this.disposers = [];
-    this.debouncedTemplateData = null;
-    this.debouncedResumeStats = { score: 0, suggestions: [] };
-  };
-
   @computed
   get pdfTemplateData() {
     const singleEntrySectionTypes = [
@@ -210,4 +201,16 @@ export class BuilderTemplateStore {
               })),
     };
   }
+
+  resetState = () => {
+    this.debouncedTemplateData = null;
+    this.debouncedResumeStats = { score: 0, suggestions: [] };
+  };
+
+  dispose = () => {
+    this.disposers.forEach((dispose) => {
+      dispose();
+    });
+    this.disposers = [];
+  };
 }

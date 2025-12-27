@@ -11,6 +11,7 @@ import { type BuilderRootStore, builderRootStore } from './builderRootStore';
 const KEYWORD_CHECK_REACTION_DELAY_MS = 500 as const;
 
 export class BuilderAISuggestionsStore {
+  private disposers: (() => void)[] = [];
   root: BuilderRootStore;
   suggestedJobTitle: string | null = null;
   keywordSuggestions: string[] = [];
@@ -42,7 +43,7 @@ export class BuilderAISuggestionsStore {
       });
     }, KEYWORD_CHECK_REACTION_DELAY_MS);
 
-    reaction(
+    const disposer = reaction(
       () => {
         return {
           values: this.richTextFieldsWithKeywordChecks.map((field) =>
@@ -53,6 +54,8 @@ export class BuilderAISuggestionsStore {
       },
       ({ values }) => checkUsedKeywords(values)
     );
+
+    this.disposers.push(disposer);
   };
 
   setSummarySuggestion(generatedSummary: string) {
@@ -106,5 +109,12 @@ export class BuilderAISuggestionsStore {
     this.keywordSuggestions = [];
     this.suggestedJobTitle = '';
     this.usedKeywords.clear();
+  };
+
+  dispose = () => {
+    this.disposers.forEach((disposer) => {
+      disposer();
+    });
+    this.disposers = [];
   };
 }
