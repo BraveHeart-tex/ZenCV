@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { computedFn } from 'mobx-utils';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
@@ -100,6 +101,10 @@ export class BuilderUIStore {
       element.focus();
     });
   };
+
+  isItemOpen = computedFn((id: DEX_Item['id']) => {
+    return this.collapsedItemId === id;
+  });
 
   resetState = () => {
     this.collapsedItemId = null;

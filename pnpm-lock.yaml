@@ -122,6 +122,9 @@ importers:
       mobx-react-lite:
         specifier: 4.1.0
         version: 4.1.0(mobx@6.13.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      mobx-utils:
+        specifier: 6.1.1
+        version: 6.1.1(mobx@6.13.5)
       motion:
         specifier: 11.18.1
         version: 11.18.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2347,6 +2350,11 @@ packages:
         optional: true
       react-native:
         optional: true
+
+  mobx-utils@6.1.1:
+    resolution: {integrity: sha512-ZR4tOKucWAHOdMjqElRl2BEvrzK7duuDdKmsbEbt2kzgVpuLuoYLiDCjc3QwWQl8CmOlxPgaZQpZ7emwNqPkIg==}
+    peerDependencies:
+      mobx: ^6.0.0
 
   mobx@6.13.5:
     resolution: {integrity: sha512-/HTWzW2s8J1Gqt+WmUj5Y0mddZk+LInejADc79NJadrWla3rHzmRHki/mnEUH1AvOmbNTZ1BRbKxr8DSgfdjMA==}
@@ -5369,6 +5377,10 @@ snapshots:
       use-sync-external-store: 1.4.0(react@19.1.0)
     optionalDependencies:
       react-dom: 19.1.0(react@19.1.0)
+
+  mobx-utils@6.1.1(mobx@6.13.5):
+    dependencies:
+      mobx: 6.13.5
 
   mobx@6.13.5: {}
 

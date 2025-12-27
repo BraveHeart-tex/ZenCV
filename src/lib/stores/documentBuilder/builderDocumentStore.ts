@@ -9,7 +9,6 @@ import type {
   ResumeTemplate,
   StoreResult,
 } from '@/lib/types/documentBuilder.types';
-import { safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
 
 export class BuilderDocumentStore {

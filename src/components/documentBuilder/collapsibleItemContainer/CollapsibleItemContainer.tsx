@@ -46,7 +46,7 @@ interface CollapsibleSectionItemContainerProps {
 export const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
-    const open = itemId === builderRootStore.UIStore.collapsedItemId;
+    const open = builderRootStore.UIStore.isItemOpen(itemId);
 
     const {
       attributes,
