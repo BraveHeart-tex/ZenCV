@@ -223,4 +223,8 @@ export class BuilderSectionStore {
     const section = this.sections.find((s) => s.type === type);
     return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
   };
+
+  setSections = (sections: SectionWithParsedMetadata[]) => {
+    this.sections = sections;
+  };
 }

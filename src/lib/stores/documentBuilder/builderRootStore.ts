@@ -1,5 +1,7 @@
 import { runInAction } from 'mobx';
+import type { GetFullDocumentStructureResponse } from '@/lib/client-db/documentService';
 import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
+import { safeParse } from '@/lib/utils/objectUtils';
 import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
 import { BuilderDocumentStore } from './builderDocumentStore';
 import { BuilderFieldStore } from './builderFieldStore';
@@ -54,6 +56,36 @@ export class BuilderRootStore {
   dispose = () => {
     this.templateStore.stop();
     this.aiSuggestionsStore.stop();
+  };
+
+  hydrateFromBackend = (
+    result: Extract<GetFullDocumentStructureResponse, { success: true }>
+  ) => {
+    const { document, sections, items, fields, aiSuggestions, jobPosting } =
+      result;
+
+    this.documentStore.setDocument(document);
+
+    this.sectionStore.setSections(
+      sections
+        .slice()
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((section) => ({
+          ...section,
+          metadata: safeParse(section.metadata, []),
+        }))
+    );
+
+    this.itemStore.setItems(
+      items.slice().sort((a, b) => a.displayOrder - b.displayOrder)
+    );
+
+    this.fieldStore.setFields(fields);
+    this.jobPostingStore.setJobPosting(jobPosting);
+
+    if (aiSuggestions) {
+      this.aiSuggestionsStore.setSuggestions(aiSuggestions);
+    }
   };
 }
 

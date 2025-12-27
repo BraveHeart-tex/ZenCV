@@ -1,5 +1,9 @@
 import { makeAutoObservable, ObservableMap, reaction, runInAction } from 'mobx';
-import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import {
+  type DEX_AiSuggestions,
+  type DEX_Field,
+  FIELD_TYPES,
+} from '@/lib/client-db/clientDbSchema';
 import { getSummaryField } from '@/lib/helpers/documentBuilderHelpers';
 import { SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { AISuggestion } from '@/lib/types/documentBuilder.types';
@@ -129,5 +133,10 @@ export class BuilderAISuggestionsStore {
     if (!this.isActive) return;
     this.isActive = false;
     this.dispose();
+  };
+
+  setSuggestions = (aiSuggestion: DEX_AiSuggestions) => {
+    this.keywordSuggestions = aiSuggestion.keywordSuggestions;
+    this.suggestedJobTitle = aiSuggestion.suggestedJobTitle;
   };
 }

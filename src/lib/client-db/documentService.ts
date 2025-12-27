@@ -47,7 +47,7 @@ import type {
   SelectField,
 } from './clientDbSchema';
 
-type GetFullDocumentStructureResponse =
+export type GetFullDocumentStructureResponse =
   | { success: false; error: string }
   | {
       success: true;
@@ -149,30 +149,52 @@ export async function getFullDocumentStructure(
     async () => {
       const document = await getDocumentById(documentId);
       if (!document) {
+        return { success: false, error: 'Document not found.' };
+      }
+
+      const [jobPosting, sections, aiSuggestions] = await Promise.all([
+        document.jobPostingId
+          ? getJobPosting(document.jobPostingId)
+          : Promise.resolve(null),
+        getSectionsByDocumentId(document.id),
+        getAiSuggestionsByDocumentId(document.id),
+      ]);
+
+      // 3️⃣ Early exit if no sections
+      if (!sections.length) {
         return {
-          success: false,
-          error: 'Document not found.',
+          success: true,
+          document,
+          jobPosting: jobPosting ?? null,
+          sections: [],
+          items: [],
+          fields: [],
+          aiSuggestions,
         };
       }
 
-      const jobPosting = document.jobPostingId
-        ? (await getJobPosting(document.jobPostingId)) || null
-        : null;
-
-      const sections = await getSectionsByDocumentId(document.id);
-      const sectionIds = sections.map((section) => section.id);
+      const sectionIds = sections.map((s) => s.id);
 
       const items = await getItemsWithSectionIds(sectionIds);
-      const itemIds = items.map((item) => item.id);
+      if (!items.length) {
+        return {
+          success: true,
+          document,
+          jobPosting: jobPosting ?? null,
+          sections,
+          items: [],
+          fields: [],
+          aiSuggestions,
+        };
+      }
 
+      const itemIds = items.map((i) => i.id);
       const fields = await getFieldsWithItemIds(itemIds);
-
-      const aiSuggestions = await getAiSuggestionsByDocumentId(document.id);
 
       return {
         success: true,
         document,
-        jobPosting,
+        jobPosting: jobPosting ?? null,
         sections,
         items,
         fields,

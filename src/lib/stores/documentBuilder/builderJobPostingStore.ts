@@ -126,4 +126,8 @@ export class BuilderJobPostingStore {
       };
     }
   };
+
+  setJobPosting = (jobPosting: DEX_JobPosting | null) => {
+    this.jobPosting = jobPosting;
+  };
 }

@@ -113,4 +113,8 @@ export class BuilderItemStore {
       }
     }
   };
+
+  setItems = (items: DEX_Item[]) => {
+    this.items = items;
+  };
 }

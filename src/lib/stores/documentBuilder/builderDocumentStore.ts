@@ -35,29 +35,7 @@ export class BuilderDocumentStore {
         };
       }
 
-      const { document, sections, items, fields, aiSuggestions } = result;
-
-      runInAction(() => {
-        this.document = document;
-        this.root.sectionStore.sections = sections
-          .slice()
-          .sort((a, b) => a.displayOrder - b.displayOrder)
-          .map((section) => ({
-            ...section,
-            metadata: safeParse(section?.metadata, []),
-          }));
-        this.root.itemStore.items = items
-          .slice()
-          .sort((a, b) => a.displayOrder - b.displayOrder);
-        this.root.fieldStore.fields = fields;
-        this.root.jobPostingStore.jobPosting = result.jobPosting;
-        if (aiSuggestions) {
-          const { suggestedJobTitle, keywordSuggestions } = aiSuggestions;
-          this.root.aiSuggestionsStore.suggestedJobTitle = suggestedJobTitle;
-          this.root.aiSuggestionsStore.keywordSuggestions = keywordSuggestions;
-        }
-      });
-
+      this.root.hydrateFromBackend(result);
       this.root.startSession();
 
       return {
@@ -120,6 +98,10 @@ export class BuilderDocumentStore {
         }
       });
     }
+  };
+
+  setDocument = (document: DEX_Document) => {
+    this.document = document;
   };
 
   private setTitle = (title: string) => {

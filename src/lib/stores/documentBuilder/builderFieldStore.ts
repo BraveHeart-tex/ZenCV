@@ -58,4 +58,8 @@ export class BuilderFieldStore {
   getFieldValueByName = (fieldName: FieldName): string => {
     return this.fields.find((field) => field.name === fieldName)?.value || '';
   };
+
+  setFields = (fields: DEX_Field[]) => {
+    this.fields = fields;
+  };
 }
