@@ -51,6 +51,14 @@
         "noDefaultExport": {
           "level": "error"
         }
+      },
+      "correctness": {
+        "noUnusedImports": {
+          "level": "error"
+        },
+        "noUnusedVariables": {
+          "level": "error"
+        }
       }
     }
   },

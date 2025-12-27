@@ -1,5 +1,4 @@
 import {
-  autorun,
   computed,
   makeAutoObservable,
   reaction,

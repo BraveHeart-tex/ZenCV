@@ -8,7 +8,6 @@ import {
   Trash,
 } from 'lucide-react';
 import { action } from 'mobx';
-import { b } from 'motion/react-m';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
