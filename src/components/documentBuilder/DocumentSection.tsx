@@ -8,10 +8,7 @@ import { ItemsDndContext } from '@/components/documentBuilder/ItemsDndContext';
 import { SectionDescription } from '@/components/documentBuilder/SectionDescription';
 import { SectionItem } from '@/components/documentBuilder/SectionItem';
 import { SectionMetadataOptions } from '@/components/documentBuilder/SectionMetadataOptions';
-import {
-  CONTAINER_TYPES,
-  type DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
+import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
