@@ -1,5 +1,10 @@
 import { computed, makeAutoObservable, runInAction } from 'mobx';
-import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
+import { computedFn } from 'mobx-utils';
+import {
+  CONTAINER_TYPES,
+  type DEX_Item,
+  type DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
 import {
   addItemFromTemplate,
   bulkUpdateItems,
@@ -43,10 +48,13 @@ export class BuilderItemStore {
     return this.itemsBySectionId.get(sectionId) ?? [];
   };
 
-  getOrderedItemsBySectionId(sectionId: DEX_Section['id']) {
+  getOrderedItemIdsBySectionId(sectionId: DEX_Section['id']): DEX_Item['id'][] {
     return computed(() => {
       const items = this.itemsBySectionId.get(sectionId) ?? [];
-      return items.slice().sort((a, b) => a.displayOrder - b.displayOrder);
+      return items
+        .slice()
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((item) => item.id);
     }).get();
   }
 
@@ -149,6 +157,14 @@ export class BuilderItemStore {
       }
     }
   };
+
+  areAllItemsCollapsible = computedFn(
+    (sectionId: DEX_Section['id']): boolean => {
+      return (this.itemsBySectionId.get(sectionId) ?? []).every(
+        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
+      );
+    }
+  );
 
   setItems = (items: DEX_Item[]) => {
     this.items = items;

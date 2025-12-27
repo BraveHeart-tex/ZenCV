@@ -17,8 +17,8 @@ import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 export const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const items =
-      builderRootStore.itemStore.getOrderedItemsBySectionId(sectionId);
+    const itemIds =
+      builderRootStore.itemStore.getOrderedItemIdsBySectionId(sectionId);
 
     return (
       <ContainerElement sectionId={sectionId}>
@@ -27,14 +27,14 @@ export const DocumentSection = observer(
           <SectionDescription sectionId={sectionId} />
           <SectionMetadataOptions sectionId={sectionId} />
         </div>
-        <ItemsDndContext items={items.map((item) => item.id)}>
-          {items.map((item) => (
-            <SectionItem itemId={item.id} key={item.id} />
+        <ItemsDndContext items={itemIds}>
+          {itemIds.map((id) => (
+            <SectionItem itemId={id} key={id} />
           ))}
         </ItemsDndContext>
-        {items.every(
-          (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
-        ) && <AddNewItemButton sectionId={sectionId} />}
+        {builderRootStore.itemStore.areAllItemsCollapsible(sectionId) && (
+          <AddNewItemButton sectionId={sectionId} />
+        )}
       </ContainerElement>
     );
   }
