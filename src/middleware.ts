@@ -2,22 +2,50 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { ratelimit } from './lib/rateLimiter';
 
-const log = (...args: unknown[]) => {
-  // eslint-disable-next-line no-console
-  console.log('[Middleware]', ...args);
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+const log = (
+  level: LogLevel,
+  message: string,
+  context: Record<string, unknown> = {}
+) => {
+  console.log(
+    JSON.stringify({
+      level,
+      scope: 'middleware',
+      message,
+      timestamp: new Date().toISOString(),
+      ...context,
+    })
+  );
 };
 
 const isProtectedRoute = createRouteMatcher(['/api(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
+  const start = Date.now();
+  const url = req.nextUrl.pathname;
+  const method = req.method;
+  const requestId = req.headers.get('x-request-id') ?? crypto.randomUUID();
+
   try {
-    const url = req.nextUrl.pathname;
+    log('debug', 'Incoming request', {
+      requestId,
+      method,
+      url,
+      ip: req.ip,
+      userAgent: req.headers.get('user-agent'),
+    });
 
     if (isProtectedRoute(req)) {
       const authObject = await auth();
 
       if (!authObject.sessionId || !authObject.userId) {
-        log('Unauthorized access attempt', { url });
+        log('warn', 'Unauthorized access attempt', {
+          requestId,
+          method,
+          url,
+        });
 
         return NextResponse.json(
           {
@@ -31,9 +59,12 @@ export default clerkMiddleware(async (auth, req) => {
       }
 
       const { success } = await ratelimit.limit(authObject.userId);
+
       if (!success) {
-        log('Rate limit exceeded', {
+        log('warn', 'Rate limit exceeded', {
+          requestId,
           userId: authObject.userId,
+          method,
           url,
         });
 
@@ -48,13 +79,34 @@ export default clerkMiddleware(async (auth, req) => {
           { status: 429 }
         );
       }
+
+      log('info', 'Authorized request passed rate limit', {
+        requestId,
+        userId: authObject.userId,
+        method,
+        url,
+      });
     }
 
-    return NextResponse.next();
+    const response = NextResponse.next();
+
+    log('info', 'Request completed', {
+      requestId,
+      method,
+      url,
+      durationMs: Date.now() - start,
+      status: response.status,
+    });
+
+    return response;
   } catch (error: unknown) {
-    log('Middleware error', {
-      message: error instanceof Error ? error?.message : String(error),
-      stack: error instanceof Error ? error?.stack : '',
+    log('error', 'Unhandled middleware error', {
+      requestId,
+      method,
+      url,
+      durationMs: Date.now() - start,
+      errorMessage: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
     });
 
     return NextResponse.json(
