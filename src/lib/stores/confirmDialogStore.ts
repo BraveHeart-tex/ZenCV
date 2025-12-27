@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, reaction } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 
 const DIALOG_CONTENT_RESET_DELAY_MS = 150 as const;
 
@@ -20,7 +20,7 @@ class ConfirmDialogStore {
   title: string = '';
   onConfirm: () => void = () => {};
   onCancel: () => void = () => {};
-  onClose: () => void = () => {};
+  onClose: (() => void) | (() => Promise<void>) = () => {};
   cancelText: string = 'Cancel';
   confirmText: string = 'Confirm';
   doNotAskAgainEnabled: boolean = false;
@@ -28,19 +28,6 @@ class ConfirmDialogStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.initReactions();
-  }
-
-  private initReactions() {
-    reaction(
-      () => this.isOpen,
-      async (isOpen) => {
-        if (!isOpen) {
-          await this.onClose();
-          this.onClose = () => {};
-        }
-      }
-    );
   }
 
   showDialog = ({
@@ -66,8 +53,11 @@ class ConfirmDialogStore {
     this.onClose = onClose;
   };
 
-  hideDialog = () => {
+  hideDialog = async () => {
     this.isOpen = false;
+
+    await this.onClose();
+
     this.onConfirm = () => {};
     this.onCancel = () => {};
 
