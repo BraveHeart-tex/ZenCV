@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx';
+import { computed, makeAutoObservable, runInAction } from 'mobx';
 import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
   addItemFromTemplate,
@@ -14,14 +14,19 @@ export class BuilderItemStore {
 
   items: DEX_Item[] = [];
 
+  @computed
+  get itemsById() {
+    return new Map(this.items.map((item) => [item.id, item]));
+  }
+
+  getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
+    return this.itemsById.get(itemId);
+  };
+
   constructor(root: BuilderRootStore) {
     this.root = root;
     makeAutoObservable(this);
   }
-
-  getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
-    return this.items.find((item) => item.id === itemId);
-  };
 
   getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
     return this.items
