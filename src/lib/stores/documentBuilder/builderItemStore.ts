@@ -19,11 +19,11 @@ export class BuilderItemStore {
     makeAutoObservable(this);
   }
 
-  getItemById = (itemId: DEX_Item['id']) => {
+  getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
     return this.items.find((item) => item.id === itemId);
   };
 
-  getItemsBySectionId = (sectionId: DEX_Section['id']) => {
+  getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
     return this.items
       .filter((item) => item.sectionId === sectionId)
       .slice()
@@ -66,6 +66,9 @@ export class BuilderItemStore {
     const item = this.items.find((item) => item.id === itemId);
     if (!item) return;
 
+    const prevItems = this.items;
+    const prevFields = this.root.fieldStore.fields;
+
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
@@ -73,7 +76,15 @@ export class BuilderItemStore {
       );
     });
 
-    await deleteItem(itemId);
+    try {
+      await deleteItem(itemId);
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      runInAction(() => {
+        this.items = prevItems;
+        this.root.fieldStore.fields = prevFields;
+      });
+    }
   };
 
   reOrderSectionItems = async (items: DEX_Item[]) => {
@@ -90,6 +101,8 @@ export class BuilderItemStore {
     });
 
     if (changedItems.length === 0) return;
+
+    const prevItems = this.items;
 
     runInAction(() => {
       this.items.forEach((item) => {
@@ -110,6 +123,9 @@ export class BuilderItemStore {
         );
       } catch (error) {
         console.error('bulkUpdateItems error', error);
+        runInAction(() => {
+          this.items = prevItems;
+        });
       }
     }
   };
