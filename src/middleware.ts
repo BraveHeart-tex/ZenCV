@@ -9,7 +9,7 @@ const log = (
   message: string,
   context: Record<string, unknown> = {}
 ) => {
-  console.log(
+  console.info(
     JSON.stringify({
       level,
       scope: 'middleware',
