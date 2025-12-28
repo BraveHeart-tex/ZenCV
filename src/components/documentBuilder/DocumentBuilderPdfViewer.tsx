@@ -1,18 +1,18 @@
 'use client';
-
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import 'react-pdf/dist/Page/TextLayer.css';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { runInAction } from 'mobx';
+import { comparer, reaction, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useAsync } from 'react-use';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
+import { debounce } from '@/lib/utils/debounce';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -37,6 +37,7 @@ export const DocumentBuilderPdfViewer = observer(
       width: 0,
       height: 0,
     });
+    const [renderVersion, setRenderVersion] = useState(0);
 
     useEffect(() => {
       if (!containerRef.current) return;
@@ -79,17 +80,33 @@ export const DocumentBuilderPdfViewer = observer(
       });
     }, [pdfDimensions.pdfHeight, pdfDimensions.pdfWidth]);
 
-    const renderData = JSON.stringify(
-      builderRootStore.templateStore.debouncedTemplateData
-    );
+    useEffect(() => {
+      const debouncedUpdate = debounce(() => {
+        setRenderVersion((prev) => prev + 1);
+      }, 500);
+
+      const dispose = reaction(
+        () => toJS(builderRootStore.templateStore.debouncedTemplateData),
+        () => {
+          console.log('dklşslkfdsşlfkşlds');
+
+          debouncedUpdate();
+        },
+        {
+          equals: comparer.structural,
+          fireImmediately: true,
+        }
+      );
+
+      return () => {
+        dispose();
+        debouncedUpdate.cancel();
+      };
+    }, []);
 
     const render = useAsync(async () => {
       try {
-        if (
-          !children ||
-          !renderData ||
-          (isMobile && view !== BUILDER_CURRENT_VIEWS.PREVIEW)
-        ) {
+        if (!children || (isMobile && view !== BUILDER_CURRENT_VIEWS.PREVIEW)) {
           return null;
         }
 
@@ -100,7 +117,7 @@ export const DocumentBuilderPdfViewer = observer(
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
-    }, [renderData, isMobile, view, children]);
+    }, [renderVersion, isMobile, view, children]);
 
     useEffect(() => {
       runInAction(() => {
