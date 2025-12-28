@@ -26,7 +26,7 @@ import z, { treeifyError } from 'zod';
     process.exit(1);
   }
 
-  console.log('Environment variables are valid');
+  console.info('Environment variables are valid');
 })();
 
 const nextConfig: NextConfig = {

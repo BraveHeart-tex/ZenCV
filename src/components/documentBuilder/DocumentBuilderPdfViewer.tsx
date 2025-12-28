@@ -88,8 +88,6 @@ export const DocumentBuilderPdfViewer = observer(
       const dispose = reaction(
         () => toJS(builderRootStore.templateStore.debouncedTemplateData),
         () => {
-          console.log('dklşslkfdsşlfkşlds');
-
           debouncedUpdate();
         },
         {

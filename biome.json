@@ -45,6 +45,12 @@
       "suspicious": {
         "noUnknownAtRules": {
           "level": "off"
+        },
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["error", "info", "warn"]
+          }
         }
       },
       "style": {

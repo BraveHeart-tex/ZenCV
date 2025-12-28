@@ -83,7 +83,9 @@ export class BuilderTemplateStore {
           ![
             INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
             INTERNAL_SECTION_TYPES.SUMMARY,
-          ].includes(section.type as any)
+          ].includes(
+            section.type as typeof INTERNAL_SECTION_TYPES.PERSONAL_DETAILS
+          )
       )
       .toSorted(sortByDisplayOrder)
       .map((section) => ({
