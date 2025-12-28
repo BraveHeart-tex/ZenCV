@@ -85,13 +85,12 @@ export class BuilderTemplateStore {
             INTERNAL_SECTION_TYPES.SUMMARY,
           ].includes(section.type as any)
       )
-      .slice()
-      .sort(sortByDisplayOrder)
+      .toSorted(sortByDisplayOrder)
       .map((section) => ({
         ...section,
-        items: this.root.itemStore.items
-          .filter((item) => item.sectionId === section.id)
-          .sort(sortByDisplayOrder)
+        items: this.root.itemStore
+          .getItemsBySectionId(section.id)
+          .toSorted(sortByDisplayOrder)
           .map((item) => ({
             ...item,
             fields: this.root.fieldStore.getFieldsByItemId(item.id),
