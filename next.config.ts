@@ -15,6 +15,7 @@ import z, { treeifyError } from 'zod';
     ),
     UPSTASH_REDIS_REST_TOKEN: nonEmpty('UPSTASH_REDIS_REST_TOKEN'),
     GROQ_API_KEY: nonEmpty('GROQ_API_KEY'),
+    CRON_TOKEN: nonEmpty('CRON_TOKEN'),
   });
 
   const env = envSchema.safeParse(process.env);
