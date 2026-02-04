@@ -182,28 +182,41 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(var(--secondary));
+    background: var(--secondary);
     border-radius: var(--radius);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary) / 0.7);
+    background: var(--primary) / 0.7;
     border-radius: var(--radius);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary) / 0.8);
+    background: var(--primary) / 0.8;
   }
 
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: hsl(var(--primary) / 0.7) hsl(var(--secondary));
+    scrollbar-color: var(--primary) / 0.7 var(--secondary);
   }
 
   /* For Internet Explorer and Edge (older versions) */
   body {
     -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+
+  button:not([disabled]),
+  [role="button"]:not([disabled]) {
+    cursor: pointer;
+  }
+
+  button > svg {
+    @apply size-4;
+  }
+
+  a > svg {
+    @apply size-4;
   }
 }
 
