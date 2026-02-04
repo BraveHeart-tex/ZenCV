@@ -18,7 +18,7 @@ export const CreateDocumentDialog = ({
   const renderTrigger = () => {
     if (triggerVariant === 'default') {
       return (
-        <Button variant={open ? 'outline-solid' : 'default'}>
+        <Button variant={open ? 'outline' : 'default'}>
           Create New Document
         </Button>
       );
