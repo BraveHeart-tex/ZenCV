@@ -1,5 +1,6 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
 import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
 export const TemplateImageDialog = ({
@@ -17,7 +19,19 @@ export const TemplateImageDialog = ({
 }: {
   template: TemplateOption;
 }) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleUseTemplate = async () => {
+    await createAndNavigateToDocument({
+      title: 'Untitled',
+      templateType: template.value,
+      onSuccess(documentId) {
+        router.push(`/builder/${documentId}`);
+      },
+    });
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -67,7 +81,9 @@ export const TemplateImageDialog = ({
               </div>
             </div>
             <div className='mt-auto space-y-2'>
-              <Button className='w-full'>Use this template</Button>
+              <Button className='w-full' onClick={handleUseTemplate}>
+                Use this template
+              </Button>
               <Button
                 variant='outline'
                 className='w-full'
