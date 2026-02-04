@@ -94,6 +94,7 @@
     "knip": "5.77.1",
     "lint-staged": "15.3.0",
     "tailwindcss": "4.1.18",
+    "tw-animate-css": "1.4.0",
     "typescript": "5.7.3"
   }
 }
