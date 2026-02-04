@@ -79,7 +79,7 @@ export const RichTextCharacterCounter = observer(
                 <span className='text-foreground'>{trimmedValue.length}</span>{' '}
                 <span className='text-muted-foreground'> / 600</span>
               </p>
-              <div className='h-[1.75rem]'>
+              <div className='h-7'>
                 {trimmedValue.length > 0 ? (
                   <SmoothEmotionIcon
                     expression={getExpression(
@@ -113,7 +113,7 @@ export const RichTextCharacterCounter = observer(
                 <span className='text-foreground'>{trimmedValue.length}</span>{' '}
                 <span className='text-muted-foreground'> / 200+</span>
               </p>
-              <div className='h-[1.75rem]'>
+              <div className='h-7'>
                 {trimmedValue.length > 0 ? (
                   <SmoothEmotionIcon
                     expression={getExpression(

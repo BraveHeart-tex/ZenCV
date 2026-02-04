@@ -102,7 +102,7 @@ export const AiSuggestionsWidget = observer(
                   {suggestion.description}
                 </p>
               </div>
-              <span className='flex-1 max-h-[12.5rem] xl:max-h-[19rem] overflow-auto p-2 bg-muted rounded-md'>
+              <span className='flex-1 max-h-50 xl:max-h-76 overflow-auto p-2 bg-muted rounded-md'>
                 {suggestion.value}
               </span>
               <div className='flex items-center justify-end gap-2'>

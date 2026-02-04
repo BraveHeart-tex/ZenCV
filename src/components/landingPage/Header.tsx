@@ -7,8 +7,8 @@ import { ModeToggle } from '../ui/mode-toggle';
 
 export const Header = () => {
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4'>
-      <div className='h-14 max-w-screen-2xl container flex items-center mx-auto'>
+    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm supports-backdrop-filter:bg-background/60 px-4'>
+      <div className='h-14 max-w-(--breakpoint-2xl) container flex items-center mx-auto'>
         <Link className='flex items-center mr-6 space-x-2' href='/'>
           <Icons.logo />
           <span className='inline-block font-bold'>{APP_NAME}</span>

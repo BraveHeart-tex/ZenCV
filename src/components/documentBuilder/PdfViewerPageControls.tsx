@@ -24,9 +24,9 @@ export const PdfViewerPageControls = observer(
           disabled={currentPage === 1}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage - 1)}
           size='icon'
-          variant={variant === 'primary' ? 'ghost' : 'outline'}
+          variant={variant === 'primary' ? 'ghost' : 'outline-solid'}
           className={cn(
-            'rounded-full size-[1.875rem]',
+            'rounded-full size-7.5',
             variant === 'primary' &&
               'text-primary-foreground dark:text-foreground'
           )}
@@ -46,9 +46,9 @@ export const PdfViewerPageControls = observer(
           disabled={currentPage === numberOfPages}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage + 1)}
           size='icon'
-          variant={variant === 'primary' ? 'ghost' : 'outline'}
+          variant={variant === 'primary' ? 'ghost' : 'outline-solid'}
           className={cn(
-            'rounded-full size-[1.875rem]',
+            'rounded-full size-7.5',
             variant === 'primary' &&
               'text-primary-foreground dark:text-foreground'
           )}

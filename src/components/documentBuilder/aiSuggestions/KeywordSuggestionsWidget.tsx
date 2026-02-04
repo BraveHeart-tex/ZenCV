@@ -120,7 +120,7 @@ export const KeywordSuggestionsWidget = observer(
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className='max-w-[11rem] text-pretty'>
+                  <p className='max-w-44 text-pretty'>
                     Use the keywords below in your resume to increase its score.
                   </p>
                 </TooltipContent>

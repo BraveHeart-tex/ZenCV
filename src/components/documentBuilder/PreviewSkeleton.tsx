@@ -9,7 +9,7 @@ export const PreviewSkeleton = () => {
   return (
     <div
       className={cn(
-        'bg-secondary min-h-screen fixed top-0 right-0 w-1/2 z-[999]',
+        'bg-secondary min-h-screen fixed top-0 right-0 w-1/2 z-999',
         view === BUILDER_CURRENT_VIEWS.PREVIEW && 'w-full xl:w-1/2',
         view === BUILDER_CURRENT_VIEWS.BUILDER && 'hidden xl:block'
       )}
@@ -20,9 +20,9 @@ export const PreviewSkeleton = () => {
         </div>
         <Skeleton className='w-full h-[calc(90vh-6rem)]' />
         <div className='flex items-center justify-center gap-2 mt-2'>
-          <Skeleton className='h-[1.875rem] w-[1.875rem] rounded-full' />
+          <Skeleton className='h-7.5 w-7.5 rounded-full' />
           <Skeleton className='w-16 h-4' />
-          <Skeleton className='h-[1.875rem] w-[1.875rem] rounded-full' />
+          <Skeleton className='h-7.5 w-7.5 rounded-full' />
         </div>
       </div>
     </div>

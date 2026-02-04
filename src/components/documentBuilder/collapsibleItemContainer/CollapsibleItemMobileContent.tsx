@@ -31,7 +31,7 @@ export const CollapsibleItemMobileContent = observer(
         }}
       >
         <DrawerContent className='max-h-[98%] overflow-hidden px-0 w-full'>
-          <DrawerHeader className='flex-shrink-0'>
+          <DrawerHeader className='shrink-0'>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>
               {description || '(Not Specified)'}
@@ -40,7 +40,7 @@ export const CollapsibleItemMobileContent = observer(
           <div className='flex-1 w-full h-full px-4 py-2 space-y-4 overflow-y-auto'>
             {children}
           </div>
-          <DrawerFooter className='flex-shrink-0'>
+          <DrawerFooter className='shrink-0'>
             <Button onClick={() => builderRootStore.UIStore.toggleItem(itemId)}>
               Done
             </Button>

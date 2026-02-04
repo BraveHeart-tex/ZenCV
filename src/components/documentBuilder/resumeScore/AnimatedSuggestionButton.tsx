@@ -46,7 +46,7 @@ export const AnimatedSuggestionButton = ({
       >
         {scoreValue !== undefined && (
           <motion.span
-            className='w-[2.5rem] h-max p-1 text-xs rounded-md'
+            className='w-10 h-max p-1 text-xs rounded-md'
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             style={{
@@ -60,7 +60,7 @@ export const AnimatedSuggestionButton = ({
         {icon && (
           <span
             className={cn(
-              'w-[2.5rem] h-max p-1 text-xs rounded-md flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4',
+              'w-10 h-max p-1 text-xs rounded-md flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4',
               iconContainerClassName
             )}
           >

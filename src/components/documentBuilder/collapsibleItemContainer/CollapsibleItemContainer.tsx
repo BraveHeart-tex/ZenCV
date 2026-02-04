@@ -105,7 +105,7 @@ export const CollapsibleSectionItemContainer = observer(
         <div
           className={cn(
             'group relative w-full',
-            isDragging && 'max-h-[17rem] overflow-hidden'
+            isDragging && 'max-h-68 overflow-hidden'
           )}
           ref={(ref) => {
             setNodeRef(ref);
