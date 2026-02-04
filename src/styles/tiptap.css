@@ -5,7 +5,7 @@
   padding: 10px;
   overflow: auto;
   cursor: auto;
-  background: hsl(var(--background));
+  background: var(--background);
 
   &:focus-visible {
     border: none;
@@ -15,7 +15,7 @@
 }
 
 .tiptap p.is-editor-empty:first-child::before {
-  color: hsl(var(--muted-foreground));
+  color: var(--muted-foreground);
   font-size: 0.875rem;
   line-height: 1.25rem;
   content: attr(data-placeholder);
@@ -25,7 +25,7 @@
 }
 
 .dark .tiptap p.is-editor-empty:first-child::before {
-  color: hsl(var(--muted-foreground) / 0.7);
+  color: var(--muted-foreground) / 0.7;
 }
 
 .tiptap {
@@ -35,7 +35,7 @@
 
   a {
     text-decoration: underline;
-    color: hsl(var(--primary));
+    color: var(--primary);
   }
 
   ul,
@@ -93,17 +93,17 @@
   }
 
   code {
-    background-color: hsl(var(--background));
+    background-color: var(--background);
     border-radius: 0.4rem;
-    color: hsl(var(--foreground));
+    color: var(--foreground);
     font-size: 0.85rem;
     padding: 0.25em 0.3em;
   }
 
   pre {
-    background: hsl(var(--foreground));
+    background: var(--foreground);
     border-radius: 0.5rem;
-    color: hsl(var(--muted));
+    color: var(--muted);
     font-family: "JetBrainsMono", monospace;
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
