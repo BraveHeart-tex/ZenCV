@@ -32,7 +32,7 @@ export const Features = () => {
       id='features'
       className='md:py-32 container px-4 py-24 mx-auto space-y-16'
     >
-      <div className='mx-auto max-w-[58rem] text-center'>
+      <div className='mx-auto max-w-232 text-center'>
         <h2 className='font-bold text-3xl leading-[1.1] sm:text-3xl md:text-5xl'>
           Key Features
         </h2>

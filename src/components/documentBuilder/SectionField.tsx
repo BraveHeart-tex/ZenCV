@@ -65,7 +65,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             className={cn(
               'flex items-center justify-between gap-8',
               field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE &&
-                'max-h-[0.875rem]'
+                'max-h-3.5'
             )}
           >
             <Label htmlFor={htmlInputId}>{field.name}</Label>

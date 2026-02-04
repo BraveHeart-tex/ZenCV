@@ -13,12 +13,12 @@ export const CollapsibleItemHeader = observer(
           !description && 'justify-center'
         )}
       >
-        <span className='max-w-full text-left break-words whitespace-normal'>
+        <span className='max-w-full text-left wrap-break-word whitespace-normal'>
           {title}
         </span>
         <span
           className={cn(
-            'text-xs text-muted-foreground opacity-100 transition-all ease-in whitespace-normal break-words text-left',
+            'text-xs text-muted-foreground opacity-100 transition-all ease-in whitespace-normal wrap-break-word text-left',
             !description && 'opacity-0'
           )}
         >

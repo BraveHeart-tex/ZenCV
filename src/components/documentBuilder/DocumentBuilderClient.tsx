@@ -41,14 +41,14 @@ export const DocumentBuilderClient = observer(() => {
 
         <div
           className={
-            'max-w-screen-2xl bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto'
+            'max-w-(--breakpoint-2xl) bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto'
           }
         >
           <ImproveResumeWidget />
         </div>
         <TailorForJobPostingBanner />
 
-        <div className='max-w-screen-2xl grid gap-6 pb-8 mx-auto mt-4'>
+        <div className='max-w-(--breakpoint-2xl) grid gap-6 pb-8 mx-auto mt-4'>
           <DocumentSections />
           <AddSectionWidget />
         </div>

@@ -29,7 +29,7 @@ export const MobileTemplatePickerItem = observer(
         <button
           type='button'
           className={cn(
-            'relative aspect-[3/4] cursor-pointer rounded-lg overflow-hidden transition-all border-transparent w-full h-full',
+            'relative aspect-3/4 cursor-pointer rounded-lg overflow-hidden transition-all border-transparent w-full h-full',
             isSelected && selectedOptionImageClassNames
           )}
           onClick={handleSelectTemplate}
@@ -48,7 +48,7 @@ export const MobileTemplatePickerItem = observer(
               <CheckIcon />
             </span>
           )}
-          <div className='bg-gradient-to-t from-black/90 to-transparent absolute inset-x-0 bottom-0 p-2'>
+          <div className='bg-linear-to-t from-black/90 to-transparent absolute inset-x-0 bottom-0 p-2'>
             <p className='text-xs font-medium text-center text-white'>
               {template.name}
             </p>

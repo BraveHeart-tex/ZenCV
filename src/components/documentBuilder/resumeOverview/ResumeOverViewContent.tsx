@@ -68,7 +68,7 @@ export const ResumeOverViewContent = observer(
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className='bg-popover group-hover:opacity-100 w-[20rem] p-3 ml-2 border rounded-md shadow-sm'
+            className='bg-popover group-hover:opacity-100 w-[20rem] p-3 ml-2 border rounded-md shadow-xs'
           >
             <motion.div
               initial={{ opacity: 0 }}

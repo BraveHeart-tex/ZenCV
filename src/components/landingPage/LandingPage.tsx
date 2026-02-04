@@ -9,7 +9,7 @@ export const LandingPage = () => {
   return (
     <div className='bg-background text-foreground relative min-h-screen'>
       <div className='fixed inset-0 pointer-events-none'>
-        <div className='bg-gradient-to-b from-background via-background/90 to-background absolute inset-0' />
+        <div className='bg-linear-to-b from-background via-background/90 to-background absolute inset-0' />
         <div className='absolute right-0 top-0 h-[500px] w-[500px]  bg-blue-500/10 blur-[100px]' />
         <div className='absolute bottom-0 left-0 h-[500px] w-[500px] bg-purple-500/10 blur-[100px]' />
       </div>

@@ -83,7 +83,7 @@ export const ResumeOverview = observer(() => {
 
   return (
     <article
-      className='group fixed right-0 top-[25%] z-[500] flex items-start'
+      className='group fixed right-0 top-[25%] z-500 flex items-start'
       onMouseEnter={() => {
         setVisible(true);
       }}
