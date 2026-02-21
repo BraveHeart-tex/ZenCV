@@ -81,7 +81,10 @@
       "@isaacs/brace-expansion": "^5.0.1",
       "glob": "^11.1.0",
       "js-yaml": "^4.1.1",
-      "tar": "^7.5.7"
+      "tar": "^7.5.8",
+      "minimatch": "^10.2.1",
+      "markdown-it": "^14.1.1",
+      "ajv": "^8.18.0"
     }
   },
   "devDependencies": {
