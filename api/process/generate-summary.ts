@@ -9,8 +9,8 @@ const ratelimit = new Ratelimit({
 import { groq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import { z } from 'zod';
-import { generateResumeSummaryPrompt } from '@/lib/helpers/promptHelpers';
-import { generateSummarySchema } from '@/lib/validation/generateSummary.schema';
+import { generateSummarySchema } from '../../src/lib/api-helpers/generateSummary.schema.js';
+import { generateResumeSummaryPrompt } from '../../src/lib/api-helpers/promptHelpers.js';
 
 const defaultAiModel = groq('openai/gpt-oss-20b');
 

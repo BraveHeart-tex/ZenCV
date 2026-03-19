@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.app.json && vite build",
+    "build": "tsc -p tsconfig.app.json && tsc -p tsconfig.api.json && vite build",
     "preview": "vite preview",
     "lint": "biome check --write --no-errors-on-unmatched src/",
     "prepare": "husky",
