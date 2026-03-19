@@ -6,9 +6,9 @@ import { LandingPage } from '@/components/landingPage/LandingPage';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import BuilderPage from './builder-page';
-import ResumeTemplatesPage from './resume-templates-page';
-import SettingsPage from './settings-page';
+import { BuilderPage } from './builder-page';
+import { ResumeTemplatesPage } from './resume-templates-page';
+import { SettingsPage } from './settings-page';
 
 export function App() {
   return (

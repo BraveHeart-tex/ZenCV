@@ -20,7 +20,7 @@ export const AuthenticationStatus = () => {
   const [loading, setLoading] = useState(false);
   const { isSignedIn, user } = useUser();
   const { pathname } = useLocation();
-  const { signOut } = useClerk();
+  const { signOut, session } = useClerk();
 
   const handleDeleteClerkAccount = () => {
     confirmDialogStore.showDialog({
@@ -39,8 +39,10 @@ export const AuthenticationStatus = () => {
         setLoading(true);
 
         try {
+          const token = await session?.getToken();
           const response = await fetch('/api/auth/delete-clerk-account', {
             method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
           });
 
           if (!response.ok) {
