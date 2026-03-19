@@ -1,4 +1,4 @@
-import { createClerkClient } from '@clerk/backend';
+import { createClerkClient, verifyToken } from '@clerk/backend';
 
 export const config = { runtime: 'edge' };
 
@@ -25,7 +25,9 @@ export default async function handler(req: Request) {
     const clerk = createClerkClient({
       secretKey: process.env.CLERK_SECRET_KEY,
     });
-    const { sub: userId } = await clerk.verifyToken(token);
+    const { sub: userId } = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY,
+    });
     if (!userId) {
       return new Response(
         JSON.stringify({
