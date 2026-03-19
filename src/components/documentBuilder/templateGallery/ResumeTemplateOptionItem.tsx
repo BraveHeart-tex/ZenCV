@@ -1,7 +1,7 @@
 import { CheckIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import Image from 'next/image';
+
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 import { cn } from '@/lib/utils/stringUtils';
@@ -39,7 +39,7 @@ export const ResumeTemplateOptionItem = observer(
               <CheckIcon />
             </span>
           )}
-          <Image
+          <img
             src={option.image}
             width={width}
             height={height}

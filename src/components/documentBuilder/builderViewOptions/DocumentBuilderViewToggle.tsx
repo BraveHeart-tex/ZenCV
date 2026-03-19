@@ -1,5 +1,3 @@
-'use client';
-
 import { File } from 'lucide-react';
 import { action } from 'mobx';
 import { AnimatePresence, useMotionValueEvent, useScroll } from 'motion/react';

@@ -1,5 +1,4 @@
-'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { BrainCircuitIcon, ChevronRightIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';

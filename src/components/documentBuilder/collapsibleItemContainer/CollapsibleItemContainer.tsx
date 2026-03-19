@@ -1,4 +1,3 @@
-'use client';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { PopoverClose } from '@radix-ui/react-popover';

@@ -45,7 +45,7 @@ export const ResumeLinksSection = ({
               gap: 4,
             }}
           >
-            <Link href={entry.link} style={styles.link}>
+            <Link src={entry.link} style={styles.link}>
               {entry.label}
             </Link>
             <Text

@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import type { PropsWithChildren } from 'react';
 import { AddNewItemButton } from '@/components/documentBuilder/AddNewItemButton';

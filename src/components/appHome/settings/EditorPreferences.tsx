@@ -1,5 +1,4 @@
-'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { CircleHelpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';

@@ -1,4 +1,3 @@
-'use client';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';

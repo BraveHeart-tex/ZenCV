@@ -1,4 +1,3 @@
-'use client';
 import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';

@@ -1,9 +1,7 @@
-'use client';
-import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/nextjs';
+import { SignInButton, SignOutButton, useClerk, useUser } from '@clerk/react';
 import { CheckIcon } from 'lucide-react';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   showErrorToast,
@@ -21,7 +19,7 @@ const aiPerks = [
 export const AuthenticationStatus = () => {
   const [loading, setLoading] = useState(false);
   const { isSignedIn, user } = useUser();
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const { signOut } = useClerk();
 
   const handleDeleteClerkAccount = () => {
@@ -85,7 +83,7 @@ export const AuthenticationStatus = () => {
         <div>
           <div className='sm:flex-row flex flex-col gap-4'>
             {user.imageUrl ? (
-              <Image
+              <img
                 src={user.imageUrl}
                 alt={user.firstName || ''}
                 width={96}

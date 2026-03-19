@@ -1,4 +1,3 @@
-'use client';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';

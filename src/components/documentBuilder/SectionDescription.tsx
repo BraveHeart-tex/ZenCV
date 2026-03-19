@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';

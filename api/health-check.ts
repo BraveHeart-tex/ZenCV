@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import type { NextRequest } from 'next/server';
+import type { NextRequest } from '@vercel/edge';
 
 export async function GET(request: NextRequest) {
   if (

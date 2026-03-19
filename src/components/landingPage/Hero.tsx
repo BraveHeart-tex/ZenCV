@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils/stringUtils';
 
@@ -22,7 +22,7 @@ export const Hero = () => {
         </p>
         <div className='sm:flex-row flex flex-col items-center justify-center gap-4 pt-4'>
           <Link
-            href='/documents'
+            to='/documents'
             className={cn(
               buttonVariants({
                 variant: 'default',
@@ -30,12 +30,11 @@ export const Hero = () => {
                 className: 'min-w-[200px]',
               })
             )}
-            prefetch={true}
           >
             Start Building
             <ArrowRight className='w-4 h-4 ml-2' />
           </Link>
-          <Link
+          <a
             href='#templates'
             className={cn(
               buttonVariants({
@@ -46,7 +45,7 @@ export const Hero = () => {
             )}
           >
             View Templates
-          </Link>
+          </a>
         </div>
       </div>
     </section>

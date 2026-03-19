@@ -1,4 +1,3 @@
-'use client';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useCallback } from 'react';

@@ -1,4 +1,4 @@
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { SparklesIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useAiSuggestionHelpers } from '@/components/documentBuilder/aiSuggestions/useAiSuggestionHelpers';

@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import { DocumentBuilderPdfViewer } from '@/components/documentBuilder/DocumentBuilderPdfViewer';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';

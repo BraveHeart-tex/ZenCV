@@ -1,7 +1,6 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,7 +18,7 @@ export const TemplateImageDialog = ({
 }: {
   template: TemplateOption;
 }) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleUseTemplate = async () => {
@@ -27,21 +26,20 @@ export const TemplateImageDialog = ({
       title: 'Untitled',
       templateType: template.value,
       onSuccess(documentId) {
-        router.push(`/builder/${documentId}`);
+        navigate(`/builder/${documentId}`);
       },
     });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Image
+      <DialogTrigger asChild onClick={() => setIsOpen(true)}>
+        <img
           src={template.image}
           alt={`${template.name} template`}
           width={300}
           height={400}
           className='object-cover w-full cursor-pointer'
-          onClick={() => setIsOpen(true)}
         />
       </DialogTrigger>
       <DialogContent className='max-w-[90vw] lg:max-w-[70vw] max-h-[90vh] w-full h-full overflow-y-auto'>
@@ -53,9 +51,9 @@ export const TemplateImageDialog = ({
         </VisuallyHidden>
         <div className='lg:flex-row bg-background flex flex-col w-full h-full'>
           <div className='lg:w-1/2 w-full h-[40vh] lg:h-[80vh]'>
-            <Image
+            <img
               src={template.image}
-              alt={`${template.name} template image`}
+              alt={`${template.name} template`}
               width={1920}
               height={1080}
               className='object-contain w-full h-full'

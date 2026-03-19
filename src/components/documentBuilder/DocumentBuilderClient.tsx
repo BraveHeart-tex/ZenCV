@@ -1,7 +1,6 @@
-'use client';
 import { ArrowLeftIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget';
 import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
 import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
@@ -15,11 +14,11 @@ import { ImproveResumeWidget } from './resumeScore/ImproveResumeWidget';
 import { TailorForJobPostingBanner } from './resumeScore/TailorForJobPostingBanner';
 
 export const DocumentBuilderClient = observer(() => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const view = builderRootStore.UIStore.currentView;
 
   const handleBack = () => {
-    router.push('/documents');
+    navigate('/documents');
   };
 
   return (

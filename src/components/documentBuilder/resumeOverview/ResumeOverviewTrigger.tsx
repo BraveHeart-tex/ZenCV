@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';

@@ -3,7 +3,7 @@ import { TemplateCard } from '@/components/landingPage/templates/TemplateCard';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
-const ResumeTemplatesPage = () => {
+export function ResumeTemplatesPage() {
   return (
     <SidebarInset>
       <header className='shrink-0 flex items-center h-16 gap-2 border-b'>
@@ -22,5 +22,4 @@ const ResumeTemplatesPage = () => {
       </div>
     </SidebarInset>
   );
-};
-export default ResumeTemplatesPage;
+}

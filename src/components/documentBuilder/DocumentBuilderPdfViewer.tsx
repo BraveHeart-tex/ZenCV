@@ -1,4 +1,3 @@
-'use client';
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';

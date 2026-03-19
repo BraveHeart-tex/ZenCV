@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import { DocumentSection } from '@/components/documentBuilder/DocumentSection';
 import { PersonalDetailSectionSkeleton } from '@/components/documentBuilder/PersonalDetailSectionSkeleton';

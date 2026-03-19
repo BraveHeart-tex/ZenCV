@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { buttonVariants } from '../ui/button';
 
 export const Cta = () => {
@@ -13,12 +13,8 @@ export const Cta = () => {
           tracking. Export as PDF with unlimited downloads.
         </p>
         <Link
-          href='/documents'
-          className={buttonVariants({
-            size: 'lg',
-            className: 'mt-4',
-          })}
-          prefetch={true}
+          to='/documents'
+          className={buttonVariants({ size: 'lg', className: 'mt-4' })}
         >
           Start Building
         </Link>

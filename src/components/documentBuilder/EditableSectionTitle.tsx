@@ -1,4 +1,3 @@
-'use client';
 import { useSortable } from '@dnd-kit/sortable';
 import { GripVertical, TrashIcon } from 'lucide-react';
 import { action, runInAction } from 'mobx';

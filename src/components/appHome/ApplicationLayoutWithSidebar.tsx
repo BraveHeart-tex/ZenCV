@@ -1,20 +1,25 @@
-import { cookies } from 'next/headers';
-import type { ReactNode } from 'react';
+import { Outlet } from 'react-router-dom';
 import { AppSidebar } from '@/components/appHome/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
-export const ApplicationLayoutWithSidebar = async ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
+const getDefaultSidebarOpen = () => {
+  try {
+    return (
+      document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('sidebar:state='))
+        ?.split('=')[1] === 'true'
+    );
+  } catch {
+    return true;
+  }
+};
 
+export const ApplicationLayoutWithSidebar = () => {
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <SidebarProvider defaultOpen={getDefaultSidebarOpen()}>
       <AppSidebar />
-      {children}
+      <Outlet />
     </SidebarProvider>
   );
 };

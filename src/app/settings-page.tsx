@@ -7,7 +7,7 @@ import { SettingsDangerZone } from '@/components/appHome/settings/SettingsDanger
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
-const SettingsPage = () => {
+export function SettingsPage() {
   return (
     <SidebarInset>
       <header className='shrink-0 flex items-center h-16 gap-2 border-b'>
@@ -31,6 +31,4 @@ const SettingsPage = () => {
       </div>
     </SidebarInset>
   );
-};
-
-export default SettingsPage;
+}
