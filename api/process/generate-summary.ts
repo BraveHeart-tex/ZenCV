@@ -1,19 +1,20 @@
+import { NextResponse } from '@vercel/edge';
 import { streamText } from 'ai';
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { generateImproveSummaryPrompt } from '@/lib/helpers/promptHelpers';
-import { improveSummarySchema } from '@/lib/validation/improveSummary.schema';
+import { generateResumeSummaryPrompt } from '@/lib/helpers/promptHelpers';
+import { generateSummarySchema } from '@/lib/validation/generateSummary.schema';
 import { defaultAiModel } from '../ai.constants';
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const validationResult = improveSummarySchema.safeParse(body);
+
+    const validationResult = generateSummarySchema.safeParse(body);
     if (validationResult?.error) {
       return NextResponse.json(
         {
           success: false,
-          fieldErrors: z.treeifyError(validationResult?.error),
+          fieldErrors: z.treeifyError(validationResult.error),
           timestamp: Date.now(),
           message: 'Please provide valid data.',
         },
@@ -21,7 +22,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const prompt = generateImproveSummaryPrompt(validationResult.data);
+    const prompt = generateResumeSummaryPrompt({
+      workExperiences: validationResult.data?.workExperiences,
+      jobPosting: validationResult.data?.jobPosting,
+      customPrompt: validationResult.data?.customPrompt,
+    });
 
     const result = streamText({
       model: defaultAiModel,
@@ -32,7 +37,7 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (error) {
-    console.error('improve-summary error', error);
+    console.error('generate-summary error', error);
     return NextResponse.json(
       {
         success: false,

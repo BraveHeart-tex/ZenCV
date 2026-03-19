@@ -1,4 +1,3 @@
-'use client';
 import { Download, Upload } from 'lucide-react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';

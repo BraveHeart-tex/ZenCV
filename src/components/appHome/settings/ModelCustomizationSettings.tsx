@@ -1,5 +1,4 @@
-'use client';
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Label } from '@/components/ui/label';

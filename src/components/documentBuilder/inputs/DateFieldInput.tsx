@@ -1,4 +1,3 @@
-'use client';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
   CalendarIcon,

@@ -1,4 +1,3 @@
-'use client';
 import { AlertCircle } from 'lucide-react';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';

@@ -1,13 +1,12 @@
-'use client';
-import { SignInButton, SignUpButton } from '@clerk/nextjs';
+import { SignInButton, SignUpButton } from '@clerk/react';
 import { observer } from 'mobx-react-lite';
-import { usePathname } from 'next/navigation';
+import { useLocation } from 'react-router-dom';
 import { protectedServiceDialogStore } from '@/lib/stores/protectedServiceDialogStore';
 import { Button } from '../ui/button';
 import { ResponsiveDialog } from '../ui/ResponsiveDialog';
 
 export const ProtectedServiceDialog = observer(() => {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   return (
     <ResponsiveDialog

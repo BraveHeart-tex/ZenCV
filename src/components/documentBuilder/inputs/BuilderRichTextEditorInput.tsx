@@ -1,4 +1,3 @@
-'use client';
 import { SparklesIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';

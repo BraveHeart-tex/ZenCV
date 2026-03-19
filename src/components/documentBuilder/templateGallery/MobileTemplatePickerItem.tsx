@@ -1,8 +1,7 @@
-'use client';
 import { CheckIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import Image from 'next/image';
+
 import { selectedOptionImageClassNames } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { CarouselItem } from '@/components/ui/carousel';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
@@ -36,11 +35,10 @@ export const MobileTemplatePickerItem = observer(
           onKeyDown={handleSelectTemplate}
           onKeyUp={handleSelectTemplate}
         >
-          <Image
+          <img
             src={template.image}
             alt={template.name}
             loading='lazy'
-            fill
             className='object-cover'
           />
           {isSelected && (

@@ -1,5 +1,4 @@
-'use client';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
@@ -11,13 +10,13 @@ interface TemplateCardProps {
 }
 
 export const TemplateCard = ({ template }: TemplateCardProps) => {
-  const router = useRouter();
+  const navigate = useNavigate();
   const handleUseTemplate = async () => {
     await createAndNavigateToDocument({
       title: 'Untitled',
       templateType: template.value,
       onSuccess(documentId) {
-        router.push(`/builder/${documentId}`);
+        navigate(`/builder/${documentId}`);
       },
     });
   };

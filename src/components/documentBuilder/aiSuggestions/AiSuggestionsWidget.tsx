@@ -1,5 +1,4 @@
-'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';

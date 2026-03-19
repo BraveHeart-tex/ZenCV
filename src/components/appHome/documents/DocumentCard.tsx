@@ -1,4 +1,3 @@
-'use client';
 import {
   BriefcaseBusinessIcon,
   CopyIcon,
@@ -8,8 +7,8 @@ import {
   Trash,
 } from 'lucide-react';
 import { action } from 'mobx';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -36,7 +35,7 @@ interface DocumentCardProps {
 export const DocumentCard = ({ document }: DocumentCardProps) => {
   const [isRenameDialogOpen, setIsRenameDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const handleDelete = (event: Event) => {
     event.stopImmediatePropagation();
@@ -59,11 +58,6 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
       }),
     });
   };
-
-  const prefetchDocumentData = action(async () => {
-    router.prefetch(`/documents/${document.id}`);
-    await builderRootStore.documentStore.initializeStore(document.id);
-  });
 
   const handleRenameSubmit = async (enteredTitle: string) => {
     try {
@@ -94,11 +88,10 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
   return (
     <>
       <Card
-        onMouseEnter={prefetchDocumentData}
         className='bg-background border-border hover:border-border-hover w-full transition-colors border cursor-pointer'
         onMouseDown={() => {
           if (isOpen) return;
-          router.push(`/builder/${document.id}`);
+          navigate(`/builder/${document.id}`);
         }}
       >
         <CardHeader className='flex flex-row items-center justify-between p-3 space-y-0'>
@@ -117,7 +110,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuItem
-                onSelect={() => router.push(`/builder/${document.id}`)}
+                onSelect={() => navigate(`/builder/${document.id}`)}
               >
                 <FileSymlink className='w-4 h-4 mr-2' />
                 Edit in CV Builder

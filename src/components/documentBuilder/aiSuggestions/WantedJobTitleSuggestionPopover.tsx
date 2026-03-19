@@ -1,5 +1,4 @@
-'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@clerk/react';
 import { PopoverClose } from '@radix-ui/react-popover';
 import {
   BriefcaseBusinessIcon,

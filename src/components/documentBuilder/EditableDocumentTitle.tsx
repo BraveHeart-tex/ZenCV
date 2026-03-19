@@ -1,4 +1,3 @@
-'use client';
 import { PencilIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';

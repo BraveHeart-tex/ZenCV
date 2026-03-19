@@ -1,5 +1,5 @@
 import { Cog, Files, FileUser } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { ClientOnly } from '@/components/misc/ClientOnly';
 import {
   Sidebar,
@@ -43,7 +43,7 @@ export const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size='lg' asChild tooltip={APP_NAME}>
-              <Link href='/' prefetch={true}>
+              <Link to='/'>
                 <div className='aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg'>
                   <Icons.logo />
                 </div>
@@ -71,7 +71,7 @@ export const AppSidebar = () => {
               {appLinks.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link href={item.url} prefetch={true}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>

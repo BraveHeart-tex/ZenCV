@@ -1,5 +1,3 @@
-'use client';
-
 import { useTheme } from 'next-themes';
 import { type ExternalToast, Toaster as Sonner, toast } from 'sonner';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -50,9 +48,9 @@ const showLoadingToast = (message: string, data?: ExternalToast) => {
 };
 
 export {
-  Toaster,
   showErrorToast,
-  showSuccessToast,
   showInfoToast,
   showLoadingToast,
+  showSuccessToast,
+  Toaster,
 };

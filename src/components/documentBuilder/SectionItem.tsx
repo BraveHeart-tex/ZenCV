@@ -1,4 +1,3 @@
-'use client';
 import { observer } from 'mobx-react-lite';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import { CONTAINER_TYPES, type DEX_Item } from '@/lib/client-db/clientDbSchema';

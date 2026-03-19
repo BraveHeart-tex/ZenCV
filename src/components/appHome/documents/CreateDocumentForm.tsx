@@ -1,7 +1,6 @@
-'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -43,7 +42,7 @@ interface CreateDocumentFormProps {
 }
 
 export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const form = useForm<CreateDocumentFormData>({
     resolver: zodResolver(createNewDocumentSchema),
@@ -67,7 +66,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       templateType: template,
       selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
       onSuccess(documentId) {
-        router.push(`/builder/${documentId}`);
+        navigate(`/builder/${documentId}`);
         setOpen(false);
         form.reset();
       },

@@ -1,4 +1,3 @@
-'use client';
 import { startTransition, useEffect } from 'react';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 

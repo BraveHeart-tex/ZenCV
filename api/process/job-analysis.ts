@@ -1,5 +1,5 @@
+import { NextResponse } from '@vercel/edge';
 import { generateObject } from 'ai';
-import { NextResponse } from 'next/server';
 import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
