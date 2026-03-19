@@ -30,8 +30,8 @@ export const generateResumeSummaryPrompt = ({
       Target Role:
       - **Company:** ${jobPosting.companyName}
       - **Position:** ${jobPosting.jobTitle}
-      
-      **Job Description:**  
+
+      **Job Description:**
       ${jobPosting.roleDescription}
       `
     : '';
@@ -40,16 +40,16 @@ export const generateResumeSummaryPrompt = ({
     return `
     ### Role:
     You are a professional AI assistant helping to craft resume summaries that are impactful, relevant, and aligned with job requirements.
-    
+
     ### Custom Instructions:
     ${customPrompt.trim()}
-    
+
     ### Input:
     **Candidate's Work Experience:**
     ${experiencesText}
-    
+
     ${jobPosting ? `**Target Job Description:**\n${jobPostingSection}` : ''}
-    
+
     ### Guidelines:
     - Respond with a **3-5 sentence** resume summary.
     - Focus on **skills, achievements, and measurable impact**.
@@ -58,7 +58,7 @@ export const generateResumeSummaryPrompt = ({
     - Avoid generic fluff or vague statements.
     - Use **industry-relevant keywords**.
     - Avoid repeating job titles or basic duties.
-    
+
     ### Output Format:
     - Respond **only** with the summary text (no headings, labels, or Markdown).
     - Your response must be **directly usable** in a resume to attract employers.
@@ -68,7 +68,7 @@ export const generateResumeSummaryPrompt = ({
   return `
   ### Role:
   You are a professional **resume-writing expert**. Your task is to craft powerful, concise, and targeted resume summaries that position candidates as top-tier professionals.
-  
+
   ### Objective:
   Write a **3-5 sentence** professional summary that:
   - Highlights **key achievements**, **technical or leadership skills**, and **quantifiable impact**.
@@ -81,13 +81,13 @@ export const generateResumeSummaryPrompt = ({
   }
   - Avoids generic descriptions of duties or soft skills.
   - Reads like it belongs at the top of a competitive, modern resume.
-  
+
   ### Input:
   **Candidate's Work Experience:**
   ${experiencesText}
-  
+
   ${jobPosting ? `**Target Job Posting:**\n${jobPostingSection}` : ''}
-  
+
   ### Output Instructions:
   - Respond **only** with the final resume summary.
   - **Do not** include headings, labels, formatting (like Markdown), or any explanations.
@@ -105,7 +105,7 @@ export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
 - **Company:** ${jobPosting.companyName}
 - **Position:** ${jobPosting.jobTitle}
 
-**Job Description:**  
+**Job Description:**
 ${jobPosting.roleDescription}
 `
     : '';
@@ -133,10 +133,10 @@ ${jobPosting ? '- Is clearly tailored to the **target job description** and role
 ${refinementSection}
 
 ### Input:
-**Current Summary:**  
+**Current Summary:**
 ${summary}
 
-**Candidate's Work Experience:**  
+**Candidate's Work Experience:**
 ${experiencesText}
 
 ${jobPostingSection}
@@ -167,10 +167,10 @@ Analyze the following job posting and return:
 ---
 
 ### Job Posting
-**Company:** ${companyName}  
+**Company:** ${companyName}
 **Position:** ${jobTitle}
 
-**Job Description:**  
+**Job Description:**
 ${roleDescription}
 
 ---
@@ -178,13 +178,13 @@ ${roleDescription}
 ### ✍️ Response Format
 Respond *exactly* as shown:
 
-**Suggested Job Title:**  
+**Suggested Job Title:**
 [Single best-fit title]
 
-**Keyword Suggestions:**  
-Skill 1  
-Skill 2  
-Skill 3  
+**Keyword Suggestions:**
+Skill 1
+Skill 2
+Skill 3
 ... up to 15 max
 
 ---
