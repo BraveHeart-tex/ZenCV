@@ -4,5 +4,10 @@
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": "vite",
+  "functions": {
+    "api/process/*.ts": { "runtime": "edge" },
+    "api/auth/*.ts": { "runtime": "nodejs22.x" },
+    "api/health-check.ts": { "runtime": "edge" }
+  },
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
