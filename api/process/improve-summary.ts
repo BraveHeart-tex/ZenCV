@@ -14,7 +14,7 @@ import { generateImproveSummaryPrompt } from '../lib/promptHelpers.js';
 
 const defaultAiModel = groq('openai/gpt-oss-20b');
 
-export const config = { runtime: 'edge' };
+export const runtime = 'nodejs';
 
 export default async function handler(req: Request) {
   if (req.method !== 'POST') {

@@ -1,6 +1,6 @@
 import { Redis } from '@upstash/redis';
 
-export const config = { runtime: 'edge' };
+export const runtime = 'nodejs';
 
 export default async function handler(request: Request) {
   if (
