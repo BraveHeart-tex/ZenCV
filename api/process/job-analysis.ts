@@ -1,62 +1,81 @@
-import { NextResponse } from '@vercel/edge';
-import { generateObject } from 'ai';
-import { generateJobAnalysisPrompt } from '@/lib/helpers/promptHelpers';
-import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
-import { jobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { defaultAiModel } from '../ai.constants';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
-export async function POST(req: Request) {
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1m'),
+});
+
+import { groq } from '@ai-sdk/groq';
+import { generateObject } from 'ai';
+import { generateJobAnalysisPrompt } from '../../src/lib/helpers/promptHelpers';
+import { jobAnalysisResultSchema } from '../../src/lib/validation/jobAnalysisResult.schema';
+import { jobPostingSchema } from '../../src/lib/validation/jobPosting.schema';
+
+const defaultAiModel = groq('openai/gpt-oss-20b');
+
+export const config = { runtime: 'edge' };
+
+export default async function handler(req: Request) {
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ success: false, message: 'Method not allowed' }),
+      { status: 405 }
+    );
+  }
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+    const { success: rateLimitSuccess } = await ratelimit.limit(ip);
+    if (!rateLimitSuccess) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          timestamp: Date.now(),
+          message:
+            'Too many requests. Please wait a few minutes and try again.',
+        }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     const body = await req.json();
     const validationResult = jobPostingSchema.safeParse(body);
     if (!validationResult?.success) {
-      return NextResponse.json(
-        {
+      return new Response(
+        JSON.stringify({
           success: false,
           fieldErrors: validationResult.error.flatten().fieldErrors,
           timestamp: Date.now(),
           message: 'Invalid request body.',
           data: null,
-        },
-        {
-          status: 400,
-        }
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
     const prompt = generateJobAnalysisPrompt(validationResult.data);
-
     const result = await generateObject({
       model: defaultAiModel,
       schema: jobAnalysisResultSchema,
       prompt,
     });
-
-    return NextResponse.json(
-      {
+    return new Response(
+      JSON.stringify({
         success: true,
-        fieldErrors: {},
         timestamp: Date.now(),
         data: result.object,
         message: 'Job analysis completed successfully.',
-      },
-      {
-        status: 200,
-      }
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     console.error('/api/process/job-analysis error', error);
-    return NextResponse.json(
-      {
+    return new Response(
+      JSON.stringify({
         success: false,
-        fieldErrors: {},
         data: null,
         timestamp: Date.now(),
         message: 'An internal error occurred while processing the request.',
-      },
-      {
-        status: 500,
-      }
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

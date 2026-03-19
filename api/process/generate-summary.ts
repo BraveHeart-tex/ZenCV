@@ -1,53 +1,71 @@
-import { NextResponse } from '@vercel/edge';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, '1m'),
+});
+
+import { groq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import { z } from 'zod';
-import { generateResumeSummaryPrompt } from '@/lib/helpers/promptHelpers';
-import { generateSummarySchema } from '@/lib/validation/generateSummary.schema';
-import { defaultAiModel } from '../ai.constants';
+import { generateResumeSummaryPrompt } from '../../src/lib/helpers/promptHelpers';
+import { generateSummarySchema } from '../../src/lib/validation/generateSummary.schema';
 
-export async function POST(req: Request) {
+const defaultAiModel = groq('openai/gpt-oss-20b');
+
+export const config = { runtime: 'edge' };
+
+export default async function handler(req: Request) {
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ success: false, message: 'Method not allowed' }),
+      { status: 405 }
+    );
+  }
   try {
+    const ip = req.headers.get('x-forwarded-for') ?? 'anonymous';
+    const { success: rateLimitSuccess } = await ratelimit.limit(ip);
+    if (!rateLimitSuccess) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          timestamp: Date.now(),
+          message:
+            'Too many requests. Please wait a few minutes and try again.',
+        }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
     const body = await req.json();
-
     const validationResult = generateSummarySchema.safeParse(body);
     if (validationResult?.error) {
-      return NextResponse.json(
-        {
+      return new Response(
+        JSON.stringify({
           success: false,
           fieldErrors: z.treeifyError(validationResult.error),
           timestamp: Date.now(),
           message: 'Please provide valid data.',
-        },
-        { status: 400 }
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
     const prompt = generateResumeSummaryPrompt({
       workExperiences: validationResult.data?.workExperiences,
       jobPosting: validationResult.data?.jobPosting,
       customPrompt: validationResult.data?.customPrompt,
     });
-
-    const result = streamText({
-      model: defaultAiModel,
-      prompt,
-    });
-
-    return result.toUIMessageStreamResponse({
-      status: 200,
-    });
+    const result = streamText({ model: defaultAiModel, prompt });
+    return result.toUIMessageStreamResponse({ status: 200 });
   } catch (error) {
     console.error('generate-summary error', error);
-    return NextResponse.json(
-      {
+    return new Response(
+      JSON.stringify({
         success: false,
-        fieldErrors: {},
         timestamp: Date.now(),
         message: 'An internal error occurred while processing the request.',
-      },
-      {
-        status: 500,
-      }
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

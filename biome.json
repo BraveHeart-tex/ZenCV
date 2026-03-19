@@ -93,11 +93,7 @@
   },
   "overrides": [
     {
-      "includes": [
-        "**/{page,layout,error,errors}.tsx",
-        "**/*.config.{js,ts,mjs,cjs}",
-        "**/middleware.ts"
-      ],
+      "includes": ["**/*.config.{js,ts,mjs,cjs}", "**/api/**"],
       "linter": {
         "rules": {
           "style": {
