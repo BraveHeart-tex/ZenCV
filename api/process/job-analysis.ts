@@ -8,9 +8,9 @@ const ratelimit = new Ratelimit({
 
 import { groq } from '@ai-sdk/groq';
 import { generateObject } from 'ai';
-import { jobAnalysisResultSchema } from '../../_lib/jobAnalysisResult.schema.js';
-import { jobPostingSchema } from '../../_lib/jobPosting.schema.js';
-import { generateJobAnalysisPrompt } from '../../_lib/promptHelpers.js';
+import { jobAnalysisResultSchema } from '../../src/lib/api-helpers/jobAnalysisResult.schema.js';
+import { jobPostingSchema } from '../../src/lib/api-helpers/jobPosting.schema.js';
+import { generateJobAnalysisPrompt } from '../../src/lib/api-helpers/promptHelpers.js';
 
 const defaultAiModel = groq('openai/gpt-oss-20b');
 
