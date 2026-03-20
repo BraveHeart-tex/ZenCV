@@ -10,11 +10,6 @@ import jobAnalysisRoute from './routes/job-analysis';
 
 const app = new Hono<{ Bindings: Env }>();
 
-app.use('*', async (c, next) => {
-  validateEnv(c.env);
-  await next();
-});
-
 app.use(
   '*',
   cors({
@@ -23,6 +18,11 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization', 'X-CRON-TOKEN'],
   })
 );
+
+app.use('*', async (c, next) => {
+  validateEnv(c.env);
+  await next();
+});
 
 app.route('/auth', authRoutes);
 app.route('/process/improve-summary', improveSummaryRoute);
