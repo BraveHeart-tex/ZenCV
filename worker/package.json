@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/groq": "2.0.22",
     "@clerk/backend": "^3.2.1",
+    "@sentry/cloudflare": "^10.45.0",
     "@upstash/ratelimit": "2.0.5",
     "@upstash/redis": "1.34.4",
     "ai": "5.0.60",

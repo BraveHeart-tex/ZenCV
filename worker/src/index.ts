@@ -1,6 +1,7 @@
+import * as Sentry from '@sentry/cloudflare';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import type { Env } from './env';
+import { type Env, validateEnv } from './env';
 import authRoutes from './routes/auth';
 import generateSummaryRoute from './routes/generate-summary';
 import healthCheckRoute from './routes/health-check';
@@ -8,6 +9,11 @@ import improveSummaryRoute from './routes/improve-summary';
 import jobAnalysisRoute from './routes/job-analysis';
 
 const app = new Hono<{ Bindings: Env }>();
+
+app.use('*', async (c, next) => {
+  validateEnv(c.env);
+  await next();
+});
 
 app.use(
   '*',
@@ -38,4 +44,14 @@ app.onError((err, c) => {
   );
 });
 
-export default app;
+export default {
+  fetch: Sentry.withSentry(
+    (env: Env) => ({
+      dsn: env.SENTRY_DSN,
+      environment: env.ENVIRONMENT,
+      tracesSampleRate: 1.0,
+    }),
+    // biome-ignore lint/suspicious/noExplicitAny: types are fighting each other, any is the most flexible type here
+    app.fetch.bind(app) as any
+  ),
+};

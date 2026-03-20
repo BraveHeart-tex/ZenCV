@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/cloudflare';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import type { Context, Next } from 'hono';
@@ -22,9 +23,21 @@ export async function rateLimitMiddleware(
     c.req.header('x-forwarded-for') ??
     'anonymous';
 
-  const { success } = await ratelimit.limit(ip);
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
 
   if (!success) {
+    Sentry.addBreadcrumb({
+      category: 'rate_limit',
+      message: `Rate limit hit`,
+      level: 'warning',
+      data: {
+        ip,
+        route: c.req.path,
+        limit,
+        reset: new Date(reset).toISOString(),
+      },
+    });
+
     return c.json(
       {
         success: false,
@@ -34,6 +47,10 @@ export async function rateLimitMiddleware(
       429
     );
   }
+
+  c.header('X-RateLimit-Limit', String(limit));
+  c.header('X-RateLimit-Remaining', String(remaining));
+  c.header('X-RateLimit-Reset', String(reset));
 
   await next();
 }
