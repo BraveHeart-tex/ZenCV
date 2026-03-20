@@ -43,14 +43,12 @@ export const KeywordSuggestionsWidget = observer(
 
     useEffect(() => {
       const controller = new AbortController();
-
       if (
         !userSettingsStore.editorPreferences.showAiSuggestions ||
         !isSignedIn
       ) {
         controller.abort();
       }
-
       document.addEventListener(
         getKeywordSuggestionScrollEventName(sectionType),
         () => {
@@ -60,18 +58,12 @@ export const KeywordSuggestionsWidget = observer(
             const absoluteY = window.scrollY + rect.top;
             const centerY =
               absoluteY - window.innerHeight / 2 + rect.height / 2;
-
             window.scrollTo({ top: centerY, behavior: 'smooth' });
           }
         },
-        {
-          signal: controller.signal,
-        }
+        { signal: controller.signal }
       );
-
-      return () => {
-        controller.abort();
-      };
+      return () => controller.abort();
     }, [sectionType, isSignedIn]);
 
     if (
@@ -82,6 +74,9 @@ export const KeywordSuggestionsWidget = observer(
       return null;
     }
 
+    const used = builderRootStore.aiSuggestionsStore.usedKeywords.size;
+    const total = builderRootStore.aiSuggestionsStore.keywordSuggestions.length;
+
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild ref={popoverRef}>
@@ -89,33 +84,37 @@ export const KeywordSuggestionsWidget = observer(
             <DiamondPlus className='w-4 h-4 text-white' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='space-y-4' side='top'>
-          <div className='flex items-center justify-between w-full gap-8'>
-            <div className='flex items-center gap-2'>
-              <div className='bg-foreground p-1 rounded-md'>
+
+        <PopoverContent className='w-72 p-0 overflow-hidden' side='top'>
+          {/* Header */}
+          <div className='flex items-center justify-between gap-2 px-3 py-2.5 bg-muted/50 border-b'>
+            <div className='flex items-center gap-2 min-w-0'>
+              <div className='shrink-0 bg-foreground p-1 rounded-md'>
                 <BriefcaseBusinessIcon className='text-background w-3 h-3' />
               </div>
-              <span className='text-[1rem] whitespace-nowrap overflow-hidden truncate'>
+              <span className='text-sm font-medium truncate min-w-0'>
                 {builderRootStore.jobPostingStore.jobPosting?.jobTitle}
               </span>
             </div>
             <PopoverClose asChild>
-              <Button size='xsIcon' variant='ghost'>
-                <XIcon />
+              <Button size='xsIcon' variant='ghost' className='shrink-0'>
+                <XIcon className='w-3.5 h-3.5' />
               </Button>
             </PopoverClose>
           </div>
-          <div className='flex items-center gap-1'>
-            <span className='font-semibold'>
-              {builderRootStore.aiSuggestionsStore.usedKeywords.size} /{' '}
-              {builderRootStore.aiSuggestionsStore.keywordSuggestions.length}
+
+          {/* Keywords count + tooltip */}
+          <div className='flex items-center gap-1.5 px-3 pt-3 pb-2'>
+            <span className='text-sm'>
+              <span className='font-semibold'>{used}</span>
+              <span className='text-muted-foreground'> / {total}</span>
             </span>
-            <span>Keywords</span>
+            <span className='text-sm text-muted-foreground'>keywords used</span>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size='xsIcon' variant='ghost'>
-                    <CircleHelp />
+                  <Button size='xsIcon' variant='ghost' className='h-5 w-5'>
+                    <CircleHelp className='w-3.5 h-3.5' />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -126,7 +125,19 @@ export const KeywordSuggestionsWidget = observer(
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className='flex-1 max-h-[200px] overflow-auto space-y-1'>
+
+          {/* Progress bar */}
+          <div className='px-3 pb-3'>
+            <div className='h-1 w-full rounded-full bg-muted overflow-hidden'>
+              <div
+                className='h-full rounded-full bg-foreground transition-all duration-300'
+                style={{ width: `${total > 0 ? (used / total) * 100 : 0}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Keyword list */}
+          <div className='flex flex-col max-h-[200px] overflow-y-auto px-2 pb-2 gap-1'>
             {builderRootStore.aiSuggestionsStore.keywordSuggestions.map(
               (keyword) => (
                 <KeywordSuggestionButton
@@ -159,31 +170,29 @@ const KeywordSuggestionButton = ({
   const handleKeywordClick = async () => {
     await navigator.clipboard.writeText(keyword);
     setCopied(true);
-    setTimeout(() => {
-      setCopied(false);
-    }, 3000);
+    setTimeout(() => setCopied(false), 3000);
   };
 
   return (
     <Button
-      className='items-center justify-between w-full gap-8 px-1'
-      variant='outline'
+      className='flex items-center justify-between w-full gap-2 px-2 h-8 text-sm'
+      variant={isUsed ? 'secondary' : 'outline'}
       onClick={handleKeywordClick}
       disabled={isUsed}
     >
-      <span className='flex-1 w-full overflow-hidden text-left truncate'>
-        {keyword}
-      </span>
-      <div className='flex items-center gap-1'>
+      <span className='flex-1 min-w-0 text-left truncate'>{keyword}</span>
+      <span className='shrink-0 flex items-center gap-1 text-xs text-muted-foreground'>
         {isUsed ? (
-          <CheckIcon />
-        ) : (
+          <CheckIcon className='w-3.5 h-3.5 text-green-600' />
+        ) : copied ? (
           <>
-            {copied ? <ClipboardCheckIcon /> : <ClipboardIcon />}
-            {copied && <span>Copied</span>}
+            <ClipboardCheckIcon className='w-3.5 h-3.5' />
+            <span>Copied</span>
           </>
+        ) : (
+          <ClipboardIcon className='w-3.5 h-3.5' />
         )}
-      </div>
+      </span>
     </Button>
   );
 };
