@@ -34,14 +34,13 @@ export class BuilderRootStore {
   }
 
   resetState = () => {
+    this.dispose();
     runInAction(() => {
       this.documentStore.document = null;
       this.sectionStore.sections = [];
       this.itemStore.items = [];
       this.fieldStore.fields = [];
-
       this.jobPostingStore.jobPosting = null;
-
       this.UIStore.resetState();
       this.aiSuggestionsStore.resetState();
       this.templateStore.resetState();
