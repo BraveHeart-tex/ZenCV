@@ -41,9 +41,11 @@ export const SettingsDangerZone = observer(() => {
             </p>
           </div>
         </div>
-        <Button variant='destructive' size='sm' onClick={handleDeleteAllData}>
-          Delete all data
-        </Button>
+        <div className='flex justify-end'>
+          <Button variant='destructive' size='sm' onClick={handleDeleteAllData}>
+            Delete all data
+          </Button>
+        </div>
       </div>
     </div>
   );
