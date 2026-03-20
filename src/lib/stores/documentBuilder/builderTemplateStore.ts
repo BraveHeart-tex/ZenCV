@@ -39,6 +39,7 @@ export class BuilderTemplateStore {
     makeAutoObservable(this);
   }
 
+  @computed
   get personalDetails() {
     return {
       firstName: this.root.fieldStore.getFieldValueByName(
@@ -65,6 +66,7 @@ export class BuilderTemplateStore {
     };
   }
 
+  @computed
   get summarySection() {
     return {
       sectionName: this.root.sectionStore.getSectionNameByType(
@@ -76,6 +78,7 @@ export class BuilderTemplateStore {
     };
   }
 
+  @computed
   get mappedSections() {
     return this.root.sectionStore.sections
       .filter(

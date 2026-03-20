@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
 import type { BuilderRootStore } from './builderRootStore';
@@ -37,28 +37,17 @@ export class BuilderUIStore {
     sectionType: SectionType
   ) => {
     const section = this.root.sectionStore.sections.find(
-      (section) => section.type === sectionType
+      (s) => s.type === sectionType
     );
     if (!section) return;
 
-    const fieldMap = new Map<DEX_Item['id'], DEX_Field[]>();
-    for (const field of this.root.fieldStore.fields) {
-      if (!fieldMap.has(field.itemId)) {
-        fieldMap.set(field.itemId, []);
-      }
-      fieldMap.get(field.itemId)?.push(field);
+    const items = this.root.itemStore.getItemsBySectionId(section.id);
+    for (const item of items) {
+      const field = this.root.fieldStore
+        .getFieldsByItemId(item.id)
+        .find((f) => f.name === fieldName);
+      if (field) return this.fieldRefs.get(field.id.toString());
     }
-
-    const sectionFields: DEX_Field[] = [];
-    for (const item of this.root.itemStore.items) {
-      if (item.sectionId === section.id && fieldMap.has(item.id)) {
-        sectionFields.push(...(fieldMap.get(item.id) || []));
-      }
-    }
-
-    const field = sectionFields?.find((field) => field.name === fieldName);
-    if (!field) return;
-    return this.fieldRefs.get(field.id.toString());
   };
 
   focusFirstFieldInItem = (itemId: DEX_Item['id']) => {

@@ -1,4 +1,10 @@
-import { makeAutoObservable, ObservableMap, reaction, runInAction } from 'mobx';
+import {
+  computed,
+  makeAutoObservable,
+  ObservableMap,
+  reaction,
+  runInAction,
+} from 'mobx';
 import {
   type DEX_AiSuggestions,
   type DEX_Field,
@@ -31,6 +37,7 @@ export class BuilderAISuggestionsStore {
     makeAutoObservable(this);
   }
 
+  @computed
   get richTextFieldsWithKeywordChecks() {
     return this.root.sectionStore.sections
       .filter((section) =>
@@ -91,17 +98,15 @@ export class BuilderAISuggestionsStore {
 
   private setupReactions = () => {
     const checkUsedKeywords = debounce((values: string[]) => {
-      this.usedKeywords.clear();
-
-      if (this.keywordSuggestions.length === 0) return;
-
-      this.keywordSuggestions.forEach((keyword) => {
-        values.forEach((value) => {
-          if (value.includes(keyword.toLowerCase())) {
-            runInAction(() => {
+      runInAction(() => {
+        this.usedKeywords.clear();
+        if (this.keywordSuggestions.length === 0) return;
+        this.keywordSuggestions.forEach((keyword) => {
+          values.forEach((value) => {
+            if (value.includes(keyword.toLowerCase())) {
               this.usedKeywords.add(keyword);
-            });
-          }
+            }
+          });
         });
       });
     }, KEYWORD_CHECK_REACTION_DELAY_MS);
