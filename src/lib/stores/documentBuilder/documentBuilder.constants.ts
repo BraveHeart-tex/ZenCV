@@ -30,6 +30,7 @@ export const INTERNAL_TEMPLATE_TYPES = {
   MANHATTAN: 'manhattan',
   LONDON: 'london',
   TOKYO: 'tokyo',
+  DUBAI: 'dubai',
 } as const;
 
 export const NOT_TEMPLATED_SECTION_TYPES = [
