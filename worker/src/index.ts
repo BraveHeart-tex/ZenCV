@@ -44,14 +44,13 @@ app.onError((err, c) => {
   );
 });
 
-export default {
-  fetch: Sentry.withSentry(
-    (env: Env) => ({
-      dsn: env.SENTRY_DSN,
-      environment: env.ENVIRONMENT,
-      tracesSampleRate: 1.0,
-    }),
-    // biome-ignore lint/suspicious/noExplicitAny: types are fighting each other, any is the most flexible type here
-    app.fetch.bind(app) as any
-  ),
-};
+export default Sentry.withSentry(
+  (env: Env) => ({
+    dsn: env.SENTRY_DSN,
+    environment: env.ENVIRONMENT,
+    tracesSampleRate: 1.0,
+  }),
+  {
+    fetch: app.fetch.bind(app),
+  }
+);

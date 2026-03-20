@@ -8,6 +8,11 @@ export async function rateLimitMiddleware(
   c: Context<{ Bindings: Env }>,
   next: Next
 ) {
+  if (c.env.ENVIRONMENT === 'development') {
+    await next();
+    return;
+  }
+
   const redis = new Redis({
     url: c.env.UPSTASH_REDIS_REST_URL,
     token: c.env.UPSTASH_REDIS_REST_TOKEN,
