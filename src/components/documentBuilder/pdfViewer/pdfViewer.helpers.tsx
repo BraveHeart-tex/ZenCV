@@ -1,3 +1,4 @@
+import { DubaiTemplate } from '@/components/appHome/resumeTemplates/dubai/DubaiTemplate';
 import { LondonTemplate } from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { ManhattanTemplate } from '@/components/appHome/resumeTemplates/manhattan/ManhattanTemplate';
 import { TokyoTemplate } from '@/components/appHome/resumeTemplates/tokyo/TokyoTemplate';
@@ -21,6 +22,10 @@ export const getPdfTemplateByType = (
 
   if (templateType === INTERNAL_TEMPLATE_TYPES.TOKYO) {
     return <TokyoTemplate templateData={pdfTemplateData} />;
+  }
+
+  if (templateType === INTERNAL_TEMPLATE_TYPES.DUBAI) {
+    return <DubaiTemplate templateData={pdfTemplateData} />;
   }
 
   // biome-ignore lint/complexity/noUselessFragments: Fragment is fine here

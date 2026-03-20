@@ -83,6 +83,14 @@ export const templateOptionsWithImages: TemplateOption[] = [
     tags: ['Two-Column', 'Modern', 'ATS-Optimized'],
     value: INTERNAL_TEMPLATE_TYPES.TOKYO,
   },
+  {
+    name: 'Dubai',
+    image: '/templates/dubai.webp',
+    description:
+      'The Dubai template features a warm two-column layout with a light sidebar and gold accent detailing. Refined and professional, it suits finance, consulting, and corporate roles where elegance matters.',
+    tags: ['Two-Column', 'Elegant', 'Professional'],
+    value: INTERNAL_TEMPLATE_TYPES.DUBAI,
+  },
 ];
 
 export const selectedOptionImageClassNames = 'ring-2 ring-blue-500' as const;
