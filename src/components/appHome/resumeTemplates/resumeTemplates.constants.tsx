@@ -61,7 +61,7 @@ export const pdfHtmlRenderers: ComponentProps<typeof Html>['renderers'] = {
 export const templateOptionsWithImages: TemplateOption[] = [
   {
     name: 'London',
-    image: '/templates/london.jpg',
+    image: '/templates/london.webp',
     description:
       'The London template offers a clean and modern design, perfect for showcasing your professional experience in a structured and elegant format. Its minimalist layout ensures ATS compatibility while maintaining a polished and professional appearance.',
     tags: ['Clean & Modern', 'ATS-Optimized', 'Professional'],
@@ -69,7 +69,7 @@ export const templateOptionsWithImages: TemplateOption[] = [
   },
   {
     name: 'Manhattan',
-    image: '/templates/manhattan.jpg',
+    image: '/templates/manhattan.webp',
     description:
       'The Manhattan template combines a sleek, contemporary design with a focus on clarity and readability. Its ATS-friendly structure ensures your resume passes through automated systems effortlessly, while its professional layout highlights your skills and achievements effectively.',
     tags: ['Clean & Modern', 'ATS-Optimized', 'Professional'],
@@ -77,7 +77,7 @@ export const templateOptionsWithImages: TemplateOption[] = [
   },
   {
     name: 'Tokyo',
-    image: '/templates/tokyo.png',
+    image: '/templates/tokyo.webp',
     description:
       'The Tokyo template features a bold two-column layout with a dark sidebar and clean white main column. Designed for modern professionals who want to stand out while remaining ATS-friendly and easy to scan.',
     tags: ['Two-Column', 'Modern', 'ATS-Optimized'],
