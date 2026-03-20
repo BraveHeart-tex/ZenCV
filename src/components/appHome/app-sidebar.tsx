@@ -1,6 +1,5 @@
 import { Cog, Files, FileUser } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ClientOnly } from '@/components/misc/ClientOnly';
 import {
   Sidebar,
   SidebarContent,
@@ -85,9 +84,7 @@ export const AppSidebar = () => {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <ClientOnly>
-              <AppColorModeToggle shouldShowSidebarButton />
-            </ClientOnly>
+            <AppColorModeToggle shouldShowSidebarButton />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
