@@ -1,3 +1,4 @@
+// DocumentCard.tsx
 import {
   BriefcaseBusinessIcon,
   CopyIcon,
@@ -10,7 +11,6 @@ import { action } from 'mobx';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,7 @@ import {
 } from '@/lib/client-db/documentService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { cn } from '@/lib/utils/stringUtils';
 import { RenameDocumentDialog } from './RenameDocumentDialog';
 
 interface DocumentCardProps {
@@ -66,7 +67,6 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         showErrorToast('An error occurred while renaming the document.');
         return;
       }
-
       showSuccessToast('Document renamed successfully.');
       setIsRenameDialogOpen(false);
     } catch (error) {
@@ -85,76 +85,93 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     }
   };
 
+  const formattedDate = new Intl.DateTimeFormat(navigator.language, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(document.updatedAt));
+
   return (
     <>
-      <Card
-        className='bg-background border-border hover:border-border-hover w-full transition-colors border cursor-pointer'
+      <article
+        className={cn(
+          'group relative flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
+          'hover:border-border hover:shadow-md hover:bg-accent/30',
+          'transition-all duration-200 cursor-pointer shadow-sm'
+        )}
         onMouseDown={() => {
           if (isOpen) return;
           navigate(`/builder/${document.id}`);
         }}
       >
-        <CardHeader className='flex flex-row items-center justify-between p-3 space-y-0'>
-          <CardTitle className='flex-1 mr-2 font-medium truncate'>
+        <div className='flex items-start justify-between gap-2'>
+          <h3 className='flex-1 text-sm font-semibold leading-snug truncate pr-1'>
             {document.title}
-          </CardTitle>
+          </h3>
+
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant='ghost'
-                className='text-muted-foreground hover:text-foreground w-7 h-7 p-0'
+                className={cn(
+                  'shrink-0 w-7 h-7 p-0 text-muted-foreground/50',
+                  'opacity-0 group-hover:opacity-100 transition-opacity duration-150',
+                  'hover:text-foreground hover:bg-muted/60',
+                  isOpen && 'opacity-100'
+                )}
               >
                 <span className='sr-only'>Open menu</span>
                 <MoreHorizontal className='w-4 h-4' />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
+            <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuItem
                 onSelect={() => navigate(`/builder/${document.id}`)}
               >
-                <FileSymlink className='w-4 h-4 mr-2' />
-                Edit in CV Builder
+                <FileSymlink className='w-4 h-4 mr-1' />
+                Open in Builder
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
-                <Pencil className='w-4 h-4 mr-2' />
+                <Pencil className='w-4 h-4 mr-1' />
                 Rename
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={handleCopyDocument}>
-                <CopyIcon className='w-4 h-4 mr-2' />
-                Copy
+                <CopyIcon className='w-4 h-4 mr-1' />
+                Duplicate
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={handleDelete}
-                className='text-destructive'
+                className='text-destructive focus:text-destructive hover:bg-destructive/10!'
               >
-                <Trash className='w-4 h-4 mr-2' />
+                <Trash className='w-4 h-4 mr-1' />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </CardHeader>
-        <CardContent className='p-3 pt-0 space-y-2'>
-          {document.jobPosting ? (
-            <div className='bg-muted whitespace-nowrap flex items-center w-full gap-2 px-1 overflow-hidden text-xs truncate rounded-md'>
-              <div className='bg-background p-1 rounded-md'>
-                <BriefcaseBusinessIcon className='w-3 h-3' />
-              </div>
-              {document.jobPosting.jobTitle} at{' '}
-              {document.jobPosting.companyName}
+        </div>
+
+        {document.jobPosting && (
+          <div className='flex items-center gap-1.5 min-w-0'>
+            <div className='shrink-0 bg-muted p-1 rounded-md'>
+              <BriefcaseBusinessIcon className='w-3 h-3 text-muted-foreground' />
             </div>
-          ) : null}
-          <p className='text-muted-foreground text-sm font-medium'>
-            Updated{' '}
-            {new Intl.DateTimeFormat(navigator.language, {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            }).format(new Date(document.updatedAt))}
-          </p>
-        </CardContent>
-      </Card>
+            <span className='text-xs text-muted-foreground truncate'>
+              {document.jobPosting.jobTitle}
+              <span className='text-muted-foreground/50 mx-1'>at</span>
+              {document.jobPosting.companyName}
+            </span>
+          </div>
+        )}
+
+        <div className='flex items-center justify-between mt-auto pt-2 border-t border-border'>
+          <span className='text-xs text-muted-foreground tabular-nums'>
+            Updated {formattedDate}
+          </span>
+        </div>
+      </article>
+
       <RenameDocumentDialog
         defaultTitle={document.title}
         isOpen={isRenameDialogOpen}

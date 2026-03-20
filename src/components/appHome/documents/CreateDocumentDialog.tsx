@@ -6,7 +6,7 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { CreateDocumentForm } from './CreateDocumentForm';
 
 interface CreateDocumentDialogProps {
-  triggerVariant?: 'default' | 'sidebar' | 'icon';
+  triggerVariant?: 'default' | 'sidebar' | 'icon' | 'card';
 }
 
 export const CreateDocumentDialog = ({
@@ -21,6 +21,19 @@ export const CreateDocumentDialog = ({
           <PlusIcon className='w-4 h-4' />
           New Document
         </Button>
+      );
+    }
+
+    if (triggerVariant === 'card') {
+      return (
+        <div className='flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/70 hover:border-border hover:bg-muted/50 transition-all duration-200 cursor-pointer min-h-30 p-4'>
+          <div className='rounded-lg border border-border/50 bg-muted/40 p-2'>
+            <PlusIcon className='w-4 h-4 text-muted-foreground' />
+          </div>
+          <span className='text-xs font-medium text-muted-foreground'>
+            New document
+          </span>
+        </div>
       );
     }
 
