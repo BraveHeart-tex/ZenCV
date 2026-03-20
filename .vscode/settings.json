@@ -1,5 +1,10 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "biome.enabled": false,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "biome.enabled": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  }
 }
