@@ -1,4 +1,4 @@
-import { FilePlusIcon } from 'lucide-react';
+import { FilePlusIcon, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
@@ -18,7 +18,8 @@ export const CreateDocumentDialog = ({
     if (triggerVariant === 'default') {
       return (
         <Button variant={open ? 'outline' : 'default'}>
-          Create New Document
+          <PlusIcon className='w-4 h-4' />
+          New Document
         </Button>
       );
     }
@@ -42,8 +43,8 @@ export const CreateDocumentDialog = ({
 
   return (
     <ResponsiveDialog
-      title='Create new document'
-      description='Use the form below to create a document'
+      title='New Document'
+      description='Give your document a title, pick a template, and optionally start with sample data.'
       trigger={renderTrigger()}
       open={open}
       onOpenChange={setOpen}

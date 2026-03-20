@@ -30,7 +30,7 @@ export const createNewDocumentSchema = z
   .superRefine((data, ctx) => {
     if (data.shouldUseSampleData && !data.selectedPrefillStyle) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         path: ['selectedPrefillStyle'],
         message: 'Please select a prefill style',
       });

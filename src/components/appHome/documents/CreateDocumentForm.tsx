@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -20,11 +21,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { showErrorToast } from '@/components/ui/sonner';
-import { dialogFooterClassNames } from '@/lib/constants';
 import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
 import type { UseState } from '@/lib/types/utils.types';
+import { cn } from '@/lib/utils/stringUtils';
 import {
   type CreateDocumentFormData,
   createNewDocumentSchema,
@@ -43,7 +44,6 @@ interface CreateDocumentFormProps {
 
 export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
   const navigate = useNavigate();
-
   const form = useForm<CreateDocumentFormData>({
     resolver: zodResolver(createNewDocumentSchema),
     defaultValues: {
@@ -60,7 +60,6 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       shouldUseSampleData,
       selectedPrefillStyle,
     } = data;
-
     await createAndNavigateToDocument({
       title: name,
       templateType: template,
@@ -78,9 +77,11 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
     });
   };
 
+  const showSampleData = form.watch('shouldUseSampleData');
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
         <FormField
           control={form.control}
           name='title'
@@ -91,13 +92,14 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                 <Input
                   type='text'
                   {...field}
-                  placeholder='ABC Company - Software Engineer'
+                  placeholder='e.g. ABC Company — Software Engineer'
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name='template'
@@ -110,8 +112,8 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  <SelectTrigger className='w-full' id='template'>
-                    <SelectValue placeholder='Resume Template' />
+                  <SelectTrigger className='w-full'>
+                    <SelectValue placeholder='Choose a template' />
                   </SelectTrigger>
                   <SelectContent>
                     {resumeTemplateSelectOptions.map((option) => (
@@ -126,38 +128,59 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name='shouldUseSampleData'
           render={({ field }) => (
-            <FormItem className='flex items-center gap-2 space-y-0'>
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={(checked: boolean) => {
-                    field.onChange(checked);
-                  }}
-                />
-              </FormControl>
-              <FormLabel>Use sample data</FormLabel>
+            <FormItem className='rounded-lg border border-border/40 bg-muted/20 px-4 py-3'>
+              <div className='flex items-center gap-3'>
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={(checked: boolean) =>
+                      field.onChange(checked)
+                    }
+                  />
+                </FormControl>
+                <div className='space-y-0.5'>
+                  <FormLabel className='text-sm font-medium cursor-pointer'>
+                    Start with sample data
+                  </FormLabel>
+                  <p className='text-xs text-muted-foreground'>
+                    Pre-fill the document with example content to get started
+                    faster
+                  </p>
+                </div>
+              </div>
               <FormMessage />
             </FormItem>
           )}
         />
-        {form.watch('shouldUseSampleData') && (
+
+        <div
+          className={cn(
+            'transition-all duration-200',
+            !showSampleData && 'overflow-hidden'
+          )}
+          style={{
+            maxHeight: showSampleData ? '120px' : '0',
+            opacity: showSampleData ? 1 : 0,
+          }}
+        >
           <FormField
             control={form.control}
             name='selectedPrefillStyle'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Sample Data Type</FormLabel>
+                <FormLabel>Sample data style</FormLabel>
                 <FormControl>
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className='w-full' id='sample-data-type'>
+                    <SelectTrigger className='w-full'>
                       <SelectValue placeholder='Select sample data type' />
                     </SelectTrigger>
                     <SelectContent>
@@ -173,17 +196,16 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
               </FormItem>
             )}
           />
-        )}
-        <div className={dialogFooterClassNames}>
-          <Button
-            type='button'
-            variant='outline'
-            aria-label='Close create document dialog'
-            onClick={() => setOpen(false)}
-          >
+        </div>
+
+        <div className='flex items-center justify-end gap-2'>
+          <Button type='button' variant='ghost' onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button type='submit'>Create</Button>
+          <Button type='submit' className='gap-2'>
+            Create document
+            <ArrowRight className='w-4 h-4' />
+          </Button>
         </div>
       </form>
     </Form>
