@@ -2,9 +2,11 @@ import { useAuth } from '@clerk/react';
 import { CircleHelpIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useNetworkState } from 'react-use';
-
+import {
+  SettingsRow,
+  SettingsSectionHeader,
+} from '@/components/appHome/settings/SettingsShared';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
@@ -21,12 +23,15 @@ export const EditorPreferences = observer(() => {
 
   return (
     <div className='space-y-6'>
-      <h2 className='text-lg font-semibold'>Editor Preferences</h2>
-      <div className='space-y-4'>
-        <div className='flex items-center justify-between'>
-          <Label htmlFor='askBeforeDeletingItem'>
-            Ask before deleting an item
-          </Label>
+      <SettingsSectionHeader
+        title='Editor'
+        description='Customize how the document builder behaves.'
+      />
+      <div className='space-y-1'>
+        <SettingsRow
+          label='Ask before deleting an item'
+          htmlFor='askBeforeDeletingItem'
+        >
           <Switch
             id='askBeforeDeletingItem'
             checked={userSettingsStore.editorPreferences.askBeforeDeletingItem}
@@ -34,11 +39,12 @@ export const EditorPreferences = observer(() => {
               handleEditorPreferenceChange('askBeforeDeletingItem', checked)
             }
           />
-        </div>
-        <div className='flex items-center justify-between'>
-          <Label htmlFor='askBeforeDeletingSection'>
-            Ask before deleting a section
-          </Label>
+        </SettingsRow>
+
+        <SettingsRow
+          label='Ask before deleting a section'
+          htmlFor='askBeforeDeletingSection'
+        >
           <Switch
             id='askBeforeDeletingSection'
             checked={
@@ -48,17 +54,18 @@ export const EditorPreferences = observer(() => {
               handleEditorPreferenceChange('askBeforeDeletingSection', checked)
             }
           />
-        </div>
-        {online ? (
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-1'>
-              <Label
-                className={!isSignedIn ? 'opacity-50' : ''}
-                htmlFor='showAiSuggestions'
-              >
-                Show AI suggestions
-              </Label>{' '}
-              {!isSignedIn && (
+        </SettingsRow>
+
+        {online && (
+          <SettingsRow
+            label='Show AI suggestions'
+            htmlFor='showAiSuggestions'
+            description={
+              !isSignedIn ? 'Sign in to enable AI features' : undefined
+            }
+            disabled={!isSignedIn}
+            action={
+              !isSignedIn && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -71,25 +78,26 @@ export const EditorPreferences = observer(() => {
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>You must be signed in to AI features.</p>
+                      <p>You must be signed in to use AI features.</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              )}
-            </div>
+              )
+            }
+          >
             <Switch
               disabled={!isSignedIn}
               id='showAiSuggestions'
               checked={
                 userSettingsStore.editorPreferences.showAiSuggestions &&
-                isSignedIn
+                !!isSignedIn
               }
               onCheckedChange={(checked) =>
                 handleEditorPreferenceChange('showAiSuggestions', checked)
               }
             />
-          </div>
-        ) : null}
+          </SettingsRow>
+        )}
       </div>
     </div>
   );

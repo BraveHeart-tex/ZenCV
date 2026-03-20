@@ -1,14 +1,19 @@
-import { Label } from '@/components/ui/label';
+import {
+  SettingsRow,
+  SettingsSectionHeader,
+} from '@/components/appHome/settings/SettingsShared';
 import { AppColorModeToggle } from '../AppColorModeToggle';
 
 export const GeneralSettings = () => {
   return (
-    <div className='space-y-4'>
-      <h2 className='text-lg font-semibold'>General Settings</h2>
-      <div className='space-y-2'>
-        <Label htmlFor='language'>Color Scheme</Label>
+    <div className='space-y-6'>
+      <SettingsSectionHeader
+        title='General'
+        description='Manage your application preferences.'
+      />
+      <SettingsRow label='Theme' htmlFor='colorScheme'>
         <AppColorModeToggle />
-      </div>
+      </SettingsRow>
     </div>
   );
 };
