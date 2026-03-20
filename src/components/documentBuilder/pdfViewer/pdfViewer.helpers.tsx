@@ -1,5 +1,6 @@
 import { LondonTemplate } from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { ManhattanTemplate } from '@/components/appHome/resumeTemplates/manhattan/ManhattanTemplate';
+import { TokyoTemplate } from '@/components/appHome/resumeTemplates/tokyo/TokyoTemplate';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type {
   PdfTemplateData,
@@ -16,6 +17,10 @@ export const getPdfTemplateByType = (
 
   if (templateType === INTERNAL_TEMPLATE_TYPES.LONDON) {
     return <LondonTemplate templateData={pdfTemplateData} />;
+  }
+
+  if (templateType === INTERNAL_TEMPLATE_TYPES.TOKYO) {
+    return <TokyoTemplate templateData={pdfTemplateData} />;
   }
 
   // biome-ignore lint/complexity/noUselessFragments: Fragment is fine here

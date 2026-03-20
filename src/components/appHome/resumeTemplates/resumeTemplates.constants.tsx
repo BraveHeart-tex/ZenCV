@@ -75,6 +75,14 @@ export const templateOptionsWithImages: TemplateOption[] = [
     tags: ['Clean & Modern', 'ATS-Optimized', 'Professional'],
     value: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   },
+  {
+    name: 'Tokyo',
+    image: '/templates/tokyo.png',
+    description:
+      'The Tokyo template features a bold two-column layout with a dark sidebar and clean white main column. Designed for modern professionals who want to stand out while remaining ATS-friendly and easy to scan.',
+    tags: ['Two-Column', 'Modern', 'ATS-Optimized'],
+    value: INTERNAL_TEMPLATE_TYPES.TOKYO,
+  },
 ];
 
 export const selectedOptionImageClassNames = 'ring-2 ring-blue-500' as const;
