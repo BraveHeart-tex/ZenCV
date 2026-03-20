@@ -70,7 +70,7 @@ route.post('/', rateLimitMiddleware, async (c) => {
       200
     );
   } catch (error) {
-    captureError(error, c, { handler: 'process/job-analysis' });
+    await captureError(error, c, { handler: 'process/job-analysis' });
     return c.json(
       {
         success: false,

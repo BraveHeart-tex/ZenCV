@@ -52,7 +52,7 @@ route.post('/', rateLimitMiddleware, async (c) => {
 
     return result.toUIMessageStreamResponse({ status: 200 });
   } catch (error) {
-    captureError(error, c, { handler: 'process/generate-summary' });
+    await captureError(error, c, { handler: 'process/generate-summary' });
     return c.json(
       {
         success: false,

@@ -1,8 +1,9 @@
+// worker/src/lib/sentry.ts
 import * as Sentry from '@sentry/cloudflare';
 import type { Context } from 'hono';
 import type { Env } from '../env';
 
-export function captureError(
+export async function captureError(
   err: unknown,
   c: Context<{ Bindings: Env }>,
   context?: Record<string, unknown>
@@ -22,4 +23,7 @@ export function captureError(
     }
     Sentry.captureException(err);
   });
+
+  // flush ensures events are sent before the worker response closes
+  await Sentry.flush(2000);
 }

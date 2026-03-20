@@ -48,7 +48,7 @@ route.post('/', rateLimitMiddleware, async (c) => {
 
     return result.toUIMessageStreamResponse({ status: 200 });
   } catch (error) {
-    captureError(error, c, { handler: 'process/improve-summary' });
+    await captureError(error, c, { handler: 'process/improve-summary' });
     return c.json(
       {
         success: false,

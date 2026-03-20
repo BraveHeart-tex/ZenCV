@@ -30,7 +30,7 @@ route.delete('/delete-account', async (c) => {
       });
       userId = sub;
     } catch (err) {
-      captureError(err, c, {
+      await captureError(err, c, {
         handler: 'auth/delete-account',
         step: 'verifyToken',
       });
@@ -74,7 +74,7 @@ route.delete('/delete-account', async (c) => {
       200
     );
   } catch (error) {
-    captureError(error, c, { handler: 'auth/delete-account' });
+    await captureError(error, c, { handler: 'auth/delete-account' });
     return c.json(
       {
         success: false,
