@@ -98,7 +98,7 @@ export const AuthenticationStatus = () => {
             Your account is only used to ensure fair usage of AI features. No
             data is collected for tracking.
           </p>
-          <div className='flex items-center justify-end gap-2'>
+          <div className='flex items-center gap-2'>
             <Button
               variant='destructive'
               size='sm'
@@ -131,16 +131,12 @@ export const AuthenticationStatus = () => {
             Only used for fair usage of AI features. No tracking. Sign out or
             delete your account at any time.
           </p>
-          <div className='flex justify-end'>
-            <SignInButton
-              fallbackRedirectUrl={pathname}
-              signUpFallbackRedirectUrl={pathname}
-            >
-              <Button size='sm' disabled={loading}>
-                Sign in
-              </Button>
-            </SignInButton>
-          </div>
+          <SignInButton
+            fallbackRedirectUrl={pathname}
+            signUpFallbackRedirectUrl={pathname}
+          >
+            <Button disabled={loading}>Sign in</Button>
+          </SignInButton>
         </div>
       )}
     </div>
