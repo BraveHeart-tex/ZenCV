@@ -220,7 +220,7 @@ export class BuilderTemplateStore {
       (data) => {
         debouncedTemplateUpdate(data);
       },
-      { fireImmediately: true, equals: comparer.structural }
+      { fireImmediately: true }
     );
 
     const disposer2 = reaction(
