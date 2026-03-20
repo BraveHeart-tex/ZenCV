@@ -62,6 +62,7 @@ export const generateResumeSummaryPrompt = ({
     ### Output Format:
     - Respond **only** with the summary text (no headings, labels, or Markdown).
     - Your response must be **directly usable** in a resume to attract employers.
+    - Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
     `.trim();
   }
 
@@ -145,6 +146,7 @@ ${jobPostingSection}
 - Respond with the **text only**, exactly as it should appear in a resume.
 - **Do not** include any headings, notes, surrounding quotes, or explanations.
 - The output must be **ready to paste directly into a resume**.
+- Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
 `.trim();
 };
 
@@ -175,7 +177,7 @@ ${roleDescription}
 
 ---
 
-### ✍️ Response Format
+### Response Format
 Respond *exactly* as shown:
 
 **Suggested Job Title:**
@@ -206,5 +208,6 @@ Skill 3
 - **Do not** include extra explanations, headings, or markdown.
 - Return only the content in the specified format: title + skill list.
 - Make sure each skill is **distinct**, correctly spelled, and properly capitalized.
+- Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
   `.trim();
 };
