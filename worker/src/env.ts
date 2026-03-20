@@ -10,7 +10,11 @@ const envSchema = z.object({
   ENVIRONMENT: z.enum(['development', 'production']).default('production'),
 });
 
-export type Env = z.infer<typeof envSchema>;
+export type Env = z.infer<typeof envSchema> & {
+  RATE_LIMITER: {
+    limit: (options: { key: string }) => Promise<{ success: boolean }>;
+  };
+};
 
 export function validateEnv(env: unknown): Env {
   const result = envSchema.safeParse(env);
@@ -25,5 +29,6 @@ export function validateEnv(env: unknown): Env {
       'Worker startup aborted due to invalid environment variables.'
     );
   }
-  return result.data;
+
+  return result.data as Env;
 }

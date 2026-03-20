@@ -6,3 +6,9 @@ workers_dev = true
 
 [vars]
 ENVIRONMENT = "production"
+
+[[unsafe.bindings]]
+type = "ratelimit"
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 10, period = 60 }

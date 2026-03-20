@@ -4,7 +4,7 @@ import { cors } from 'hono/cors';
 import { type Env, validateEnv } from './env';
 import authRoutes from './routes/auth';
 import generateSummaryRoute from './routes/generate-summary';
-import healthCheckRoute from './routes/health-check';
+
 import improveSummaryRoute from './routes/improve-summary';
 import jobAnalysisRoute from './routes/job-analysis';
 
@@ -28,7 +28,6 @@ app.route('/auth', authRoutes);
 app.route('/process/improve-summary', improveSummaryRoute);
 app.route('/process/job-analysis', jobAnalysisRoute);
 app.route('/process/generate-summary', generateSummaryRoute);
-app.route('/health-check', healthCheckRoute);
 
 app.notFound((c) => c.json({ success: false, message: 'Not found' }, 404));
 
