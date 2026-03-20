@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
+import { Button } from '@/components/ui/button';
 import {
   CONTAINER_TYPES,
   type DEX_Item,
@@ -17,7 +18,6 @@ import {
   getItemContainerId,
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
-import { Button } from '../../ui/button';
 import type { FocusState } from './ResumeOverview';
 
 interface ResumeOverViewContentProps {
@@ -34,24 +34,20 @@ export const ResumeOverViewContent = observer(
         getSectionContainerId(sectionId)
       );
       if (!container) return;
-
       container.scrollIntoView({ behavior: 'instant', block: 'center' });
-
       const checkScrollCompletion = () => {
         const rect = container.getBoundingClientRect();
         const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
         if (isInView) {
           container.classList.add(highlightedElementClassName);
-
-          setTimeout(() => {
-            container.classList.remove(highlightedElementClassName);
-          }, 500);
+          setTimeout(
+            () => container.classList.remove(highlightedElementClassName),
+            500
+          );
         } else {
           requestAnimationFrame(checkScrollCompletion);
         }
       };
-
       requestAnimationFrame(checkScrollCompletion);
     };
 
@@ -63,82 +59,77 @@ export const ResumeOverViewContent = observer(
       <AnimatePresence>
         {visible && (
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
-            className='bg-popover group-hover:opacity-100 w-[20rem] p-3 ml-2 border rounded-md shadow-xs'
+            exit={{ opacity: 0, x: 8 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className='bg-popover/95 backdrop-blur-sm w-64 mr-3 border border-border/60 rounded-lg shadow-lg overflow-hidden'
           >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.2 }}
-              className='text-muted-foreground pb-2 text-sm font-medium'
-            >
-              Resume Overview
-            </motion.div>
+            <div className='px-3 py-2.5 border-b border-border/40'>
+              <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60'>
+                Overview
+              </p>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-              className='flex flex-col gap-1.5 max-h-[50vh] overflow-auto'
-            >
+            <div className='flex flex-col py-1.5 max-h-[50vh] overflow-y-auto'>
               {sectionsWithItems.map((section) => {
+                const isSectionFocused =
+                  focusState.sectionId === getSectionContainerId(section.id);
+                const collapsibleItems = section.items.filter(
+                  (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
+                );
+
                 return (
                   <motion.div
                     key={section.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.15 }}
                   >
                     <Button
-                      className='hover:bg-muted/70 justify-start px-1.5 text-sm font-normal text-ellipsis overflow-hidden w-full'
+                      className={cn(
+                        'justify-start w-full px-3 h-8 text-sm font-medium rounded-none',
+                        'hover:bg-muted/60 transition-colors',
+                        isSectionFocused
+                          ? 'text-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      )}
                       variant='ghost'
-                      onClick={() => {
-                        handleScrollToSection(section.id);
-                      }}
+                      onClick={() => handleScrollToSection(section.id)}
                     >
                       {section.title}
                     </Button>
-                    {section.items.length > 0 && (
-                      <div className='flex flex-col gap-0.5 pl-2'>
-                        {section.items
-                          .filter(
-                            (item) =>
-                              item.containerType === CONTAINER_TYPES.COLLAPSIBLE
-                          )
-                          .map((item) => (
-                            <motion.div
+
+                    {collapsibleItems.length > 0 && (
+                      <div className='flex flex-col mb-0.5 gap-1'>
+                        {collapsibleItems.map((item) => {
+                          const isItemFocused =
+                            focusState.itemId === getItemContainerId(item.id);
+                          return (
+                            <Button
                               key={item.id}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{
-                                duration: 0.2,
-                              }}
+                              className={cn(
+                                'justify-start w-full pl-6 pr-3 h-7 text-xs font-normal rounded-none',
+                                'hover:bg-muted/60 transition-colors truncate',
+                                isItemFocused
+                                  ? 'text-foreground'
+                                  : 'text-muted-foreground/70 hover:text-muted-foreground'
+                              )}
+                              variant='ghost'
+                              onClick={() => handleScrollToItem(item.id)}
                             >
-                              <Button
-                                className={cn(
-                                  'hover:bg-muted/70 justify-start px-1.5 text-xs font-normal text-muted-foreground overflow-hidden truncate w-full',
-                                  focusState.itemId ===
-                                    getItemContainerId(item.id) &&
-                                    'text-blue-500 hover:text-blue-500'
-                                )}
-                                variant='ghost'
-                                onClick={() => {
-                                  handleScrollToItem(item.id);
-                                }}
-                              >
+                              <span className='truncate'>
                                 {getTriggerContent(item.id).title}
-                              </Button>
-                            </motion.div>
-                          ))}
+                              </span>
+                            </Button>
+                          );
+                        })}
                       </div>
                     )}
                   </motion.div>
                 );
               })}
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
