@@ -7,36 +7,35 @@ import { ModeToggle } from '../ui/mode-toggle';
 
 export const Header = () => {
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm supports-backdrop-filter:bg-background/60 px-4'>
-      <div className='h-14 max-w-(--breakpoint-2xl) container flex items-center mx-auto'>
-        <Link className='flex items-center mr-6 space-x-2' to='/'>
+    <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-md px-4'>
+      <div className='h-14 max-w-7xl flex items-center mx-auto gap-8'>
+        <Link className='flex items-center gap-2 shrink-0' to='/'>
           <Icons.logo />
-          <span className='inline-block font-bold'>{APP_NAME}</span>
+          <span className='font-semibold tracking-tight text-sm'>
+            {APP_NAME}
+          </span>
         </Link>
-        <div className='md:flex hidden mr-4'>
-          <nav className='flex items-center space-x-6 text-sm font-medium'>
+
+        <nav className='md:flex hidden items-center gap-6 text-sm'>
+          {['Features', 'Templates'].map((item) => (
             <a
-              className='hover:text-foreground/80 text-foreground/60 transition-colors'
-              href='#features'
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className='text-muted-foreground hover:text-foreground transition-colors duration-200'
             >
-              Features
+              {item}
             </a>
-            <a
-              className='hover:text-foreground/80 text-foreground/60 transition-colors'
-              href='#templates'
-            >
-              Templates
-            </a>
-          </nav>
-        </div>
-        <div className='flex items-center justify-end flex-1 space-x-2'>
+          ))}
+        </nav>
+
+        <div className='flex items-center gap-2 ml-auto'>
           <ModeToggle />
           <Link
             to='/documents'
-            className={buttonVariants({ variant: 'default' })}
+            className={buttonVariants({ variant: 'default', size: 'sm' })}
           >
             Start Building
-            <ArrowRight className='w-4 h-4 ml-2' />
+            <ArrowRight className='w-3.5 h-3.5 ml-1.5' />
           </Link>
         </div>
       </div>

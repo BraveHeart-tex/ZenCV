@@ -3,30 +3,28 @@ import { Icons } from '../misc/icons';
 
 export const Footer = () => {
   return (
-    <footer className='bg-background/80 w-full px-4 border-t'>
-      <div className='md:h-24 md:flex-row md:py-0 container flex flex-col items-center justify-between py-10 mx-auto space-y-4'>
-        <div className='md:flex-row md:space-y-0 md:space-x-4 flex flex-col items-center justify-between w-full space-y-4'>
-          <div className='flex items-center gap-2'>
-            <span className='flex items-center space-x-2'>
-              <Icons.logo />
-              <span className='text-sm font-bold'>{APP_NAME}</span>
-            </span>
-            <p className='text-sm leading-loose text-center'>
-              &copy; {new Date().getFullYear()} All rights reserved.
-            </p>
-          </div>
-          <p className='md:text-left ml-auto text-sm leading-loose text-center'>
-            Built by{' '}
-            <a
-              href='https://github.com/BraveHeart-tex'
-              target='_blank'
-              rel='noreferrer'
-              className='underline-offset-4 font-bold underline'
-            >
-              Bora Karaca
-            </a>
-          </p>
+    <footer className='border-t border-border/70 px-4'>
+      <div className='container h-16 mx-auto flex items-center justify-between max-w-7xl'>
+        <div className='flex items-center gap-2'>
+          <Icons.logo />
+          <span className='text-sm font-semibold tracking-tight'>
+            {APP_NAME}
+          </span>
+          <span className='text-muted-foreground/70 text-sm ml-2'>
+            © {new Date().getFullYear()}
+          </span>
         </div>
+        <p className='text-sm text-muted-foreground/60'>
+          Built by{' '}
+          <a
+            href='https://github.com/BraveHeart-tex'
+            target='_blank'
+            rel='noreferrer'
+            className='text-foreground/70 hover:text-foreground font-medium transition-colors underline underline-offset-4'
+          >
+            Bora Karaca
+          </a>
+        </p>
       </div>
     </footer>
   );
