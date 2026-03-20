@@ -2,10 +2,7 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   CLERK_SECRET_KEY: z.string().min(1),
-  UPSTASH_REDIS_REST_URL: z.url(),
-  UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
   GROQ_API_KEY: z.string().min(1),
-  CRON_TOKEN: z.string().min(1),
   SENTRY_DSN: z.string().min(1),
   ENVIRONMENT: z.enum(['development', 'production']).default('production'),
 });
