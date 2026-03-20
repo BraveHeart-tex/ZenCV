@@ -5,11 +5,10 @@ import {
   showLoadingToast,
   showSuccessToast,
 } from '@/components/ui/sonner';
+import { endpoints } from '@/lib/endpoints';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import type { AiSuggestionsContext } from '@/lib/types/documentBuilder.types';
 import { useJobAnalysis } from './useJobAnalysis';
-
-export const PROCESS_BASE_API_ROUTE = '/api/process';
 
 const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
   null
@@ -39,7 +38,7 @@ export const BuilderAiSuggestionsProvider = ({
     completion: generatedSummary,
     error: summaryCompletionError,
   } = useCompletion({
-    api: `${PROCESS_BASE_API_ROUTE}/generate-summary`,
+    api: endpoints.process.generateSummary,
     onError(error) {
       showErrorToast(getErrorMessage(error), {
         id: toastId.current,
@@ -54,7 +53,7 @@ export const BuilderAiSuggestionsProvider = ({
     completion: improvedSummary,
     error: summaryImprovementError,
   } = useCompletion({
-    api: `${PROCESS_BASE_API_ROUTE}/improve-summary`,
+    api: endpoints.process.improveSummary,
     onError(error) {
       showErrorToast(getErrorMessage(error), {
         id: toastId.current,
