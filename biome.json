@@ -93,7 +93,7 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.config.{js,ts,mjs,cjs}", "**/api/**"],
+      "includes": ["**/*.config.{js,ts,mjs,cjs}", "**/api/**", "**/worker/**"],
       "linter": {
         "rules": {
           "style": {

@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { CUSTOM_PROMPT_MAX_LENGTH } from './constants.js';
-import { jobPostingSchema } from './jobPosting.schema.js';
-import { workExperienceSchema } from './workExperience.schema.js';
+import { CUSTOM_PROMPT_MAX_LENGTH } from '../constants';
+import { jobPostingSchema } from './jobPosting.schema';
+import { workExperienceSchema } from './workExperience.schema';
 
 export const generateSummarySchema = z.object({
   workExperiences: z

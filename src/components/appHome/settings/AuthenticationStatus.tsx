@@ -8,6 +8,7 @@ import {
   showLoadingToast,
   showSuccessToast,
 } from '@/components/ui/sonner';
+import { endpoints } from '@/lib/endpoints';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 
 const aiPerks = [
@@ -40,7 +41,7 @@ export const AuthenticationStatus = () => {
 
         try {
           const token = await session?.getToken();
-          const response = await fetch('/api/auth/delete-clerk-account', {
+          const response = await fetch(endpoints.auth.deleteAccount, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
           });

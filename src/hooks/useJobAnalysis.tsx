@@ -10,10 +10,10 @@ import {
   deleteAiSuggestions,
 } from '@/lib/client-db/aiSuggestionsService';
 import { genericErrorMessage } from '@/lib/constants';
+import { endpoints } from '@/lib/endpoints';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { jobAnalysisResultSchema } from '@/lib/validation/jobAnalysisResult.schema';
 import type { JobPostingSchema } from '@/lib/validation/jobPosting.schema';
-import { PROCESS_BASE_API_ROUTE } from './useBuilderAiSuggestions';
 
 export const useJobAnalysis = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +41,7 @@ export const useJobAnalysis = () => {
     abortControllerRef.current = controller;
 
     try {
-      const response = await fetch(`${PROCESS_BASE_API_ROUTE}/job-analysis`, {
+      const response = await fetch(endpoints.process.jobAnalysis, {
         method: 'POST',
         body: JSON.stringify(values),
         headers: {

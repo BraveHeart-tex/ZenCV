@@ -8,13 +8,9 @@ const nonEmpty = (name: string) =>
 
 const envSchema = z.object({
   VITE_CLERK_PUBLISHABLE_KEY: nonEmpty('VITE_CLERK_PUBLISHABLE_KEY'),
-  CLERK_SECRET_KEY: nonEmpty('CLERK_SECRET_KEY'),
-  UPSTASH_REDIS_REST_URL: nonEmpty('UPSTASH_REDIS_REST_URL').url(
-    'UPSTASH_REDIS_REST_URL must be a valid URL'
+  VITE_API_URL: nonEmpty('VITE_API_URL').url(
+    'VITE_API_URL must be a valid URL'
   ),
-  UPSTASH_REDIS_REST_TOKEN: nonEmpty('UPSTASH_REDIS_REST_TOKEN'),
-  GROQ_API_KEY: nonEmpty('GROQ_API_KEY'),
-  CRON_TOKEN: nonEmpty('CRON_TOKEN'),
 });
 
 export default defineConfig(({ mode }) => {
@@ -36,14 +32,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-      },
-    },
-    server: {
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-        },
       },
     },
     build: {

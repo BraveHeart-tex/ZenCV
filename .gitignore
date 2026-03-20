@@ -46,3 +46,7 @@ coverage
 # os
 .DS_Store
 .env*.local
+
+# worker
+worker/.dev.vars
+worker/.wrangler
