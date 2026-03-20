@@ -48,8 +48,8 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
     resolver: zodResolver(createNewDocumentSchema),
     defaultValues: {
       title: '',
-      shouldUseSampleData: false,
       template: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
+      shouldUseSampleData: false,
     },
   });
 
