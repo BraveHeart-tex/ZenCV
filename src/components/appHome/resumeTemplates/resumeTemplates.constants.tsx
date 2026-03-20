@@ -91,6 +91,14 @@ export const templateOptionsWithImages: TemplateOption[] = [
     tags: ['Two-Column', 'Elegant', 'Professional'],
     value: INTERNAL_TEMPLATE_TYPES.DUBAI,
   },
+  {
+    name: 'Sydney',
+    image: '/templates/sydney.webp',
+    description:
+      'The Sydney template is a purely minimal, whitespace-driven design built for senior and executive profiles. A bold name treatment anchors the page while generous spacing lets your experience speak for itself.',
+    tags: ['Minimal', 'Executive', 'Whitespace'],
+    value: INTERNAL_TEMPLATE_TYPES.SYDNEY,
+  },
 ];
 
 export const selectedOptionImageClassNames = 'ring-2 ring-blue-500' as const;
