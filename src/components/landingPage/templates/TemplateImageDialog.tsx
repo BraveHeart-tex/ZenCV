@@ -3,6 +3,7 @@ import { ArrowRight, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { TemplateImage } from '@/components/documentBuilder/TemplateImage';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -36,14 +37,14 @@ export const TemplateImageDialog = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div className='relative overflow-hidden cursor-pointer bg-muted/30'>
-          <img
-            src={template.images.card}
-            alt={`${template.name} template`}
-            width={300}
-            loading='lazy'
-            fetchPriority='low'
-            height={400}
-            className='object-cover w-full transition-transform duration-500 hover:scale-[1.03]'
+          <TemplateImage
+            template={template}
+            variant='card'
+            imgProps={{
+              className:
+                'object-cover w-full transition-transform duration-500 hover:scale-[1.03]',
+              alt: `${template.name} template`,
+            }}
           />
           <div className='absolute inset-0 bg-foreground/0 hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center'>
             <span className='opacity-0 hover:opacity-100 transition-opacity duration-300 text-xs font-semibold tracking-widest uppercase bg-background/90 text-foreground px-3 py-1.5 rounded-full border border-border/60'>
@@ -67,15 +68,14 @@ export const TemplateImageDialog = ({
         {/* Mobile: stacked + scrollable. Desktop: side by side, fixed height */}
         <div className='flex flex-col lg:flex-row w-full lg:h-[80vh] overflow-y-auto lg:overflow-hidden'>
           {/* Image panel — short on mobile, full height on desktop */}
-          <div className='w-full h-[35vh] lg:h-full lg:w-[55%] bg-muted/20 flex items-center justify-center overflow-hidden shrink-0'>
-            <img
-              src={template.images.modal}
-              alt={`${template.name} template`}
-              width={1920}
-              height={1080}
-              loading='lazy'
-              fetchPriority='low'
-              className='object-contain w-full h-full'
+          <div className='w-full h-[35vh] lg:h-full lg:w-[55%] bg-muted/20 shrink-0'>
+            <TemplateImage
+              template={template}
+              imgProps={{
+                className: 'object-contain w-full h-full',
+                alt: `${template.name} template`,
+              }}
+              variant='modal'
             />
           </div>
 

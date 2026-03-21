@@ -10,6 +10,7 @@ import { CarouselItem } from '@/components/ui/carousel';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 import { cn } from '@/lib/utils/stringUtils';
+import { TemplateImage } from '../TemplateImage';
 
 interface MobileTemplatePickerItemProps {
   template: TemplateOptionWithVariants;
@@ -38,11 +39,13 @@ export const MobileTemplatePickerItem = observer(
           onKeyDown={handleSelectTemplate}
           onKeyUp={handleSelectTemplate}
         >
-          <img
-            src={template.images.card}
-            alt={template.name}
-            loading='lazy'
-            className='object-cover'
+          <TemplateImage
+            template={template}
+            imgProps={{
+              className: 'object-cover',
+              alt: template.name,
+            }}
+            variant='card'
           />
           {isSelected && (
             <span className='bg-primary text-primary-foreground dark:bg-background dark:text-foreground top-1/2 left-1/2 absolute flex items-center justify-center w-8 h-8 -translate-x-1/2 -translate-y-1/2 rounded-full'>
