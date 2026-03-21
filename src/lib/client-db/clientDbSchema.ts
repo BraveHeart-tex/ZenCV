@@ -14,10 +14,10 @@ export interface DEX_Document {
   id: IdType;
   title: string;
   templateType: ResumeTemplate;
+  templateSettings: string;
   createdAt: string;
   updatedAt: string;
   jobPostingId: Nullable<IdType>;
-  accentColor: string;
 }
 
 export interface DEX_Section {

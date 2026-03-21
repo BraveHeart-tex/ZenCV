@@ -3,10 +3,10 @@ import type { ResumeTemplate } from '../types/documentBuilder.types';
 
 export const DEFAULT_ACCENT_COLOR = '#4f8ef7' as const;
 
-export const TEMPLATE_ACCENT_COLORS: Record<string, `#${string}`> = {
+export const TEMPLATE_ACCENT_COLORS: Partial<Record<ResumeTemplate, string>> = {
   [INTERNAL_TEMPLATE_TYPES.TOKYO]: '#4f8ef7',
   [INTERNAL_TEMPLATE_TYPES.DUBAI]: '#c8a96e',
-  [INTERNAL_TEMPLATE_TYPES.SYDNEY]: '##111111',
+  [INTERNAL_TEMPLATE_TYPES.SYDNEY]: '#111111',
 };
 
 export const ACCENT_COLOR_PRESETS = [
@@ -27,3 +27,33 @@ export const ACCENT_COLOR_SUPPORTED_TEMPLATES = new Set<ResumeTemplate>([
   INTERNAL_TEMPLATE_TYPES.DUBAI,
   INTERNAL_TEMPLATE_TYPES.SYDNEY,
 ]);
+
+export interface TemplateColorSetting {
+  accentColor: string;
+}
+
+export type TemplateSettings = Partial<
+  Record<ResumeTemplate, TemplateColorSetting>
+>;
+
+export const parseTemplateSettings = (
+  raw: string | undefined
+): TemplateSettings => {
+  try {
+    return JSON.parse(raw || '{}') as TemplateSettings;
+  } catch {
+    return {};
+  }
+};
+
+export const serializeTemplateSettings = (
+  settings: TemplateSettings
+): string => {
+  return JSON.stringify(settings);
+};
+
+export const getDefaultAccentColorForTemplate = (
+  templateType: ResumeTemplate
+): string => {
+  return TEMPLATE_ACCENT_COLORS[templateType] ?? DEFAULT_ACCENT_COLOR;
+};

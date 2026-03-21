@@ -5,14 +5,14 @@ import { getPdfTemplateByType } from './pdfViewer/pdfViewer.helpers';
 
 export const DocumentBuilderPreviewContent = observer(() => {
   const pdfTemplateData = builderRootStore.templateStore.debouncedTemplateData;
-  const templateType = builderRootStore.documentStore.document?.templateType;
-
-  if (!pdfTemplateData || !templateType) return null;
+  if (!pdfTemplateData) {
+    return null;
+  }
 
   return (
     <div className='hide-scrollbar w-full h-full overflow-auto rounded-md'>
       <DocumentBuilderPdfViewer>
-        {getPdfTemplateByType(templateType, pdfTemplateData)}
+        {getPdfTemplateByType(pdfTemplateData)}
       </DocumentBuilderPdfViewer>
     </div>
   );

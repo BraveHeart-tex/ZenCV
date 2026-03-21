@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie';
-import { DEFAULT_ACCENT_COLOR } from '../constants/accentColors';
+import type { TemplateSettings } from '../constants/accentColors';
 import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
+import type { ResumeTemplate } from '../types/documentBuilder.types';
 import type {
   DEX_AiSuggestions,
   DEX_Document,
@@ -136,8 +137,14 @@ clientDb
       .table('documents')
       .toCollection()
       .modify((doc) => {
-        if (!doc.accentColor) {
-          doc.accentColor = DEFAULT_ACCENT_COLOR;
+        const existingColor = doc.accentColor;
+        const settings: TemplateSettings = {};
+        if (existingColor) {
+          settings[doc.templateType as ResumeTemplate] = {
+            accentColor: existingColor,
+          };
         }
+        doc.templateSettings = JSON.stringify(settings);
+        delete doc.accentColor;
       });
   });

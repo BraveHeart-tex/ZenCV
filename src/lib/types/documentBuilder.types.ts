@@ -78,6 +78,7 @@ export interface PdfTemplateData {
   };
   sections: TemplateDataSection[];
   accentColor: string;
+  templateType: ResumeTemplate;
 }
 
 export interface TemplateDataSection extends SectionWithParsedMetadata {

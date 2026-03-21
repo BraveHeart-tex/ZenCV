@@ -1,12 +1,16 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import {
-  changeDocumentTemplateType,
   getFullDocumentStructure,
   renameDocument,
-  updateDocumentAccentColor,
+  updateDocument,
 } from '@/lib/client-db/documentService';
-import { DEFAULT_ACCENT_COLOR } from '@/lib/constants/accentColors';
+import {
+  DEFAULT_ACCENT_COLOR,
+  getDefaultAccentColorForTemplate,
+  parseTemplateSettings,
+  serializeTemplateSettings,
+} from '@/lib/constants/accentColors';
 import type {
   ResumeTemplate,
   StoreResult,
@@ -86,54 +90,100 @@ export class BuilderDocumentStore {
     }
   };
 
+  get accentColor(): string {
+    if (!this.document) {
+      return DEFAULT_ACCENT_COLOR;
+    }
+
+    const settings = parseTemplateSettings(this.document.templateSettings);
+    return (
+      settings[this.document.templateType]?.accentColor ??
+      getDefaultAccentColorForTemplate(this.document.templateType)
+    );
+  }
+
   changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
-    if (!this.document || this.document.templateType === templateType) return;
+    if (!this.document || this.document.templateType === templateType) {
+      return;
+    }
 
-    const { id, templateType: prev } = this.document;
+    const {
+      id,
+      templateType: prevType,
+      templateSettings: prevSettings,
+    } = this.document;
 
-    runInAction(() => this.setTemplateType(templateType));
+    // batch both changes together — single reaction fire
+    runInAction(() => {
+      this.setTemplateType(templateType);
+      // pre-resolve the accent color for the new template into templateSettings
+      // so accentColor getter returns the right value in the same tick
+      if (this.document) {
+        const settings = parseTemplateSettings(this.document.templateSettings);
+        if (!settings[templateType]) {
+          settings[templateType] = {
+            accentColor: getDefaultAccentColorForTemplate(templateType),
+          };
+          this.document.templateSettings = serializeTemplateSettings(settings);
+        }
+      }
+    });
 
     try {
-      await changeDocumentTemplateType(id, templateType);
+      await updateDocument(id, {
+        templateType,
+        templateSettings: this.document.templateSettings,
+      });
     } catch (error) {
       console.error('changeDocumentTemplateType error', error);
       runInAction(() => {
         if (this.document?.id === id) {
-          this.setTemplateType(prev);
+          this.setTemplateType(prevType);
+          this.document.templateSettings = prevSettings;
         }
       });
     }
   };
 
   private setTitle = (title: string) => {
-    if (!this.document) return;
+    if (!this.document) {
+      return;
+    }
     this.document.title = title;
   };
 
   private setTemplateType = (templateType: ResumeTemplate) => {
-    if (!this.document) return;
+    if (!this.document) {
+      return;
+    }
     this.document.templateType = templateType;
   };
 
-  get accentColor(): string {
-    return this.document?.accentColor ?? DEFAULT_ACCENT_COLOR;
-  }
-
   updateAccentColor = async (color: string): Promise<StoreResult> => {
-    if (!this.document) return { success: false, error: 'Document not found.' };
-    const prev = this.document.accentColor;
+    if (!this.document) {
+      return { success: false, error: 'Document not found.' };
+    }
+
+    const settings = parseTemplateSettings(this.document.templateSettings);
+    const newSettings = serializeTemplateSettings({
+      ...settings,
+      [this.document.templateType]: { accentColor: color },
+    });
+
+    const prev = this.document.templateSettings;
     runInAction(() => {
       if (this.document) {
-        this.document.accentColor = color;
+        this.document.templateSettings = newSettings;
       }
     });
+
     try {
-      await updateDocumentAccentColor(this.document.id, color);
+      await updateDocument(this.document.id, { templateSettings: newSettings });
       return { success: true };
     } catch {
       runInAction(() => {
         if (this.document) {
-          this.document.accentColor = prev;
+          this.document.templateSettings = prev;
         }
       });
       return { success: false, error: 'Failed to update accent color.' };

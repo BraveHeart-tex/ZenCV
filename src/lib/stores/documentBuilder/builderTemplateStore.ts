@@ -11,6 +11,7 @@ import type { BuilderRootStore } from './builderRootStore';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
+  INTERNAL_TEMPLATE_TYPES,
   MAX_VISIBLE_SUGGESTIONS,
   RESUME_SCORE_CONFIG,
   SECTION_SUGGESTION_CONFIG,
@@ -111,6 +112,9 @@ export class BuilderTemplateStore {
       summarySection: this.summarySection,
       sections: this.mappedSections,
       accentColor: this.root.documentStore.accentColor,
+      templateType:
+        this.root.documentStore.document?.templateType ??
+        INTERNAL_TEMPLATE_TYPES.MANHATTAN,
     };
   }
 
@@ -250,13 +254,17 @@ export class BuilderTemplateStore {
   };
 
   start = () => {
-    if (this.isActive) return;
+    if (this.isActive) {
+      return;
+    }
     this.isActive = true;
     this.setupReactions();
   };
 
   stop = () => {
-    if (!this.isActive) return;
+    if (!this.isActive) {
+      return;
+    }
     this.isActive = false;
     this.dispose();
   };

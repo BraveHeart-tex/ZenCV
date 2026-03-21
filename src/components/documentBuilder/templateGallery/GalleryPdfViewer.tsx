@@ -1,6 +1,7 @@
 import { pdf } from '@react-pdf/renderer';
+import { reaction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -18,36 +19,34 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 export const GalleryPdfViewer = observer(() => {
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [renderVersion, setRenderVersion] = useState(0);
 
-  const templateType = builderRootStore.documentStore.document?.templateType;
-
-  const renderData = JSON.stringify(
-    builderRootStore.templateStore.debouncedTemplateData
-  );
+  useEffect(() => {
+    const dispose = reaction(
+      () => builderRootStore.templateStore.debouncedTemplateData,
+      (data) => {
+        if (!data) {
+          return;
+        }
+        setRenderVersion((prev) => prev + 1);
+      },
+      { fireImmediately: true }
+    );
+    return () => dispose();
+  }, []);
 
   const render = useAsync(async () => {
-    try {
-      if (
-        !renderData ||
-        !templateType ||
-        !builderRootStore.templateStore.debouncedTemplateData
-      ) {
-        return null;
-      }
-
-      const element = getPdfTemplateByType(
-        templateType,
-        builderRootStore.templateStore.debouncedTemplateData
-      );
-
-      if (element) {
-        const blob = await pdf(element).toBlob();
-        return URL.createObjectURL(blob);
-      }
-    } catch (error) {
-      console.error('DocumentBuilderPdfViewer rendering error', error);
+    const templateData = builderRootStore.templateStore.debouncedTemplateData;
+    if (!templateData || isMobile) {
+      return null;
     }
-  }, [renderData, isMobile, templateType]);
+
+    const element = getPdfTemplateByType(templateData);
+    if (element) {
+      const blob = await pdf(element).toBlob();
+      return URL.createObjectURL(blob);
+    }
+  }, [renderVersion, isMobile]);
 
   const { currentPage, onDocumentLoad } = usePdfViewerHelpers(render);
 
@@ -55,7 +54,7 @@ export const GalleryPdfViewer = observer(() => {
     <div ref={containerRef} className='w-full h-full'>
       {render.value && !render.loading && (
         <Document
-          key={`${templateType}-${render.value}`}
+          key={render.value}
           file={render.value}
           className='w-full h-full'
           loading={null}

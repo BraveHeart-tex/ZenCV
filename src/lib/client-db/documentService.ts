@@ -27,10 +27,7 @@ import {
   isSelectField,
   prepareSectionsInsertData,
 } from '@/lib/helpers/documentBuilderHelpers';
-import {
-  DEFAULT_ACCENT_COLOR,
-  TEMPLATE_ACCENT_COLORS,
-} from '../constants/accentColors';
+import { serializeTemplateSettings } from '../constants/accentColors';
 import {
   getTemplateByStyle,
   type PrefilledResumeStyle,
@@ -64,7 +61,7 @@ export type GetFullDocumentStructureResponse =
     };
 
 export async function createDocument(
-  data: Omit<DEX_InsertDocumentModel, 'jobPostingId' | 'accentColor'> & {
+  data: Omit<DEX_InsertDocumentModel, 'jobPostingId'> & {
     selectedPrefillStyle: PrefilledResumeStyle | null;
   }
 ) {
@@ -74,9 +71,8 @@ export async function createDocument(
     async () => {
       const documentId = await clientDb.documents.add({
         templateType: data.templateType,
+        templateSettings: serializeTemplateSettings({}),
         title: data.title,
-        accentColor:
-          TEMPLATE_ACCENT_COLORS[data.templateType] ?? DEFAULT_ACCENT_COLOR,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         jobPostingId: null,
@@ -285,11 +281,13 @@ export async function copyDocument(documentId: DEX_Document['id']) {
       const newDocumentId = await clientDb.documents.add({
         templateType: sourceDocumentStructure.document.templateType,
         title: `${sourceDocumentStructure.document.title}(copy)`,
-        accentColor:
-          sourceDocumentStructure.document.accentColor ?? DEFAULT_ACCENT_COLOR,
+        templateSettings:
+          sourceDocumentStructure.document.templateSettings ??
+          serializeTemplateSettings({}),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      } as DEX_Document);
+        jobPostingId: null,
+      });
 
       const insertPayload = sourceDocumentStructure.sections.map((section) => {
         const items = sourceDocumentStructure.items.filter(
@@ -350,11 +348,4 @@ export async function copyDocument(documentId: DEX_Document['id']) {
       return newDocumentId;
     }
   );
-}
-
-export async function updateDocumentAccentColor(
-  documentId: DEX_Document['id'],
-  accentColor: string
-) {
-  return updateDocument(documentId, { accentColor });
 }
