@@ -1,6 +1,6 @@
 import type { InsertType } from 'dexie';
 import { findValueInItemFields } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import { showErrorToast } from '@/components/ui/sonner';
 import {
   CONTAINER_TYPES,
   type DEX_Document,
@@ -36,15 +36,12 @@ import type {
   FieldInsertTemplate,
   FieldName,
   FieldValuesForKey,
-  ResumeTemplate,
   SectionType,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
-import { createDocument } from '../client-db/documentService';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
-import type { PrefilledResumeStyle } from '../templates/prefilledTemplates';
 import type { GenerateSummarySchema } from '../validation/generateSummary.schema';
 
 export const getInitialDocumentInsertBoilerplate = (
@@ -545,47 +542,6 @@ export const scrollItemIntoView = (
   };
 
   setTimeout(scrollAndHighlight, 300);
-};
-
-interface CreateAndNavigateToDocumentParams {
-  title: string;
-  templateType: ResumeTemplate;
-  onSuccess?: (documentId: DEX_Document['id']) => void;
-  onError?: () => void;
-  selectedPrefillStyle?: PrefilledResumeStyle | null;
-}
-
-export const createAndNavigateToDocument = async ({
-  title,
-  templateType,
-  onSuccess,
-  onError,
-  selectedPrefillStyle = null,
-}: CreateAndNavigateToDocumentParams) => {
-  try {
-    const documentId = await createDocument({
-      title,
-      templateType,
-      selectedPrefillStyle,
-    });
-
-    if (!documentId) {
-      showErrorToast(
-        'An error occurred while creating the document. Please try again.'
-      );
-      if (onError) onError();
-      return;
-    }
-
-    await builderRootStore.documentStore.initializeStore(documentId);
-    showSuccessToast('Document created successfully.');
-
-    if (onSuccess) onSuccess(documentId);
-  } catch (error) {
-    showErrorToast('An error occurred while creating the document.');
-    console.error(error);
-    if (onError) onError();
-  }
 };
 
 export const downloadPDF = ({

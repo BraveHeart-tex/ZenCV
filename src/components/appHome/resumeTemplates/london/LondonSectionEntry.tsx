@@ -1,6 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import Html from 'react-pdf-html';
-import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.pdf';
 import type { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { LONDON_FONT_SIZE } from './london.styles';
 

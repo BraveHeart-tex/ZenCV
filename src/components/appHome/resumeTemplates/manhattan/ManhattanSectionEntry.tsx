@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import { Html } from 'react-pdf-html';
 import type { WithEntryId } from '@/lib/types/documentBuilder.types';
-import { pdfHtmlRenderers } from '../resumeTemplates.constants';
+import { pdfHtmlRenderers } from '../resumeTemplates.pdf';
 import { MANHATTAN_FONT_SIZE } from './manhattan.styles';
 
 interface ManhattanSectionEntryProps<T extends Record<string, string>> {

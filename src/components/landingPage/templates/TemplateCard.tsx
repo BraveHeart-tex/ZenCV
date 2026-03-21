@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
 import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 import { TemplateImageDialog } from './TemplateImageDialog';
 

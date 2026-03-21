@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer';
 import { Html } from 'react-pdf-html';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import { pdfHtmlRenderers } from '../resumeTemplates.constants';
+import { pdfHtmlRenderers } from '../resumeTemplates.pdf';
 import { DUBAI_FONT_SIZE, dubaiTemplateStyles } from './dubai.styles';
 
 export const DubaiSummarySection = ({
