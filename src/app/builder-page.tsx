@@ -44,8 +44,10 @@ export const BuilderPage = observer(() => {
     if (
       !documentId ||
       builderRootStore.documentStore.document?.id === documentId
-    )
+    ) {
       return;
+    }
+
     const init = async () => {
       const result =
         await builderRootStore.documentStore.initializeStore(documentId);
@@ -54,6 +56,7 @@ export const BuilderPage = observer(() => {
         navigate('/documents');
       }
     };
+
     init();
   }, [documentId, navigate]);
 

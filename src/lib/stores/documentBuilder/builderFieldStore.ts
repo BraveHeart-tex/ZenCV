@@ -40,8 +40,13 @@ export class BuilderFieldStore {
     }, new Map<DEX_Item['id'], DEX_Field[]>());
   }
 
-  getFieldById = (fieldId: DEX_Field['id']) => {
-    return this.fieldsById.get(fieldId);
+  getFieldById = (fieldId: DEX_Field['id']): DEX_Field | undefined => {
+    const field = this.fieldsById.get(fieldId);
+    if (!field) return undefined;
+    return {
+      ...field,
+      value: this.fieldValues.get(field.id) ?? field.value ?? '',
+    } as DEX_Field;
   };
 
   getFieldValueByName = (fieldName: FieldName): string => {
