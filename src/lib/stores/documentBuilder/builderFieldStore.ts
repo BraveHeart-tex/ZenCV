@@ -1,4 +1,10 @@
-import { computed, makeAutoObservable, runInAction } from 'mobx';
+import {
+  computed,
+  makeAutoObservable,
+  ObservableMap,
+  observable,
+  runInAction,
+} from 'mobx';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
@@ -7,10 +13,14 @@ import type { BuilderRootStore } from './builderRootStore';
 export class BuilderFieldStore {
   root: BuilderRootStore;
   fields: DEX_Field[] = [];
+  fieldValues: ObservableMap<DEX_Field['id'], string> = new ObservableMap();
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      fields: observable,
+      fieldValues: observable,
+    });
   }
 
   @computed
@@ -34,16 +44,19 @@ export class BuilderFieldStore {
     return this.fieldsById.get(fieldId);
   };
 
-  getFieldsByItemId = (itemId: DEX_Item['id']) => {
-    return this.fieldsByItemId.get(itemId) || [];
-  };
-
   getFieldValueByName = (fieldName: FieldName): string => {
-    return this.fields.find((field) => field.name === fieldName)?.value || '';
+    const field = this.fields.find((currField) => currField.name === fieldName);
+    if (!field) return '';
+    return this.fieldValues.get(field.id) ?? field.value ?? '';
   };
 
   setFields = (fields: DEX_Field[]) => {
     this.fields = fields;
+    const nextFieldValues = new ObservableMap<DEX_Field['id'], string>();
+    fields.forEach((field) => {
+      nextFieldValues.set(field.id, field.value ?? '');
+    });
+    this.fieldValues = nextFieldValues;
   };
 
   setFieldValue = async (
@@ -51,7 +64,7 @@ export class BuilderFieldStore {
     value: string,
     shouldSaveToStore = true
   ): Promise<StoreResult> => {
-    const field = this.fields.find((field) => field.id === fieldId);
+    const field = this.fields.find((currField) => currField.id === fieldId);
     if (!field) {
       return {
         success: false,
@@ -60,7 +73,7 @@ export class BuilderFieldStore {
     }
 
     runInAction(() => {
-      field.value = value;
+      this.fieldValues.set(fieldId, value);
     });
 
     if (shouldSaveToStore) {
@@ -78,5 +91,16 @@ export class BuilderFieldStore {
     }
 
     return { success: true };
+  };
+
+  getFieldsByItemId = (itemId: DEX_Item['id']): DEX_Field[] => {
+    const fields = this.fieldsByItemId.get(itemId) || [];
+    return fields.map(
+      (field) =>
+        ({
+          ...field,
+          value: this.fieldValues.get(field.id) ?? field.value ?? '',
+        }) as DEX_Field
+    );
   };
 }
