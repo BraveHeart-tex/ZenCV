@@ -2,14 +2,17 @@ import { CheckIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
-import { selectedOptionImageClassNames } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import {
+  selectedOptionImageClassNames,
+  type TemplateOptionWithVariants,
+} from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { CarouselItem } from '@/components/ui/carousel';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import type { TemplateOption } from '@/lib/types/documentBuilder.types';
+
 import { cn } from '@/lib/utils/stringUtils';
 
 interface MobileTemplatePickerItemProps {
-  template: TemplateOption;
+  template: TemplateOptionWithVariants;
 }
 
 export const MobileTemplatePickerItem = observer(
@@ -36,7 +39,7 @@ export const MobileTemplatePickerItem = observer(
           onKeyUp={handleSelectTemplate}
         >
           <img
-            src={template.image}
+            src={template.images.card}
             alt={template.name}
             loading='lazy'
             className='object-cover'
