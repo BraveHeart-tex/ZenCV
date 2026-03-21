@@ -1,9 +1,8 @@
 import { CheckIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-
+import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 import { cn } from '@/lib/utils/stringUtils';
 
 const aspectRatio = 0.75;
@@ -11,7 +10,7 @@ const width = 300;
 const height = width / aspectRatio;
 
 interface ResumeTemplateOptionItemProps {
-  option: TemplateOption;
+  option: TemplateOptionWithVariants;
 }
 
 export const ResumeTemplateOptionItem = observer(
@@ -40,7 +39,7 @@ export const ResumeTemplateOptionItem = observer(
             </span>
           )}
           <img
-            src={option.image}
+            src={option.images.card}
             width={width}
             height={height}
             alt={`Template ${option.name}`}

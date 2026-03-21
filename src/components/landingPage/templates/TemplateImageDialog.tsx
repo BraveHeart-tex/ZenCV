@@ -2,6 +2,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ArrowRight, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -12,12 +13,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
-import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
 export const TemplateImageDialog = ({
   template,
 }: {
-  template: TemplateOption;
+  template: TemplateOptionWithVariants;
 }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +37,7 @@ export const TemplateImageDialog = ({
       <DialogTrigger asChild>
         <div className='relative overflow-hidden cursor-pointer bg-muted/30'>
           <img
-            src={template.image}
+            src={template.images.card}
             alt={`${template.name} template`}
             width={300}
             loading='lazy'
@@ -69,10 +69,12 @@ export const TemplateImageDialog = ({
           {/* Image panel — short on mobile, full height on desktop */}
           <div className='w-full h-[35vh] lg:h-full lg:w-[55%] bg-muted/20 flex items-center justify-center overflow-hidden shrink-0'>
             <img
-              src={template.image}
+              src={template.images.modal}
               alt={`${template.name} template`}
               width={1920}
               height={1080}
+              loading='lazy'
+              fetchPriority='low'
               className='object-contain w-full h-full'
             />
           </div>
