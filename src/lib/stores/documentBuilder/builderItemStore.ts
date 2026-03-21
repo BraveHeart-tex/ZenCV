@@ -96,6 +96,9 @@ export class BuilderItemStore {
     runInAction(() => {
       this.items.push(item);
       this.root.fieldStore.fields.push(...fields);
+      fields.forEach((field) => {
+        this.root.fieldStore.fieldValues.set(field.id, field.value ?? '');
+      });
       this.root.UIStore.toggleItem(item.id);
     });
 
@@ -108,12 +111,19 @@ export class BuilderItemStore {
 
     const prevItems = this.items;
     const prevFields = this.root.fieldStore.fields;
+    const prevFieldValues = new Map(this.root.fieldStore.fieldValues);
+    const removedFieldIds = this.root.fieldStore.fields
+      .filter((field) => field.itemId === itemId)
+      .map((field) => field.id);
 
     runInAction(() => {
       this.items = this.items.filter((item) => item.id !== itemId);
       this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
         (field) => field.itemId !== itemId
       );
+      removedFieldIds.forEach((fieldId) => {
+        this.root.fieldStore.fieldValues.delete(fieldId);
+      });
     });
 
     try {
@@ -123,6 +133,10 @@ export class BuilderItemStore {
       runInAction(() => {
         this.items = prevItems;
         this.root.fieldStore.fields = prevFields;
+        this.root.fieldStore.fieldValues.clear();
+        prevFieldValues.forEach((value, key) => {
+          this.root.fieldStore.fieldValues.set(key, value);
+        });
       });
     }
   };

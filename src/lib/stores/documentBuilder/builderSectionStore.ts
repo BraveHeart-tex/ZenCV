@@ -199,6 +199,13 @@ export class BuilderSectionStore {
     const prevSections = this.sections;
     const prevItems = this.root.itemStore.items;
     const prevFields = this.root.fieldStore.fields;
+    const prevFieldValues = new Map(this.root.fieldStore.fieldValues);
+    const itemIdsToRemove = this.root.itemStore.items
+      .filter((item) => item.sectionId === sectionId)
+      .map((item) => item.id);
+    const removedFieldIds = this.root.fieldStore.fields
+      .filter((field) => itemIdsToRemove.includes(field.itemId))
+      .map((field) => field.id);
 
     runInAction(() => {
       this.sections = this.sections.filter(
@@ -210,6 +217,9 @@ export class BuilderSectionStore {
       this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
         (field) => itemIdsToKeep.includes(field.itemId)
       );
+      removedFieldIds.forEach((fieldId) => {
+        this.root.fieldStore.fieldValues.delete(fieldId);
+      });
     });
 
     try {
@@ -220,6 +230,10 @@ export class BuilderSectionStore {
         this.sections = prevSections;
         this.root.itemStore.items = prevItems;
         this.root.fieldStore.fields = prevFields;
+        this.root.fieldStore.fieldValues.clear();
+        prevFieldValues.forEach((value, key) => {
+          this.root.fieldStore.fieldValues.set(key, value);
+        });
       });
     }
   };

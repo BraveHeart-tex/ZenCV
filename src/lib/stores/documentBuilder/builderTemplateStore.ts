@@ -1,10 +1,4 @@
-import {
-  comparer,
-  computed,
-  makeAutoObservable,
-  reaction,
-  runInAction,
-} from 'mobx';
+import { computed, makeAutoObservable, reaction, runInAction } from 'mobx';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
@@ -80,6 +74,7 @@ export class BuilderTemplateStore {
 
   @computed
   get mappedSections() {
+    const fieldValues = this.root.fieldStore.fieldValues;
     return this.root.sectionStore.sections
       .filter(
         (section) =>
@@ -96,10 +91,16 @@ export class BuilderTemplateStore {
         items: this.root.itemStore
           .getItemsBySectionId(section.id)
           .toSorted(sortByDisplayOrder)
-          .map((item) => ({
-            ...item,
-            fields: this.root.fieldStore.getFieldsByItemId(item.id),
-          })),
+          .map((item) => {
+            const fields = this.root.fieldStore.getFieldsByItemId(item.id);
+            fields.forEach((field) => {
+              fieldValues.get(field.id);
+            });
+            return {
+              ...item,
+              fields,
+            };
+          }),
       }));
   }
 
@@ -231,7 +232,7 @@ export class BuilderTemplateStore {
       (data) => {
         debouncedStatsUpdate(data);
       },
-      { fireImmediately: true, equals: comparer.structural }
+      { fireImmediately: true }
     );
 
     this.disposers.push(disposer1, disposer2, () => {
