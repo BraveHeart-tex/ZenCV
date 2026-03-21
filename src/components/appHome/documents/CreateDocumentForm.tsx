@@ -2,6 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { TemplateImage } from '@/components/documentBuilder/TemplateImage';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -14,6 +16,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -24,6 +31,7 @@ import { showErrorToast } from '@/components/ui/sonner';
 import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import type { UseState } from '@/lib/types/utils.types';
 import { cn } from '@/lib/utils/stringUtils';
 import {
@@ -37,6 +45,53 @@ const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
     value: INTERNAL_TEMPLATE_TYPES[key as keyof typeof INTERNAL_TEMPLATE_TYPES],
   })
 );
+
+function TemplatePreviewPopover({
+  templateValue,
+  children,
+}: {
+  templateValue: ResumeTemplate;
+  children: React.ReactNode;
+}) {
+  const template = templateOptionsWithImages.find(
+    (t) => t.value === templateValue
+  );
+
+  if (!template) return <>{children}</>;
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent
+        side='right'
+        align='start'
+        sideOffset={12}
+        className='w-60 md:w-102 p-0 overflow-hidden border-border/60 shadow-lg'
+      >
+        <TemplateImage
+          template={template}
+          variant='hover'
+          imgProps={{
+            className: 'w-full object-cover object-top',
+          }}
+        />
+        <div className='px-3 py-2.5 border-t border-border/40 bg-muted/30'>
+          <p className='text-xs font-semibold'>{template.name}</p>
+          <div className='flex flex-wrap gap-1 mt-1.5'>
+            {template.tags.map((tag) => (
+              <span
+                key={tag}
+                className='text-[10px] px-1.5 py-0.5 rounded-md border border-border/50 bg-background text-muted-foreground'
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 interface CreateDocumentFormProps {
   setOpen: UseState<boolean>;
@@ -78,6 +133,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
   };
 
   const showSampleData = form.watch('shouldUseSampleData');
+  const selectedTemplate = form.watch('template');
 
   return (
     <Form {...form}>
@@ -106,24 +162,46 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Template</FormLabel>
-              <FormControl>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className='w-full'>
-                    <SelectValue placeholder='Choose a template' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {resumeTemplateSelectOptions.map((option) => (
-                      <SelectItem value={option.value} key={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
+              <div className='flex items-center gap-2'>
+                <FormControl className='flex-1'>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Choose a template' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {resumeTemplateSelectOptions.map((option) => (
+                        <SelectItem value={option.value} key={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+
+                <TemplatePreviewPopover templateValue={selectedTemplate}>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    className='shrink-0 h-9 px-2.5 text-xs text-muted-foreground gap-1.5'
+                  >
+                    <img
+                      src={
+                        templateOptionsWithImages.find(
+                          (t) => t.value === selectedTemplate
+                        )?.images.card
+                      }
+                      alt=''
+                      className='w-4 h-5 object-cover object-top rounded-[2px] border border-border/50'
+                    />
+                    Preview
+                  </Button>
+                </TemplatePreviewPopover>
+              </div>
               <FormMessage />
             </FormItem>
           )}

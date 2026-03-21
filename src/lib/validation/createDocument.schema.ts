@@ -12,10 +12,7 @@ export const createNewDocumentSchema = z
         (title) => title.replaceAll(' ', '').length > 0,
         'Please enter a valid title'
       ),
-    template: z.union([
-      z.literal(INTERNAL_TEMPLATE_TYPES.MANHATTAN),
-      z.literal(INTERNAL_TEMPLATE_TYPES.LONDON),
-    ]),
+    template: z.enum(INTERNAL_TEMPLATE_TYPES),
     shouldUseSampleData: z.boolean(),
     selectedPrefillStyle: z
       .union([
