@@ -2,9 +2,9 @@ import * as Sentry from '@sentry/cloudflare';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { type Env, validateEnv } from './env';
+import { loggerMiddleware } from './middleware/logger';
 import authRoutes from './routes/auth';
 import generateSummaryRoute from './routes/generate-summary';
-
 import improveSummaryRoute from './routes/improve-summary';
 import jobAnalysisRoute from './routes/job-analysis';
 
@@ -18,7 +18,7 @@ app.use(
     allowHeaders: ['Content-Type', 'Authorization', 'X-CRON-TOKEN'],
   })
 );
-
+app.use('*', loggerMiddleware);
 app.use('*', async (c, next) => {
   validateEnv(c.env);
   await next();

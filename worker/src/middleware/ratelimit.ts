@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/cloudflare';
 import type { Context, Next } from 'hono';
 import type { Env } from '../env';
+import { getLogger } from './logger';
 
 export async function rateLimitMiddleware(
   c: Context<{ Bindings: Env }>,
@@ -14,6 +15,9 @@ export async function rateLimitMiddleware(
   const { success } = await c.env.RATE_LIMITER.limit({ key: ip });
 
   if (!success) {
+    const logger = getLogger(c);
+    logger.warn('rate_limit_hit', { ip });
+
     Sentry.addBreadcrumb({
       category: 'rate_limit',
       message: 'Rate limit hit',

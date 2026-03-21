@@ -7,16 +7,20 @@ import { generateObject } from 'ai';
 import { Hono } from 'hono';
 import type { Env } from '../env';
 import { captureError } from '../lib/sentry';
+import { getLogger } from '../middleware/logger';
 import { rateLimitMiddleware } from '../middleware/ratelimit';
 
 const route = new Hono<{ Bindings: Env }>();
 
 route.post('/', rateLimitMiddleware, async (c) => {
+  const logger = getLogger(c);
+
   try {
     const body = await c.req.json();
     const validation = jobPostingSchema.safeParse(body);
 
     if (!validation.success) {
+      logger.warn('job_analysis_validation_failed');
       return c.json(
         {
           success: false,
@@ -29,25 +33,37 @@ route.post('/', rateLimitMiddleware, async (c) => {
       );
     }
 
+    const { companyName, jobTitle, roleDescription } = validation.data;
+
+    logger.info('job_analysis_start', {
+      company: companyName,
+      jobTitle,
+      descriptionLength: roleDescription.length,
+    });
+
     Sentry.addBreadcrumb({
       category: 'ai',
       message: 'Running job analysis',
       level: 'info',
       data: {
-        company: validation.data.companyName,
-        jobTitle: validation.data.jobTitle,
-        descriptionLength: validation.data.roleDescription.length,
+        company: companyName,
+        jobTitle,
+        descriptionLength: roleDescription.length,
       },
     });
 
     const groqClient = createGroq({ apiKey: c.env.GROQ_API_KEY });
     const model = groqClient('openai/gpt-oss-20b');
-
     const prompt = generateJobAnalysisPrompt(validation.data);
     const result = await generateObject({
       model,
       schema: jobAnalysisResultSchema,
       prompt,
+    });
+
+    logger.info('job_analysis_complete', {
+      suggestedJobTitle: result.object.suggestedJobTitle,
+      keywordCount: result.object.keywordSuggestions.length,
     });
 
     Sentry.addBreadcrumb({
@@ -70,6 +86,9 @@ route.post('/', rateLimitMiddleware, async (c) => {
       200
     );
   } catch (error) {
+    logger.error('job_analysis_error', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     await captureError(error, c, { handler: 'process/job-analysis' });
     return c.json(
       {
