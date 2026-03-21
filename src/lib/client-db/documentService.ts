@@ -28,6 +28,10 @@ import {
   prepareSectionsInsertData,
 } from '@/lib/helpers/documentBuilderHelpers';
 import {
+  DEFAULT_ACCENT_COLOR,
+  TEMPLATE_ACCENT_COLORS,
+} from '../constants/accentColors';
+import {
   getTemplateByStyle,
   type PrefilledResumeStyle,
 } from '../templates/prefilledTemplates';
@@ -60,7 +64,7 @@ export type GetFullDocumentStructureResponse =
     };
 
 export async function createDocument(
-  data: Omit<DEX_InsertDocumentModel, 'jobPostingId'> & {
+  data: Omit<DEX_InsertDocumentModel, 'jobPostingId' | 'accentColor'> & {
     selectedPrefillStyle: PrefilledResumeStyle | null;
   }
 ) {
@@ -71,7 +75,12 @@ export async function createDocument(
       const documentId = await clientDb.documents.add({
         templateType: data.templateType,
         title: data.title,
-      } as DEX_Document);
+        accentColor:
+          TEMPLATE_ACCENT_COLORS[data.templateType] ?? DEFAULT_ACCENT_COLOR,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        jobPostingId: null,
+      });
 
       const sectionTemplates = data.selectedPrefillStyle
         ? getTemplateByStyle(data.selectedPrefillStyle, documentId)
@@ -86,7 +95,9 @@ export async function createDocument(
 
       sectionTemplates.forEach((sectionTemplate, sectionIndex) => {
         const sectionId = sectionInsertIds[sectionIndex];
-        if (!sectionTemplate) return;
+        if (!sectionTemplate) {
+          return;
+        }
 
         sectionTemplate.items.forEach((item) => {
           const itemInsertIndex = itemInsertDtos.length;
@@ -274,6 +285,10 @@ export async function copyDocument(documentId: DEX_Document['id']) {
       const newDocumentId = await clientDb.documents.add({
         templateType: sourceDocumentStructure.document.templateType,
         title: `${sourceDocumentStructure.document.title}(copy)`,
+        accentColor:
+          sourceDocumentStructure.document.accentColor ?? DEFAULT_ACCENT_COLOR,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       } as DEX_Document);
 
       const insertPayload = sourceDocumentStructure.sections.map((section) => {
@@ -335,4 +350,11 @@ export async function copyDocument(documentId: DEX_Document['id']) {
       return newDocumentId;
     }
   );
+}
+
+export async function updateDocumentAccentColor(
+  documentId: DEX_Document['id'],
+  accentColor: string
+) {
+  return updateDocument(documentId, { accentColor });
 }

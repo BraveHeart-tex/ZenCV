@@ -6,6 +6,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { Button } from '../../ui/button';
+import { AccentColorPicker } from '../AccentColorPicker';
 import { MobileTemplatePickerTrigger } from './MobileTemplatePickerTrigger';
 
 export const TemplateGalleryHeader = observer(() => {
@@ -25,6 +26,7 @@ export const TemplateGalleryHeader = observer(() => {
         <span className='lg:inline hidden'>Back to editor</span>
       </Button>
       <div className='flex items-center gap-2'>
+        <AccentColorPicker />
         <MobileTemplatePickerTrigger />
         <Button
           disabled={

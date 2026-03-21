@@ -13,7 +13,7 @@ import { DubaiReferencesSection } from './DubaiReferencesSection';
 import { DubaiSkillsSection } from './DubaiSkillsSection';
 import { DubaiSummarySection } from './DubaiSummarySection';
 import { DubaiWorkExperienceSection } from './DubaiWorkExperienceSection';
-import { dubaiTemplateStyles } from './dubai.styles';
+import { createDubaiStyles } from './dubai.styles';
 
 const SIDEBAR_SECTION_TYPES = new Set([
   INTERNAL_SECTION_TYPES.SKILLS,
@@ -27,6 +27,7 @@ export const DubaiTemplate = ({
 }: {
   templateData: PdfTemplateData;
 }) => {
+  const styles = createDubaiStyles(templateData.accentColor);
   const { personalDetails, summarySection, sections } = templateData;
 
   const sidebarSections = sections.filter((s) =>
@@ -37,45 +38,118 @@ export const DubaiTemplate = ({
   );
 
   const renderSidebarSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.SKILLS)
-      return <DubaiSkillsSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES)
-      return <DubaiLanguagesSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS)
-      return <DubaiLinksSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES)
-      return <DubaiHobbiesSection section={section} key={section.id} />;
+    if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
+      return (
+        <DubaiSkillsSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+
+    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
+      return (
+        <DubaiLanguagesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
+      return (
+        <DubaiLinksSection section={section} key={section.id} styles={styles} />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
+      return (
+        <DubaiHobbiesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
     return null;
   };
 
   const renderMainSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE)
-      return <DubaiWorkExperienceSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION)
-      return <DubaiEducationSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS)
-      return <DubaiInternshipsSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.COURSES)
-      return <DubaiCoursesSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM)
-      return <DubaiCustomSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES)
-      return <DubaiReferencesSection section={section} key={section.id} />;
+    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
+      return (
+        <DubaiWorkExperienceSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
+      return (
+        <DubaiEducationSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
+      return (
+        <DubaiInternshipsSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
+      return (
+        <DubaiCoursesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+      return (
+        <DubaiCustomSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
+      return (
+        <DubaiReferencesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
     return null;
   };
 
   return (
     <Document>
-      <Page size='A4' style={dubaiTemplateStyles.page}>
+      <Page size='A4' style={styles.page}>
         {/* Light sidebar */}
-        <View style={dubaiTemplateStyles.sidebar}>
-          <DubaiPersonalDetailsSection personalDetails={personalDetails} />
+        <View style={styles.sidebar}>
+          <DubaiPersonalDetailsSection
+            personalDetails={personalDetails}
+            styles={styles}
+          />
           {sidebarSections.map(renderSidebarSection)}
         </View>
 
         {/* Main column */}
-        <View style={dubaiTemplateStyles.main}>
-          <DubaiSummarySection summarySection={summarySection} />
+        <View style={styles.main}>
+          <DubaiSummarySection
+            summarySection={summarySection}
+            styles={styles}
+          />
           {mainSections.map(renderMainSection)}
         </View>
       </Page>

@@ -1,4 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie';
+import { DEFAULT_ACCENT_COLOR } from '../constants/accentColors';
 import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 import type {
   DEX_AiSuggestions,
@@ -117,3 +118,26 @@ clientDb.jobPostings.hook('deleting', (primKey) => {
       doc.jobPostingId = null;
     });
 });
+
+clientDb
+  .version(7)
+  .stores({
+    documents: '++id, title, templateType, jobPostingId, createdAt, updatedAt',
+    sections:
+      '++id, documentId, title, defaultTitle, type, displayOrder, metadata',
+    items: '++id, sectionId, containerType, displayOrder',
+    fields: '++id, itemId, name, type, value, selectType, options',
+    settings: 'key',
+    jobPostings: '++id, companyName, jobTitle, roleDescription, documentId',
+    aiSuggestions: '++id, suggestedJobTitle, keywordSuggestions, documentId',
+  })
+  .upgrade((transaction) => {
+    transaction
+      .table('documents')
+      .toCollection()
+      .modify((doc) => {
+        if (!doc.accentColor) {
+          doc.accentColor = DEFAULT_ACCENT_COLOR;
+        }
+      });
+  });

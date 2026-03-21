@@ -1,21 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
-import { tokyoTemplateStyles } from './tokyo.styles';
+import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoLanguagesSection = ({
   section,
-}: {
-  section: TemplateDataSection;
-}) => {
+  styles,
+}: TokyoSectionProps) => {
   const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
-    <View style={tokyoTemplateStyles.sidebarSection}>
-      <Text style={tokyoTemplateStyles.sidebarSectionLabel}>
-        {section.title}
-      </Text>
+    <View style={styles.sidebarSection}>
+      <Text style={styles.sidebarSectionLabel}>{section.title}</Text>
       <View style={{ flexDirection: 'column', gap: 4 }}>
         {sectionEntries.map((entry) => (
           <View
@@ -26,9 +22,9 @@ export const TokyoLanguagesSection = ({
               alignItems: 'center',
             }}
           >
-            <Text style={tokyoTemplateStyles.skillName}>{entry.language}</Text>
+            <Text style={styles.skillName}>{entry.language}</Text>
             {entry.level ? (
-              <Text style={tokyoTemplateStyles.skillLevel}>{entry.level}</Text>
+              <Text style={styles.skillLevel}>{entry.level}</Text>
             ) : null}
           </View>
         ))}

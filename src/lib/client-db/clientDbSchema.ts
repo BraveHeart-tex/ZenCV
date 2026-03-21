@@ -17,6 +17,7 @@ export interface DEX_Document {
   createdAt: string;
   updatedAt: string;
   jobPostingId: Nullable<IdType>;
+  accentColor: string;
 }
 
 export interface DEX_Section {

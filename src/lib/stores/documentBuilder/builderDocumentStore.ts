@@ -4,7 +4,9 @@ import {
   changeDocumentTemplateType,
   getFullDocumentStructure,
   renameDocument,
+  updateDocumentAccentColor,
 } from '@/lib/client-db/documentService';
+import { DEFAULT_ACCENT_COLOR } from '@/lib/constants/accentColors';
 import type {
   ResumeTemplate,
   StoreResult,
@@ -111,5 +113,30 @@ export class BuilderDocumentStore {
   private setTemplateType = (templateType: ResumeTemplate) => {
     if (!this.document) return;
     this.document.templateType = templateType;
+  };
+
+  get accentColor(): string {
+    return this.document?.accentColor ?? DEFAULT_ACCENT_COLOR;
+  }
+
+  updateAccentColor = async (color: string): Promise<StoreResult> => {
+    if (!this.document) return { success: false, error: 'Document not found.' };
+    const prev = this.document.accentColor;
+    runInAction(() => {
+      if (this.document) {
+        this.document.accentColor = color;
+      }
+    });
+    try {
+      await updateDocumentAccentColor(this.document.id, color);
+      return { success: true };
+    } catch {
+      runInAction(() => {
+        if (this.document) {
+          this.document.accentColor = prev;
+        }
+      });
+      return { success: false, error: 'Failed to update accent color.' };
+    }
   };
 }

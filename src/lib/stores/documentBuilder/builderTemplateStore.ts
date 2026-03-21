@@ -110,6 +110,7 @@ export class BuilderTemplateStore {
       personalDetails: this.personalDetails,
       summarySection: this.summarySection,
       sections: this.mappedSections,
+      accentColor: this.root.documentStore.accentColor,
     };
   }
 

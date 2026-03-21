@@ -1,22 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
-import { dubaiTemplateStyles } from './dubai.styles';
+import type { DubaiSectionProps } from './dubai.types';
 
-export const DubaiHobbiesSection = ({
-  section,
-}: {
-  section: TemplateDataSection;
-}) => {
+export const DubaiHobbiesSection = ({ section, styles }: DubaiSectionProps) => {
   const hobbies = getHobbiesSectionValue(section);
-  if (!hobbies.length) return null;
+  if (!hobbies.length) {
+    return null;
+  }
 
   return (
-    <View style={dubaiTemplateStyles.sidebarSection}>
-      <Text style={dubaiTemplateStyles.sidebarSectionLabel}>
-        {section.title}
-      </Text>
-      <Text style={dubaiTemplateStyles.sidebarText}>{hobbies}</Text>
+    <View style={styles.sidebarSection}>
+      <Text style={styles.sidebarSectionLabel}>{section.title}</Text>
+      <Text style={styles.sidebarText}>{hobbies}</Text>
     </View>
   );
 };

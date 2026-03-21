@@ -85,13 +85,22 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     }
   };
 
-  const formattedDate = new Intl.DateTimeFormat(navigator.language, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(document.updatedAt));
+  const formattedDate = document.updatedAt
+    ? new Intl.DateTimeFormat(navigator.language, {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date(document.updatedAt))
+    : null;
+
+  const handleMouseDown = () => {
+    if (isOpen) {
+      return;
+    }
+    navigate(`/builder/${document.id}`);
+  };
 
   return (
     <>
@@ -101,10 +110,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
           'hover:border-border hover:shadow-md hover:bg-accent/30',
           'transition-all duration-200 cursor-pointer shadow-sm'
         )}
-        onMouseDown={() => {
-          if (isOpen) return;
-          navigate(`/builder/${document.id}`);
-        }}
+        onMouseDown={handleMouseDown}
       >
         <div className='flex items-start justify-between gap-2'>
           <h3 className='flex-1 text-sm font-semibold leading-snug truncate pr-1'>

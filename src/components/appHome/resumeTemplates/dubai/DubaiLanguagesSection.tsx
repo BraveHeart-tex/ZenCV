@@ -1,30 +1,28 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
-import { dubaiTemplateStyles } from './dubai.styles';
+import type { DubaiSectionProps } from './dubai.types';
 
 export const DubaiLanguagesSection = ({
   section,
-}: {
-  section: TemplateDataSection;
-}) => {
+  styles,
+}: DubaiSectionProps) => {
   const sectionEntries = getLanguagesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
-    <View style={dubaiTemplateStyles.sidebarSection}>
-      <Text style={dubaiTemplateStyles.sidebarSectionLabel}>
-        {section.title}
-      </Text>
+    <View style={styles.sidebarSection}>
+      <Text style={styles.sidebarSectionLabel}>{section.title}</Text>
       <View style={{ flexDirection: 'column', gap: 4 }}>
         {sectionEntries.map((entry) => (
           <View
             key={entry.entryId}
             style={{ flexDirection: 'row', justifyContent: 'space-between' }}
           >
-            <Text style={dubaiTemplateStyles.skillName}>{entry.language}</Text>
+            <Text style={styles.skillName}>{entry.language}</Text>
             {entry.level ? (
-              <Text style={dubaiTemplateStyles.skillLevel}>{entry.level}</Text>
+              <Text style={styles.skillLevel}>{entry.level}</Text>
             ) : null}
           </View>
         ))}

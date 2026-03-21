@@ -2,18 +2,20 @@ import { Text, View } from '@react-pdf/renderer';
 import Html from 'react-pdf-html';
 import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.pdf';
 import type { WithEntryId } from '@/lib/types/documentBuilder.types';
-import { TOKYO_FONT_SIZE, tokyoTemplateStyles } from './tokyo.styles';
+import { type createTokyoStyles, TOKYO_FONT_SIZE } from './tokyo.styles';
 
 type TokyoSectionEntryProps<T extends Record<string, string>> = {
   entry: WithEntryId<T>;
   titleKey: keyof T;
   subtitleKey: keyof T;
+  styles: ReturnType<typeof createTokyoStyles>;
 };
 
 export const TokyoSectionEntry = <T extends Record<string, string>>({
   entry,
   titleKey,
   subtitleKey,
+  styles,
 }: TokyoSectionEntryProps<T>) => {
   const hasDate = entry.startDate || entry.endDate;
   const dateString = [entry.startDate, entry.endDate]
@@ -31,10 +33,8 @@ export const TokyoSectionEntry = <T extends Record<string, string>>({
           marginBottom: 1,
         }}
       >
-        <Text style={tokyoTemplateStyles.entryTitle}>{entry[titleKey]}</Text>
-        {entry.city ? (
-          <Text style={tokyoTemplateStyles.entryDate}>{entry.city}</Text>
-        ) : null}
+        <Text style={styles.entryTitle}>{entry[titleKey]}</Text>
+        {entry.city ? <Text style={styles.entryDate}>{entry.city}</Text> : null}
       </View>
 
       {/* Subtitle + date row */}
@@ -47,13 +47,9 @@ export const TokyoSectionEntry = <T extends Record<string, string>>({
         }}
       >
         {entry[subtitleKey] ? (
-          <Text style={tokyoTemplateStyles.entrySubtitle}>
-            {entry[subtitleKey]}
-          </Text>
+          <Text style={styles.entrySubtitle}>{entry[subtitleKey]}</Text>
         ) : null}
-        {hasDate ? (
-          <Text style={tokyoTemplateStyles.entryDate}>{dateString}</Text>
-        ) : null}
+        {hasDate ? <Text style={styles.entryDate}>{dateString}</Text> : null}
       </View>
 
       {/* Description */}

@@ -1,20 +1,18 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getWorkExperienceSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { TokyoSectionEntry } from './TokyoSectionEntry';
-import { tokyoTemplateStyles } from './tokyo.styles';
+import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoWorkExperienceSection = ({
   section,
-}: {
-  section: TemplateDataSection;
-}) => {
+  styles,
+}: TokyoSectionProps) => {
   const sectionEntries = getWorkExperienceSectionEntries(section);
   if (!sectionEntries.length) return null;
 
   return (
-    <View style={tokyoTemplateStyles.mainSection}>
-      <Text style={tokyoTemplateStyles.mainSectionLabel}>{section.title}</Text>
+    <View style={styles.mainSection}>
+      <Text style={styles.mainSectionLabel}>{section.title}</Text>
       <View style={{ marginTop: 6 }}>
         {sectionEntries.map((entry) => (
           <TokyoSectionEntry
@@ -22,6 +20,7 @@ export const TokyoWorkExperienceSection = ({
             key={entry.entryId}
             titleKey='employer'
             subtitleKey='jobTitle'
+            styles={styles}
           />
         ))}
       </View>

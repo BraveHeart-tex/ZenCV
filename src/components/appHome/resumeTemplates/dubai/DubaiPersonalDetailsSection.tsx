@@ -1,11 +1,13 @@
 import { Text, View } from '@react-pdf/renderer';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import { dubaiTemplateStyles } from './dubai.styles';
+import type { DubaiStyles } from './dubai.types';
 
 export const DubaiPersonalDetailsSection = ({
   personalDetails,
+  styles,
 }: {
   personalDetails: PdfTemplateData['personalDetails'];
+  styles: DubaiStyles;
 }) => {
   const { firstName, lastName, jobTitle, address, city, phone, email } =
     personalDetails;
@@ -18,19 +20,17 @@ export const DubaiPersonalDetailsSection = ({
 
   return (
     <View>
-      <Text style={dubaiTemplateStyles.sidebarName}>
+      <Text style={styles.sidebarName}>
         {firstName} {lastName}
       </Text>
       {jobTitle ? (
-        <Text style={dubaiTemplateStyles.sidebarJobTitle}>
-          {jobTitle.toUpperCase()}
-        </Text>
+        <Text style={styles.sidebarJobTitle}>{jobTitle.toUpperCase()}</Text>
       ) : null}
       {contactDetails.length > 0 && (
-        <View style={dubaiTemplateStyles.sidebarSection}>
-          <Text style={dubaiTemplateStyles.sidebarSectionLabel}>Contact</Text>
+        <View style={styles.sidebarSection}>
+          <Text style={styles.sidebarSectionLabel}>Contact</Text>
           {contactDetails.map((detail) => (
-            <Text key={detail} style={dubaiTemplateStyles.sidebarText}>
+            <Text key={detail} style={styles.sidebarText}>
               {detail}
             </Text>
           ))}

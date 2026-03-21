@@ -1,18 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
 import { CHECKED_METADATA_VALUE } from '@/lib/constants';
 import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import {
   getReferencesSectionEntries,
   getSectionMetadata,
 } from '../resumeTemplates.helpers';
-import { TOKYO_FONT_SIZE, tokyoTemplateStyles } from './tokyo.styles';
+import { TOKYO_FONT_SIZE } from './tokyo.styles';
+import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoReferencesSection = ({
   section,
-}: {
-  section: TemplateDataSection;
-}) => {
+  styles,
+}: TokyoSectionProps) => {
   const sectionEntries = getReferencesSectionEntries(section);
   const hideReferences =
     getSectionMetadata(
@@ -23,8 +22,8 @@ export const TokyoReferencesSection = ({
   if (!sectionEntries.length) return null;
 
   return (
-    <View style={tokyoTemplateStyles.mainSection}>
-      <Text style={tokyoTemplateStyles.mainSectionLabel}>{section.title}</Text>
+    <View style={styles.mainSection}>
+      <Text style={styles.mainSectionLabel}>{section.title}</Text>
       <View style={{ marginTop: 6, gap: 8 }}>
         {hideReferences ? (
           <Text style={{ fontSize: TOKYO_FONT_SIZE, color: '#2d2d2d' }}>
@@ -33,11 +32,11 @@ export const TokyoReferencesSection = ({
         ) : (
           sectionEntries.map((entry) => (
             <View key={entry.entryId} style={{ gap: 2 }}>
-              <Text style={tokyoTemplateStyles.entryTitle}>
+              <Text style={styles.entryTitle}>
                 {entry.referentFullName}
                 {entry.referentCompany ? ` · ${entry.referentCompany}` : ''}
               </Text>
-              <Text style={tokyoTemplateStyles.mainMuted}>
+              <Text style={styles.mainMuted}>
                 {entry.referentEmail}
                 {entry.referentEmail && entry.referentPhone ? '  ·  ' : ''}
                 {entry.referentPhone}

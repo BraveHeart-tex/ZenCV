@@ -77,6 +77,7 @@ export interface PdfTemplateData {
     summary: string;
   };
   sections: TemplateDataSection[];
+  accentColor: string;
 }
 
 export interface TemplateDataSection extends SectionWithParsedMetadata {

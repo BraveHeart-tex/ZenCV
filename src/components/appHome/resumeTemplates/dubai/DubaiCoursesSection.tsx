@@ -1,26 +1,24 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
 import { DubaiSectionEntry } from './DubaiSectionEntry';
-import { dubaiTemplateStyles } from './dubai.styles';
+import type { DubaiSectionProps } from './dubai.types';
 
-export const DubaiCoursesSection = ({
-  section,
-}: {
-  section: TemplateDataSection;
-}) => {
+export const DubaiCoursesSection = ({ section, styles }: DubaiSectionProps) => {
   const sectionEntries = getCoursesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
-    <View style={dubaiTemplateStyles.mainSection}>
-      <Text style={dubaiTemplateStyles.mainSectionLabel}>{section.title}</Text>
+    <View style={styles.mainSection}>
+      <Text style={styles.mainSectionLabel}>{section.title}</Text>
       {sectionEntries.map((entry) => (
         <DubaiSectionEntry
           entry={entry}
           key={entry.entryId}
           titleKey='course'
           subtitleKey='institution'
+          styles={styles}
         />
       ))}
     </View>
