@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
 import type { TemplateOption } from '@/lib/types/documentBuilder.types';
 
 export const TemplateImageDialog = ({
@@ -40,6 +40,8 @@ export const TemplateImageDialog = ({
             src={template.image}
             alt={`${template.name} template`}
             width={300}
+            loading='lazy'
+            fetchPriority='low'
             height={400}
             className='object-cover w-full transition-transform duration-500 hover:scale-[1.03]'
           />

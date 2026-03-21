@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { showErrorToast } from '@/components/ui/sonner';
-import { createAndNavigateToDocument } from '@/lib/helpers/documentBuilderHelpers';
+import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
 import type { UseState } from '@/lib/types/utils.types';

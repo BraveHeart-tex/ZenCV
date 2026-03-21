@@ -35,11 +35,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
+      modulePreload: false,
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('@react-pdf') || id.includes('react-pdf'))
-              return 'pdf';
             if (id.includes('@tiptap') || id.includes('prosemirror'))
               return 'editor';
             if (id.includes('@clerk')) return 'clerk';
