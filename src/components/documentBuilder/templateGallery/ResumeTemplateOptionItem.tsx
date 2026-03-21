@@ -4,10 +4,7 @@ import { observer } from 'mobx-react-lite';
 import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { cn } from '@/lib/utils/stringUtils';
-
-const aspectRatio = 0.75;
-const width = 300;
-const height = width / aspectRatio;
+import { TemplateImage } from '../TemplateImage';
 
 interface ResumeTemplateOptionItemProps {
   option: TemplateOptionWithVariants;
@@ -38,16 +35,14 @@ export const ResumeTemplateOptionItem = observer(
               <CheckIcon />
             </span>
           )}
-          <img
-            src={option.images.card}
-            width={width}
-            height={height}
-            alt={`Template ${option.name}`}
+          <div
             className={cn(
-              'ring-2 ring-transparent group-hover:ring-blue-500 object-cover transition-all duration-300 rounded-md',
+              'ring-2 ring-transparent group-hover:ring-blue-500 transition-all duration-300 rounded-md overflow-hidden',
               isSelected && 'ring-2 ring-blue-500'
             )}
-          />
+          >
+            <TemplateImage template={option} variant='card' />
+          </div>
         </div>
       </article>
     );
