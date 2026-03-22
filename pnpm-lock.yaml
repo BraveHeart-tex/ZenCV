@@ -154,7 +154,7 @@ importers:
         specifier: 2.1.2
         version: 2.1.2(@react-pdf/renderer@4.1.2(react@19.2.4))(react@19.2.4)
       react-router-dom:
-        specifier: ^7.13.1
+        specifier: 7.13.1
         version: 7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react-use:
         specifier: 17.6.0
