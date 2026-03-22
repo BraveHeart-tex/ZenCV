@@ -87,22 +87,31 @@ export class BuilderTemplateStore {
           )
       )
       .toSorted(sortByDisplayOrder)
-      .map((section) => ({
-        ...section,
-        items: this.root.itemStore
-          .getItemsBySectionId(section.id)
-          .toSorted(sortByDisplayOrder)
-          .map((item) => {
-            const fields = this.root.fieldStore.getFieldsByItemId(item.id);
-            fields.forEach((field) => {
-              fieldValues.get(field.id);
-            });
-            return {
-              ...item,
-              fields,
-            };
-          }),
-      }));
+      .map((section) => {
+        // force MobX to track each metadata item's value
+        const metadata = section.metadata?.map((m) => ({
+          ...m,
+          value: m.value, // ← explicit read of each value property
+        }));
+
+        return {
+          ...section,
+          metadata,
+          items: this.root.itemStore
+            .getItemsBySectionId(section.id)
+            .toSorted(sortByDisplayOrder)
+            .map((item) => {
+              const fields = this.root.fieldStore.getFieldsByItemId(item.id);
+              fields.forEach((field) => {
+                fieldValues.get(field.id);
+              });
+              return {
+                ...item,
+                fields,
+              };
+            }),
+        };
+      });
   }
 
   @computed
