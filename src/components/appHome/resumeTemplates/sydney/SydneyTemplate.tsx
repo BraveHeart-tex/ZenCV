@@ -13,54 +13,118 @@ import { SydneyReferencesSection } from './SydneyReferencesSection';
 import { SydneySkillsSection } from './SydneySkillsSection';
 import { SydneySummarySection } from './SydneySummarySection';
 import { SydneyWorkExperienceSection } from './SydneyWorkExperienceSection';
-import { sydneyTemplateStyles } from './sydney.styles';
+import { createSydneyStyles } from './sydney.styles';
 
 export const SydneyTemplate = ({
   templateData,
 }: {
   templateData: PdfTemplateData;
 }) => {
+  const styles = createSydneyStyles(templateData.accentColor);
   const { personalDetails, summarySection, sections } = templateData;
 
   const renderSection = (section: (typeof sections)[number]) => {
     if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-      return <SydneyWorkExperienceSection section={section} key={section.id} />;
+      return (
+        <SydneyWorkExperienceSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-      return <SydneyEducationSection section={section} key={section.id} />;
+      return (
+        <SydneyEducationSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-      return <SydneyInternshipsSection section={section} key={section.id} />;
+      return (
+        <SydneyInternshipsSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-      return <SydneyCoursesSection section={section} key={section.id} />;
+      return (
+        <SydneyCoursesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
-      return <SydneySkillsSection section={section} key={section.id} />;
+      return (
+        <SydneySkillsSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
-      return <SydneyLanguagesSection section={section} key={section.id} />;
+      return (
+        <SydneyLanguagesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-      return <SydneyLinksSection section={section} key={section.id} />;
+      return (
+        <SydneyLinksSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-      return <SydneyHobbiesSection section={section} key={section.id} />;
+      return (
+        <SydneyHobbiesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
-      return <SydneyCustomSection section={section} key={section.id} />;
+      return (
+        <SydneyCustomSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-      return <SydneyReferencesSection section={section} key={section.id} />;
+      return (
+        <SydneyReferencesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
     }
     return null;
   };
 
   return (
     <Document>
-      <Page size='A4' style={sydneyTemplateStyles.page}>
-        <SydneyPersonalDetailsSection personalDetails={personalDetails} />
-        <SydneySummarySection summarySection={summarySection} />
+      <Page size='A4' style={styles.page}>
+        <SydneyPersonalDetailsSection
+          personalDetails={personalDetails}
+          styles={styles}
+        />
+        <SydneySummarySection summarySection={summarySection} styles={styles} />
         {sections.map(renderSection)}
       </Page>
     </Document>

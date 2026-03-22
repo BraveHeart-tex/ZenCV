@@ -1,22 +1,20 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
 import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
-import { sydneyTemplateStyles } from './sydney.styles';
+import type { SydneySectionProps } from './sydney.types';
 
 export const SydneyHobbiesSection = ({
   section,
-}: {
-  section: TemplateDataSection;
-}) => {
+  styles,
+}: SydneySectionProps) => {
   const hobbies = getHobbiesSectionValue(section);
   if (!hobbies.length) {
     return null;
   }
 
   return (
-    <View style={sydneyTemplateStyles.section}>
-      <Text style={sydneyTemplateStyles.sectionLabel}>{section.title}</Text>
-      <Text style={sydneyTemplateStyles.mainText}>{hobbies}</Text>
+    <View style={styles.section}>
+      <Text style={styles.sectionLabel}>{section.title}</Text>
+      <Text style={styles.mainText}>{hobbies}</Text>
     </View>
   );
 };
