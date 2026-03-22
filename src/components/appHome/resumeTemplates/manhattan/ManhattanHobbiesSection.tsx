@@ -13,7 +13,9 @@ export const ManhattanHobbiesSection = ({
 }) => {
   const hobbies = getHobbiesSectionValue(section);
 
-  if (!hobbies.length) return null;
+  if (!hobbies.length) {
+    return null;
+  }
 
   return (
     <View style={manhattanTemplateStyles.section}>

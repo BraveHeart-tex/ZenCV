@@ -24,7 +24,9 @@ export const ResumeLinksSection = ({
 }: ResumeLinksSectionProps) => {
   const sectionEntries = getLinksSectionEntries(section);
 
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
   return (
     <View style={styles.section}>
       <Text style={styles.sectionLabel}>{section.title}</Text>

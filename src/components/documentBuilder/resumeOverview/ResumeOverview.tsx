@@ -41,7 +41,9 @@ export const ResumeOverview = observer(() => {
         let closestItem: { id: string; distance: number } | null = null;
 
         builderRootStore.UIStore.itemRefs.forEach((el) => {
-          if (!el) return;
+          if (!el) {
+            return;
+          }
 
           const rect = el.getBoundingClientRect();
           const elementCenter = rect.top + rect.height / 2;
@@ -52,7 +54,9 @@ export const ResumeOverview = observer(() => {
           }
         });
 
-        if (!closestItem) return;
+        if (!closestItem) {
+          return;
+        }
 
         const { id: closestItemId } = closestItem;
 
@@ -60,7 +64,9 @@ export const ResumeOverview = observer(() => {
           (item) => getItemContainerId(item.id) === closestItemId
         );
 
-        if (!foundItem) return;
+        if (!foundItem) {
+          return;
+        }
 
         setFocusState({
           sectionId: getSectionContainerId(foundItem.sectionId),

@@ -28,7 +28,9 @@ export const EditableSectionTitle = observer(
     const section = builderRootStore.sectionStore.getSectionById(sectionId);
     const { listeners } = useSortable({ id: sectionId });
 
-    if (!section) return null;
+    if (!section) {
+      return null;
+    }
 
     const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.has(
       section.type

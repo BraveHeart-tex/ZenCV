@@ -21,7 +21,9 @@ export const LondonReferencesSection = ({
       SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
     ) === CHECKED_METADATA_VALUE;
 
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={londonTemplateStyles.section}>

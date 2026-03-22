@@ -40,8 +40,12 @@ export const DocumentsPageClient = () => {
   );
 
   const filteredDocuments = useMemo(() => {
-    if (!documents) return null;
-    if (!searchQuery) return documents;
+    if (!documents) {
+      return null;
+    }
+    if (!searchQuery) {
+      return documents;
+    }
     return documents.filter((doc) =>
       doc.title.toLowerCase().includes(searchQuery.toLowerCase())
     );

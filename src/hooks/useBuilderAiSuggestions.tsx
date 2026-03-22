@@ -84,7 +84,9 @@ export const BuilderAiSuggestionsProvider = ({
   }, [isLoadingSummary, summaryCompletionError, summaryImprovementError]);
 
   useEffect(() => {
-    if (!generatedSummary && !improvedSummary) return;
+    if (!generatedSummary && !improvedSummary) {
+      return;
+    }
     builderRootStore.aiSuggestionsStore.setSummarySuggestion(
       generatedSummary || improvedSummary
     );

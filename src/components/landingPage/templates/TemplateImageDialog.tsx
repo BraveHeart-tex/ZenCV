@@ -41,6 +41,8 @@ export const TemplateImageDialog = ({
             template={template}
             variant='card'
             imgProps={{
+              width: 400,
+              height: 566,
               className:
                 'object-cover w-full transition-transform duration-500 hover:scale-[1.03]',
               alt: `${template.name} template`,
@@ -72,6 +74,8 @@ export const TemplateImageDialog = ({
             <TemplateImage
               template={template}
               imgProps={{
+                width: 1000,
+                height: 1414,
                 className: 'object-contain w-full h-full',
                 alt: `${template.name} template`,
               }}

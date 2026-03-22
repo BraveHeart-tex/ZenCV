@@ -12,7 +12,9 @@ export const SectionDescription = observer(
         sectionType as keyof typeof SECTION_DESCRIPTIONS_BY_TYPE
       ];
 
-    if (!description) return null;
+    if (!description) {
+      return null;
+    }
 
     return <p className='text-muted-foreground text-sm'>{description}</p>;
   }

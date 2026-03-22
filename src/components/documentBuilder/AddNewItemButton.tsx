@@ -15,7 +15,9 @@ export const AddNewItemButton = observer(
     const handleAddItem = action(async () => {
       const itemId =
         await builderRootStore.itemStore.addNewItemEntry(sectionId);
-      if (!itemId) return;
+      if (!itemId) {
+        return;
+      }
       scrollItemIntoView(itemId);
     });
 

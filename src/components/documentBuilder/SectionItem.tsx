@@ -14,7 +14,9 @@ export const SectionItem = observer(
   ({ itemId }: { itemId: DEX_Item['id'] }) => {
     const item = builderRootStore.itemStore.getItemById(itemId);
 
-    if (!item) return null;
+    if (!item) {
+      return null;
+    }
 
     return <ContainerElement item={item} />;
   }

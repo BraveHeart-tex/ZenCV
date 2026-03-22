@@ -10,7 +10,9 @@ export const LondonWorkExperienceSection = ({
   section: TemplateDataSection;
 }) => {
   const sectionEntries = getWorkExperienceSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={londonTemplateStyles.section}>

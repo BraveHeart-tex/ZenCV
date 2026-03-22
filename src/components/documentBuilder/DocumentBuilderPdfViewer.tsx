@@ -38,7 +38,9 @@ export const DocumentBuilderPdfViewer = observer(
     const [renderVersion, setRenderVersion] = useState(0);
 
     useEffect(() => {
-      if (!containerRef.current) return;
+      if (!containerRef.current) {
+        return;
+      }
 
       const element = containerRef.current;
 

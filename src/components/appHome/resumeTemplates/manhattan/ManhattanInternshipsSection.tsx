@@ -11,7 +11,9 @@ export const ManhattanInternshipsSection = ({
 }) => {
   const sectionEntries = getInternshipsSectionEntries(section);
 
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={manhattanTemplateStyles.section}>

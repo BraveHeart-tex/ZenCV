@@ -29,7 +29,9 @@ export const ResumeScoreSuggestionItem = observer(
       setOpen(false);
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.FOCUS_FIELD) {
         const { fieldName, sectionType } = suggestion;
-        if (!fieldName) return;
+        if (!fieldName) {
+          return;
+        }
 
         const elementRef =
           builderRootStore.UIStore.getFieldRefByFieldNameAndSection(
@@ -57,7 +59,9 @@ export const ResumeScoreSuggestionItem = observer(
           const sectionOption = OTHER_SECTION_OPTIONS.find(
             (sectionOption) => sectionOption.type === suggestion.sectionType
           );
-          if (!sectionOption) return;
+          if (!sectionOption) {
+            return;
+          }
 
           const result =
             await builderRootStore.sectionStore.addNewSection(sectionOption);
@@ -94,7 +98,9 @@ export const ResumeScoreSuggestionItem = observer(
         const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
           section.id
         );
-        if (!addedItemId) return;
+        if (!addedItemId) {
+          return;
+        }
 
         scrollItemIntoView(addedItemId);
         return;

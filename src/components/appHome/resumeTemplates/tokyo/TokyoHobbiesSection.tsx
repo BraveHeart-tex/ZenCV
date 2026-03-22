@@ -4,7 +4,9 @@ import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoHobbiesSection = ({ section, styles }: TokyoSectionProps) => {
   const hobbies = getHobbiesSectionValue(section);
-  if (!hobbies.length) return null;
+  if (!hobbies.length) {
+    return null;
+  }
 
   return (
     <View style={styles.sidebarSection}>

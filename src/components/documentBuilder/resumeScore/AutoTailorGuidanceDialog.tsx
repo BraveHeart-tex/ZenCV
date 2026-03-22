@@ -21,7 +21,9 @@ export const AutoTailorGuidanceDialog = observer(
     const handleContinue = async () => {
       props.onOpenChange?.(false);
       const workExperienceSectionId = getWorkExperienceSectionId();
-      if (!workExperienceSectionId) return;
+      if (!workExperienceSectionId) {
+        return;
+      }
 
       const itemId = await getOrCreateWorkExperienceItem(
         workExperienceSectionId

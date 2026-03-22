@@ -45,7 +45,9 @@ export const RichTextEditor = ({
     ],
     content: initialValue,
     onUpdate: ({ editor }) => {
-      if (!onChange) return;
+      if (!onChange) {
+        return;
+      }
       const content = editor.getText() ? editor.getHTML() : '';
       onChange(content);
     },

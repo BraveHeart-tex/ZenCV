@@ -9,7 +9,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { JobPostingFormDialog } from './resumeScore/JobPostingFormDialog';
 
 export const DocumentJobPostingIndicator = observer(() => {
-  if (!builderRootStore.jobPostingStore.jobPosting) return null;
+  if (!builderRootStore.jobPostingStore.jobPosting) {
+    return null;
+  }
 
   const handleDeleteJobPosting = () => {
     confirmDialogStore.showDialog({

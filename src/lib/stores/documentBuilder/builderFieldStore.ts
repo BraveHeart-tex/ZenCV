@@ -42,7 +42,9 @@ export class BuilderFieldStore {
 
   getFieldById = (fieldId: DEX_Field['id']): DEX_Field | undefined => {
     const field = this.fieldsById.get(fieldId);
-    if (!field) return undefined;
+    if (!field) {
+      return undefined;
+    }
     return {
       ...field,
       value: this.fieldValues.get(field.id) ?? field.value ?? '',
@@ -51,7 +53,9 @@ export class BuilderFieldStore {
 
   getFieldValueByName = (fieldName: FieldName): string => {
     const field = this.fields.find((currField) => currField.name === fieldName);
-    if (!field) return '';
+    if (!field) {
+      return '';
+    }
     return this.fieldValues.get(field.id) ?? field.value ?? '';
   };
 

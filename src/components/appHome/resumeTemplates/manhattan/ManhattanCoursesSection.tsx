@@ -12,7 +12,9 @@ export const ManhattanCoursesSection = ({
   section: TemplateDataSection;
 }) => {
   const sectionEntries = getCoursesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={manhattanTemplateStyles.section}>

@@ -5,7 +5,9 @@ import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoCoursesSection = ({ section, styles }: TokyoSectionProps) => {
   const sectionEntries = getCoursesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={styles.mainSection}>

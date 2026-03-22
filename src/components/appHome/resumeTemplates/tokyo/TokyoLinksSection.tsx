@@ -4,7 +4,9 @@ import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoLinksSection = ({ section, styles }: TokyoSectionProps) => {
   const sectionEntries = getLinksSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={styles.sidebarSection}>

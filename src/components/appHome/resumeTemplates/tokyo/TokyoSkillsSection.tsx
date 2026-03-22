@@ -10,7 +10,9 @@ import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoSkillsSection = ({ section, styles }: TokyoSectionProps) => {
   const sectionEntries = getSkillsSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   const showExperienceLevel =
     getSectionMetadata(

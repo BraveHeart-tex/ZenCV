@@ -10,7 +10,9 @@ export const ManhattanWorkExperienceSection = ({
   section: TemplateDataSection;
 }) => {
   const sectionEntries = getWorkExperienceSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={manhattanTemplateStyles.section}>

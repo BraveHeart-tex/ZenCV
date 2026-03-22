@@ -59,7 +59,9 @@ export const RichTextEditorMenubar = memo(
     const linkRef = useRef<HTMLInputElement>(null);
 
     const setLink = useCallback(() => {
-      if (!editor) return;
+      if (!editor) {
+        return;
+      }
       const url = linkRef.current?.value;
       if (!url) {
         editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -168,7 +170,9 @@ export const RichTextEditorMenubar = memo(
               onClick={() => {
                 const previousUrl = editor.getAttributes('link').href;
                 setTimeout(() => {
-                  if (!linkRef.current || !previousUrl) return;
+                  if (!linkRef.current || !previousUrl) {
+                    return;
+                  }
                   linkRef.current.value = previousUrl;
                 });
               }}

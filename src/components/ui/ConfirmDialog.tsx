@@ -118,7 +118,9 @@ export const ConfirmDialog = observer(() => {
 });
 
 const DoNotAskAgainCheckbox = observer(() => {
-  if (!confirmDialogStore.doNotAskAgainEnabled) return null;
+  if (!confirmDialogStore.doNotAskAgainEnabled) {
+    return null;
+  }
 
   return (
     <div className='flex items-center space-x-2'>

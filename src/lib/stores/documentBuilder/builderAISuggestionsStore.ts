@@ -84,7 +84,9 @@ export class BuilderAISuggestionsStore {
   };
 
   applySuggestedJobTitle = async (fieldId: DEX_Field['id']) => {
-    if (!this.suggestedJobTitle) return;
+    if (!this.suggestedJobTitle) {
+      return;
+    }
 
     await builderRootStore.fieldStore.setFieldValue(
       fieldId,
@@ -100,7 +102,9 @@ export class BuilderAISuggestionsStore {
     const checkUsedKeywords = debounce((values: string[]) => {
       runInAction(() => {
         this.usedKeywords.clear();
-        if (this.keywordSuggestions.length === 0) return;
+        if (this.keywordSuggestions.length === 0) {
+          return;
+        }
         this.keywordSuggestions.forEach((keyword) => {
           values.forEach((value) => {
             if (value.includes(keyword.toLowerCase())) {
@@ -134,13 +138,17 @@ export class BuilderAISuggestionsStore {
   };
 
   start = () => {
-    if (this.isActive) return;
+    if (this.isActive) {
+      return;
+    }
     this.isActive = true;
     this.setupReactions();
   };
 
   stop = () => {
-    if (!this.isActive) return;
+    if (!this.isActive) {
+      return;
+    }
     this.isActive = false;
     this.dispose();
   };

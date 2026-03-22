@@ -49,12 +49,16 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
 
   const setFieldRef = useCallback(
     (ref: HTMLElement | null) => {
-      if (ref) builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+      if (ref) {
+        builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+      }
     },
     [fieldId]
   );
 
-  if (!field) return null;
+  if (!field) {
+    return null;
+  }
 
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {

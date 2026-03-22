@@ -1,5 +1,7 @@
 const isElementCentered = (element: HTMLElement) => {
-  if (!element) return false;
+  if (!element) {
+    return false;
+  }
 
   const rect = element.getBoundingClientRect();
   const elementCenter = rect.top + rect.height / 2;
@@ -12,7 +14,9 @@ const isElementCentered = (element: HTMLElement) => {
 };
 
 export const scrollToCenterAndFocus = (element: HTMLElement) => {
-  if (!element) return;
+  if (!element) {
+    return;
+  }
 
   const isCentered = isElementCentered(element);
 

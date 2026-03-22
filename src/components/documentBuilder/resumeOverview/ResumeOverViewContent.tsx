@@ -33,7 +33,9 @@ export const ResumeOverViewContent = observer(
       const container = document.getElementById(
         getSectionContainerId(sectionId)
       );
-      if (!container) return;
+      if (!container) {
+        return;
+      }
       container.scrollIntoView({ behavior: 'instant', block: 'center' });
       const checkScrollCompletion = () => {
         const rect = container.getBoundingClientRect();

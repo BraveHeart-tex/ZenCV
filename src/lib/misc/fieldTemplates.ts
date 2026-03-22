@@ -276,10 +276,11 @@ export const getInsertTemplatesWithValues = <T extends TopLevelFieldName>(
   return fieldNamesToTemplates[key].map((field) => {
     const fieldNameKey = getKeyByValue(FIELD_NAMES[key], field.name);
 
-    if (!fieldNameKey)
+    if (!fieldNameKey) {
       throw new Error(
         `Field name ${field.name} not found in FIELD_NAMES[${key}]`
       );
+    }
 
     return {
       ...field,

@@ -11,7 +11,9 @@ export const TokyoSummarySection = ({
   summarySection: PdfTemplateData['summarySection'];
   styles: ReturnType<typeof createTokyoStyles>;
 }) => {
-  if (!summarySection?.summary) return null;
+  if (!summarySection?.summary) {
+    return null;
+  }
 
   return (
     <View style={styles.mainSection}>

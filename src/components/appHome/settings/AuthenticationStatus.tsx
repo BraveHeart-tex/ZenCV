@@ -44,9 +44,13 @@ export const AuthenticationStatus = () => {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (!response.ok) throw new Error('Failed to delete account');
+          if (!response.ok) {
+            throw new Error('Failed to delete account');
+          }
           const data = await response.json();
-          if (!data?.success) throw new Error('Failed to delete account');
+          if (!data?.success) {
+            throw new Error('Failed to delete account');
+          }
           await signOut({ redirectUrl: pathname });
           showSuccessToast('Your account has been deleted.', {
             id: loadingToastId,

@@ -71,7 +71,9 @@ export const JobPostingFormDialog = observer(
     const handleJobPostingUpdate = async (values: JobPostingSchema) => {
       const jobPosting = builderRootStore.jobPostingStore?.jobPosting;
 
-      if (!jobPosting) return;
+      if (!jobPosting) {
+        return;
+      }
 
       const changedValues = getChangedValues(jobPosting, values);
 
@@ -83,7 +85,9 @@ export const JobPostingFormDialog = observer(
       const result =
         await builderRootStore.jobPostingStore.updateJobPosting(changedValues);
 
-      if (!handleJobResult(result)) return;
+      if (!handleJobResult(result)) {
+        return;
+      }
 
       if (changedValues.jobTitle || changedValues.roleDescription) {
         builderRootStore.aiSuggestionsStore.resetState();
@@ -95,7 +99,9 @@ export const JobPostingFormDialog = observer(
       const result =
         await builderRootStore.jobPostingStore.addJobPosting(values);
 
-      if (!handleJobResult(result)) return;
+      if (!handleJobResult(result)) {
+        return;
+      }
 
       await handleJobAnalysis(values);
     };

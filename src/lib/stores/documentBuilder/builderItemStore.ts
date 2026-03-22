@@ -72,12 +72,16 @@ export class BuilderItemStore {
 
   addNewItemEntry = async (sectionId: DEX_Section['id']) => {
     const section = this.root.sectionStore.getSectionById(sectionId);
-    if (!section) return;
+    if (!section) {
+      return;
+    }
 
     const template = getItemInsertTemplate(
       section.type as TemplatedSectionType
     );
-    if (!template) return;
+    if (!template) {
+      return;
+    }
 
     const result = await addItemFromTemplate({
       ...template,
@@ -107,7 +111,9 @@ export class BuilderItemStore {
 
   removeItem = async (itemId: DEX_Item['id']) => {
     const item = this.items.find((item) => item.id === itemId);
-    if (!item) return;
+    if (!item) {
+      return;
+    }
 
     const prevItems = this.items;
     const prevFields = this.root.fieldStore.fields;
@@ -142,7 +148,9 @@ export class BuilderItemStore {
   };
 
   reOrderSectionItems = async (itemIds: DEX_Item['id'][]) => {
-    if (itemIds.length === 0) return;
+    if (itemIds.length === 0) {
+      return;
+    }
 
     const newDisplayOrders = itemIds.map((id, index) => ({
       id,
@@ -154,7 +162,9 @@ export class BuilderItemStore {
       return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
 
-    if (changedItems.length === 0) return;
+    if (changedItems.length === 0) {
+      return;
+    }
 
     const prevItems = this.items;
 

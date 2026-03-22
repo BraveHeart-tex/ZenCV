@@ -57,7 +57,9 @@ function TemplatePreviewPopover({
     (t) => t.value === templateValue
   );
 
-  if (!template) return <>{children}</>;
+  if (!template) {
+    return <>{children}</>;
+  }
 
   return (
     <Popover>
@@ -72,6 +74,8 @@ function TemplatePreviewPopover({
           template={template}
           variant='hover'
           imgProps={{
+            width: 408,
+            height: 577,
             className: 'w-full object-cover object-top',
           }}
         />
@@ -195,6 +199,8 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                           (t) => t.value === selectedTemplate
                         )?.images.card
                       }
+                      width={16}
+                      height={20}
                       alt=''
                       className='w-4 h-5 object-cover object-top rounded-[2px] border border-border/50'
                     />

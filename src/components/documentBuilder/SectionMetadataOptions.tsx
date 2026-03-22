@@ -8,7 +8,9 @@ const MetadataOptionsList = observer(
     const sectionMetadataOptions =
       builderRootStore.sectionStore.getSectionMetadataOptions(sectionId);
 
-    if (!sectionMetadataOptions?.length) return null;
+    if (!sectionMetadataOptions?.length) {
+      return null;
+    }
 
     return sectionMetadataOptions.map((option) => (
       <SectionMetadataOption

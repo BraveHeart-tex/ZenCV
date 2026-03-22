@@ -56,7 +56,9 @@ export const useAiSuggestionHelpers = () => {
 
   const handleWriteProfileSummary = async (refinementPrompt?: string) => {
     const workExperienceSectionId = getWorkExperienceSectionId();
-    if (!workExperienceSectionId) return;
+    if (!workExperienceSectionId) {
+      return;
+    }
 
     const itemId = await getOrCreateWorkExperienceItem(workExperienceSectionId);
     if (!itemId) {

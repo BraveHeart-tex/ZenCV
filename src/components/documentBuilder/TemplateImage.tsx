@@ -1,5 +1,8 @@
 import type { TemplateOptionWithVariants } from '../appHome/resumeTemplates/resumeTemplates.constants';
 
+type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> &
+  Omit<T, K>;
+
 export function TemplateImage({
   template,
   variant = 'card',
@@ -7,7 +10,10 @@ export function TemplateImage({
 }: {
   template: TemplateOptionWithVariants;
   variant?: 'card' | 'hover' | 'modal';
-  imgProps?: React.ImgHTMLAttributes<HTMLImageElement>;
+  imgProps: RequireKeys<
+    React.ImgHTMLAttributes<HTMLImageElement>,
+    'width' | 'height'
+  >;
 }) {
   const webpSrc = template.images[variant];
   const avifSrc = webpSrc.replace('.webp', '.avif');
@@ -18,6 +24,8 @@ export function TemplateImage({
       <source srcSet={webpSrc} type='image/webp' />
       <img
         {...imgProps}
+        width={imgProps.width}
+        height={imgProps.height}
         src={webpSrc}
         alt={template.name}
         loading='lazy'

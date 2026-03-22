@@ -6,7 +6,9 @@
  */
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
   const match = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
-  if (!match) throw new Error('Invalid hex color');
+  if (!match) {
+    throw new Error('Invalid hex color');
+  }
   return {
     r: parseInt(match[1], 16),
     g: parseInt(match[2], 16),

@@ -59,8 +59,12 @@ export const CollapsibleSectionItemContainer = observer(
     } = useSortable({ id: itemId });
 
     useEffect(() => {
-      if (!open) return;
-      if (window.innerWidth < 768) return;
+      if (!open) {
+        return;
+      }
+      if (window.innerWidth < 768) {
+        return;
+      }
 
       builderRootStore.UIStore.focusFirstFieldInItem(itemId);
     }, [open, itemId]);
@@ -160,7 +164,9 @@ export const CollapsibleSectionItemContainer = observer(
                   variant='ghost'
                   className='hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent'
                   onClick={() => {
-                    if (isDragging || isSorting || isOver) return;
+                    if (isDragging || isSorting || isOver) {
+                      return;
+                    }
                     builderRootStore.UIStore.toggleItem(itemId);
                   }}
                 >

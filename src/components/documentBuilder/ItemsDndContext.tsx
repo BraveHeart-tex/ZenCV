@@ -29,12 +29,16 @@ export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     const activeId = event.active.id;
     const overId = event?.over?.id;
 
-    if (!overId || activeId === overId) return;
+    if (!overId || activeId === overId) {
+      return;
+    }
 
     const activeIndex = items.indexOf(activeId as DEX_Item['id']);
     const overIndex = items.indexOf(overId as DEX_Item['id']);
 
-    if (activeIndex === -1 || overIndex === -1) return;
+    if (activeIndex === -1 || overIndex === -1) {
+      return;
+    }
 
     const newItems = arrayMove(items, activeIndex, overIndex);
     await builderRootStore.itemStore.reOrderSectionItems(newItems);

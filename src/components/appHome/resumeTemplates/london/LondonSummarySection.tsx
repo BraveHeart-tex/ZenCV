@@ -9,7 +9,9 @@ export const LondonSummarySection = ({
 }: {
   summarySection: PdfTemplateData['summarySection'];
 }) => {
-  if (!summarySection?.summary) return null;
+  if (!summarySection?.summary) {
+    return null;
+  }
 
   return (
     <View style={londonTemplateStyles.section}>

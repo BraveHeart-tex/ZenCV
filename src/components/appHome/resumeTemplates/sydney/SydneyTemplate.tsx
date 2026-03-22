@@ -23,26 +23,36 @@ export const SydneyTemplate = ({
   const { personalDetails, summarySection, sections } = templateData;
 
   const renderSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE)
+    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
       return <SydneyWorkExperienceSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
       return <SydneyEducationSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
       return <SydneyInternshipsSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.COURSES)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
       return <SydneyCoursesSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.SKILLS)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
       return <SydneySkillsSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
       return <SydneyLanguagesSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
       return <SydneyLinksSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
       return <SydneyHobbiesSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
       return <SydneyCustomSection section={section} key={section.id} />;
-    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES)
+    }
+    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
       return <SydneyReferencesSection section={section} key={section.id} />;
+    }
     return null;
   };
 

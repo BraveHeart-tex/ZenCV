@@ -10,7 +10,9 @@ export const LondonHobbiesSection = ({
   section: TemplateDataSection;
 }) => {
   const hobbies = getHobbiesSectionValue(section);
-  if (!hobbies.length) return null;
+  if (!hobbies.length) {
+    return null;
+  }
 
   return (
     <View style={londonTemplateStyles.section}>

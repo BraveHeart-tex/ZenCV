@@ -20,7 +20,9 @@ export const ResumeLanguagesSection = ({
   fontSize,
 }: ResumeLanguagesSectionProps) => {
   const sectionEntries = getLanguagesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={styles.section}>

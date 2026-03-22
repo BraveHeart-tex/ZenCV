@@ -42,6 +42,8 @@ export const MobileTemplatePickerItem = observer(
           <TemplateImage
             template={template}
             imgProps={{
+              width: 400,
+              height: 566,
               className: 'object-cover',
               alt: template.name,
             }}

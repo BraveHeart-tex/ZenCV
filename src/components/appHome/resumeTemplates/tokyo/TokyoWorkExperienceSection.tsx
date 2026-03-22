@@ -8,7 +8,9 @@ export const TokyoWorkExperienceSection = ({
   styles,
 }: TokyoSectionProps) => {
   const sectionEntries = getWorkExperienceSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={styles.mainSection}>

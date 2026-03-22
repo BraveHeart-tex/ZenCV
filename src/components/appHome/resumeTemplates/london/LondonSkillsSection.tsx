@@ -14,7 +14,9 @@ export const LondonSkillsSection = ({
   section: TemplateDataSection;
 }) => {
   const sectionEntries = getSkillsSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   const showExperienceLevel =
     getSectionMetadata(

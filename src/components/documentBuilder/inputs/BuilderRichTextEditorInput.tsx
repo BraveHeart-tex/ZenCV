@@ -20,7 +20,9 @@ interface BuilderRichTextEditorInputProps {
 export const BuilderRichTextEditorInput = observer(
   ({ fieldId, shouldRenderAiWidget }: BuilderRichTextEditorInputProps) => {
     const field = builderRootStore.fieldStore.getFieldById(fieldId);
-    if (!field) return null;
+    if (!field) {
+      return null;
+    }
 
     const id = getFieldHtmlId(field);
 

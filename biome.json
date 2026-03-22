@@ -58,14 +58,19 @@
           "level": "error"
         },
         "useBlockStatements": {
+          "fix": "safe",
           "level": "error"
         }
       },
       "correctness": {
         "noUnusedImports": {
+          "fix": "safe",
           "level": "error"
         },
         "noUnusedVariables": {
+          "level": "error"
+        },
+        "useImageSize": {
           "level": "error"
         }
       }

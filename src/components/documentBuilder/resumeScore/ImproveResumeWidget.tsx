@@ -46,7 +46,9 @@ export const ImproveResumeWidget = observer(() => {
   useMotionValueEvent(scrollY, 'change', (latest) => {
     if (containerRef.current) {
       const parentContainer = containerRef.current.parentElement;
-      if (!parentContainer) return;
+      if (!parentContainer) {
+        return;
+      }
       const { top } = parentContainer.getBoundingClientRect();
       setIsSticky(latest > top);
     }

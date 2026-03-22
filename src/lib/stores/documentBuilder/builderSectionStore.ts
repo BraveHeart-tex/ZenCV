@@ -73,7 +73,9 @@ export class BuilderSectionStore {
     sectionId: DEX_Section['id']
   ): ParsedSectionMetadata[] => {
     const section = this.getSectionById(sectionId);
-    if (!section || !section?.metadata) return [];
+    if (!section || !section?.metadata) {
+      return [];
+    }
     return section?.metadata || [];
   };
 
@@ -111,7 +113,9 @@ export class BuilderSectionStore {
       return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
     });
 
-    if (changedSections.length === 0) return { success: true };
+    if (changedSections.length === 0) {
+      return { success: true };
+    }
 
     const prevSections = this.sections;
 
@@ -146,15 +150,21 @@ export class BuilderSectionStore {
 
   addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
     const template = getItemInsertTemplate(option.type);
-    if (!template) return;
+    if (!template) {
+      return;
+    }
 
-    if (!this.root.documentStore.document) return;
+    if (!this.root.documentStore.document) {
+      return;
+    }
 
     return await clientDb.transaction(
       'rw',
       [clientDb.sections, clientDb.fields, clientDb.items],
       async () => {
-        if (!this.root.documentStore.document) return;
+        if (!this.root.documentStore.document) {
+          return;
+        }
 
         const sectionDto = {
           displayOrder: this.sections.reduce(
@@ -190,7 +200,9 @@ export class BuilderSectionStore {
 
   removeSection = async (sectionId: DEX_Section['id']) => {
     const section = this.sections.find((section) => section.id === sectionId);
-    if (!section) return;
+    if (!section) {
+      return;
+    }
 
     const itemIdsToKeep = this.root.itemStore.items
       .filter((item) => item.sectionId !== sectionId)
@@ -240,7 +252,9 @@ export class BuilderSectionStore {
 
   renameSection = async (sectionId: DEX_Section['id'], value: string) => {
     const section = this.sections.find((section) => section.id === sectionId);
-    if (!section) return;
+    if (!section) {
+      return;
+    }
 
     const prevTitle = section.title;
 
@@ -268,7 +282,9 @@ export class BuilderSectionStore {
     }
   ) => {
     const section = this.getSectionById(sectionId);
-    if (!section) return;
+    if (!section) {
+      return;
+    }
 
     const metadata = section.metadata.find(
       (metadata) => metadata.key === data.key

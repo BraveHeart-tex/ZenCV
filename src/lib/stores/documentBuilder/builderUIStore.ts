@@ -39,14 +39,18 @@ export class BuilderUIStore {
     const section = this.root.sectionStore.sections.find(
       (s) => s.type === sectionType
     );
-    if (!section) return;
+    if (!section) {
+      return;
+    }
 
     const items = this.root.itemStore.getItemsBySectionId(section.id);
     for (const item of items) {
       const field = this.root.fieldStore
         .getFieldsByItemId(item.id)
         .find((f) => f.name === fieldName);
-      if (field) return this.fieldRefs.get(field.id.toString());
+      if (field) {
+        return this.fieldRefs.get(field.id.toString());
+      }
     }
   };
 

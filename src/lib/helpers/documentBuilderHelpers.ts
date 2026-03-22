@@ -495,13 +495,15 @@ export const getScoreColor = (
 } => {
   let bgColor: string;
 
-  if (score <= 24)
+  if (score <= 24) {
     bgColor = '#d32f2f'; // Red
-  else if (score <= 49)
+  } else if (score <= 49) {
     bgColor = '#f57c00'; // Orange
-  else if (score <= 74)
+  } else if (score <= 74) {
     bgColor = '#fbc02d'; // Yellow
-  else bgColor = '#388e3c'; // Green
+  } else {
+    bgColor = '#388e3c'; // Green
+  }
 
   const textColor = getTextColorForBackground(bgColor);
   return { backgroundColor: bgColor, color: textColor };
@@ -514,7 +516,9 @@ export const scrollItemIntoView = (
   const element = builderRootStore.UIStore.itemRefs.get(
     getItemContainerId(itemId)
   );
-  if (!element) return;
+  if (!element) {
+    return;
+  }
 
   if (builderRootStore.UIStore.collapsedItemId !== itemId) {
     builderRootStore.UIStore.toggleItem(itemId);
@@ -580,7 +584,9 @@ export const prepareWorkExperienceEntries =
       (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
     );
 
-    if (!workExperienceSection) return [];
+    if (!workExperienceSection) {
+      return [];
+    }
 
     const workExperienceItems = builderRootStore.itemStore.getItemsBySectionId(
       workExperienceSection.id
@@ -619,11 +625,15 @@ export const getSummaryField = (): DEX_Field | null => {
     (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY
   )?.id;
 
-  if (!sectionId) return null;
+  if (!sectionId) {
+    return null;
+  }
 
   const items = builderRootStore.itemStore.getItemsBySectionId(sectionId);
 
-  if (!items.length) return null;
+  if (!items.length) {
+    return null;
+  }
 
   const fields = items.flatMap((item) =>
     builderRootStore.fieldStore.getFieldsByItemId(item.id)
@@ -649,7 +659,9 @@ export const getSummaryValue = () => {
 
 export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
   const item = builderRootStore.itemStore.getItemById(itemId);
-  if (!item) return null;
+  if (!item) {
+    return null;
+  }
 
   const section = builderRootStore.sectionStore.getSectionById(item?.sectionId);
 
@@ -674,7 +686,9 @@ export const getOrCreateWorkExperienceItem = async (sectionId: number) => {
     INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
   );
 
-  if (items.length > 0) return items[0]?.id;
+  if (items.length > 0) {
+    return items[0]?.id;
+  }
 
   return await builderRootStore.itemStore.addNewItemEntry(sectionId);
 };

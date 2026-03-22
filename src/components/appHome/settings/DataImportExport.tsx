@@ -14,7 +14,9 @@ export const DataImportExport = observer(() => {
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
     try {
       const content = await file.text();
       const data = JSON.parse(content);
@@ -150,7 +152,9 @@ export const DataImportExport = observer(() => {
             accept='.json'
             className='hidden'
             onChange={action((event) => {
-              if (!event.target.files?.[0]) return;
+              if (!event.target.files?.[0]) {
+                return;
+              }
               confirmDialogStore.showDialog({
                 title: 'Import data',
                 message:

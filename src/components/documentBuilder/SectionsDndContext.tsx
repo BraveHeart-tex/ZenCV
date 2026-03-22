@@ -32,12 +32,16 @@ export const SectionsDndContext = ({
     const activeId = event.active.id;
     const overId = event?.over?.id;
 
-    if (!overId || activeId === overId) return;
+    if (!overId || activeId === overId) {
+      return;
+    }
 
     const activeIndex = sectionIds.indexOf(activeId as DEX_Section['id']);
     const overIndex = sectionIds.indexOf(overId as DEX_Section['id']);
 
-    if (activeIndex === -1 || overIndex === -1) return;
+    if (activeIndex === -1 || overIndex === -1) {
+      return;
+    }
 
     const newSections = arrayMove(sectionIds, activeIndex, overIndex);
 

@@ -45,20 +45,26 @@ export const DateFieldInput = observer(
     const inputRef = useRef<HTMLInputElement>(null);
 
     const month = useMemo(() => {
-      if (!field?.value) return CURRENT_MONTH;
+      if (!field?.value) {
+        return CURRENT_MONTH;
+      }
       return field.value && field.value !== PRESENT
         ? getMonthFromFieldValue(field.value)
         : CURRENT_MONTH;
     }, [field?.value]);
 
     const year = useMemo(() => {
-      if (!field?.value) return CURRENT_YEAR;
+      if (!field?.value) {
+        return CURRENT_YEAR;
+      }
       return field.value && field.value !== PRESENT
         ? getYearFromFieldValue(field.value)
         : CURRENT_YEAR;
     }, [field?.value]);
 
-    if (!field) return null;
+    if (!field) {
+      return null;
+    }
 
     const isPresent = field?.value === PRESENT;
     const isError =

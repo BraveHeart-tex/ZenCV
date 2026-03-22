@@ -41,7 +41,14 @@ export const ResumeTemplateOptionItem = observer(
               isSelected && 'ring-2 ring-blue-500'
             )}
           >
-            <TemplateImage template={option} variant='card' />
+            <TemplateImage
+              template={option}
+              variant='card'
+              imgProps={{
+                width: 400,
+                height: 566,
+              }}
+            />
           </div>
         </div>
       </article>

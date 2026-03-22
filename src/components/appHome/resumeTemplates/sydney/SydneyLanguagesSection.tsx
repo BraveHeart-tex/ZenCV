@@ -9,7 +9,9 @@ export const SydneyLanguagesSection = ({
   section: TemplateDataSection;
 }) => {
   const sectionEntries = getLanguagesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={sydneyTemplateStyles.section}>

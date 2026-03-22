@@ -7,7 +7,9 @@ export const TokyoLanguagesSection = ({
   styles,
 }: TokyoSectionProps) => {
   const sectionEntries = getLanguagesSectionEntries(section);
-  if (!sectionEntries.length) return null;
+  if (!sectionEntries.length) {
+    return null;
+  }
 
   return (
     <View style={styles.sidebarSection}>

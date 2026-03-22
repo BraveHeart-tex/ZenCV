@@ -41,7 +41,9 @@ export const AppColorModeToggle = ({
       (themeOption) => themeOption.value === theme
     );
 
-    if (!selectedOption) return;
+    if (!selectedOption) {
+      return;
+    }
 
     const content = (
       <div className='flex items-center gap-2'>
