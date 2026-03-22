@@ -49,11 +49,16 @@ export function excludeObjectKeys<
   return result;
 }
 
-export function safeParse<T>(value: string | null | undefined, fallback: T): T {
-  if (value == null || value.trim() === '') {
+export function safeParse<T>(value: unknown, fallback: T): T {
+  if (value == null) {
     return fallback;
   }
-
+  if (typeof value !== 'string') {
+    return value as T;
+  }
+  if (value.trim() === '') {
+    return fallback;
+  }
   try {
     return JSON.parse(value) as T;
   } catch {

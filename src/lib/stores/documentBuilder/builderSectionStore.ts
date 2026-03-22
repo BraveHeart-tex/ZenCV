@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, runInAction } from 'mobx';
+import { computed, makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
@@ -20,6 +20,9 @@ import type {
 import { groupBy, safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
 import { FIXED_SECTIONS } from './documentBuilder.constants';
+
+export const parseMetadataToObservable = (raw: unknown) =>
+  safeParse<ParsedSectionMetadata[]>(raw, []).map((m) => observable(m));
 
 export class BuilderSectionStore {
   root: BuilderRootStore;
@@ -91,7 +94,10 @@ export class BuilderSectionStore {
   };
 
   setSections = (sections: SectionWithParsedMetadata[]) => {
-    this.sections = sections;
+    this.sections = sections.map((s) => ({
+      ...s,
+      metadata: parseMetadataToObservable(s.metadata),
+    }));
   };
 
   reOrderSections = async (
@@ -184,7 +190,7 @@ export class BuilderSectionStore {
           this.sections.push({
             ...sectionDto,
             id: sectionId,
-            metadata: safeParse(option.metadata, []),
+            metadata: parseMetadataToObservable(option.metadata),
           });
         });
 
@@ -286,26 +292,25 @@ export class BuilderSectionStore {
       return;
     }
 
-    const metadata = section.metadata.find(
-      (metadata) => metadata.key === data.key
-    );
+    const metadata = section.metadata.find((m) => m.key === data.key);
+    if (!metadata) {
+      return;
+    }
+
+    const prev = metadata.value;
 
     runInAction(() => {
-      if (metadata) {
-        metadata.value = data.value;
-      }
+      metadata.value = data.value;
     });
 
     try {
       await updateSection(sectionId, {
-        metadata: JSON.stringify(
-          section.metadata.map((metadata) => ({
-            ...metadata,
-            value: metadata.key === data.key ? data.value : metadata.value,
-          }))
-        ),
+        metadata: JSON.stringify(section.metadata),
       });
     } catch (error) {
+      runInAction(() => {
+        metadata.value = prev;
+      });
       console.error('Error updating section metadata:', error);
     }
   };

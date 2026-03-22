@@ -85,12 +85,7 @@ export class BuilderTemplateStore {
       .filter((section) => !STATIC_SECTIONS.has(section.type))
       .toSorted(sortByDisplayOrder)
       .map((section) => {
-        // force MobX to track each metadata item's value
-        const metadata = section.metadata?.map((m) => ({
-          ...m,
-          value: m.value, // ← explicit read of each value property
-        }));
-
+        const metadata = section.metadata.map((m) => ({ ...m }));
         return {
           ...section,
           metadata,
