@@ -1,4 +1,5 @@
 import { computed, makeAutoObservable, reaction, runInAction } from 'mobx';
+import { computedFn } from 'mobx-utils';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
@@ -81,23 +82,17 @@ export class BuilderTemplateStore {
 
   @computed
   get mappedSections() {
-    return this.root.sectionStore.sections
-      .filter((section) => !STATIC_SECTIONS.has(section.type))
-      .toSorted(sortByDisplayOrder)
-      .map((section) => {
-        const metadata = section.metadata.map((m) => ({ ...m }));
-        return {
-          ...section,
-          metadata,
-          items: this.root.itemStore
-            .getItemsBySectionId(section.id)
-            .toSorted(sortByDisplayOrder)
-            .map((item) => ({
-              ...item,
-              fields: this.root.fieldStore.getFieldsByItemId(item.id),
-            })),
-        };
-      });
+    return this.getSortedSections().map((section) => {
+      const metadata = section.metadata.map((m) => ({ ...m }));
+      return {
+        ...section,
+        metadata,
+        items: this.getSortedSectionItems(section.id).map((item) => ({
+          ...item,
+          fields: this.root.fieldStore.getFieldsByItemId(item.id),
+        })),
+      };
+    });
   }
 
   @computed
@@ -205,6 +200,18 @@ export class BuilderTemplateStore {
     this.debouncedTemplateData = null;
     this.debouncedResumeStats = { score: 0, suggestions: [] };
   };
+
+  private getSortedSectionItems = computedFn((sectionId: number) => {
+    return this.root.itemStore
+      .getItemsBySectionId(sectionId)
+      .toSorted(sortByDisplayOrder);
+  });
+
+  private getSortedSections = computedFn(() => {
+    return this.root.sectionStore.sections
+      .filter((section) => !STATIC_SECTIONS.has(section.type))
+      .toSorted(sortByDisplayOrder);
+  });
 
   private setupReactions = () => {
     const debouncedTemplateUpdate = debounce((data: PdfTemplateData) => {
