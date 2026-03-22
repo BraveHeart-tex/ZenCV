@@ -16,7 +16,7 @@ export const MobileTemplatePickerContent = observer(() => {
   const isOpen = builderRootStore.UIStore.isMobileTemplateSelectorVisible;
 
   return (
-    <div className='fixed bottom-0 left-0 right-0'>
+    <div className='fixed bottom-0 left-0 right-0 z-50'>
       <AnimatePresence>
         {isOpen ? (
           <motion.div
@@ -60,9 +60,7 @@ export const MobileTemplatePickerContent = observer(() => {
               </div>
             </div>
           </motion.div>
-        ) : (
-          'not open'
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

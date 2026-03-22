@@ -5,7 +5,6 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { cn } from '@/lib/utils/stringUtils';
@@ -20,7 +19,6 @@ const height = width / aspectRatio;
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export const GalleryPdfViewer = observer(() => {
-  const isMobile = useMediaQuery('(max-width: 768px)', false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [renderVersion, setRenderVersion] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
@@ -42,7 +40,7 @@ export const GalleryPdfViewer = observer(() => {
 
   const render = useAsync(async () => {
     const templateData = builderRootStore.templateStore.debouncedTemplateData;
-    if (!templateData || isMobile) {
+    if (!templateData) {
       return null;
     }
     const element = getPdfTemplateByType(templateData);
@@ -50,7 +48,7 @@ export const GalleryPdfViewer = observer(() => {
       const blob = await pdf(element).toBlob();
       return URL.createObjectURL(blob);
     }
-  }, [renderVersion, isMobile]);
+  }, [renderVersion]);
 
   const {
     currentPage,
@@ -95,7 +93,7 @@ export const GalleryPdfViewer = observer(() => {
           loading={null}
           onLoadSuccess={onDocumentLoad}
           className={cn(
-            'transition-opacity duration-500 ease-in-out relative z-30',
+            'transition-opacity duration-500 ease-in-out relative z-20',
             isVisible ? 'opacity-100' : 'opacity-0'
           )}
         >

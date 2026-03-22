@@ -16,7 +16,7 @@ export const TemplateGallery = () => {
         </div>
         <div className='xl:col-span-9 col-span-12 p-4 h-[calc(100vh-4rem)] overflow-auto flex items-center justify-center relative'>
           <GalleryPdfViewer />
-          <div className='left-1/2 xl:left-auto xl:right-1/3 bottom-5 fixed -translate-x-1/2'>
+          <div className='left-1/2 xl:left-auto xl:right-1/3 bottom-5 fixed -translate-x-1/2 z-40'>
             <PdfViewerPageControls variant='primary' />
           </div>
         </div>
