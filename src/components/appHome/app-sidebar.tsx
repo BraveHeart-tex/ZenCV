@@ -11,7 +11,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
+import { useIsMobile } from '@/hooks/useMobile';
 import { APP_NAME } from '@/lib/appConfig';
 import { Icons } from '../misc/icons';
 import { AppColorModeToggle } from './AppColorModeToggle';
@@ -70,10 +72,7 @@ export const AppSidebar = () => {
               {appLinks.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
+                    <SidebarLink item={item} />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -89,5 +88,32 @@ export const AppSidebar = () => {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+  );
+};
+
+export const SidebarLink = ({
+  item,
+  ...props
+}: {
+  item: (typeof appLinks)[number];
+}) => {
+  const isMobile = useIsMobile();
+  const { setOpenMobile } = useSidebar();
+
+  return (
+    <Link
+      to={item.url}
+      {...props}
+      onClick={
+        isMobile
+          ? () => {
+              setOpenMobile(false);
+            }
+          : undefined
+      }
+    >
+      <item.icon />
+      <span>{item.title}</span>
+    </Link>
   );
 };
