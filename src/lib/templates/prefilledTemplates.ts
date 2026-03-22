@@ -4,8 +4,12 @@ import {
   type SectionWithFields,
 } from '@/lib/client-db/clientDbSchema';
 import { getInsertTemplatesWithValues } from '@/lib/misc/fieldTemplates';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
+  INTERNAL_SECTION_TYPES,
+  SECTION_METADATA_KEYS,
+} from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { DeepOmit, ValueOf } from '@/lib/types/utils.types';
+import { UNCHECKED_METADATA_VALUE } from '../constants';
 
 export const PREFILL_RESUME_STYLES = {
   STANDARD: 'standard',
@@ -155,7 +159,18 @@ const getStandardTemplate = (
     title: 'Skills',
     defaultTitle: 'Skills',
     documentId,
-    metadata: '',
+    metadata: JSON.stringify([
+      {
+        label: 'Show experience level',
+        key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+      {
+        label: 'Separate skills with a comma',
+        key: SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+    ]),
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
       {
@@ -268,7 +283,7 @@ const getTechFocusedTemplate = (
     defaultTitle: 'Education',
     documentId,
     metadata: '',
-    type: 'education',
+    type: INTERNAL_SECTION_TYPES.EDUCATION,
     items: [
       {
         containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -311,7 +326,19 @@ const getTechFocusedTemplate = (
     title: 'Skills',
     defaultTitle: 'Skills',
     documentId,
-    metadata: '',
+    // TODO: Extract this to a helper so we dont drift between templates
+    metadata: JSON.stringify([
+      {
+        label: 'Show experience level',
+        key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+      {
+        label: 'Separate skills with a comma',
+        key: SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+    ]),
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
       {
@@ -466,7 +493,18 @@ const getCreativeTemplate = (
   {
     title: 'Skills',
     defaultTitle: 'Skills',
-    metadata: '',
+    metadata: JSON.stringify([
+      {
+        label: 'Show experience level',
+        key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+      {
+        label: 'Separate skills with a comma',
+        key: SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
+        value: UNCHECKED_METADATA_VALUE,
+      },
+    ]),
     documentId,
     type: INTERNAL_SECTION_TYPES.SKILLS,
     items: [
