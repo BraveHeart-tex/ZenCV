@@ -1,7 +1,9 @@
+import * as Sentry from '@sentry/react';
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ApplicationLayoutWithSidebar } from '@/components/appHome/ApplicationLayoutWithSidebar';
 import { DocumentBuilderResetter } from '@/components/documentBuilder/DocumentBuilderResetter';
+import { RouteErrorFallback } from '@/components/ErrorBoundary';
 import { LandingPage } from '@/components/landingPage/LandingPage';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toaster } from '@/components/ui/sonner';
@@ -35,7 +37,13 @@ export function App() {
       <Suspense fallback={null}>
         <Routes>
           <Route path='/' element={<LandingPage />} />
-          <Route element={<ApplicationLayoutWithSidebar />}>
+          <Route
+            element={
+              <Sentry.ErrorBoundary fallback={RouteErrorFallback}>
+                <ApplicationLayoutWithSidebar />
+              </Sentry.ErrorBoundary>
+            }
+          >
             <Route path='/documents' element={<DocumentsPage />} />
             <Route path='/resume-templates' element={<ResumeTemplatesPage />} />
             <Route path='/settings' element={<SettingsPage />} />
@@ -43,10 +51,10 @@ export function App() {
           <Route
             path='/builder/:id'
             element={
-              <>
+              <Sentry.ErrorBoundary fallback={RouteErrorFallback}>
                 <DocumentBuilderResetter />
                 <BuilderPage />
-              </>
+              </Sentry.ErrorBoundary>
             }
           />
           <Route path='*' element={<Navigate to='/' replace />} />
