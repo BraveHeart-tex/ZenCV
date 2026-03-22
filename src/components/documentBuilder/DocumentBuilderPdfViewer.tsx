@@ -151,6 +151,7 @@ export const DocumentBuilderPdfViewer = observer(
               width={pdfDimensions.pdfWidth}
               height={pdfDimensions.pdfHeight}
               loading={null}
+              className='border shadow-sm'
             />
           </Document>
         ) : null}
@@ -173,6 +174,7 @@ export const DocumentBuilderPdfViewer = observer(
               width={pdfDimensions.pdfWidth}
               height={pdfDimensions.pdfHeight}
               loading={null}
+              className='border shadow-sm'
               onRenderSuccess={() => {
                 pdfViewerStore.setPreviousRenderValue(render.value as string);
               }}

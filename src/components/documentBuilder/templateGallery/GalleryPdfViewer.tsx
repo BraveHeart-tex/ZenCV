@@ -16,12 +16,15 @@ import { usePdfViewerHelpers } from '../pdfViewer/pdfViewer.hooks';
 const aspectRatio = Math.SQRT2;
 const width = 800;
 const height = width / aspectRatio;
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 export const GalleryPdfViewer = observer(() => {
   const isMobile = useMediaQuery('(max-width: 768px)', false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [renderVersion, setRenderVersion] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     const dispose = reaction(
       () => builderRootStore.templateStore.debouncedTemplateData,
@@ -36,6 +39,7 @@ export const GalleryPdfViewer = observer(() => {
     );
     return () => dispose();
   }, []);
+
   const render = useAsync(async () => {
     const templateData = builderRootStore.templateStore.debouncedTemplateData;
     if (!templateData || isMobile) {
@@ -47,6 +51,7 @@ export const GalleryPdfViewer = observer(() => {
       return URL.createObjectURL(blob);
     }
   }, [renderVersion, isMobile]);
+
   const {
     currentPage,
     onDocumentLoad,
@@ -54,6 +59,7 @@ export const GalleryPdfViewer = observer(() => {
     shouldShowPreviousDocument,
     shouldShowLoader,
   } = usePdfViewerHelpers(render);
+
   return (
     <div ref={containerRef} className='relative w-full h-full overflow-y-auto'>
       {shouldShowLoader ? (
@@ -77,6 +83,7 @@ export const GalleryPdfViewer = observer(() => {
             height={height}
             pageNumber={currentPage}
             loading={null}
+            className='border shadow-sm'
           />
         </Document>
       ) : null}
@@ -100,6 +107,7 @@ export const GalleryPdfViewer = observer(() => {
             height={height}
             pageNumber={currentPage}
             loading={null}
+            className='border shadow-sm'
             onRenderSuccess={() => {
               pdfViewerStore.setPreviousRenderValue(render.value as string);
               requestAnimationFrame(() => {
