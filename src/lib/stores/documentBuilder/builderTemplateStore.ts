@@ -5,6 +5,7 @@ import type {
   PdfTemplateData,
   ResumeStats,
   ResumeSuggestion,
+  SectionType,
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
 import type { BuilderRootStore } from './builderRootStore';
@@ -20,6 +21,11 @@ import {
   SUGGESTION_TYPES,
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from './documentBuilder.constants';
+
+const STATIC_SECTIONS = new Set<SectionType>([
+  INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+  INTERNAL_SECTION_TYPES.SUMMARY,
+]);
 
 export class BuilderTemplateStore {
   root: BuilderRootStore;
@@ -75,17 +81,8 @@ export class BuilderTemplateStore {
 
   @computed
   get mappedSections() {
-    const fieldValues = this.root.fieldStore.fieldValues;
     return this.root.sectionStore.sections
-      .filter(
-        (section) =>
-          ![
-            INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-            INTERNAL_SECTION_TYPES.SUMMARY,
-          ].includes(
-            section.type as typeof INTERNAL_SECTION_TYPES.PERSONAL_DETAILS
-          )
-      )
+      .filter((section) => !STATIC_SECTIONS.has(section.type))
       .toSorted(sortByDisplayOrder)
       .map((section) => {
         // force MobX to track each metadata item's value
@@ -100,16 +97,10 @@ export class BuilderTemplateStore {
           items: this.root.itemStore
             .getItemsBySectionId(section.id)
             .toSorted(sortByDisplayOrder)
-            .map((item) => {
-              const fields = this.root.fieldStore.getFieldsByItemId(item.id);
-              fields.forEach((field) => {
-                fieldValues.get(field.id);
-              });
-              return {
-                ...item,
-                fields,
-              };
-            }),
+            .map((item) => ({
+              ...item,
+              fields: this.root.fieldStore.getFieldsByItemId(item.id),
+            })),
         };
       });
   }
