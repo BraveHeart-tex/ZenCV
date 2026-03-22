@@ -123,7 +123,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
                 variant='ghost'
                 className={cn(
                   'shrink-0 w-7 h-7 p-0 text-muted-foreground/50',
-                  'opacity-0 group-hover:opacity-100 transition-opacity duration-150',
+                  'max-md:opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-150',
                   'hover:text-foreground hover:bg-muted/60',
                   isOpen && 'opacity-100'
                 )}
