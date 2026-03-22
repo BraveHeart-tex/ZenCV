@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@ai-sdk/groq": "2.0.22",
-    "@clerk/backend": "^3.2.1",
-    "@sentry/cloudflare": "^10.45.0",
+    "@clerk/backend": "3.2.1",
+    "@sentry/cloudflare": "10.45.0",
     "ai": "5.0.60",
-    "hono": "^4.6.0",
+    "hono": "4.6.0",
     "zod": "4.1.12"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241205.0",
+    "@cloudflare/workers-types": "4.20260317.1",
     "typescript": "5.7.3",
-    "wrangler": "^4.76.0"
+    "wrangler": "4.76.0"
   }
 }
