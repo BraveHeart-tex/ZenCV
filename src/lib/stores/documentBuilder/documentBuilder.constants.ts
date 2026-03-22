@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
-import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
+import { getDefaultReferencesMetadata } from '@/lib/misc/sectionMetadataTemplates';
 import type { SectionType } from '@/lib/types/documentBuilder.types';
 
 export const INTERNAL_SECTION_TYPES = {
@@ -253,13 +253,7 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
     icon: ContactIcon,
     title: 'References',
     type: INTERNAL_SECTION_TYPES.REFERENCES,
-    metadata: JSON.stringify([
-      {
-        label: 'Hide references and make them available upon request',
-        key: SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES,
-        value: UNCHECKED_METADATA_VALUE,
-      },
-    ]),
+    metadata: getDefaultReferencesMetadata(),
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {

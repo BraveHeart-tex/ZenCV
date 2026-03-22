@@ -11,7 +11,6 @@ import {
   type SectionWithFields,
   type SelectField,
 } from '@/lib/client-db/clientDbSchema';
-import { UNCHECKED_METADATA_VALUE } from '@/lib/constants';
 import {
   coursesSectionFields,
   customSectionFields,
@@ -41,6 +40,7 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
+import { getDefaultSkillsMetadata } from '../misc/sectionMetadataTemplates';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import type { GenerateSummarySchema } from '../validation/generateSummary.schema';
 
@@ -112,18 +112,7 @@ export const getInitialDocumentInsertBoilerplate = (
       documentId,
       title: 'Skills',
       type: INTERNAL_SECTION_TYPES.SKILLS,
-      metadata: JSON.stringify([
-        {
-          label: 'Show experience level',
-          key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-          value: UNCHECKED_METADATA_VALUE,
-        },
-        {
-          label: 'Separate skills with a comma',
-          key: SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED,
-          value: UNCHECKED_METADATA_VALUE,
-        },
-      ]),
+      metadata: getDefaultSkillsMetadata(),
       items: [
         {
           containerType: CONTAINER_TYPES.COLLAPSIBLE,
