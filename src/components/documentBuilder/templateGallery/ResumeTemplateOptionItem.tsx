@@ -15,7 +15,7 @@ export const ResumeTemplateOptionItem = observer(
     const isSelected =
       builderRootStore.documentStore.document?.templateType === option.value;
 
-    const handlOptionClick = action(async () => {
+    const handleOptionClick = action(async () => {
       await builderRootStore.documentStore.changeDocumentTemplateType(
         option.value
       );
@@ -23,34 +23,53 @@ export const ResumeTemplateOptionItem = observer(
 
     return (
       <article
-        className='group relative flex flex-col gap-1 cursor-pointer'
-        onClick={handlOptionClick}
-        onKeyUp={handlOptionClick}
-        onKeyDown={handlOptionClick}
+        className='group flex flex-col gap-1.5 cursor-pointer'
+        onClick={handleOptionClick}
+        onKeyUp={handleOptionClick}
+        onKeyDown={handleOptionClick}
       >
-        <h3 className='text-base font-medium text-center'>{option.name}</h3>
-        <div className='relative'>
-          {isSelected && (
-            <span className='bg-primary text-primary-foreground dark:bg-background dark:text-foreground top-1/2 left-1/2 absolute flex items-center justify-center w-8 h-8 -translate-x-1/2 -translate-y-1/2 rounded-full'>
-              <CheckIcon />
-            </span>
+        <div
+          className={cn(
+            'relative rounded-lg transition-all duration-200',
+            isSelected
+              ? 'ring-2 ring-blue-500 ring-offset-1'
+              : 'ring-1 ring-border/50 group-hover:ring-blue-500/50'
           )}
-          <div
-            className={cn(
-              'ring-2 ring-transparent group-hover:ring-blue-500 transition-all duration-300 rounded-md overflow-hidden',
-              isSelected && 'ring-2 ring-blue-500'
-            )}
-          >
+        >
+          {/* image + overlay — overflow-hidden here so ring isn't clipped */}
+          <div className='absolute inset-0 rounded-lg overflow-hidden'>
             <TemplateImage
               template={option}
               variant='card'
               imgProps={{
                 width: 400,
                 height: 566,
+                className: 'w-full h-full object-cover',
               }}
             />
+            {isSelected && (
+              <div className='absolute inset-0 bg-blue-500/10 flex items-center justify-center'>
+                <span className='bg-blue-500 text-white flex items-center justify-center w-7 h-7 rounded-full shadow-md'>
+                  <CheckIcon className='w-4 h-4' />
+                </span>
+              </div>
+            )}
           </div>
+
+          {/* aspect ratio placeholder */}
+          <div className='aspect-[1/1.414]' />
         </div>
+
+        <p
+          className={cn(
+            'text-xs font-medium text-center truncate transition-colors',
+            isSelected
+              ? 'text-blue-500'
+              : 'text-muted-foreground group-hover:text-foreground'
+          )}
+        >
+          {option.name}
+        </p>
       </article>
     );
   }
