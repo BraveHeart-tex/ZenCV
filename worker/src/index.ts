@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { type Env, validateEnv } from './env';
 import { loggerMiddleware } from './middleware/logger';
 import authRoutes from './routes/auth';
+import generateBulletsRoute from './routes/generate-bullets';
 import generateSummaryRoute from './routes/generate-summary';
 import improveSummaryRoute from './routes/improve-summary';
 import jobAnalysisRoute from './routes/job-analysis';
@@ -25,6 +26,7 @@ app.use('*', async (c, next) => {
 });
 
 app.route('/auth', authRoutes);
+app.route('/process/generate-bullets', generateBulletsRoute);
 app.route('/process/improve-summary', improveSummaryRoute);
 app.route('/process/job-analysis', jobAnalysisRoute);
 app.route('/process/generate-summary', generateSummaryRoute);

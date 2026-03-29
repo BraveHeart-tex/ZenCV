@@ -1,5 +1,5 @@
 import { useCompletion } from '@ai-sdk/react';
-import { createContext, useContext, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   showErrorToast,
   showLoadingToast,
@@ -8,6 +8,11 @@ import {
 import { endpoints } from '@/lib/endpoints';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import type { AiSuggestionsContext } from '@/lib/types/documentBuilder.types';
+import {
+  type BulletSuggestionsResult,
+  bulletSuggestionsResultSchema,
+  type GenerateBulletsSchema,
+} from '@/lib/validation/generateBullets.schema';
 import { useJobAnalysis } from './useJobAnalysis';
 
 const BuilderAiSuggestionsContext = createContext<AiSuggestionsContext | null>(
@@ -30,6 +35,7 @@ export const BuilderAiSuggestionsProvider = ({
   children: React.ReactNode;
 }) => {
   const { analyzeJob, isLoading: isLoadingJobAnalysis } = useJobAnalysis();
+  const [isGeneratingBullets, setIsGeneratingBullets] = useState(false);
   const toastId = useRef<string | number | undefined>(undefined);
 
   const {
@@ -63,7 +69,60 @@ export const BuilderAiSuggestionsProvider = ({
   });
 
   const isLoadingSummary = isCompletingSummary || isImprovingSummary;
-  const isLoading = isLoadingSummary || isLoadingJobAnalysis;
+  const isLoading =
+    isLoadingSummary || isLoadingJobAnalysis || isGeneratingBullets;
+
+  const generateWorkExperienceBullets = async (
+    values: GenerateBulletsSchema
+  ): Promise<BulletSuggestionsResult | undefined> => {
+    setIsGeneratingBullets(true);
+    toastId.current = showLoadingToast('Generating bullet suggestions...', {
+      id: toastId.current,
+    });
+
+    try {
+      const response = await fetch(endpoints.process.generateBullets, {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const body = await response.json();
+
+      if (!response.ok) {
+        throw new Error(body.message || 'Request failed.');
+      }
+
+      const validationResult = bulletSuggestionsResultSchema.safeParse(
+        body.data
+      );
+
+      if (!validationResult.success) {
+        throw new Error('Received invalid bullet suggestions.');
+      }
+
+      showSuccessToast('Bullet suggestions generated successfully.', {
+        id: toastId.current,
+      });
+      toastId.current = undefined;
+      return validationResult.data;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong while generating bullet suggestions.';
+
+      showErrorToast(message, {
+        id: toastId.current,
+      });
+      toastId.current = undefined;
+      return;
+    } finally {
+      setIsGeneratingBullets(false);
+    }
+  };
 
   useEffect(() => {
     if (isLoadingSummary && !toastId.current) {
@@ -103,6 +162,8 @@ export const BuilderAiSuggestionsProvider = ({
         isImprovingSummary,
         improvedSummary,
         analyzeJob,
+        generateWorkExperienceBullets,
+        isGeneratingBullets,
       }}
     >
       {children}

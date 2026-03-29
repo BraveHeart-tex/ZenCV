@@ -43,6 +43,7 @@ import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { getDefaultSkillsMetadata } from '../misc/sectionMetadataTemplates';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
 import type { GenerateSummarySchema } from '../validation/generateSummary.schema';
+import type { WorkExperience } from '../validation/workExperience.schema';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id']
@@ -608,6 +609,53 @@ export const prepareWorkExperienceEntries =
       };
     });
   };
+
+export const prepareWorkExperienceEntry = (
+  itemId: DEX_Item['id']
+): WorkExperience | null => {
+  const item = builderRootStore.itemStore.getItemById(itemId);
+  if (!item) {
+    return null;
+  }
+
+  const fields = builderRootStore.fieldStore.getFieldsByItemId(item.id);
+
+  return {
+    jobTitle: findValueInItemFields(
+      fields,
+      FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
+    ),
+    employer: findValueInItemFields(
+      fields,
+      FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
+    ),
+    startDate: findValueInItemFields(
+      fields,
+      FIELD_NAMES.WORK_EXPERIENCE.START_DATE
+    ),
+    endDate: findValueInItemFields(
+      fields,
+      FIELD_NAMES.WORK_EXPERIENCE.END_DATE
+    ),
+    city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
+    description: findValueInItemFields(
+      fields,
+      FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
+    ),
+  };
+};
+
+export const getWorkExperienceDescriptionField = (
+  itemId: DEX_Item['id']
+): DEX_Field | null => {
+  return (
+    builderRootStore.fieldStore
+      .getFieldsByItemId(itemId)
+      .find(
+        (field) => field.name === FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
+      ) || null
+  );
+};
 
 export const getSummaryField = (): DEX_Field | null => {
   const sectionId = builderRootStore.sectionStore.sections.find(

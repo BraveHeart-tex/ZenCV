@@ -1,3 +1,4 @@
+import type { GenerateBulletsSchema } from '../schemas/generateBullets.schema';
 import type { GenerateSummarySchema } from '../schemas/generateSummary.schema';
 import type { ImproveSummaryData } from '../schemas/improveSummary.schema';
 import type { JobPostingSchema } from '../schemas/jobPosting.schema';
@@ -210,4 +211,63 @@ Skill 3
 - Make sure each skill is **distinct**, correctly spelled, and properly capitalized.
 - Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
   `.trim();
+};
+
+interface GenerateBulletSuggestionsPromptParams {
+  workExperience: GenerateBulletsSchema['workExperience'];
+  jobPosting?: GenerateBulletsSchema['jobPosting'];
+  roughNotes?: string;
+}
+
+export const generateBulletSuggestionsPrompt = ({
+  workExperience,
+  jobPosting,
+  roughNotes,
+}: GenerateBulletSuggestionsPromptParams) => {
+  const experienceText = generateExperienceText([workExperience]);
+
+  const jobPostingSection = jobPosting
+    ? `
+### Target Job Posting
+- Company: ${jobPosting.companyName}
+- Role: ${jobPosting.jobTitle}
+
+${jobPosting.roleDescription}
+`
+    : '';
+
+  const roughNotesSection = roughNotes?.trim()
+    ? `
+### Candidate Rough Notes
+${roughNotes.trim()}
+`
+    : '';
+
+  return `
+### Role
+You are an expert resume writer creating strong work experience bullet points.
+
+### Objective
+Generate 3 to 5 bullet point suggestions for the candidate's work experience entry.
+
+### Source Experience
+${experienceText}
+
+${roughNotesSection}
+${jobPostingSection}
+
+### Writing Rules
+- Each bullet must be a single resume-ready bullet point.
+- Start with a strong action verb.
+- Focus on achievements, ownership, and measurable outcomes whenever possible.
+- Use details from the target job posting when provided, but do not invent facts.
+- If exact metrics are not available, write specific and credible impact without making up numbers.
+- Keep each bullet concise and practical for a resume.
+- Do not repeat the same idea across bullets.
+
+### Output Rules
+- Return only bullet point text values suitable for a structured JSON array.
+- Do not include markdown bullets, numbering, headings, or explanations.
+- Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
+`.trim();
 };

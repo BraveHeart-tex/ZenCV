@@ -7,6 +7,7 @@ import {
   MAX_VISIBLE_FIELDS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
+import { WorkExperienceBulletWriterWidget } from './aiSuggestions/WorkExperienceBulletWriterWidget';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
 
@@ -26,6 +27,9 @@ const ContainerElement = ({ item }: { item: DEX_Item }) => {
   const { renderFields } = useFieldMapper();
 
   const fields = builderRootStore.fieldStore.getFieldsByItemId(item.id);
+  const sectionType = builderRootStore.sectionStore.getSectionById(
+    item.sectionId
+  )?.type;
 
   if (fields.length > MAX_VISIBLE_FIELDS) {
     return <HidableFieldContainer fields={fields} />;
@@ -34,6 +38,9 @@ const ContainerElement = ({ item }: { item: DEX_Item }) => {
   if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
     return (
       <CollapsibleSectionItemContainer itemId={item.id}>
+        {sectionType === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE ? (
+          <WorkExperienceBulletWriterWidget itemId={item.id} />
+        ) : null}
         {renderFields(fields)}
       </CollapsibleSectionItemContainer>
     );
@@ -43,8 +50,7 @@ const ContainerElement = ({ item }: { item: DEX_Item }) => {
     <div
       className={cn(
         'p-4 pt-0 px-0 grid grid-cols-2 gap-4',
-        builderRootStore.sectionStore.getSectionById(item.sectionId)?.type ===
-          INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
+        sectionType === INTERNAL_SECTION_TYPES.PERSONAL_DETAILS &&
           'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6',
         fields.length === 2 && 'grid grid-cols-2 gap-4'
       )}

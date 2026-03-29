@@ -5,6 +5,7 @@ export const endpoints = {
     deleteAccount: `${API_BASE}/auth/delete-account`,
   },
   process: {
+    generateBullets: `${API_BASE}/process/generate-bullets`,
     improveSummary: `${API_BASE}/process/improve-summary`,
     jobAnalysis: `${API_BASE}/process/job-analysis`,
     generateSummary: `${API_BASE}/process/generate-summary`,

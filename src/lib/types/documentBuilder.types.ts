@@ -24,6 +24,10 @@ import type {
   ValueOf,
   ValueOfNestedObject,
 } from '@/lib/types/utils.types';
+import type {
+  BulletSuggestionsResult,
+  GenerateBulletsSchema,
+} from '../validation/generateBullets.schema';
 import type { JobAnalysisResult } from '../validation/jobAnalysisResult.schema';
 import type { JobPostingSchema } from '../validation/jobPosting.schema';
 
@@ -149,6 +153,10 @@ export interface AiSuggestionsContext {
   analyzeJob: (
     values: JobPostingSchema
   ) => Promise<JobAnalysisResult | undefined>;
+  generateWorkExperienceBullets: (
+    values: GenerateBulletsSchema
+  ) => Promise<BulletSuggestionsResult | undefined>;
+  isGeneratingBullets: boolean;
 }
 
 export type StoreResult<T = void> =
