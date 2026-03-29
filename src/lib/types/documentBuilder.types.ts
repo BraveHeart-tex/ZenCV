@@ -118,6 +118,19 @@ export interface ResumeStats {
   suggestions: (ResumeSuggestion & { key: string })[];
 }
 
+export interface ATSCheck {
+  id: string;
+  label: string;
+  pass: boolean;
+}
+
+export interface ATSCompatibilityReport {
+  checks: ATSCheck[];
+  passedCount: number;
+  totalCount: number;
+  keywordCoverage: number;
+}
+
 type SuggestionType = ValueOf<typeof SUGGESTION_TYPES>;
 
 export type ResumeTemplate = ValueOf<typeof INTERNAL_TEMPLATE_TYPES>;

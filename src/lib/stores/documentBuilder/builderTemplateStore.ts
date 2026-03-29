@@ -3,12 +3,14 @@ import { computedFn } from 'mobx-utils';
 import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
+  ATSCompatibilityReport,
   PdfTemplateData,
   ResumeStats,
   ResumeSuggestion,
   SectionType,
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
+import { removeHTMLTags } from '@/lib/utils/stringUtils';
 import type { BuilderRootStore } from './builderRootStore';
 import {
   FIELD_NAMES,
@@ -28,10 +30,48 @@ const STATIC_SECTIONS = new Set<SectionType>([
   INTERNAL_SECTION_TYPES.SUMMARY,
 ]);
 
+const sentenceRegex = /[^.!?]+[.!?]+/g;
+const quantifiedAchievementRegex =
+  /\b(?:\d+(?:\.\d+)?%|\d+(?:,\d{3})+|\d+(?:\.\d+)?(?:\s?\+)?(?:k|m|b)?|[$EURGBP]\s?\d+(?:,\d{3})*(?:\.\d+)?)\b/i;
+const bulletPointRegex = /<li\b|(^|\n)\s*(?:[-*•]\s+)/i;
+
+const checkSummaryLength = (summary: string) => {
+  const plainTextSummary = removeHTMLTags(summary).replace(/\s+/g, ' ').trim();
+
+  if (!plainTextSummary) {
+    return false;
+  }
+
+  const sentences =
+    plainTextSummary.match(sentenceRegex)?.map((sentence) => sentence.trim()) ??
+    [];
+
+  return sentences.length >= 3 && sentences.length <= 5;
+};
+
+const calculateKeywordCoverage = (content: string, keywords: string[]) => {
+  if (keywords.length === 0) {
+    return 0;
+  }
+
+  const normalizedContent = content.toLowerCase();
+  const matchedKeywords = keywords.filter((keyword) =>
+    normalizedContent.includes(keyword.toLowerCase())
+  );
+
+  return matchedKeywords.length / keywords.length;
+};
+
 export class BuilderTemplateStore {
   root: BuilderRootStore;
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
+  debouncedATSCompatibility: ATSCompatibilityReport = {
+    checks: [],
+    passedCount: 0,
+    totalCount: 0,
+    keywordCoverage: 0,
+  };
 
   private disposers: (() => void)[] = [];
   private isActive = false;
@@ -196,9 +236,98 @@ export class BuilderTemplateStore {
     };
   }
 
+  @computed
+  get atsCompatibility() {
+    const { personalDetails, summarySection, sections } = this.pdfTemplateData;
+    const keywordSuggestions = this.root.aiSuggestionsStore.keywordSuggestions;
+    const workExperienceSections = sections.filter(
+      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
+    );
+
+    const workExperienceDescriptions = workExperienceSections.flatMap(
+      (section) =>
+        section.items.map((item) => {
+          return item.fields.find(
+            (field) => field.name === FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
+          )?.value;
+        })
+    );
+
+    const allResumeText = [
+      personalDetails.jobTitle,
+      summarySection.summary,
+      ...sections.flatMap((section) =>
+        section.items.flatMap((item) => item.fields.map((field) => field.value))
+      ),
+    ]
+      .map((value) => removeHTMLTags(value).toLowerCase().trim())
+      .filter(Boolean)
+      .join(' ');
+
+    const keywordCoverage = calculateKeywordCoverage(
+      allResumeText,
+      keywordSuggestions
+    );
+
+    const checks = [
+      {
+        id: 'has_email',
+        label: 'Email address present',
+        pass: !!personalDetails.email.trim(),
+      },
+      {
+        id: 'has_phone',
+        label: 'Phone number present',
+        pass: !!personalDetails.phone.trim(),
+      },
+      {
+        id: 'has_job_title',
+        label: 'Job title present',
+        pass: !!personalDetails.jobTitle.trim(),
+      },
+      {
+        id: 'summary_length',
+        label: 'Summary is 3-5 sentences',
+        pass: checkSummaryLength(summarySection.summary),
+      },
+      {
+        id: 'work_experience_bullets',
+        label: 'Work experience uses bullet points',
+        pass: workExperienceDescriptions.some((description) =>
+          bulletPointRegex.test(description || '')
+        ),
+      },
+      {
+        id: 'quantified_achievements',
+        label: 'At least one quantified achievement',
+        pass: workExperienceDescriptions.some((description) =>
+          quantifiedAchievementRegex.test(removeHTMLTags(description || ''))
+        ),
+      },
+      {
+        id: 'keyword_coverage',
+        label: 'Covers 50%+ of job keywords',
+        pass: keywordSuggestions.length > 0 ? keywordCoverage >= 0.5 : false,
+      },
+    ];
+
+    return {
+      checks,
+      passedCount: checks.filter((check) => check.pass).length,
+      totalCount: checks.length,
+      keywordCoverage,
+    };
+  }
+
   resetState = () => {
     this.debouncedTemplateData = null;
     this.debouncedResumeStats = { score: 0, suggestions: [] };
+    this.debouncedATSCompatibility = {
+      checks: [],
+      passedCount: 0,
+      totalCount: 0,
+      keywordCoverage: 0,
+    };
   };
 
   private getSortedSectionItems = computedFn((sectionId: number) => {
@@ -226,6 +355,15 @@ export class BuilderTemplateStore {
       });
     }, TEMPLATE_DATA_DEBOUNCE_MS);
 
+    const debouncedATSCompatibilityUpdate = debounce(
+      (data: ATSCompatibilityReport) => {
+        runInAction(() => {
+          this.debouncedATSCompatibility = data;
+        });
+      },
+      TEMPLATE_DATA_DEBOUNCE_MS
+    );
+
     const disposer1 = reaction(
       () => this.pdfTemplateData,
       (data) => {
@@ -242,9 +380,18 @@ export class BuilderTemplateStore {
       { fireImmediately: true }
     );
 
-    this.disposers.push(disposer1, disposer2, () => {
+    const disposer3 = reaction(
+      () => this.atsCompatibility,
+      (data) => {
+        debouncedATSCompatibilityUpdate(data);
+      },
+      { fireImmediately: true }
+    );
+
+    this.disposers.push(disposer1, disposer2, disposer3, () => {
       debouncedStatsUpdate.cancel();
       debouncedTemplateUpdate.cancel();
+      debouncedATSCompatibilityUpdate.cancel();
     });
   };
 
