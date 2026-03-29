@@ -13,6 +13,10 @@ export const improveSummarySchema = z.object({
     .min(1, 'At least one work experience entry is required')
     .max(10, 'At most 10 work experience entries are allowed'),
   jobPosting: jobPostingSchema.optional(),
+  jobKeywords: z
+    .array(z.string().min(1, 'Keyword cannot be empty'))
+    .max(20, 'At most 20 job keywords are allowed')
+    .optional(),
   refinementPrompt: z
     .string()
     .max(

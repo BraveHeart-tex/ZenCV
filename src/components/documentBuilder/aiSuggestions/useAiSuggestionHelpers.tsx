@@ -28,9 +28,15 @@ export const useAiSuggestionHelpers = () => {
     summaryValue: string,
     refinementPrompt?: string
   ) => {
+    const jobKeywords =
+      builderRootStore.aiSuggestionsStore.keywordSuggestions.length > 0
+        ? builderRootStore.aiSuggestionsStore.keywordSuggestions
+        : undefined;
+
     const body: GenerateSummarySchema = {
       workExperiences: prepareWorkExperienceEntries(),
       customPrompt: userSettingsStore.modelSettings.customGenerateSummaryPrompt,
+      jobKeywords,
     };
 
     const jobPosting = builderRootStore.jobPostingStore.jobPosting || undefined;

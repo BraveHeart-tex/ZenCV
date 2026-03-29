@@ -16,15 +16,29 @@ const generateExperienceText = (workExperiences: WorkExperience[]) =>
 interface GenerateResumeSummaryPromptParams {
   workExperiences: GenerateSummarySchema['workExperiences'];
   jobPosting?: GenerateSummarySchema['jobPosting'];
+  jobKeywords?: GenerateSummarySchema['jobKeywords'];
   customPrompt?: string;
 }
+
+const getJobKeywordsSection = (jobKeywords?: string[]) => {
+  if (!jobKeywords?.length) {
+    return '';
+  }
+
+  return `
+### Preferred Job Keywords
+${jobKeywords.map((keyword) => `- ${keyword}`).join('\n')}
+`;
+};
 
 export const generateResumeSummaryPrompt = ({
   workExperiences,
   jobPosting,
+  jobKeywords,
   customPrompt,
 }: GenerateResumeSummaryPromptParams): string => {
   const experiencesText = generateExperienceText(workExperiences);
+  const jobKeywordsSection = getJobKeywordsSection(jobKeywords);
 
   const jobPostingSection = jobPosting
     ? `
@@ -50,6 +64,7 @@ export const generateResumeSummaryPrompt = ({
     ${experiencesText}
 
     ${jobPosting ? `**Target Job Description:**\n${jobPostingSection}` : ''}
+    ${jobKeywordsSection}
 
     ### Guidelines:
     - Respond with a **3-5 sentence** resume summary.
@@ -57,7 +72,9 @@ export const generateResumeSummaryPrompt = ({
     - Align with the **tone and focus** requested above.
     - Maintain a **professional, confident tone**.
     - Avoid generic fluff or vague statements.
-    - Use **industry-relevant keywords**.
+    - Use **industry-relevant keywords** only when they are clearly supported by the candidate's actual work experience.
+    - Prefer the provided job keywords when they genuinely match the candidate's background.
+    - If a requested or job-related keyword is not evidenced by the work experience, do not include it.
     - Avoid repeating job titles or basic duties.
 
     ### Output Format:
@@ -89,17 +106,29 @@ export const generateResumeSummaryPrompt = ({
   ${experiencesText}
 
   ${jobPosting ? `**Target Job Posting:**\n${jobPostingSection}` : ''}
+  ${jobKeywordsSection}
 
   ### Output Instructions:
   - Respond **only** with the final resume summary.
   - **Do not** include headings, labels, formatting (like Markdown), or any explanations.
   - The summary should be **immediately usable** in a resume and designed to attract recruiters and hiring managers.
+  - When job keywords are provided, weave in only the strongest matching ones from the candidate's experience.
+  - Never imply the candidate used a tool, skill, or domain they did not actually demonstrate in the source experience.
+  - Prefer evidence-backed keywords over broad buzzwords.
+  - Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
   `.trim();
 };
 
 export const generateImproveSummaryPrompt = (data: ImproveSummaryData) => {
-  const { summary, workExperiences, jobPosting, refinementPrompt } = data;
+  const {
+    summary,
+    workExperiences,
+    jobPosting,
+    jobKeywords,
+    refinementPrompt,
+  } = data;
   const experiencesText = generateExperienceText(workExperiences);
+  const jobKeywordsSection = getJobKeywordsSection(jobKeywords);
 
   const jobPostingSection = jobPosting
     ? `
@@ -142,11 +171,16 @@ ${summary}
 ${experiencesText}
 
 ${jobPostingSection}
+${jobKeywordsSection}
 
 ### Output Instructions:
 - Respond with the **text only**, exactly as it should appear in a resume.
 - **Do not** include any headings, notes, surrounding quotes, or explanations.
 - The output must be **ready to paste directly into a resume**.
+- Retain the intent of the current summary while improving relevance and specificity.
+- Use provided job keywords only when they are supported by the candidate's work history.
+- Do not add tools, domains, seniority, certifications, or achievements that are not evidenced in the source experience.
+- Prefer the most relevant 2-4 matching keywords instead of stuffing many keywords into the summary.
 - Use only standard ASCII punctuation. Do NOT use Unicode dashes (‑ – —), smart quotes (" " ' '), or non-breaking spaces.
 `.trim();
 };
