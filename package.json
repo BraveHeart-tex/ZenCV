@@ -19,13 +19,9 @@
     "worker:deploy": "pnpm --filter zen-cv-worker deploy",
     "worker:typecheck": "pnpm --filter zen-cv-worker typecheck"
   },
-  "resolutions": {
-    "@react-pdf/layout": "3.11.5",
-    "restructure": "3.0.0"
-  },
   "dependencies": {
     "@ai-sdk/react": "2.0.60",
-    "@clerk/react": "6.4.2",
+    "@clerk/react": "6.4.3",
     "@dnd-kit/core": "6.3.1",
     "@dnd-kit/sortable": "10.0.0",
     "@dnd-kit/utilities": "3.2.2",
@@ -62,7 +58,7 @@
     "mobx-utils": "6.1.1",
     "motion": "11.18.1",
     "next-themes": "0.4.4",
-    "postcss": "8.5.6",
+    "postcss": "8.5.10",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "7.71.2",
@@ -76,24 +72,6 @@
     "tailwindcss-animate": "1.0.7",
     "vaul": "1.1.2",
     "zod": "4.1.12"
-  },
-  "pnpm": {
-    "overrides": {
-      "@isaacs/brace-expansion": "^5.0.1",
-      "glob": "^11.1.0",
-      "js-yaml": "^4.1.1",
-      "tar": "^7.5.11",
-      "minimatch": "^10.2.3",
-      "markdown-it": "^14.1.1",
-      "ajv": "^8.18.0",
-      "undici": "^6.24.0",
-      "@tootallnate/once": "^3.0.1",
-      "picomatch@2.3.1": "2.3.2",
-      "picomatch@4.0.3": "4.0.4",
-      "smol-toml@1.6.0": "1.6.1",
-      "yaml@2.6.1": "2.8.3",
-      "brace-expansion@5.0.2": "5.0.5"
-    }
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
@@ -110,5 +88,6 @@
     "tw-animate-css": "1.4.0",
     "typescript": "5.7.3",
     "vite": "8.0.8"
-  }
+  },
+  "packageManager": "pnpm@10.33.4"
 }
