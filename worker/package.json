@@ -9,16 +9,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/groq": "2.0.22",
+    "@ai-sdk/groq": "4.0.13",
     "@clerk/backend": "3.2.14",
-    "@sentry/cloudflare": "10.45.0",
-    "ai": "5.0.60",
-    "hono": "4.12.25",
+    "@sentry/cloudflare": "10.67.0",
+    "ai": "7.0.36",
+    "hono": "4.12.31",
     "zod": "4.1.12"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260317.1",
+    "@cloudflare/workers-types": "5.20260722.1",
     "typescript": "5.7.3",
-    "wrangler": "4.76.0"
+    "wrangler": "4.114.0"
   }
 }
