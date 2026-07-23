@@ -101,13 +101,7 @@ export const getInitialDocumentInsertBoilerplate = (
       documentId,
       title: 'Links',
       type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
-      items: [
-        {
-          containerType: CONTAINER_TYPES.COLLAPSIBLE,
-          displayOrder: 1,
-          fields: websitesAndLinkFields,
-        },
-      ],
+      items: [],
     },
     {
       documentId,

@@ -44,8 +44,18 @@ export const SectionsDndContext = ({
     }
 
     const newSections = arrayMove(sectionIds, activeIndex, overIndex);
+    const reorderedVisibleSections = [...newSections];
+    const visibleSectionIds = new Set(sectionIds);
+    const allSectionsWithHiddenPositionsPreserved =
+      builderRootStore.sectionStore.orderedSectionIds.map((sectionId) =>
+        visibleSectionIds.has(sectionId)
+          ? (reorderedVisibleSections.shift() ?? sectionId)
+          : sectionId
+      );
 
-    await builderRootStore.sectionStore.reOrderSections(newSections);
+    await builderRootStore.sectionStore.reOrderSections(
+      allSectionsWithHiddenPositionsPreserved
+    );
   });
 
   const sensors = useSensors(

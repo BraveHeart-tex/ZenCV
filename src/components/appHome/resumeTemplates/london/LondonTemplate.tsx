@@ -7,7 +7,6 @@ import { LondonEducationSection } from './LondonEducationSection';
 import { LondonHobbiesSection } from './LondonHobbiesSection';
 import { LondonInternshipsSection } from './LondonInternshipsSection';
 import { LondonLanguagesSection } from './LondonLanguagesSection';
-import { LondonLinksSection } from './LondonLinksSection';
 import { LondonPersonalDetailsSection } from './LondonPersonalDetailsSection';
 import { LondonReferencesSection } from './LondonReferencesSection';
 import { LondonSkillsSection } from './LondonSkillsSection';
@@ -32,10 +31,6 @@ export const LondonTemplate = ({
 
       if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
         return <LondonEducationSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-        return <LondonLinksSection section={section} key={section.id} />;
       }
 
       if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {

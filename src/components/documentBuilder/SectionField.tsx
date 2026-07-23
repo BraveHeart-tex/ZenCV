@@ -5,6 +5,7 @@ import { WantedJobTitleSuggestionPopover } from '@/components/documentBuilder/ai
 import { DocumentBuilderSelectInput } from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { BuilderRichTextEditorInput } from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
+import { WebLinkFieldInput } from '@/components/documentBuilder/inputs/WebLinkFieldInput';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -62,6 +63,10 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
 
   const renderInput = () => {
     if (field.type === FIELD_TYPES.STRING) {
+      if (field.name === FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK) {
+        return <WebLinkFieldInput fieldId={fieldId} />;
+      }
+
       return (
         <>
           <div

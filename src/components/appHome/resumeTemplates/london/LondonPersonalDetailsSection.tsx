@@ -1,6 +1,6 @@
-import { Text, View } from '@react-pdf/renderer';
+import { Link, Text, View } from '@react-pdf/renderer';
+import { Fragment } from 'react';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
-import { SeparatedPDFText } from '../SeparatedPdfText';
 import { londonTemplateStyles } from './london.styles';
 
 export const LondonPersonalDetailsSection = ({
@@ -8,9 +8,21 @@ export const LondonPersonalDetailsSection = ({
 }: {
   personalDetails: PdfTemplateData['personalDetails'];
 }) => {
-  const { firstName, lastName, jobTitle, address, city, phone, email } =
+  const { firstName, lastName, jobTitle, address, city, phone, email, links } =
     personalDetails;
-  const contactDetails = [email, phone, address, city].filter(Boolean);
+  const contactDetails: { id: string; label: string; link?: string }[] = [
+    ...[
+      { id: 'email', label: email },
+      { id: 'phone', label: phone },
+      { id: 'address', label: address },
+      { id: 'city', label: city },
+    ].filter((detail) => detail.label),
+    ...links.map((link) => ({
+      id: link.entryId,
+      label: link.label,
+      link: link.link,
+    })),
+  ];
 
   return (
     <View
@@ -29,14 +41,28 @@ export const LondonPersonalDetailsSection = ({
         {firstName} {lastName} {jobTitle}
       </Text>
 
-      <SeparatedPDFText
-        separator=' • '
-        fields={contactDetails}
+      <Text
         style={{
           ...londonTemplateStyles.documentDescription,
           textAlign: 'center',
         }}
-      />
+      >
+        {contactDetails.map((detail, index) => (
+          <Fragment key={detail.id}>
+            {detail.link ? (
+              <Link
+                src={detail.link}
+                style={{ color: 'black', textDecoration: 'underline' }}
+              >
+                {detail.label}
+              </Link>
+            ) : (
+              detail.label
+            )}
+            {index < contactDetails.length - 1 ? ' • ' : null}
+          </Fragment>
+        ))}
+      </Text>
     </View>
   );
 };

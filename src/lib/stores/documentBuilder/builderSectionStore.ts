@@ -2,7 +2,7 @@ import { computed, makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
   bulkUpdateSections,
   deleteSection,
@@ -19,7 +19,10 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { groupBy, safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
-import { FIXED_SECTIONS } from './documentBuilder.constants';
+import {
+  FIXED_SECTIONS,
+  INTERNAL_SECTION_TYPES,
+} from './documentBuilder.constants';
 
 export const parseMetadataToObservable = (raw: unknown) =>
   safeParse<ParsedSectionMetadata[]>(raw, []).map((m) => observable(m));
@@ -164,44 +167,88 @@ export class BuilderSectionStore {
       return;
     }
 
-    return await clientDb.transaction(
-      'rw',
-      [clientDb.sections, clientDb.fields, clientDb.items],
-      async () => {
-        if (!this.root.documentStore.document) {
-          return;
-        }
+    let createdSectionId: DEX_Section['id'] | undefined;
+    let createdItemId: DEX_Item['id'] | undefined;
 
-        const sectionDto = {
-          displayOrder: this.sections.reduce(
-            (acc, curr) => Math.max(acc, curr.displayOrder),
-            1
-          ),
-          title: option.title,
-          defaultTitle: option.defaultTitle,
-          type: option.type,
-          metadata: option?.metadata,
-          documentId: this.root.documentStore.document.id,
-        };
+    try {
+      return await clientDb.transaction(
+        'rw',
+        [clientDb.sections, clientDb.fields, clientDb.items],
+        async () => {
+          if (!this.root.documentStore.document) {
+            return;
+          }
 
-        const sectionId = await clientDb.sections.add(sectionDto);
+          const sectionDto = {
+            displayOrder: this.sections.reduce(
+              (acc, curr) => Math.max(acc, curr.displayOrder),
+              1
+            ),
+            title: option.title,
+            defaultTitle: option.defaultTitle,
+            type: option.type,
+            metadata: option?.metadata,
+            documentId: this.root.documentStore.document.id,
+          };
 
-        runInAction(() => {
-          this.sections.push({
-            ...sectionDto,
-            id: sectionId,
-            metadata: parseMetadataToObservable(option.metadata),
+          const sectionId = await clientDb.sections.add(sectionDto);
+          createdSectionId = sectionId;
+
+          runInAction(() => {
+            this.sections.push({
+              ...sectionDto,
+              id: sectionId,
+              metadata: parseMetadataToObservable(option.metadata),
+            });
           });
-        });
 
-        const itemId = await this.root.itemStore.addNewItemEntry(sectionId);
+          const itemId = await this.root.itemStore.addNewItemEntry(sectionId);
+          createdItemId = itemId;
 
-        return {
-          itemId,
-          sectionId,
-        };
-      }
-    );
+          if (
+            itemId === undefined &&
+            option.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+          ) {
+            await clientDb.sections.delete(sectionId);
+            runInAction(() => {
+              this.sections = this.sections.filter(
+                (section) => section.id !== sectionId
+              );
+            });
+            createdSectionId = undefined;
+            return;
+          }
+
+          return {
+            itemId,
+            sectionId,
+          };
+        }
+      );
+    } catch (error) {
+      runInAction(() => {
+        if (createdSectionId !== undefined) {
+          this.sections = this.sections.filter(
+            (section) => section.id !== createdSectionId
+          );
+        }
+        if (createdItemId !== undefined) {
+          this.root.itemStore.items = this.root.itemStore.items.filter(
+            (item) => item.id !== createdItemId
+          );
+          const createdFieldIds = this.root.fieldStore.fields
+            .filter((field) => field.itemId === createdItemId)
+            .map((field) => field.id);
+          this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
+            (field) => field.itemId !== createdItemId
+          );
+          createdFieldIds.forEach((fieldId) => {
+            this.root.fieldStore.fieldValues.delete(fieldId);
+          });
+        }
+      });
+      throw error;
+    }
   };
 
   removeSection = async (sectionId: DEX_Section['id']) => {

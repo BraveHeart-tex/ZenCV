@@ -7,7 +7,6 @@ import { ManhattanEducationSection } from './ManhattanEducationSection';
 import { ManhattanHobbiesSection } from './ManhattanHobbiesSection';
 import { ManhattanInternshipsSection } from './ManhattanInternshipsSection';
 import { ManhattanLanguagesSection } from './ManhattanLanguagesSection';
-import { ManhattanLinksSection } from './ManhattanLinksSection';
 import { ManhattanPersonalDetailsSection } from './ManhattanPersonalDetailsSection';
 import { ManhattanReferencesSection } from './ManhattanReferencesSection';
 import { ManhattanSkillsSection } from './ManhattanSkillsSection';
@@ -32,10 +31,6 @@ export const ManhattanTemplate = ({
 
       if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
         return <ManhattanEducationSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-        return <ManhattanLinksSection section={section} key={section.id} />;
       }
 
       if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {

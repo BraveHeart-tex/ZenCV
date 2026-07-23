@@ -65,6 +65,44 @@ export async function addItemFromTemplate(
   );
 }
 
+export async function addItemFromTemplateWithSectionTypeLimit(
+  template: DEX_InsertItemModel & {
+    fields: Omit<DEX_Field, 'id' | 'itemId'>[];
+  },
+  maxItems: number
+): Promise<{ item: DEX_Item; fields: DEX_Field[] } | null> {
+  return clientDb.transaction(
+    'rw',
+    [clientDb.sections, clientDb.items, clientDb.fields],
+    async () => {
+      const section = await clientDb.sections.get(template.sectionId);
+      if (!section) {
+        return null;
+      }
+
+      const matchingSectionIds = (
+        await clientDb.sections
+          .where('documentId')
+          .equals(section.documentId)
+          .filter((candidate) => candidate.type === section.type)
+          .toArray()
+      ).map((candidate) => candidate.id);
+      const itemCount = matchingSectionIds.length
+        ? await clientDb.items
+            .where('sectionId')
+            .anyOf(matchingSectionIds)
+            .count()
+        : 0;
+
+      if (itemCount >= maxItems) {
+        return null;
+      }
+
+      return addItemFromTemplate(template);
+    }
+  );
+}
+
 export async function getItemsWithSectionIds(
   sectionIds: DEX_Section['id'][]
 ): Promise<DEX_Item[]> {

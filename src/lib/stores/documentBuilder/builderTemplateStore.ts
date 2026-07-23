@@ -1,6 +1,9 @@
 import { computed, makeAutoObservable, reaction, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import {
+  getLinksSectionEntries,
+  sortByDisplayOrder,
+} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
   ATSCompatibilityReport,
@@ -137,10 +140,21 @@ export class BuilderTemplateStore {
 
   @computed
   get pdfTemplateData() {
+    const mappedSections = this.mappedSections;
+    const linksSections = mappedSections.filter(
+      (section) => section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+    );
+    const sections = mappedSections.filter(
+      (section) => section.type !== INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+    );
+
     return {
-      personalDetails: this.personalDetails,
+      personalDetails: {
+        ...this.personalDetails,
+        links: linksSections.flatMap(getLinksSectionEntries),
+      },
       summarySection: this.summarySection,
-      sections: this.mappedSections,
+      sections,
       accentColor: this.root.documentStore.accentColor,
       templateType:
         this.root.documentStore.document?.templateType ??

@@ -7,17 +7,23 @@ import {
 } from '@/lib/client-db/clientDbSchema';
 import {
   addItemFromTemplate,
+  addItemFromTemplateWithSectionTypeLimit,
   bulkUpdateItems,
   deleteItem,
 } from '@/lib/client-db/itemService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import type { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
 import type { BuilderRootStore } from './builderRootStore';
+import {
+  INTERNAL_SECTION_TYPES,
+  MAX_PERSONAL_DETAILS_LINKS,
+} from './documentBuilder.constants';
 
 export class BuilderItemStore {
   root: BuilderRootStore;
 
   items: DEX_Item[] = [];
+  private isAddingLink = false;
 
   constructor(root: BuilderRootStore) {
     this.root = root;
@@ -76,37 +82,73 @@ export class BuilderItemStore {
       return;
     }
 
-    const template = getItemInsertTemplate(
-      section.type as TemplatedSectionType
-    );
-    if (!template) {
+    const isLinkSection =
+      section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS;
+    if (
+      isLinkSection &&
+      (this.isAddingLink ||
+        (
+          this.root.sectionStore.sectionsByType[
+            INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+          ] ?? []
+        ).reduce(
+          (itemCount, linksSection) =>
+            itemCount + this.getItemsBySectionId(linksSection.id).length,
+          0
+        ) >= MAX_PERSONAL_DETAILS_LINKS)
+    ) {
       return;
     }
 
-    const result = await addItemFromTemplate({
-      ...template,
-      sectionId,
-      displayOrder: this.items.reduce(
-        (displayOrder, currentItem) =>
-          currentItem.displayOrder > displayOrder
-            ? currentItem.displayOrder
-            : displayOrder,
-        1
-      ),
-    });
+    if (isLinkSection) {
+      this.isAddingLink = true;
+    }
+    try {
+      const template = getItemInsertTemplate(
+        section.type as TemplatedSectionType
+      );
+      if (!template) {
+        return;
+      }
 
-    const { fields, item } = result;
+      const itemTemplate = {
+        ...template,
+        sectionId,
+        displayOrder: this.items.reduce(
+          (displayOrder, currentItem) =>
+            currentItem.displayOrder > displayOrder
+              ? currentItem.displayOrder
+              : displayOrder,
+          1
+        ),
+      };
+      const result = isLinkSection
+        ? await addItemFromTemplateWithSectionTypeLimit(
+            itemTemplate,
+            MAX_PERSONAL_DETAILS_LINKS
+          )
+        : await addItemFromTemplate(itemTemplate);
+      if (!result) {
+        return;
+      }
 
-    runInAction(() => {
-      this.items.push(item);
-      this.root.fieldStore.fields.push(...fields);
-      fields.forEach((field) => {
-        this.root.fieldStore.fieldValues.set(field.id, field.value ?? '');
+      const { fields, item } = result;
+
+      runInAction(() => {
+        this.items.push(item);
+        this.root.fieldStore.fields.push(...fields);
+        fields.forEach((field) => {
+          this.root.fieldStore.fieldValues.set(field.id, field.value ?? '');
+        });
+        this.root.UIStore.toggleItem(item.id);
       });
-      this.root.UIStore.toggleItem(item.id);
-    });
 
-    return result.item.id;
+      return result.item.id;
+    } finally {
+      if (isLinkSection) {
+        this.isAddingLink = false;
+      }
+    }
   };
 
   removeItem = async (itemId: DEX_Item['id']) => {

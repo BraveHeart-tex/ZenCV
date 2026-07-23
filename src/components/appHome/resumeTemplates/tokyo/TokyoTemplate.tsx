@@ -7,7 +7,6 @@ import { TokyoEducationSection } from './TokyoEducationSection';
 import { TokyoHobbiesSection } from './TokyoHobbiesSection';
 import { TokyoInternshipsSection } from './TokyoInternshipsSection';
 import { TokyoLanguagesSection } from './TokyoLanguagesSection';
-import { TokyoLinksSection } from './TokyoLinksSection';
 import { TokyoPersonalDetailsSection } from './TokyoPersonalDetailsSection';
 import { TokyoReferencesSection } from './TokyoReferencesSection';
 import { TokyoSkillsSection } from './TokyoSkillsSection';
@@ -18,7 +17,6 @@ import { createTokyoStyles } from './tokyo.styles';
 const SIDEBAR_SECTION_TYPES = new Set([
   INTERNAL_SECTION_TYPES.SKILLS,
   INTERNAL_SECTION_TYPES.LANGUAGES,
-  INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
   INTERNAL_SECTION_TYPES.HOBBIES,
 ]);
 
@@ -55,11 +53,6 @@ export const TokyoTemplate = ({
           key={section.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-      return (
-        <TokyoLinksSection section={section} key={section.id} styles={styles} />
       );
     }
     if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {

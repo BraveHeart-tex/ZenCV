@@ -75,6 +75,11 @@ export interface PdfTemplateData {
     city: string;
     phone: string;
     email: string;
+    links: {
+      entryId: string;
+      label: string;
+      link: string;
+    }[];
   };
   summarySection: {
     sectionName: string;

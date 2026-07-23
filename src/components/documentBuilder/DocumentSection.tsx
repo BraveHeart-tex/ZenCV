@@ -4,17 +4,21 @@ import { AddNewItemButton } from '@/components/documentBuilder/AddNewItemButton'
 import { DraggableSectionContainer } from '@/components/documentBuilder/DraggableSectionContainer';
 import { EditableSectionTitle } from '@/components/documentBuilder/EditableSectionTitle';
 import { ItemsDndContext } from '@/components/documentBuilder/ItemsDndContext';
+import { PersonalDetailsLinks } from '@/components/documentBuilder/PersonalDetailsLinks';
 import { SectionDescription } from '@/components/documentBuilder/SectionDescription';
 import { SectionItem } from '@/components/documentBuilder/SectionItem';
 import { SectionMetadataOptions } from '@/components/documentBuilder/SectionMetadataOptions';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 export const DocumentSection = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const itemIds =
       builderRootStore.itemStore.getOrderedItemIdsBySectionId(sectionId);
+    const sectionType =
+      builderRootStore.sectionStore.getSectionById(sectionId)?.type;
 
     return (
       <ContainerElement sectionId={sectionId}>
@@ -31,6 +35,9 @@ export const DocumentSection = observer(
         {builderRootStore.itemStore.areAllItemsCollapsible(sectionId) && (
           <AddNewItemButton sectionId={sectionId} />
         )}
+        {sectionType === INTERNAL_SECTION_TYPES.PERSONAL_DETAILS ? (
+          <PersonalDetailsLinks />
+        ) : null}
       </ContainerElement>
     );
   }

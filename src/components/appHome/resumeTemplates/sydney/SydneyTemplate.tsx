@@ -7,7 +7,6 @@ import { SydneyEducationSection } from './SydneyEducationSection';
 import { SydneyHobbiesSection } from './SydneyHobbiesSection';
 import { SydneyInternshipsSection } from './SydneyInternshipsSection';
 import { SydneyLanguagesSection } from './SydneyLanguagesSection';
-import { SydneyLinksSection } from './SydneyLinksSection';
 import { SydneyPersonalDetailsSection } from './SydneyPersonalDetailsSection';
 import { SydneyReferencesSection } from './SydneyReferencesSection';
 import { SydneySkillsSection } from './SydneySkillsSection';
@@ -72,15 +71,6 @@ export const SydneyTemplate = ({
     if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
       return (
         <SydneyLanguagesSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-      return (
-        <SydneyLinksSection
           section={section}
           key={section.id}
           styles={styles}

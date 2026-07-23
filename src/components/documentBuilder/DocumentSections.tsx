@@ -4,9 +4,14 @@ import { PersonalDetailSectionSkeleton } from '@/components/documentBuilder/Pers
 import { ProfessionalSummarySkeleton } from '@/components/documentBuilder/ProfessionalSummarySkeleton';
 import { SectionsDndContext } from '@/components/documentBuilder/SectionsDndContext';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 export const DocumentSections = observer(() => {
-  const sectionIds = builderRootStore.sectionStore.orderedSectionIds;
+  const sectionIds = builderRootStore.sectionStore.orderedSectionIds.filter(
+    (sectionId) =>
+      builderRootStore.sectionStore.getSectionById(sectionId)?.type !==
+      INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+  );
 
   if (sectionIds.length === 0) {
     return (

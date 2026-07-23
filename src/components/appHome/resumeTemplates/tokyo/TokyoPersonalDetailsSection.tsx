@@ -1,4 +1,4 @@
-import { Text, View } from '@react-pdf/renderer';
+import { Link, Text, View } from '@react-pdf/renderer';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import type { createTokyoStyles } from './tokyo.styles';
 
@@ -9,14 +9,22 @@ export const TokyoPersonalDetailsSection = ({
   personalDetails: PdfTemplateData['personalDetails'];
   styles: ReturnType<typeof createTokyoStyles>;
 }) => {
-  const { firstName, lastName, jobTitle, address, city, phone, email } =
+  const { firstName, lastName, jobTitle, address, city, phone, email, links } =
     personalDetails;
 
   const contactDetails = [
-    { label: email },
-    { label: phone },
-    { label: [address, city].filter(Boolean).join(', ') },
-  ].filter((c) => c.label);
+    { id: 'email', label: email },
+    { id: 'phone', label: phone },
+    {
+      id: 'address',
+      label: [address, city].filter(Boolean).join(', '),
+    },
+    ...links.map((link) => ({
+      id: link.entryId,
+      label: link.label,
+      link: link.link,
+    })),
+  ].filter((contact) => contact.label);
 
   return (
     <View>
@@ -30,11 +38,17 @@ export const TokyoPersonalDetailsSection = ({
       {contactDetails.length > 0 && (
         <View style={styles.sidebarSection}>
           <Text style={styles.sidebarSectionLabel}>Contact</Text>
-          {contactDetails.map((c) => (
-            <Text key={c.label} style={styles.sidebarText}>
-              {c.label}
-            </Text>
-          ))}
+          {contactDetails.map((contact) =>
+            'link' in contact ? (
+              <Link key={contact.id} src={contact.link} style={styles.link}>
+                {contact.label}
+              </Link>
+            ) : (
+              <Text key={contact.id} style={styles.sidebarText}>
+                {contact.label}
+              </Text>
+            )
+          )}
         </View>
       )}
     </View>

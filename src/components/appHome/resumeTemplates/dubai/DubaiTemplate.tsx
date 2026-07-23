@@ -7,7 +7,6 @@ import { DubaiEducationSection } from './DubaiEducationSection';
 import { DubaiHobbiesSection } from './DubaiHobbiesSection';
 import { DubaiInternshipsSection } from './DubaiInternshipsSection';
 import { DubaiLanguagesSection } from './DubaiLanguagesSection';
-import { DubaiLinksSection } from './DubaiLinksSection';
 import { DubaiPersonalDetailsSection } from './DubaiPersonalDetailsSection';
 import { DubaiReferencesSection } from './DubaiReferencesSection';
 import { DubaiSkillsSection } from './DubaiSkillsSection';
@@ -18,7 +17,6 @@ import { createDubaiStyles } from './dubai.styles';
 const SIDEBAR_SECTION_TYPES = new Set([
   INTERNAL_SECTION_TYPES.SKILLS,
   INTERNAL_SECTION_TYPES.LANGUAGES,
-  INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
   INTERNAL_SECTION_TYPES.HOBBIES,
 ]);
 
@@ -55,11 +53,6 @@ export const DubaiTemplate = ({
           key={section.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-      return (
-        <DubaiLinksSection section={section} key={section.id} styles={styles} />
       );
     }
     if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {

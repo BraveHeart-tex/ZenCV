@@ -1,4 +1,4 @@
-import { Text, View } from '@react-pdf/renderer';
+import { Link, Text, View } from '@react-pdf/renderer';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import type { SydneyStyles } from './sydney.types';
 
@@ -9,14 +9,22 @@ export const SydneyPersonalDetailsSection = ({
   personalDetails: PdfTemplateData['personalDetails'];
   styles: SydneyStyles;
 }) => {
-  const { firstName, lastName, jobTitle, address, city, phone, email } =
+  const { firstName, lastName, jobTitle, address, city, phone, email, links } =
     personalDetails;
 
   const contactDetails = [
-    email,
-    phone,
-    [address, city].filter(Boolean).join(', '),
-  ].filter(Boolean);
+    { id: 'email', label: email },
+    { id: 'phone', label: phone },
+    {
+      id: 'address',
+      label: [address, city].filter(Boolean).join(', '),
+    },
+    ...links.map((link) => ({
+      id: link.entryId,
+      label: link.label,
+      link: link.link,
+    })),
+  ].filter((contact) => contact.label);
 
   return (
     <View style={styles.header}>
@@ -28,11 +36,17 @@ export const SydneyPersonalDetailsSection = ({
         <View style={styles.contactRow}>
           {contactDetails.map((detail, index) => (
             <View
-              key={detail}
+              key={detail.id}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
             >
               {index > 0 && <Text style={styles.contactSeparator}>·</Text>}
-              <Text style={styles.contactItem}>{detail}</Text>
+              {'link' in detail ? (
+                <Link src={detail.link} style={styles.contactItem}>
+                  {detail.label}
+                </Link>
+              ) : (
+                <Text style={styles.contactItem}>{detail.label}</Text>
+              )}
             </View>
           ))}
         </View>
