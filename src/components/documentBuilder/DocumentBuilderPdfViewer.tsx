@@ -8,6 +8,8 @@ import { reaction, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useAsync } from 'react-use';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
+import { Button } from '@/components/ui/button';
+import { showErrorToast } from '@/components/ui/sonner';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -32,6 +34,7 @@ export const DocumentBuilderPdfViewer = observer(
       height: 0,
     });
     const [renderVersion, setRenderVersion] = useState(0);
+    const [renderError, setRenderError] = useState(false);
 
     useEffect(() => {
       if (!containerRef.current) {
@@ -98,12 +101,18 @@ export const DocumentBuilderPdfViewer = observer(
           return null;
         }
 
+        setRenderError(false);
         const blob = await pdf(
           children as ReactElement<DocumentProps>
         ).toBlob();
         return URL.createObjectURL(blob);
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
+        setRenderError(true);
+        showErrorToast('Preview could not refresh.', {
+          description: 'Your edits are still saved locally. Try again shortly.',
+        });
+        return null;
       }
     }, [renderVersion, children]);
 
@@ -132,10 +141,29 @@ export const DocumentBuilderPdfViewer = observer(
         className={'relative h-full overflow-hidden w-full'}
       >
         {shouldShowLoader ? <PreviewSkeleton /> : null}
+        {renderError && !render.loading ? (
+          <div className='absolute inset-0 z-10 flex items-center justify-center p-6'>
+            <div className='bg-background max-w-sm rounded-lg border p-4 text-center shadow-lg'>
+              <p className='font-medium'>Preview could not refresh</p>
+              <p className='text-muted-foreground mt-1 text-sm'>
+                Your edits are still saved locally. Try regenerating the
+                preview.
+              </p>
+              <Button
+                className='mt-4'
+                onClick={() => setRenderVersion((prev) => prev + 1)}
+                size='sm'
+                variant='outline'
+              >
+                Try again
+              </Button>
+            </div>
+          </div>
+        ) : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className='previous-document absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out opacity-50'
+            className='previous-document absolute inset-0 flex h-full items-center justify-center opacity-50 transition-opacity duration-200 ease-[var(--ease-out-quart)] motion-reduce:transition-none'
             file={previousRenderValue}
             loading={null}
           >
@@ -156,7 +184,7 @@ export const DocumentBuilderPdfViewer = observer(
           <Document
             key={render.value}
             className={
-              'absolute inset-0 flex items-center justify-center h-full transition-opacity duration-300 ease-in-out'
+              'absolute inset-0 flex h-full items-center justify-center transition-opacity duration-200 ease-[var(--ease-out-quart)] motion-reduce:transition-none'
             }
             file={render.value}
             loading={null}

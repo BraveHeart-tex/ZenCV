@@ -38,6 +38,8 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-quart: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 .dark {
@@ -123,8 +125,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-accordion-down: accordion-down 0.18s var(--ease-out-quart);
+  --animate-accordion-up: accordion-up 0.16s var(--ease-out-quart);
 
   @keyframes accordion-down {
     from {
@@ -156,12 +158,18 @@
 
 @layer utilities {
   html {
-    scroll-behavior: smooth !important;
+    scroll-behavior: smooth;
   }
 
   html > body[data-scroll-locked] {
     overflow: visible !important;
     margin-right: 0 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
 
@@ -240,7 +248,7 @@
   left: 0;
   opacity: 1;
   z-index: 1;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .rendering-document {
@@ -249,13 +257,13 @@
   left: 0;
   opacity: 0;
   z-index: 10;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .rendered {
   opacity: 1;
   z-index: 30;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .react-pdf__Document {
@@ -273,7 +281,7 @@
   left: 0;
   opacity: 1;
   z-index: 20;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .rendering-document {
@@ -282,13 +290,13 @@
   left: 0;
   opacity: 0;
   z-index: 10;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .rendered {
   opacity: 1;
   z-index: 30;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 0.22s var(--ease-out-quart);
 }
 
 .hide-scrollbar::-webkit-scrollbar {

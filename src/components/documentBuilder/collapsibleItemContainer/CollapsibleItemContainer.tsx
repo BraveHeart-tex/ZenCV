@@ -37,6 +37,11 @@ import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import { CollapsibleItemHeader } from './CollapsibleItemHeader';
 import { CollapsibleItemMobileContent } from './CollapsibleItemMobileContent';
 
+const itemContentTransition = {
+  opacity: { duration: 0.14, ease: [0.23, 1, 0.32, 1] },
+  height: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
+};
+
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
   itemId: DEX_Item['id'];
@@ -144,7 +149,7 @@ export const CollapsibleSectionItemContainer = observer(
                     variant='ghost'
                     size='icon'
                     aria-label='Drag entry'
-                    className='cursor-grab lg:pointer-events-none lg:group-hover:pointer-events-auto lg:opacity-0 lg:group-hover:opacity-100 absolute -left-7 lg:-left-8 top-[19px] z-10 w-8 h-8 text-muted-foreground transition-all'
+                    className='absolute -left-7 top-[19px] z-10 h-8 w-8 cursor-grab text-muted-foreground/70 transition-[background-color,color,opacity] duration-150 ease-out hover:text-foreground lg:-left-8 lg:opacity-60 lg:hover:opacity-100'
                     {...attributes}
                     {...listeners}
                   >
@@ -230,18 +235,12 @@ export const CollapsibleSectionItemContainer = observer(
                     animate={{
                       height: 'auto',
                       opacity: 1,
-                      transition: {
-                        opacity: { duration: 0.15, delay: 0.15 },
-                        width: { duration: 0.15 },
-                      },
+                      transition: itemContentTransition,
                     }}
                     exit={{
                       height: 0,
                       opacity: 0,
-                      transition: {
-                        opacity: { duration: 0.15 },
-                        width: { duration: 0.15, delay: 0.15 },
-                      },
+                      transition: itemContentTransition,
                     }}
                   >
                     <div className='grid grid-cols-2 gap-4 p-4'>{children}</div>
@@ -256,7 +255,7 @@ export const CollapsibleSectionItemContainer = observer(
                 <TooltipTrigger asChild>
                   <Button
                     className={
-                      'hidden absolute -right-9 top-4 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all ease-out lg:flex'
+                      'absolute -right-9 top-4 hidden opacity-60 transition-[background-color,color,opacity] duration-150 ease-out hover:opacity-100 lg:flex'
                     }
                     onClick={handleDeleteItemClick}
                     size='icon'

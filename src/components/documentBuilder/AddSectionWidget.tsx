@@ -36,23 +36,34 @@ export const AddSectionWidget = observer(() => {
         Add New Section
       </h3>
       <div className='md:grid-cols-2 grid gap-2'>
-        {OTHER_SECTION_OPTIONS.map((option) => (
-          <Button
-            variant='ghost'
-            disabled={
-              option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
-              builderRootStore.sectionStore.sections.some(
-                (section) => section.type === option.type
-              )
-            }
-            onClick={() => handleAddSection(option)}
-            key={option.type}
-            className='flex items-center justify-start gap-2 px-0 text-base'
-          >
-            <option.icon />
-            {option.title}
-          </Button>
-        ))}
+        {OTHER_SECTION_OPTIONS.map((option) => {
+          const isAlreadyAdded =
+            option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
+            builderRootStore.sectionStore.sections.some(
+              (section) => section.type === option.type
+            );
+
+          return (
+            <Button
+              variant='ghost'
+              disabled={isAlreadyAdded}
+              title={isAlreadyAdded ? `${option.title} is already added` : ''}
+              onClick={() => handleAddSection(option)}
+              key={option.type}
+              className='min-h-11 justify-between gap-3 px-3 text-base'
+            >
+              <span className='flex min-w-0 items-center gap-2 text-left'>
+                <option.icon aria-hidden='true' className='shrink-0' />
+                <span className='truncate'>{option.title}</span>
+              </span>
+              {isAlreadyAdded ? (
+                <span className='text-muted-foreground shrink-0 text-xs font-medium'>
+                  Already added
+                </span>
+              ) : null}
+            </Button>
+          );
+        })}
       </div>
     </article>
   );
