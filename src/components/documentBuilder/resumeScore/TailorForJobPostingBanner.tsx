@@ -63,7 +63,7 @@ export const TailorForJobPostingBanner = observer(() => {
             onClick={handleJobPostingDialogClick}
           >
             <BrainCircuitIcon aria-hidden='true' />
-            <div className='flex-1 text-[0.875rem] text-left'>
+            <div className='flex-1 text-sm text-left'>
               <span className='inline md:hidden'>Tailor for a job</span>
               <span className='md:inline hidden'>
                 Tailor this CV to a job description
