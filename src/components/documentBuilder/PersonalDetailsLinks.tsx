@@ -69,11 +69,13 @@ export const PersonalDetailsLinks = observer(() => {
       </div>
 
       {itemIds.length ? (
-        <ItemsDndContext items={itemIds}>
-          {itemIds.map((itemId) => (
-            <SectionItem itemId={itemId} key={itemId} />
-          ))}
-        </ItemsDndContext>
+        <div className='space-y-2'>
+          <ItemsDndContext items={itemIds}>
+            {itemIds.map((itemId) => (
+              <SectionItem itemId={itemId} key={itemId} />
+            ))}
+          </ItemsDndContext>
+        </div>
       ) : (
         <p className='text-muted-foreground py-2 text-sm'>
           No professional links added.

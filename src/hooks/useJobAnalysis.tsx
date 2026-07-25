@@ -55,10 +55,6 @@ export const useJobAnalysis = () => {
         throw new Error(errorBody.message || 'Request failed.');
       }
 
-      showSuccessToast('Job analysis completed successfully.', {
-        id: toastId?.current || undefined,
-      });
-
       const body = await response.json();
 
       const validationResult = jobAnalysisResultSchema.safeParse(body?.data);
@@ -69,21 +65,25 @@ export const useJobAnalysis = () => {
       const data = validationResult.data;
 
       if (builderRootStore.documentStore.document) {
+        const documentId = builderRootStore.documentStore.document.id;
         if (
           builderRootStore.aiSuggestionsStore.keywordSuggestions.length ||
           builderRootStore.aiSuggestionsStore.suggestedJobTitle
         ) {
-          deleteAiSuggestions(builderRootStore.documentStore.document.id);
+          await deleteAiSuggestions(documentId);
         }
 
-        addAiSuggestions({
+        await addAiSuggestions({
           keywordSuggestions: data.keywordSuggestions,
           suggestedJobTitle: data.suggestedJobTitle,
-          documentId: builderRootStore.documentStore.document.id,
+          documentId,
         });
       }
 
       builderRootStore.aiSuggestionsStore.setJobAnalysisResults(data);
+      showSuccessToast('Job analysis completed successfully.', {
+        id: toastId?.current || undefined,
+      });
 
       return data;
     } catch (error) {

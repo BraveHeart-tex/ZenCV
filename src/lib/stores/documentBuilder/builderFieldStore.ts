@@ -14,12 +14,14 @@ export class BuilderFieldStore {
   root: BuilderRootStore;
   fields: DEX_Field[] = [];
   fieldValues: ObservableMap<DEX_Field['id'], string> = new ObservableMap();
+  private saveVersions = new Map<DEX_Field['id'], number>();
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this, {
+    makeAutoObservable<this, 'saveVersions'>(this, {
       fields: observable,
       fieldValues: observable,
+      saveVersions: false,
     });
   }
 
@@ -66,6 +68,7 @@ export class BuilderFieldStore {
       nextFieldValues.set(field.id, field.value ?? '');
     });
     this.fieldValues = nextFieldValues;
+    this.saveVersions.clear();
   };
 
   setFieldValue = async (
@@ -81,16 +84,26 @@ export class BuilderFieldStore {
       };
     }
 
+    const previousValue = this.fieldValues.get(fieldId) ?? field.value ?? '';
+
     runInAction(() => {
       this.fieldValues.set(fieldId, value);
     });
 
     if (shouldSaveToStore) {
+      const saveVersion = (this.saveVersions.get(fieldId) ?? 0) + 1;
+      this.saveVersions.set(fieldId, saveVersion);
+
       try {
         await updateField(fieldId, value);
         return { success: true };
       } catch (error) {
         console.error('setFieldValue error', error);
+        runInAction(() => {
+          if (this.saveVersions.get(fieldId) === saveVersion) {
+            this.fieldValues.set(fieldId, previousValue);
+          }
+        });
 
         return {
           success: false,

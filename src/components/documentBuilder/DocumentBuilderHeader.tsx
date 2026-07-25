@@ -5,7 +5,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 
 export const DocumentBuilderHeader = observer(() => {
   return (
-    <header className='flex items-center justify-center w-full overflow-hidden'>
+    <header className='flex w-full min-w-0 flex-col items-center justify-center overflow-hidden'>
       {builderRootStore.documentStore.document?.title ? (
         <EditableDocumentTitle />
       ) : (

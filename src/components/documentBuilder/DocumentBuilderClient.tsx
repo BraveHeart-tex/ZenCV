@@ -5,13 +5,17 @@ import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget'
 import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
 import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
 import { Button } from '@/components/ui/button';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { cn } from '@/lib/utils/stringUtils';
 import { DocumentBuilderSettingsWidget } from './DocumentBuilderSettingsWidget';
 import { ImproveResumeWidget } from './resumeScore/ImproveResumeWidget';
-import { TailorForJobPostingBanner } from './resumeScore/TailorForJobPostingBanner';
 
 export const DocumentBuilderClient = observer(() => {
   const navigate = useNavigate();
@@ -23,35 +27,42 @@ export const DocumentBuilderClient = observer(() => {
 
   return (
     <TooltipProvider>
-      <div
+      <main
+        aria-label='Resume editor'
         className={cn(
-          'bg-background min-h-screen px-2 md:px-6 md:p-12 py-14 pt-4 md:pt-4 relative w-1/2 hide-scrollbar',
+          'bg-background relative min-h-screen w-1/2 px-3 pb-20 md:px-8 xl:pb-8 hide-scrollbar',
           view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
           view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block'
         )}
       >
-        <div className='flex items-center justify-between w-full gap-4'>
-          <Button onClick={handleBack} size='icon' variant='outline'>
-            <ArrowLeftIcon />
-          </Button>
+        <div className='bg-background sticky top-0 z-40 -mx-3 flex items-center justify-between gap-3 border-b px-3 py-3 md:-mx-8 md:px-8'>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                aria-label='Back to documents'
+                className='size-10 shrink-0 md:size-9'
+                onClick={handleBack}
+                size='icon'
+                variant='outline'
+              >
+                <ArrowLeftIcon aria-hidden='true' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side='bottom'>Back to documents</TooltipContent>
+          </Tooltip>
           <DocumentBuilderHeader />
           <DocumentBuilderSettingsWidget />
         </div>
 
-        <div
-          className={
-            'max-w-(--breakpoint-2xl) bg-popover sticky top-0 z-50 flex items-center justify-between mx-auto'
-          }
-        >
+        <div className='mx-auto mt-2 max-w-2xl'>
           <ImproveResumeWidget />
         </div>
-        <TailorForJobPostingBanner />
 
-        <div className='max-w-(--breakpoint-2xl) grid gap-6 pb-8 mx-auto mt-4'>
+        <div className='mx-auto mt-6 grid max-w-2xl gap-6 pb-8 md:mt-8'>
           <DocumentSections />
           <AddSectionWidget />
         </div>
-      </div>
+      </main>
     </TooltipProvider>
   );
 });

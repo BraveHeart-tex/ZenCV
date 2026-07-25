@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-25T08:35:55Z",
+  "generatedAt": "2026-07-25T09:53:29Z",
   "title": "Design System: ZenCV",
   "extensions": {
     "colorMeta": {
@@ -340,7 +340,7 @@
       },
       {
         "name": "The Workbench Split Rule",
-        "body": "Preserve the editor/preview split only when each pane remains genuinely usable; otherwise prioritize one view at a time.",
+        "body": "Optimize the builder first for a genuinely usable desktop editor/preview split. Below that threshold, prioritize one view at a time and preserve the mobile tasks that matter most: review, light editing, and export.",
         "section": "layout"
       },
       {

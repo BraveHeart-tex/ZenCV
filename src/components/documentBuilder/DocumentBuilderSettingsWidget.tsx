@@ -15,8 +15,14 @@ export const DocumentBuilderSettingsWidget = () => {
   return (
     <ResponsiveDialog
       trigger={
-        <Button variant='ghost' size='icon'>
-          <SettingsIcon />
+        <Button
+          aria-label='Open settings'
+          className='size-10 shrink-0 md:size-9'
+          title='Settings'
+          variant='ghost'
+          size='icon'
+        >
+          <SettingsIcon aria-hidden='true' />
         </Button>
       }
       title='Settings'

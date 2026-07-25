@@ -242,6 +242,8 @@ Components should express quiet precision: compact, restrained, confidently func
 - **Focus:** A clear outline/ring using the current foreground role; never a blue glow.
 - **Error / Disabled:** Signal Red for invalid borders and messages; disabled fields retain readable content at reduced opacity.
 
+**The Silent Local Persistence Rule.** Document edits write directly to local IndexedDB and are expected to complete immediately. Do not show routine “Saving” or “Saved” indicators in the builder. Keep successful writes silent; surface only actionable persistence failures through the affected control or established error feedback, with optimistic rollback where appropriate. This rule does not apply to genuinely long-running remote, AI, PDF-rendering, import, or export operations.
+
 ### Navigation
 
 Navigation uses compact medium-weight labels and 32px rows. Default items remain visually quiet; hover and active states use the neutral accent surface. The desktop application sidebar can collapse to icons, while mobile navigation moves into an overlay sheet. Marketing navigation is sparse and text-led.

@@ -59,18 +59,18 @@ export const TailorForJobPostingBanner = observer(() => {
         trigger={
           <Button
             variant='ghost'
-            className='bg-background md:h-16 flex items-center w-full gap-2 p-4 border rounded-md'
+            className='bg-background flex w-full items-center gap-2 rounded-md border p-4 md:h-16'
             onClick={handleJobPostingDialogClick}
           >
-            <BrainCircuitIcon />
+            <BrainCircuitIcon aria-hidden='true' />
             <div className='flex-1 text-[0.875rem] text-left'>
-              <span className='md:hidden inline'>Get AI Assistance</span>
+              <span className='inline md:hidden'>Tailor for a job</span>
               <span className='md:inline hidden'>
-                Optimize your resume for the job and land more interviews
+                Tailor this CV to a job description
               </span>
             </div>
-            <div className='md:flex items-center hidden gap-2'>
-              Try it <ChevronRightIcon />
+            <div className='hidden items-center gap-2 md:flex'>
+              Add job <ChevronRightIcon aria-hidden='true' />
             </div>
           </Button>
         }

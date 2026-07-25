@@ -141,6 +141,8 @@ Current schema version: **7**
 
 Always use `parseTemplateSettings()` / `serializeTemplateSettings()` from `accentColors.ts` — never raw `JSON.parse`.
 
+**Local persistence UI decision:** Builder edits write directly to IndexedDB and should not show routine “Saving” / “Saved locally” status. Successful local writes stay silent. Handle failures with the existing error feedback and optimistic rollback patterns instead. Long-running remote, AI, PDF, import, and export operations may still expose progress.
+
 When adding schema migrations:
 - Increment version number
 - Never modify previous version definitions

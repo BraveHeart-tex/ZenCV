@@ -14,7 +14,12 @@ export const EditableDocumentTitle = observer(() => {
 
   const handleRename = action(async (enteredTitle: string) => {
     try {
-      await builderRootStore.documentStore.renameDocument(enteredTitle);
+      const result =
+        await builderRootStore.documentStore.renameDocument(enteredTitle);
+      if (!result.success) {
+        showErrorToast(result.error);
+        return;
+      }
       showSuccessToast('Document renamed successfully.');
       setOpen(false);
     } catch (error) {
@@ -39,13 +44,14 @@ export const EditableDocumentTitle = observer(() => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                aria-label='Rename document'
                 size='icon'
                 variant='ghost'
                 onClick={() => {
                   setOpen(true);
                 }}
               >
-                <PencilIcon />
+                <PencilIcon aria-hidden='true' />
               </Button>
             </TooltipTrigger>
             <TooltipContent>Rename document</TooltipContent>

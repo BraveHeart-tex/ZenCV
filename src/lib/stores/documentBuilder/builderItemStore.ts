@@ -76,7 +76,9 @@ export class BuilderItemStore {
     this.items = items;
   };
 
-  addNewItemEntry = async (sectionId: DEX_Section['id']) => {
+  addNewItemEntry = async (
+    sectionId: DEX_Section['id']
+  ): Promise<DEX_Item['id'] | undefined> => {
     const section = this.root.sectionStore.getSectionById(sectionId);
     if (!section) {
       return;
@@ -208,7 +210,12 @@ export class BuilderItemStore {
       return;
     }
 
-    const prevItems = this.items;
+    const previousDisplayOrders = new Map(
+      changedItems.map(({ id }) => [
+        id,
+        this.itemsById.get(id)?.displayOrder ?? 0,
+      ])
+    );
 
     runInAction(() => {
       this.items.forEach((item) => {
@@ -230,7 +237,12 @@ export class BuilderItemStore {
       } catch (error) {
         console.error('bulkUpdateItems error', error);
         runInAction(() => {
-          this.items = prevItems;
+          this.items.forEach((item) => {
+            const previousDisplayOrder = previousDisplayOrders.get(item.id);
+            if (previousDisplayOrder !== undefined) {
+              item.displayOrder = previousDisplayOrder;
+            }
+          });
         });
       }
     }

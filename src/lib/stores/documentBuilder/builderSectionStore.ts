@@ -27,6 +27,11 @@ import {
 export const parseMetadataToObservable = (raw: unknown) =>
   safeParse<ParsedSectionMetadata[]>(raw, []).map((m) => observable(m));
 
+interface AddSectionResult {
+  itemId: DEX_Item['id'] | undefined;
+  sectionId: DEX_Section['id'];
+}
+
 export class BuilderSectionStore {
   root: BuilderRootStore;
   sections: SectionWithParsedMetadata[] = [];
@@ -126,7 +131,12 @@ export class BuilderSectionStore {
       return { success: true };
     }
 
-    const prevSections = this.sections;
+    const previousDisplayOrders = new Map(
+      changedSections.map(({ id }) => [
+        id,
+        this.sectionsById.get(id)?.displayOrder ?? 0,
+      ])
+    );
 
     runInAction(() => {
       this.sections.forEach((section) => {
@@ -151,13 +161,20 @@ export class BuilderSectionStore {
     } catch (error) {
       console.error('bulkUpdateSections error', error);
       runInAction(() => {
-        this.sections = prevSections;
+        this.sections.forEach((section) => {
+          const previousDisplayOrder = previousDisplayOrders.get(section.id);
+          if (previousDisplayOrder !== undefined) {
+            section.displayOrder = previousDisplayOrder;
+          }
+        });
       });
       return { success: false, error: 'Failed to reorder sections' };
     }
   };
 
-  addNewSection = async (option: Omit<OtherSectionOption, 'icon'>) => {
+  addNewSection = async (
+    option: Omit<OtherSectionOption, 'icon'>
+  ): Promise<AddSectionResult | undefined> => {
     const template = getItemInsertTemplate(option.type);
     if (!template) {
       return;
@@ -170,8 +187,8 @@ export class BuilderSectionStore {
     let createdSectionId: DEX_Section['id'] | undefined;
     let createdItemId: DEX_Item['id'] | undefined;
 
-    try {
-      return await clientDb.transaction(
+    const createSection = (): Promise<AddSectionResult | undefined> =>
+      clientDb.transaction(
         'rw',
         [clientDb.sections, clientDb.fields, clientDb.items],
         async () => {
@@ -225,6 +242,9 @@ export class BuilderSectionStore {
           };
         }
       );
+
+    try {
+      return await createSection();
     } catch (error) {
       runInAction(() => {
         if (createdSectionId !== undefined) {
