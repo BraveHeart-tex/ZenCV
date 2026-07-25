@@ -8,9 +8,7 @@ import { reaction, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useAsync } from 'react-use';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -26,8 +24,6 @@ export const DocumentBuilderPdfViewer = observer(
     renderTextLayer = false,
     renderAnnotationLayer = false,
   }: DocumentBuilderPdfViewerProps) => {
-    const view = builderRootStore.UIStore.currentView;
-    const isMobile = useMediaQuery('(max-width: 768px)', false);
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
     const containerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +94,7 @@ export const DocumentBuilderPdfViewer = observer(
 
     const render = useAsync(async () => {
       try {
-        if (!children || (isMobile && view !== BUILDER_CURRENT_VIEWS.PREVIEW)) {
+        if (!children) {
           return null;
         }
 
@@ -109,7 +105,7 @@ export const DocumentBuilderPdfViewer = observer(
       } catch (error) {
         console.error('DocumentBuilderPdfViewer rendering error', error);
       }
-    }, [renderVersion, isMobile, view, children]);
+    }, [renderVersion, children]);
 
     useEffect(() => {
       runInAction(() => {
