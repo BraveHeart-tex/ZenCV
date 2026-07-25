@@ -4,6 +4,8 @@ node_modules
 .pnp.*
 .pnpm-store
 
+.agents
+
 # build output
 dist
 dist-ssr
