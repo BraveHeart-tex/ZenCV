@@ -1,4 +1,4 @@
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/instrument-sans";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -78,6 +78,10 @@
 }
 
 @theme inline {
+  --font-sans:
+    "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -153,6 +157,10 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground;
   }
 }
 
