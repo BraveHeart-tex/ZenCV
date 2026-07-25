@@ -9,7 +9,9 @@ Resolve one stable target, run two independent assessments, synthesize a design 
 - If you degrade for any reason, the report's first line MUST be a banner: `⚠️ DEGRADED: single-context (<reason>)`. A silent degraded critique is a failed critique.
 - Assessment A must finish before detector findings enter the parent synthesis context. Detector output is deterministic, but it still anchors judgment.
 - A skipped detector is a failed critique run unless `detect.mjs` is missing or crashes after a real attempt.
-- Viewable targets require browser inspection when available.
+- Viewable web targets require successful live browser inspection. Browser unavailability is a blocking condition, never a degraded-mode condition.
+- Before spawning assessments, the parent MUST establish browser access, create or claim a tab, navigate to the live target, and verify that the rendered page can be inspected.
+- If browser access, tab creation/claiming, navigation, or rendering fails, immediately notify the user with the concrete failure and STOP. Do not run assessments, synthesize a report, persist a snapshot, or substitute source review, screenshots, cached imagery, or documentation images.
 - Any local server started only for critique visualization must run in the background, have a recorded stop method, and be stopped before final reporting unless the user asks to keep it.
 - Do not claim a user-visible overlay exists unless script injection succeeded and the detector ran in the page.
 
@@ -45,11 +47,11 @@ Codex sub-agent gate (overrides the default above; Codex's permission model requ
 - If spawning fails after permission, run sequentially and lead with `⚠️ DEGRADED: single-context (sub-agent spawn failed: <exact error>)`.
 Prefer `fork_context: false` with self-contained prompts containing cwd, target, live URL, references, product context, and output contract. If using `fork_context: true`, omit `agent_type`, `model`, and `reasoning_effort`.
 
-If browser automation is available, each assessment creates its own new tab. Never reuse an existing tab, even if it is already at the right URL.
+Each assessment creates its own new tab. Never reuse an existing tab, even if it is already at the right URL. If either isolated assessment cannot access the browser or inspect the rendered target, it must return `BROWSER_BLOCKED: <concrete reason>` without completing its assessment. The parent must then notify the user and STOP without synthesis or persistence.
 
 ### Assessment A: Design Review
 
-Read relevant source files and visually inspect the live page when browser automation is available. Think like a design director.
+Read relevant source files and visually inspect the live page. Think like a design director. Source-only or screenshot-only assessment is prohibited for a viewable web target.
 
 Evaluate:
 - **Design specificity**: Is the composition, interaction, and visual language grounded in this product, or could an unrelated product use it unchanged? Make this judgment before seeing detector output.
@@ -75,17 +77,17 @@ node .agents/skills/impeccable/scripts/detect.mjs --json [target]
 - Exit code 0 = clean; 2 = findings.
 - If the detector entrypoint is missing or fails to load, report deterministic scan unavailable and continue with browser/manual review.
 
-Browser visualization is required for a viewable target when browser automation is available. Use a localhost dev/static URL for local files; avoid `file://` unless the available browser explicitly supports this workflow. Overlay flow:
+Browser visualization is required for every viewable web target. Use a localhost dev/static URL for local files; avoid `file://` unless the available browser explicitly supports this workflow. Failure to access or render the page is blocking and must follow the hard browser gate above. Overlay flow:
 
 1. Create a fresh tab and navigate. Prefer the harness's native/browser-canvas screenshot path before hand-rolling a Playwright/Puppeteer script; only fall back to a custom script when no native browser tool is exposed.
 2. Preflight mutable injection by setting `document.title` and appending a `<script>` tag. Read-only evaluate APIs do not count.
-3. If mutation is unavailable, skip live server, browser presentation, and injection; report fallback signal.
+3. If mutation is unavailable but live page inspection succeeded, skip live server, browser presentation, and injection; report the overlay limitation. This does not waive the live-inspection requirement.
 4. If mutation is available, start `node .agents/skills/impeccable/scripts/live-server.mjs --background`, present the browser if supported, label `[Human]`, scroll top, inject `http://localhost:PORT/detect.js`, wait 2-3 seconds, read `impeccable` console messages, then stop the live server.
 5. For multi-view targets, inject on 3-5 representative pages.
 
 Codex Browser note: Use the Browser skill. Do not spend a Browser attempt on `file://`. Only call `visibility.set(true)` after mutable script injection is confirmed for the `[Human]` overlay path; verify with `get()`. Use `tab.dev.logs({ filter: "impeccable" })` for console results. Its Playwright `evaluate(...)` surface is read-only; do not rely on it for mutation.
 
-Return: CLI findings JSON/counts, browser console findings if applicable, false positives, and skipped/failed browser steps with concrete reasons.
+Return: CLI findings JSON/counts, browser console findings if applicable, false positives, and overlay limitations. If live browser access or rendered inspection fails, return only `BROWSER_BLOCKED: <concrete reason>`.
 
 After Assessment B returns usable CLI findings, reuse them. Do not rerun `detect.mjs` in the parent unless Assessment B failed, was truncated, or omitted count, rule names, or file locations.
 

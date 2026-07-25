@@ -179,11 +179,11 @@ Studio Ink, Paper White, and Quiet Slate form a low-chroma working palette desig
 
 The marketing surface uses a centered container with generous vertical intervals, a narrow reading measure, and responsive padding that grows from compact mobile gutters to open desktop sections. It moves from single-column content to two-column feature grids and horizontal template browsing as width allows.
 
-The application shell favors an anchored sidebar, full-width working surfaces, and 64px page headers. The document builder becomes a split workspace at extra-large widths: the form and live preview each receive half of the viewport. On smaller screens, builder and preview become mutually focused views rather than compressed columns.
+The application shell favors an anchored sidebar, full-width working surfaces, and 64px page headers. The document builder is desktop-primary: at extra-large widths, the form and live preview each receive half of the viewport for sustained editing sessions. On smaller screens, builder and preview become mutually focused views rather than compressed columns. Mobile is a continuity mode for review, light editing, and export, not the primary environment for full resume-building parity.
 
 Spacing follows a 4px base rhythm, with 8–16px inside compact controls, 16–24px inside cards and dialogs, and substantially larger intervals between marketing sections. Keep related labels, descriptions, and inputs tightly grouped; place more space above a new section than below its heading.
 
-**The Workbench Split Rule.** Preserve the editor/preview split only when each pane remains genuinely usable; otherwise prioritize one view at a time.
+**The Workbench Split Rule.** Optimize the builder first for a genuinely usable desktop editor/preview split. Below that threshold, prioritize one view at a time and preserve the mobile tasks that matter most: review, light editing, and export.
 
 **The Tight Controls, Open Sections Rule.** Operational density belongs inside controls and field groups. Section boundaries and page transitions receive the breathing room.
 

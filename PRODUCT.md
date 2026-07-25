@@ -10,6 +10,8 @@ web
 
 ZenCV is primarily for individual job seekers who need to create, customize, and tailor a professional CV for job applications.
 
+The document builder is used primarily on desktop, where users can sustain longer editing sessions and work with the form and live resume preview side by side. Mobile support is a secondary continuity experience for reviewing, making light edits, and exporting while away from a desktop.
+
 ## Product Purpose
 
 ZenCV helps people build polished resumes quickly, adapt them to specific job postings, and export them as PDFs. Success means a user can create and maintain application-ready CVs without a subscription, mandatory account, or surrendering control of their resume data.
@@ -33,7 +35,7 @@ Users create one or more resume documents, choose a template or sample-data star
 - Use optional, authenticated AI features to analyze job postings, generate or improve summaries, suggest keywords, and generate bullet points.
 - Resume data stays local unless the user explicitly invokes an AI feature. Content selected for an AI operation is processed through the ZenCV Worker and Groq.
 - Core resume building does not require an account. An account is required for AI features.
-- The product is a web application and supports responsive desktop and mobile use.
+- The product is a web application with a desktop-primary builder and responsive mobile continuity for review, light editing, and export.
 
 ## Brand Commitments
 
