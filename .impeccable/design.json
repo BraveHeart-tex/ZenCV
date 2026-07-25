@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-25T09:53:29Z",
+  "generatedAt": "2026-07-25T15:25:37Z",
   "title": "Design System: ZenCV",
   "extensions": {
     "colorMeta": {
@@ -202,23 +202,33 @@
     "motion": [
       {
         "name": "state-fast",
-        "value": "150ms ease",
-        "purpose": "Icon opacity and compact hover feedback."
+        "value": "150ms var(--ease-out-quart)",
+        "purpose": "Button state changes, icon opacity, and compact hover feedback."
       },
       {
         "name": "state-standard",
-        "value": "200ms ease",
-        "purpose": "Color, sidebar, dialog, and control state transitions."
+        "value": "200ms var(--ease-out-quart)",
+        "purpose": "Color, dialog, and control state transitions."
       },
       {
         "name": "surface-gentle",
-        "value": "300ms ease",
+        "value": "300ms var(--ease-out-quart)",
         "purpose": "Marketing and template card hover transitions."
       },
       {
         "name": "preview-crossfade",
-        "value": "500ms ease-in-out",
+        "value": "220ms var(--ease-out-quart)",
         "purpose": "Replacing a completed PDF render while preserving the previous page."
+      },
+      {
+        "name": "accordion-reveal",
+        "value": "180ms var(--ease-out-quart)",
+        "purpose": "Accordion expansion in dense editor controls."
+      },
+      {
+        "name": "accordion-hide",
+        "value": "160ms var(--ease-out-quart)",
+        "purpose": "Accordion collapse in dense editor controls."
       }
     ],
     "breakpoints": [
