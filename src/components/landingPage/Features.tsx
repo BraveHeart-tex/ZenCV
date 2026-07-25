@@ -1,84 +1,82 @@
-import { Download, Palette, ShieldCheck, Zap } from 'lucide-react';
+import { Download, Palette, ShieldCheck, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 
 const features = [
   {
     icon: ShieldCheck,
-    title: '100% Local Data',
+    title: 'Local by default',
     description:
-      'Your CV data never leaves your device. No servers, no syncing, no data collection. Complete privacy by design.',
+      'Your resume documents live in your browser. Core editing and PDF export work without an account.',
     accent: 'text-emerald-500',
     bg: 'bg-emerald-500/8',
   },
   {
-    icon: Zap,
-    title: 'Lightning Fast',
+    icon: Sparkles,
+    title: 'AI when you ask',
     description:
-      'Instant updates as you type with zero lag. The editor feels native.',
-    accent: 'text-amber-500',
-    bg: 'bg-amber-500/8',
+      'Generate summaries, improve wording, and analyze job posts only when you explicitly choose an AI action.',
+    accent: 'text-primary',
+    bg: 'bg-muted',
   },
   {
     icon: Download,
-    title: 'Unlimited Downloads',
+    title: 'Unlimited PDF export',
     description:
       'Export to PDF as many times as you need. No watermarks, no limits.',
-    accent: 'text-blue-500',
-    bg: 'bg-blue-500/8',
+    accent: 'text-primary',
+    bg: 'bg-muted',
   },
   {
     icon: Palette,
-    title: 'Professional Templates',
+    title: 'Professional templates',
     description:
-      'ATS-friendly templates designed by professionals to stand out.',
-    accent: 'text-violet-500',
-    bg: 'bg-violet-500/8',
+      'Choose from five polished resume layouts, including templates with accent-color customization.',
+    accent: 'text-primary',
+    bg: 'bg-muted',
   },
 ];
 
 export const Features = () => {
   return (
-    <section id='features' className='container px-4 py-20 md:py-28 mx-auto'>
-      <div className='max-w-5xl mx-auto'>
-        {/* Section label */}
-        <div className='mb-14 space-y-3'>
-          <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60'>
+    <section id='features' className='container mx-auto px-4 py-20 md:py-28'>
+      <div className='mx-auto max-w-5xl'>
+        <div className='mb-12 space-y-3'>
+          <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
             Features
           </p>
-          <h2 className='text-3xl md:text-4xl font-bold tracking-tight'>
-            Everything you need.
-            <span className='text-muted-foreground/70'>
+          <h2 className='max-w-3xl text-balance text-3xl font-bold tracking-tight md:text-4xl'>
+            Everything you need
+            <span className='text-muted-foreground/75'>
               {' '}
               Nothing you don't.
             </span>
           </h2>
-          <p className='text-muted-foreground max-w-lg text-base'>
+          <p className='max-w-xl text-base text-muted-foreground'>
             Job hunting is stressful enough. Your CV builder shouldn't add to
-            it. Free forever, no account needed.
+            it. Free, open source, no account needed.
           </p>
         </div>
 
-        {/* Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
           {features.map((feature, i) => (
             <div
               key={feature.title}
               className={cn(
-                'group relative rounded-xl border border-border/50 bg-card/30 p-6 transition-all duration-300 hover:border-border hover:bg-card/60 hover:shadow-sm',
+                'group relative rounded-xl border border-border/70 bg-card p-6 transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 hover:shadow-sm',
                 i === 0 &&
-                  'md:col-span-2 md:grid md:grid-cols-2 md:gap-6 md:items-center'
+                  'md:col-span-2 md:grid md:grid-cols-[1fr_auto] md:items-center md:gap-8'
               )}
             >
-              <div className={i === 0 ? '' : ''}>
+              <div>
                 <div
                   className={cn(
-                    'inline-flex p-2.5 rounded-lg mb-4',
+                    'mb-4 inline-flex rounded-lg p-2.5',
                     feature.bg
                   )}
                 >
-                  <feature.icon className={cn('w-5 h-5', feature.accent)} />
+                  <feature.icon className={cn('size-5', feature.accent)} />
                 </div>
-                <h3 className='font-semibold text-base mb-1.5'>
+                <h3 className='mb-1.5 text-base font-semibold'>
                   {feature.title}
                 </h3>
                 <p className='text-sm text-muted-foreground leading-relaxed'>
@@ -86,10 +84,11 @@ export const Features = () => {
                 </p>
               </div>
               {i === 0 && (
-                <div className='hidden md:flex items-center justify-center'>
-                  <div className='w-24 h-24 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center'>
-                    <ShieldCheck className='w-10 h-10 text-emerald-500/60' />
-                  </div>
+                <div className='hidden w-56 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300 md:block'>
+                  <p className='font-medium'>Private workspace</p>
+                  <p className='mt-1 text-emerald-700/75 dark:text-emerald-300/75'>
+                    Resume data stays local unless you run an AI action.
+                  </p>
                 </div>
               )}
             </div>

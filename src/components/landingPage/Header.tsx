@@ -34,8 +34,8 @@ export const Header = () => {
             to='/documents'
             className={buttonVariants({ variant: 'default', size: 'sm' })}
           >
-            Start Building
-            <ArrowRight className='w-3.5 h-3.5 ml-1.5' />
+            Start building
+            <ArrowRight className='ml-1.5 size-3.5' />
           </Link>
         </div>
       </div>

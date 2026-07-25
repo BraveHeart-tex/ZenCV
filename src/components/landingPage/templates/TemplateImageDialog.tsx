@@ -22,21 +22,35 @@ export const TemplateImageDialog = ({
 }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleUseTemplate = async () => {
-    await createAndNavigateToDocument({
-      title: 'Untitled',
-      templateType: template.value,
-      onSuccess(documentId) {
-        navigate(`/builder/${documentId}`);
-      },
-    });
+    if (isCreating) {
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      await createAndNavigateToDocument({
+        title: 'Untitled',
+        templateType: template.value,
+        onSuccess(documentId) {
+          navigate(`/builder/${documentId}`);
+        },
+      });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className='relative overflow-hidden cursor-pointer bg-muted/30'>
+        <button
+          type='button'
+          className='group/preview relative block w-full overflow-hidden bg-muted/30 text-left focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring'
+          aria-label={`Preview ${template.name} template`}
+        >
           <TemplateImage
             template={template}
             variant='card'
@@ -45,19 +59,19 @@ export const TemplateImageDialog = ({
               height: 566,
               className:
                 'object-cover w-full transition-transform duration-500 hover:scale-[1.03]',
-              alt: `${template.name} template`,
+              alt: `${template.name} resume template preview`,
             }}
           />
-          <div className='absolute inset-0 bg-foreground/0 hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center'>
-            <span className='opacity-0 hover:opacity-100 transition-opacity duration-300 text-xs font-semibold tracking-widest uppercase bg-background/90 text-foreground px-3 py-1.5 rounded-full border border-border/60'>
+          <span className='absolute inset-0 flex items-center justify-center bg-foreground/0 transition-colors duration-300 group-hover/preview:bg-foreground/10'>
+            <span className='rounded-full border border-border/60 bg-background/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground opacity-0 transition-opacity duration-300 group-hover/preview:opacity-100 group-focus-visible/preview:opacity-100'>
               Preview
             </span>
-          </div>
-        </div>
+          </span>
+        </button>
       </DialogTrigger>
 
       <DialogContent
-        className='max-w-[95vw] lg:max-w-[75vw] p-0 overflow-hidden border-border/50 gap-0 max-h-[90vh]'
+        className='max-h-[90vh] max-w-[95vw] gap-0 overflow-hidden border-border/50 p-0 lg:max-w-[75vw]'
         showCloseButton={false}
       >
         <VisuallyHidden>
@@ -68,28 +82,25 @@ export const TemplateImageDialog = ({
         </VisuallyHidden>
 
         {/* Mobile: stacked + scrollable. Desktop: side by side, fixed height */}
-        <div className='flex flex-col lg:flex-row w-full lg:h-[80vh] overflow-y-auto lg:overflow-hidden'>
-          {/* Image panel — short on mobile, full height on desktop */}
-          <div className='w-full h-[35vh] lg:h-full lg:w-[55%] bg-muted/20 shrink-0'>
+        <div className='flex w-full flex-col overflow-y-auto lg:h-[80vh] lg:flex-row lg:overflow-hidden'>
+          <div className='h-[35vh] w-full shrink-0 bg-muted/20 lg:h-full lg:w-[55%]'>
             <TemplateImage
               template={template}
               imgProps={{
                 width: 1000,
                 height: 1414,
-                className: 'object-contain w-full h-full',
-                alt: `${template.name} template`,
+                className: 'h-full w-full object-contain',
+                alt: `${template.name} resume template preview`,
               }}
               variant='modal'
             />
           </div>
 
-          {/* Info panel — natural height on mobile, scrollable column on desktop */}
-          <div className='w-full lg:w-[45%] flex flex-col border-t lg:border-t-0 lg:border-l border-border/40 lg:overflow-hidden'>
-            {/* Header */}
-            <div className='px-5 pt-5 pb-4 border-b border-border/40 shrink-0'>
+          <div className='flex w-full flex-col border-t border-border/40 lg:w-[45%] lg:overflow-hidden lg:border-t-0 lg:border-l'>
+            <div className='shrink-0 border-b border-border/40 px-5 pt-5 pb-4'>
               <div className='flex items-start justify-between gap-4'>
                 <div>
-                  <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60 mb-1'>
+                  <p className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
                     Template
                   </p>
                   <h2 className='text-lg font-bold tracking-tight'>
@@ -100,22 +111,21 @@ export const TemplateImageDialog = ({
                   size='icon'
                   variant='ghost'
                   aria-label='Close template preview'
-                  className='shrink-0 -mt-1 -mr-1 h-8 w-8 text-muted-foreground'
+                  className='-mt-1 -mr-1 h-8 w-8 shrink-0 text-muted-foreground'
                   onClick={() => setIsOpen(false)}
                 >
-                  <X className='w-4 h-4' />
+                  <X className='size-4' />
                 </Button>
               </div>
             </div>
 
-            {/* Body — scrollable on desktop */}
-            <div className='flex-1 px-5 py-4 space-y-4 lg:overflow-y-auto'>
+            <div className='flex-1 space-y-4 px-5 py-4 lg:overflow-y-auto'>
               <p className='text-sm text-muted-foreground leading-relaxed'>
                 {template.description}
               </p>
               {template.tags.length > 0 && (
                 <div className='space-y-2'>
-                  <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60'>
+                  <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
                     Best for
                   </p>
                   <div className='flex flex-wrap gap-1.5'>
@@ -132,11 +142,14 @@ export const TemplateImageDialog = ({
               )}
             </div>
 
-            {/* Actions — pinned to bottom on desktop, natural flow on mobile */}
-            <div className='px-5 pb-5 pt-4 border-t border-border/40 space-y-2 shrink-0'>
-              <Button className='w-full gap-2' onClick={handleUseTemplate}>
-                Use this template
-                <ArrowRight className='w-4 h-4' />
+            <div className='shrink-0 space-y-2 border-t border-border/40 px-5 pt-4 pb-5'>
+              <Button
+                className='w-full gap-2'
+                onClick={handleUseTemplate}
+                disabled={isCreating}
+              >
+                {isCreating ? 'Creating...' : 'Use this template'}
+                <ArrowRight className='size-4' />
               </Button>
               <Button
                 variant='ghost'

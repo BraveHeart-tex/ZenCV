@@ -24,8 +24,8 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
       modal: '/templates/london-1000.webp',
     },
     description:
-      'The London template offers a clean and modern design, perfect for showcasing your professional experience in a structured and elegant format. Its minimalist layout ensures ATS compatibility while maintaining a polished and professional appearance.',
-    tags: ['Clean & Modern', 'ATS-Optimized', 'Professional'],
+      'The London template offers a clean and modern design for showcasing professional experience in a structured, elegant format. Its minimalist layout keeps the focus on readable sections and crisp hierarchy.',
+    tags: ['Clean & Modern', 'Readable', 'Professional'],
     value: INTERNAL_TEMPLATE_TYPES.LONDON,
   },
   {
@@ -36,8 +36,8 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
       modal: '/templates/manhattan-1000.webp',
     },
     description:
-      'The Manhattan template combines a sleek, contemporary design with a focus on clarity and readability. Its ATS-friendly structure ensures your resume passes through automated systems effortlessly, while its professional layout highlights your skills and achievements effectively.',
-    tags: ['Clean & Modern', 'ATS-Optimized', 'Professional'],
+      'The Manhattan template combines a sleek, contemporary design with a focus on clarity and readability. Its professional layout highlights skills and achievements without visual clutter.',
+    tags: ['Clean & Modern', 'Focused', 'Professional'],
     value: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   },
   {
@@ -48,8 +48,8 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
       modal: '/templates/tokyo-1000.webp',
     },
     description:
-      'The Tokyo template features a bold two-column layout with a dark sidebar and clean white main column. Designed for modern professionals who want to stand out while remaining ATS-friendly and easy to scan.',
-    tags: ['Two-Column', 'Modern', 'ATS-Optimized'],
+      'The Tokyo template features a bold two-column layout with a dark sidebar and clean white main column. Designed for modern professionals who want a distinctive resume that stays easy to scan.',
+    tags: ['Two-Column', 'Modern', 'Scannable'],
     value: INTERNAL_TEMPLATE_TYPES.TOKYO,
   },
   {

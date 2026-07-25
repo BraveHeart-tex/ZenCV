@@ -1,6 +1,6 @@
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { templateOptionsWithImages } from '../../appHome/resumeTemplates/resumeTemplates.constants';
 import { TemplateCard } from './TemplateCard';
@@ -12,35 +12,63 @@ export const Templates = () => {
     slidesToScroll: 1,
   });
 
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    if (!emblaApi) {
+      return;
+    }
+
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
+  useEffect(() => {
+    if (!emblaApi) {
+      return;
+    }
+
+    updateScrollState();
+    emblaApi.on('select', updateScrollState);
+    emblaApi.on('reInit', updateScrollState);
+
+    return () => {
+      emblaApi.off('select', updateScrollState);
+      emblaApi.off('reInit', updateScrollState);
+    };
+  }, [emblaApi, updateScrollState]);
+
   return (
-    <section id='templates' className='md:py-24 lg:py-32 w-full py-12'>
-      <div className='container px-4 md:px-6 mx-auto'>
-        <div className='flex items-end justify-between mb-10 gap-4'>
+    <section id='templates' className='w-full py-16 md:py-24 lg:py-28'>
+      <div className='container mx-auto px-4 md:px-6'>
+        <div className='mb-10 flex items-end justify-between gap-4'>
           <div className='space-y-3'>
-            <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60'>
+            <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
               Templates
             </p>
-            <h2 className='text-3xl md:text-4xl font-bold tracking-tight'>
+            <h2 className='text-balance text-3xl font-bold tracking-tight md:text-4xl'>
               Pick your style.
             </h2>
-            <p className='text-muted-foreground text-base max-w-md'>
-              ATS-friendly templates designed for every industry and career
-              stage.
+            <p className='max-w-md text-base text-muted-foreground'>
+              Five polished layouts for different roles, levels, and personal
+              taste.
             </p>
           </div>
 
-          <div className='flex items-center gap-2 shrink-0'>
+          <div className='flex shrink-0 items-center gap-2'>
             <Button
               variant='outline'
               size='icon'
               aria-label='Previous template'
               className='h-8 w-8'
               onClick={scrollPrev}
+              disabled={!canScrollPrev}
             >
-              <ChevronLeft className='w-4 h-4' />
+              <ChevronLeft className='size-4' />
             </Button>
             <Button
               variant='outline'
@@ -48,8 +76,9 @@ export const Templates = () => {
               aria-label='Next template'
               className='h-8 w-8'
               onClick={scrollNext}
+              disabled={!canScrollNext}
             >
-              <ChevronRight className='w-4 h-4' />
+              <ChevronRight className='size-4' />
             </Button>
           </div>
         </div>
@@ -57,7 +86,7 @@ export const Templates = () => {
         <div className='overflow-hidden' ref={emblaRef}>
           <div className='flex gap-5'>
             {templateOptionsWithImages.map((template) => (
-              <div key={template.name} className='flex-none w-70 sm:w-75'>
+              <div key={template.name} className='w-70 flex-none sm:w-75'>
                 <TemplateCard template={template} />
               </div>
             ))}

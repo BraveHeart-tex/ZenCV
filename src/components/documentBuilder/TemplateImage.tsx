@@ -27,7 +27,7 @@ export function TemplateImage({
         width={imgProps.width}
         height={imgProps.height}
         src={webpSrc}
-        alt={template.name}
+        alt={imgProps.alt ?? template.name}
         loading='lazy'
         fetchPriority='low'
       />

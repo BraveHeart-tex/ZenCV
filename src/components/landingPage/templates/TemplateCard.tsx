@@ -1,4 +1,5 @@
 import { ArrowRight } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { Button } from '@/components/ui/button';
@@ -11,36 +12,47 @@ interface TemplateCardProps {
 
 export const TemplateCard = ({ template }: TemplateCardProps) => {
   const navigate = useNavigate();
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleUseTemplate = async () => {
-    await createAndNavigateToDocument({
-      title: 'Untitled',
-      templateType: template.value,
-      onSuccess(documentId) {
-        navigate(`/builder/${documentId}`);
-      },
-    });
+    if (isCreating) {
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      await createAndNavigateToDocument({
+        title: 'Untitled',
+        templateType: template.value,
+        onSuccess(documentId) {
+          navigate(`/builder/${documentId}`);
+        },
+      });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
-    <div className='group rounded-xl border border-border/50 overflow-hidden bg-card/30 hover:border-border hover:bg-card/50 transition-all duration-300 hover:shadow-md'>
+    <div className='group overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 hover:shadow-md'>
       <div className='overflow-hidden'>
         <div className='transition-transform duration-500 group-hover:scale-[1.02]'>
           <TemplateImageDialog template={template} />
         </div>
       </div>
       <div className='p-4 space-y-3'>
-        <h3 className='font-semibold text-sm tracking-tight'>
+        <h3 className='text-sm font-semibold tracking-tight'>
           {template.name}
         </h3>
         <Button
           variant='outline'
           size='sm'
-          className='w-full gap-2 group-hover:border-foreground/30 transition-colors'
+          className='w-full gap-2 transition-colors group-hover:border-foreground/30'
           onClick={handleUseTemplate}
+          disabled={isCreating}
         >
-          Use template
-          <ArrowRight className='w-3.5 h-3.5' />
+          {isCreating ? 'Creating...' : 'Use template'}
+          <ArrowRight className='size-3.5' />
         </Button>
       </div>
     </div>
