@@ -1,0 +1,387 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-25T08:35:55Z",
+  "title": "Design System: ZenCV",
+  "extensions": {
+    "colorMeta": {
+      "studio-ink": {
+        "role": "primary",
+        "displayName": "Studio Ink",
+        "canonical": "hsl(240 5.9% 10%)",
+        "tonalRamp": [
+          "oklch(15% 0.01 285)",
+          "oklch(25% 0.01 285)",
+          "oklch(36% 0.01 285)",
+          "oklch(48% 0.01 285)",
+          "oklch(60% 0.01 285)",
+          "oklch(72% 0.008 285)",
+          "oklch(84% 0.006 285)",
+          "oklch(95% 0.003 285)"
+        ]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "canonical": "hsl(0 0% 100%)",
+        "tonalRamp": [
+          "oklch(15% 0 0)",
+          "oklch(27% 0 0)",
+          "oklch(39% 0 0)",
+          "oklch(51% 0 0)",
+          "oklch(63% 0 0)",
+          "oklch(75% 0 0)",
+          "oklch(87% 0 0)",
+          "oklch(100% 0 0)"
+        ]
+      },
+      "quiet-slate": {
+        "role": "neutral",
+        "displayName": "Quiet Slate",
+        "canonical": "hsl(240 3.8% 46.1%)",
+        "tonalRamp": [
+          "oklch(15% 0.008 285)",
+          "oklch(25% 0.008 285)",
+          "oklch(36% 0.008 285)",
+          "oklch(48% 0.008 285)",
+          "oklch(60% 0.007 285)",
+          "oklch(72% 0.006 285)",
+          "oklch(84% 0.004 285)",
+          "oklch(95% 0.002 285)"
+        ]
+      },
+      "soft-surface": {
+        "role": "neutral",
+        "displayName": "Soft Surface",
+        "canonical": "hsl(240 4.8% 95.9%)",
+        "tonalRamp": [
+          "oklch(15% 0.008 285)",
+          "oklch(26% 0.008 285)",
+          "oklch(38% 0.008 285)",
+          "oklch(50% 0.007 285)",
+          "oklch(62% 0.006 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(86% 0.003 285)",
+          "oklch(96% 0.002 285)"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "hsl(240 5.9% 90%)",
+        "tonalRamp": [
+          "oklch(15% 0.009 285)",
+          "oklch(26% 0.009 285)",
+          "oklch(38% 0.008 285)",
+          "oklch(50% 0.007 285)",
+          "oklch(62% 0.006 285)",
+          "oklch(74% 0.005 285)",
+          "oklch(84% 0.004 285)",
+          "oklch(93% 0.003 285)"
+        ]
+      },
+      "night-studio": {
+        "role": "neutral",
+        "displayName": "Night Studio",
+        "canonical": "hsl(240 10% 3.9%)",
+        "tonalRamp": [
+          "oklch(12% 0.012 285)",
+          "oklch(23% 0.012 285)",
+          "oklch(35% 0.011 285)",
+          "oklch(47% 0.01 285)",
+          "oklch(59% 0.008 285)",
+          "oklch(71% 0.006 285)",
+          "oklch(83% 0.004 285)",
+          "oklch(95% 0.002 285)"
+        ]
+      },
+      "night-surface": {
+        "role": "neutral",
+        "displayName": "Night Surface",
+        "canonical": "hsl(240 3.7% 15.9%)",
+        "tonalRamp": [
+          "oklch(16% 0.008 285)",
+          "oklch(27% 0.008 285)",
+          "oklch(39% 0.007 285)",
+          "oklch(51% 0.006 285)",
+          "oklch(63% 0.005 285)",
+          "oklch(75% 0.004 285)",
+          "oklch(87% 0.003 285)",
+          "oklch(95% 0.002 285)"
+        ]
+      },
+      "night-muted": {
+        "role": "neutral",
+        "displayName": "Night Muted",
+        "canonical": "hsl(240 5% 64.9%)",
+        "tonalRamp": [
+          "oklch(15% 0.008 285)",
+          "oklch(26% 0.008 285)",
+          "oklch(38% 0.007 285)",
+          "oklch(50% 0.006 285)",
+          "oklch(62% 0.005 285)",
+          "oklch(74% 0.004 285)",
+          "oklch(86% 0.003 285)",
+          "oklch(95% 0.002 285)"
+        ]
+      },
+      "signal-red": {
+        "role": "tertiary",
+        "displayName": "Signal Red",
+        "canonical": "hsl(0 85% 50%)",
+        "tonalRamp": [
+          "oklch(15% 0.08 25)",
+          "oklch(26% 0.13 25)",
+          "oklch(38% 0.18 25)",
+          "oklch(50% 0.22 25)",
+          "oklch(62% 0.2 25)",
+          "oklch(74% 0.15 25)",
+          "oklch(86% 0.08 25)",
+          "oklch(95% 0.03 25)"
+        ]
+      },
+      "privacy-green": {
+        "role": "secondary",
+        "displayName": "Privacy Green",
+        "canonical": "hsl(142 71% 45%)",
+        "tonalRamp": [
+          "oklch(15% 0.06 150)",
+          "oklch(26% 0.1 150)",
+          "oklch(38% 0.14 150)",
+          "oklch(50% 0.17 150)",
+          "oklch(62% 0.16 150)",
+          "oklch(74% 0.12 150)",
+          "oklch(86% 0.07 150)",
+          "oklch(95% 0.025 150)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Short persuasive headlines on the landing surface."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Major page and section introductions."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Document titles, dialogs, settings groups, and card headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Instructions, descriptions, and longer interface copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Sparse section kickers, badges, and compact metadata."
+      }
+    },
+    "shadows": [
+      {
+        "name": "control-rest",
+        "value": "0 1px 2px rgb(0 0 0 / 0.05)",
+        "purpose": "Compact buttons, inputs, switches, and bordered controls."
+      },
+      {
+        "name": "card-rest",
+        "value": "0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06)",
+        "purpose": "Document cards and reusable card containers."
+      },
+      {
+        "name": "state-lift",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "purpose": "Interactive cards on hover."
+      },
+      {
+        "name": "overlay",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Dialogs, dropdowns, and popovers."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-fast",
+        "value": "150ms ease",
+        "purpose": "Icon opacity and compact hover feedback."
+      },
+      {
+        "name": "state-standard",
+        "value": "200ms ease",
+        "purpose": "Color, sidebar, dialog, and control state transitions."
+      },
+      {
+        "name": "surface-gentle",
+        "value": "300ms ease",
+        "purpose": "Marketing and template card hover transitions."
+      },
+      {
+        "name": "preview-crossfade",
+        "value": "500ms ease-in-out",
+        "purpose": "Replacing a completed PDF render while preserving the previous page."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1536px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default high-emphasis action: compact, neutral, and decisive.",
+      "html": "<button class=\"ds-btn-primary\">Start building</button>",
+      "css": ".ds-btn-primary { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 0; border-radius: 6px; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: background-color 200ms ease, box-shadow 200ms ease; } .ds-btn-primary:hover { background: color-mix(in hsl, var(--primary, hsl(240 5.9% 10%)) 90%, transparent); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: none; } .ds-btn-primary:disabled { pointer-events: none; opacity: 0.5; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A lower-emphasis action that retains a precise structural edge.",
+      "html": "<button class=\"ds-btn-outline\">Browse templates</button>",
+      "css": ".ds-btn-outline { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: background-color 200ms ease, color 200ms ease; } .ds-btn-outline:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-outline:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-outline:active { box-shadow: none; } .ds-btn-outline:disabled { pointer-events: none; opacity: 0.5; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "A quiet utility action that becomes visible through interaction.",
+      "html": "<button class=\"ds-btn-ghost\">Settings</button>",
+      "css": ".ds-btn-ghost { height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease, color 200ms ease; } .ds-btn-ghost:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-ghost:active { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 80%, var(--foreground, hsl(240 10% 3.9%))); } .ds-btn-ghost:disabled { pointer-events: none; opacity: 0.5; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "A compact canvas-matched field with a crisp neutral focus treatment.",
+      "html": "<input class=\"ds-input\" value=\"Software Engineer\" aria-label=\"Wanted job title\">",
+      "css": ".ds-input { width: 320px; height: 36px; padding: 4px 12px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 400 14px/1.4 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: border-color 200ms ease, box-shadow 200ms ease; } .ds-input::placeholder { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); } .ds-input:hover { border-color: var(--foreground, hsl(240 10% 3.9%)); } .ds-input:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 1px; } .ds-input:disabled { cursor: not-allowed; opacity: 0.5; }"
+    },
+    {
+      "name": "Document Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The canonical interactive record card for locally stored resumes.",
+      "html": "<article class=\"ds-document-card\"><strong>Software Engineer</strong><span>Senior Engineer at Northstar</span><small>Updated 25/07/2026</small></article>",
+      "css": ".ds-document-card { width: 280px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 12px; background: var(--card, hsl(0 0% 100%)); color: var(--card-foreground, hsl(240 10% 3.9%)); box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06); font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease; } .ds-document-card strong { font-size: 14px; line-height: 1.35; } .ds-document-card span { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; } .ds-document-card small { padding-top: 8px; border-top: 1px solid var(--border, hsl(240 5.9% 90%)); color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; font-variant-numeric: tabular-nums; } .ds-document-card:hover { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 30%, var(--card, hsl(0 0% 100%))); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); } .ds-document-card:focus-within { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-document-card:active { box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }"
+    },
+    {
+      "name": "Sidebar Navigation Item",
+      "kind": "nav",
+      "refersTo": "navigation-item",
+      "description": "A compact application destination with neutral active-state emphasis.",
+      "html": "<a class=\"ds-nav-item\" href=\"#\">Documents</a>",
+      "css": ".ds-nav-item { width: 220px; height: 32px; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; background: transparent; color: var(--sidebar-foreground, hsl(240 5.3% 26.1%)); font: 400 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; text-decoration: none; transition: background-color 200ms linear, color 200ms linear; } .ds-nav-item:hover { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); } .ds-nav-item:focus-visible { outline: 2px solid var(--sidebar-ring, hsl(217.2 91.2% 59.8%)); outline-offset: 1px; } .ds-nav-item:active, .ds-nav-item[aria-current=\"page\"] { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); font-weight: 500; }"
+    },
+    {
+      "name": "Dialog",
+      "kind": "custom",
+      "refersTo": "dialog",
+      "description": "A focused overlay for short protected decisions and forms.",
+      "html": "<section class=\"ds-dialog\" role=\"dialog\" aria-labelledby=\"ds-dialog-title\"><h2 id=\"ds-dialog-title\">Rename document</h2><p>Choose a clear title for this resume.</p><div><button class=\"ds-dialog-cancel\">Cancel</button><button class=\"ds-dialog-save\">Save</button></div></section>",
+      "css": ".ds-dialog { width: 420px; display: flex; flex-direction: column; gap: 16px; padding: 24px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 8px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-dialog h2 { margin: 0; font-size: 18px; line-height: 1; letter-spacing: -0.015em; } .ds-dialog p { margin: -8px 0 0; color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 14px; } .ds-dialog > div { display: flex; justify-content: flex-end; gap: 8px; } .ds-dialog button { height: 36px; padding: 8px 16px; border-radius: 6px; font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease; } .ds-dialog-cancel { border: 1px solid var(--input, hsl(240 5.9% 90%)); background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); } .ds-dialog-save { border: 0; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); } .ds-dialog button:hover { filter: brightness(0.94); } .ds-dialog button:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-dialog button:active { transform: translateY(1px); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Career Studio",
+    "overview": "ZenCV should feel like a private, well-kept studio for consequential work: calm enough to reduce job-search stress, polished enough to build confidence, and precise enough to make dense editing feel manageable. The interface recedes behind the resume. It uses a restrained monochrome foundation, disciplined spacing, compact controls, and selective editorial scale rather than ornamental branding.\n\nThe experience is professional without becoming corporate. Light and dark themes are equal expressions of the same system, and both preserve a paper-and-ink relationship between canvas and content. Color is semantic and rare. Motion confirms state or guides attention; it never turns the workspace into a playful SaaS demo. Avoid corporate-blue dominance, AI-neon effects, glassmorphism, and decorative gradients.",
+    "keyCharacteristics": [
+      "Quiet monochrome chrome that keeps the document visually dominant.",
+      "Strong editorial hierarchy paired with compact, practical controls.",
+      "Paper-like light surfaces and ink-like dark surfaces with clear theme parity.",
+      "Fine borders and tonal shifts before shadow.",
+      "Direct, reassuring interaction language with visible keyboard focus."
+    ],
+    "rules": [
+      {
+        "name": "The Document Leads Rule",
+        "body": "Application chrome stays neutral so templates, user-selected accents, and resume content remain the visual subject.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Color Rule",
+        "body": "Saturated color must communicate privacy, warning, error, progress, or template choice; it is not ambient decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Synthetic Glow Rule",
+        "body": "Do not introduce neon gradients, luminous AI treatments, or blue-purple glow effects.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Typeface Rule",
+        "body": "Use Inter throughout the application shell; resume templates own their independent print typography.",
+        "section": "typography"
+      },
+      {
+        "name": "The Editorial Jump Rule",
+        "body": "Large display type is earned by persuasive or orienting moments. Operational screens use compact titles and strong grouping instead.",
+        "section": "typography"
+      },
+      {
+        "name": "The Workbench Split Rule",
+        "body": "Preserve the editor/preview split only when each pane remains genuinely usable; otherwise prioritize one view at a time.",
+        "section": "layout"
+      },
+      {
+        "name": "The Tight Controls, Open Sections Rule",
+        "body": "Operational density belongs inside controls and field groups. Section boundaries and page transitions receive the breathing room.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-Until-Needed Rule",
+        "body": "A surface earns additional shadow only when it floats, opens, or responds to interaction.",
+        "section": "elevation"
+      },
+      {
+        "name": "The One Boundary Rule",
+        "body": "Prefer a border or a shadow as the dominant edge treatment; avoid heavy borders under broad shadows.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Purposeful Pill Rule",
+        "body": "Do not turn ordinary buttons, cards, or fields into capsules. Reserve full rounding for status, paging, and compact toggles.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do keep the resume or template preview visually dominant over application chrome.",
+      "Do use Studio Ink, Paper White, and Quiet Slate for most interface decisions.",
+      "Do reserve saturated colors for semantic states and user-selected template accents.",
+      "Do preserve equal-quality light and dark themes.",
+      "Do use borders and tonal layering before increasing shadow.",
+      "Do keep operational controls compact while giving sections generous separation.",
+      "Do provide visible hover, focus, disabled, loading, error, and empty states.",
+      "Do keep motion short, purposeful, and compatible with reduced-motion preferences."
+    ],
+    "donts": [
+      "Don't turn ZenCV into a playful SaaS interface with bubbly cards, mascot energy, or novelty copy.",
+      "Don't make corporate blue the default action or navigation color.",
+      "Don't use AI-neon, blue-purple glow, glassmorphism, or decorative gradients.",
+      "Don't let application accents compete with resume-template colors.",
+      "Don't use pills for ordinary buttons, inputs, or cards.",
+      "Don't add shadow to every container or stack heavy borders beneath broad shadows.",
+      "Don't use uppercase tracked labels as a universal heading pattern."
+    ]
+  }
+}
