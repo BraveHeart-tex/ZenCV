@@ -14,7 +14,7 @@ export const DocumentBuilderViewToggle = () => {
   return (
     <Button
       aria-label='Open preview and download options'
-      className='fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex h-12 max-w-[calc(100%-1.5rem)] items-center justify-center gap-2 rounded-lg px-5 text-base shadow-lg transition-[background-color,box-shadow] duration-200 ease-[var(--ease-out-quart)] active:shadow-md motion-reduce:transition-none sm:right-5 xl:hidden'
+      className='fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex h-12 max-w-[calc(100%-1.5rem)] items-center justify-center gap-2 rounded-lg px-5 text-base shadow-lg transition-[background-color,box-shadow] duration-200 ease-(--ease-out-quart) active:shadow-md motion-reduce:transition-none sm:right-5 xl:hidden'
       size='lg'
       onClick={action(() => {
         builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.PREVIEW;

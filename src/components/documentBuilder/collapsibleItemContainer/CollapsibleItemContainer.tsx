@@ -149,7 +149,7 @@ export const CollapsibleSectionItemContainer = observer(
                     variant='ghost'
                     size='icon'
                     aria-label='Drag entry'
-                    className='absolute -left-7 top-[19px] z-10 h-8 w-8 cursor-grab text-muted-foreground/70 transition-[background-color,color,opacity] duration-150 ease-out hover:text-foreground lg:-left-8 lg:opacity-60 lg:hover:opacity-100'
+                    className='absolute -left-7 top-4.75 z-10 h-8 w-8 cursor-grab text-muted-foreground/70 transition-[background-color,color,opacity] duration-150 ease-out hover:text-foreground lg:-left-8 lg:opacity-60 lg:hover:opacity-100'
                     {...attributes}
                     {...listeners}
                   >
