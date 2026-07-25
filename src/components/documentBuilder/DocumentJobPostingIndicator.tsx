@@ -61,6 +61,7 @@ export const DocumentJobPostingIndicator = observer(() => {
             className='group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none'
             variant='ghost'
             size='icon'
+            aria-label='Edit job posting'
           >
             <Edit2Icon />
           </Button>
@@ -70,6 +71,7 @@ export const DocumentJobPostingIndicator = observer(() => {
         className='group-hover:opacity-100 group-hover:pointer-events-auto opacity-0 pointer-events-none'
         variant='ghost'
         size='icon'
+        aria-label='Remove job posting'
         onClick={handleDeleteJobPosting}
       >
         <TrashIcon />

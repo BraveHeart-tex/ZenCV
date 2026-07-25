@@ -122,14 +122,15 @@ export const CollapsibleSectionItemContainer = observer(
             transform: CSS.Translate.toString(transform),
           }}
           id={getItemContainerId(itemId)}
-          {...attributes}
         >
           {isMobileOrTablet ? (
             <div className='absolute top-0 left-0 z-10'>
               <Button
                 variant='ghost'
                 size='icon'
+                aria-label='Drag entry'
                 className='cursor-grab touch-none w-8 h-8'
+                {...attributes}
                 {...listeners}
               >
                 <GripVertical />
@@ -142,7 +143,9 @@ export const CollapsibleSectionItemContainer = observer(
                   <Button
                     variant='ghost'
                     size='icon'
+                    aria-label='Drag entry'
                     className='cursor-grab lg:pointer-events-none lg:group-hover:pointer-events-auto lg:opacity-0 lg:group-hover:opacity-100 absolute -left-7 lg:-left-8 top-[19px] z-10 w-8 h-8 text-muted-foreground transition-all'
+                    {...attributes}
                     {...listeners}
                   >
                     <GripVertical />
@@ -174,7 +177,7 @@ export const CollapsibleSectionItemContainer = observer(
                 </Button>
                 {isMobileOrTablet ? (
                   <Popover>
-                    <PopoverTrigger>
+                    <PopoverTrigger aria-label='Open entry actions'>
                       <EllipsisIcon className='group text-muted-foreground mr-2 transition-all' />
                     </PopoverTrigger>
                     <PopoverContent className='p-0'>
@@ -204,13 +207,18 @@ export const CollapsibleSectionItemContainer = observer(
                     </PopoverContent>
                   </Popover>
                 ) : (
-                  <ChevronDownIcon
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label={open ? 'Collapse entry' : 'Expand entry'}
                     onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
                     className={cn(
-                      'mr-2 group-hover:text-primary text-muted-foreground transition-all cursor-pointer',
-                      open ? 'rotate-180' : 'rotate-0'
+                      'mr-2 group-hover:text-primary text-muted-foreground transition-all',
+                      open ? '[&_svg]:rotate-180' : '[&_svg]:rotate-0'
                     )}
-                  />
+                  >
+                    <ChevronDownIcon className='transition-transform' />
+                  </Button>
                 )}
               </div>
             </div>
@@ -253,6 +261,7 @@ export const CollapsibleSectionItemContainer = observer(
                     onClick={handleDeleteItemClick}
                     size='icon'
                     variant='ghost'
+                    aria-label='Delete entry'
                   >
                     <TrashIcon />
                   </Button>

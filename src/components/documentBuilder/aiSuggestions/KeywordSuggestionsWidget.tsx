@@ -80,7 +80,11 @@ export const KeywordSuggestionsWidget = observer(
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild ref={popoverRef}>
-          <Button size='xsIcon' className={cn(aiButtonBaseClassnames)}>
+          <Button
+            size='xsIcon'
+            className={cn(aiButtonBaseClassnames)}
+            aria-label='Show keyword suggestions'
+          >
             <DiamondPlus className='w-4 h-4 text-white' />
           </Button>
         </PopoverTrigger>
@@ -97,7 +101,12 @@ export const KeywordSuggestionsWidget = observer(
               </span>
             </div>
             <PopoverClose asChild>
-              <Button size='xsIcon' variant='ghost' className='shrink-0'>
+              <Button
+                size='xsIcon'
+                variant='ghost'
+                className='shrink-0'
+                aria-label='Close keyword suggestions'
+              >
                 <XIcon className='w-3.5 h-3.5' />
               </Button>
             </PopoverClose>
@@ -113,7 +122,12 @@ export const KeywordSuggestionsWidget = observer(
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size='xsIcon' variant='ghost' className='h-5 w-5'>
+                  <Button
+                    size='xsIcon'
+                    variant='ghost'
+                    className='h-5 w-5'
+                    aria-label='Explain keyword suggestions'
+                  >
                     <CircleHelp className='w-3.5 h-3.5' />
                   </Button>
                 </TooltipTrigger>

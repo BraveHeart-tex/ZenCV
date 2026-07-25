@@ -47,7 +47,7 @@ export const CreateDocumentDialog = ({
 
     if (triggerVariant === 'icon') {
       return (
-        <Button variant='outline' size='icon'>
+        <Button variant='outline' size='icon' aria-label='Create document'>
           <FilePlusIcon />
         </Button>
       );

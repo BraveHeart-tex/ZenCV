@@ -14,7 +14,7 @@ interface DraggableSectionContainerProps {
 
 export const DraggableSectionContainer = memo(
   ({ sectionId, children, className }: DraggableSectionContainerProps) => {
-    const { attributes, setNodeRef, transform, transition } = useSortable({
+    const { setNodeRef, transform, transition } = useSortable({
       id: sectionId,
     });
 
@@ -31,7 +31,6 @@ export const DraggableSectionContainer = memo(
           transition,
           transform: CSS.Translate.toString(transform),
         }}
-        {...attributes}
         id={getSectionContainerId(sectionId)}
         className={cn('grid gap-2 relative group/container', className)}
       >

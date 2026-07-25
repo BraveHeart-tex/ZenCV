@@ -84,7 +84,11 @@ export const RichTextEditorMenubar = memo(
       <div className='border-input editor-input-menubar flex flex-wrap gap-2 p-2 border-b'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='outline' size='icon'>
+            <Button
+              variant='outline'
+              size='icon'
+              aria-label='Choose text style'
+            >
               <div className='flex items-center'>
                 <HeadingIcon className='size-4' />
                 <ChevronDownIcon className='size-3' />
@@ -119,6 +123,7 @@ export const RichTextEditorMenubar = memo(
         </DropdownMenu>
         <Toggle
           variant='outline'
+          aria-label='Paragraph'
           onClick={() => editor.chain().focus().setParagraph().run()}
           pressed={editor.isActive('paragraph')}
         >
@@ -126,6 +131,7 @@ export const RichTextEditorMenubar = memo(
         </Toggle>
         <Toggle
           variant='outline'
+          aria-label='Bold'
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editor.can().chain().focus().toggleBold().run()}
           pressed={editor.isActive('bold')}
@@ -134,6 +140,7 @@ export const RichTextEditorMenubar = memo(
         </Toggle>
         <Toggle
           variant='outline'
+          aria-label='Italic'
           onClick={() => editor.chain().focus().toggleItalic().run()}
           disabled={!editor.can().chain().focus().toggleItalic().run()}
           pressed={editor.isActive('italic')}
@@ -142,6 +149,7 @@ export const RichTextEditorMenubar = memo(
         </Toggle>
         <Toggle
           variant='outline'
+          aria-label='Bullet list'
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           disabled={!editor.can().chain().focus().toggleBulletList().run()}
           pressed={editor.isActive('bulletList')}
@@ -150,6 +158,7 @@ export const RichTextEditorMenubar = memo(
         </Toggle>
         <Toggle
           variant='outline'
+          aria-label='Ordered list'
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           disabled={!editor.can().chain().focus().toggleOrderedList().run()}
           pressed={editor.isActive('orderedList')}
@@ -162,6 +171,7 @@ export const RichTextEditorMenubar = memo(
               variant='outline'
               type='button'
               size='icon'
+              aria-label='Add or edit link'
               className={
                 editor.isActive('orderedList')
                   ? ' bg-gray-200 dark:bg-gray-700'
@@ -210,6 +220,7 @@ export const RichTextEditorMenubar = memo(
             variant='outline'
             type='button'
             size='icon'
+            aria-label='Remove link'
             onClick={() => editor?.chain().focus().unsetLink().run()}
           >
             <UnlinkIcon className={menuButtonClassNames} />
@@ -219,6 +230,7 @@ export const RichTextEditorMenubar = memo(
           variant='outline'
           type='button'
           size='icon'
+          aria-label='Undo'
           onClick={() => editor.chain().focus().undo().run()}
           disabled={!editor.can().chain().focus().undo().run()}
         >
@@ -228,6 +240,7 @@ export const RichTextEditorMenubar = memo(
           variant='outline'
           type='button'
           size='icon'
+          aria-label='Redo'
           onClick={() => editor.chain().focus().redo().run()}
           disabled={!editor.can().chain().focus().redo().run()}
         >

@@ -88,6 +88,7 @@ export const DateFieldInput = observer(
               <Button
                 variant='ghost'
                 size='xsIcon'
+                aria-label='Show date format help'
                 className='h-[14px] hidden lg:inline-flex'
               >
                 {isError ? (
@@ -146,6 +147,7 @@ export const DateFieldInput = observer(
               <Button
                 size='icon'
                 variant='ghost'
+                aria-label={`Open ${field.name} date picker`}
                 className='absolute left-0 top-1/2 -translate-y-1/2 p-1 rounded-md bg-muted text-muted-foreground hover:text-foreground'
               >
                 <CalendarIcon className='w-4 h-4' />
@@ -187,6 +189,7 @@ export const DateFieldInput = observer(
                   <Button
                     size='icon'
                     variant='ghost'
+                    aria-label='Previous year'
                     className='h-7 w-7'
                     disabled={isPresent}
                     onClick={action(async () => {
@@ -204,6 +207,7 @@ export const DateFieldInput = observer(
                   <Button
                     size='icon'
                     variant='ghost'
+                    aria-label='Next year'
                     className='h-7 w-7'
                     disabled={isPresent || year >= CURRENT_YEAR}
                     onClick={action(async () => {

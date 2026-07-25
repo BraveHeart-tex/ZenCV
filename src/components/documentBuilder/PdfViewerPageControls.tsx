@@ -24,6 +24,7 @@ export const PdfViewerPageControls = observer(
           disabled={currentPage === 1}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage - 1)}
           size='icon'
+          aria-label='Previous PDF page'
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
             'rounded-full size-7.5',
@@ -46,6 +47,7 @@ export const PdfViewerPageControls = observer(
           disabled={currentPage === numberOfPages}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage + 1)}
           size='icon'
+          aria-label='Next PDF page'
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
             'rounded-full size-7.5',

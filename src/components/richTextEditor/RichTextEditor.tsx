@@ -10,6 +10,7 @@ interface RichTextEditorProps {
   onChange?: (html: string) => void;
   ref?: Ref<HTMLDivElement>;
   id?: string;
+  ariaLabelledBy?: string;
   footer: React.ReactNode;
 }
 
@@ -26,6 +27,7 @@ export const RichTextEditor = ({
   onChange,
   ref,
   id,
+  ariaLabelledBy,
   footer,
 }: RichTextEditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,6 +46,13 @@ export const RichTextEditor = ({
       }),
     ],
     content: initialValue,
+    editorProps: {
+      attributes: {
+        ...(id ? { id } : {}),
+        ...(ariaLabelledBy ? { 'aria-labelledby': ariaLabelledBy } : {}),
+        'aria-multiline': 'true',
+      },
+    },
     onUpdate: ({ editor }) => {
       if (!onChange) {
         return;
@@ -87,12 +96,7 @@ export const RichTextEditor = ({
       <div className='border-input bg-background border rounded-md'>
         <RichTextEditorMenubar editor={editor} />
         <div className='min-h-[200px] overflow-auto relative pb-10'>
-          <EditorContent
-            id={id}
-            ref={ref}
-            editor={editor}
-            className='max-w-none'
-          />
+          <EditorContent ref={ref} editor={editor} className='max-w-none' />
           {footer}
         </div>
       </div>

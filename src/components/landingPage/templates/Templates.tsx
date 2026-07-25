@@ -36,6 +36,7 @@ export const Templates = () => {
             <Button
               variant='outline'
               size='icon'
+              aria-label='Previous template'
               className='h-8 w-8'
               onClick={scrollPrev}
             >
@@ -44,6 +45,7 @@ export const Templates = () => {
             <Button
               variant='outline'
               size='icon'
+              aria-label='Next template'
               className='h-8 w-8'
               onClick={scrollNext}
             >

@@ -23,10 +23,13 @@ import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import type { FixedSection } from '@/lib/types/documentBuilder.types';
 import { RenameSectionFormDialog } from './RenameSectionFormDialog';
 
+const getSectionTitleId = (sectionId: DEX_Section['id']) =>
+  `section-title-${sectionId}`;
+
 export const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const section = builderRootStore.sectionStore.getSectionById(sectionId);
-    const { listeners } = useSortable({ id: sectionId });
+    const { attributes, listeners } = useSortable({ id: sectionId });
 
     if (!section) {
       return null;
@@ -72,13 +75,18 @@ export const EditableSectionTitle = observer(
           <Button
             variant='outline'
             size='icon'
+            aria-label={`Drag ${section.title} section`}
             className='cursor-grab touch-none z-10 w-8 h-8'
+            {...attributes}
             {...listeners}
           >
             <GripVertical />
           </Button>
         )}
-        <h2 className='scroll-m-20 text-xl font-semibold tracking-tight'>
+        <h2
+          id={getSectionTitleId(sectionId)}
+          className='scroll-m-20 text-xl font-semibold tracking-tight'
+        >
           {section.title}
         </h2>
         <div className='flex items-center gap-1'>
@@ -97,6 +105,7 @@ export const EditableSectionTitle = observer(
                   <Button
                     variant='ghost'
                     size='icon'
+                    aria-label={`Delete ${section.title} section`}
                     onClick={handleDeleteSection}
                   >
                     <TrashIcon size={18} />

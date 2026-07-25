@@ -63,6 +63,7 @@ export const RenameSectionFormDialog = observer(
               <Button
                 size='icon'
                 variant='ghost'
+                aria-label={`Rename ${section.title} section`}
                 onClick={() => {
                   setEnteredTitle(section.title);
                   setOpen(true);

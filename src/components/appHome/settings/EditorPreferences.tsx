@@ -72,6 +72,7 @@ export const EditorPreferences = observer(() => {
                       <Button
                         size='xsIcon'
                         variant='ghost'
+                        aria-label='Explain AI suggestions sign-in requirement'
                         className='lg:inline-flex hidden'
                       >
                         <CircleHelpIcon />

@@ -48,7 +48,7 @@ export const WantedJobTitleSuggestionPopover = observer(
     return (
       <Popover>
         <PopoverTrigger className={cn(aiButtonBaseClassnames)} asChild>
-          <Button size='xsIcon'>
+          <Button size='xsIcon' aria-label='Show suggested job title'>
             <DiamondPlus className='w-4 h-4 text-white' />
           </Button>
         </PopoverTrigger>
@@ -65,7 +65,12 @@ export const WantedJobTitleSuggestionPopover = observer(
               </span>
             </div>
             <PopoverClose asChild>
-              <Button size='xsIcon' variant='ghost' className='shrink-0'>
+              <Button
+                size='xsIcon'
+                variant='ghost'
+                className='shrink-0'
+                aria-label='Close suggested job title'
+              >
                 <XIcon className='w-3.5 h-3.5' />
               </Button>
             </PopoverClose>

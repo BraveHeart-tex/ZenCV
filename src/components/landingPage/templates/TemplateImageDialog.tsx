@@ -99,6 +99,7 @@ export const TemplateImageDialog = ({
                 <Button
                   size='icon'
                   variant='ghost'
+                  aria-label='Close template preview'
                   className='shrink-0 -mt-1 -mr-1 h-8 w-8 text-muted-foreground'
                   onClick={() => setIsOpen(false)}
                 >

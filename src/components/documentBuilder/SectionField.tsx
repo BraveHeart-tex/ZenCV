@@ -35,6 +35,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
   const field = builderRootStore.fieldStore.getFieldById(fieldId);
 
   const htmlInputId = field ? getFieldHtmlId(field) : '';
+  const fieldLabelId = `${htmlInputId}-label`;
 
   const handleInputChange = useCallback(
     action(
@@ -111,14 +112,28 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     }
 
     if (field.type === FIELD_TYPES.RICH_TEXT) {
+      const item = builderRootStore.itemStore.getItemById(field.itemId);
+      const section = item
+        ? builderRootStore.sectionStore.getSectionById(item.sectionId)
+        : null;
+      const isCollapsibleItem =
+        item?.containerType === CONTAINER_TYPES.COLLAPSIBLE;
+      const editorLabelledBy = isCollapsibleItem
+        ? fieldLabelId
+        : section
+          ? `section-title-${section.id}`
+          : undefined;
+
       return (
         <>
-          {builderRootStore.itemStore.getItemById(field.itemId)
-            ?.containerType === CONTAINER_TYPES.COLLAPSIBLE ? (
-            <Label htmlFor={htmlInputId}>{field.name}</Label>
+          {isCollapsibleItem ? (
+            <Label id={fieldLabelId} htmlFor={htmlInputId}>
+              {field.name}
+            </Label>
           ) : null}
           <BuilderRichTextEditorInput
             fieldId={fieldId}
+            ariaLabelledBy={editorLabelledBy}
             shouldRenderAiWidget={
               (getSectionTypeByItemId(field.itemId) as SectionType) ===
               INTERNAL_SECTION_TYPES.SUMMARY

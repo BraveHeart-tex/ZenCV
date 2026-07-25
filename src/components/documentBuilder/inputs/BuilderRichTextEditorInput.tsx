@@ -15,10 +15,15 @@ import { AiSuggestionsWidget } from '../aiSuggestions/AiSuggestionsWidget';
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];
   shouldRenderAiWidget?: boolean;
+  ariaLabelledBy?: string;
 }
 
 export const BuilderRichTextEditorInput = observer(
-  ({ fieldId, shouldRenderAiWidget }: BuilderRichTextEditorInputProps) => {
+  ({
+    fieldId,
+    shouldRenderAiWidget,
+    ariaLabelledBy,
+  }: BuilderRichTextEditorInputProps) => {
     const field = builderRootStore.fieldStore.getFieldById(fieldId);
     if (!field) {
       return null;
@@ -37,6 +42,7 @@ export const BuilderRichTextEditorInput = observer(
             builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
           }}
           id={id}
+          ariaLabelledBy={ariaLabelledBy}
           initialValue={field.value}
           placeholder={field?.placeholder || ''}
           onChange={handleRichTextChange}
