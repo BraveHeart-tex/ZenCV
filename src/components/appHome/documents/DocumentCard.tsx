@@ -3,13 +3,15 @@ import {
   BriefcaseBusinessIcon,
   CopyIcon,
   FileSymlink,
+  FileText,
   MoreHorizontal,
   Pencil,
   Trash,
 } from 'lucide-react';
 import { action } from 'mobx';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -41,19 +43,19 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
   const handleDelete = (event: Event) => {
     event.stopImmediatePropagation();
     confirmDialogStore.showDialog({
-      title: 'Delete Document',
-      message: 'Are you sure you want to delete this document?',
+      title: 'Delete Resume',
+      message: 'Are you sure you want to delete this resume?',
       onConfirm: action(async () => {
         try {
           await deleteDocument(document.id);
-          showSuccessToast('Document deleted successfully.');
+          showSuccessToast('Resume deleted successfully.');
           if (builderRootStore.documentStore?.document?.id === document.id) {
             builderRootStore.resetState();
             builderRootStore.dispose();
           }
         } catch (error) {
           console.error(error);
-          showErrorToast('An error occurred while deleting the document.');
+          showErrorToast('An error occurred while deleting the resume.');
         }
         confirmDialogStore.hideDialog();
       }),
@@ -64,13 +66,13 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     try {
       const result = await renameDocument(document.id, enteredTitle);
       if (!result) {
-        showErrorToast('An error occurred while renaming the document.');
+        showErrorToast('An error occurred while renaming the resume.');
         return;
       }
-      showSuccessToast('Document renamed successfully.');
+      showSuccessToast('Resume renamed successfully.');
       setIsRenameDialogOpen(false);
     } catch (error) {
-      showErrorToast('An error occurred while renaming the document.');
+      showErrorToast('An error occurred while renaming the resume.');
       console.error(error);
     }
   };
@@ -78,7 +80,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
   const handleCopyDocument = async () => {
     try {
       await copyDocument(document.id);
-      showSuccessToast('Document copied successfully');
+      showSuccessToast('Resume duplicated successfully.');
     } catch (error) {
       console.error(error);
       showErrorToast((error as Error).message);
@@ -95,12 +97,10 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
       }).format(new Date(document.updatedAt))
     : null;
 
-  const handleMouseDown = () => {
-    if (isOpen) {
-      return;
-    }
-    navigate(`/builder/${document.id}`);
-  };
+  const templateName =
+    templateOptionsWithImages.find(
+      (template) => template.value === document.templateType
+    )?.name ?? 'Resume';
 
   return (
     <>
@@ -108,21 +108,34 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         className={cn(
           'group relative flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
           'hover:border-border hover:shadow-md hover:bg-accent/30',
-          'transition-all duration-200 cursor-pointer shadow-sm'
+          'shadow-sm transition-all duration-200'
         )}
-        onMouseDown={handleMouseDown}
       >
-        <div className='flex items-start justify-between gap-2'>
-          <h3 className='flex-1 text-sm font-semibold leading-snug truncate pr-1'>
-            {document.title}
-          </h3>
+        <div className='flex items-start justify-between gap-3 sm:gap-2'>
+          <div className='min-w-0 flex-1 space-y-1.5 pr-1'>
+            <h3
+              className='line-clamp-2 text-sm font-semibold leading-snug lg:truncate'
+              title={document.title}
+            >
+              {document.title}
+            </h3>
+            <div className='flex min-w-0 flex-wrap items-center gap-1.5'>
+              <span className='inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
+                <FileText className='h-3 w-3' />
+                {templateName}
+              </span>
+              <span className='inline-flex items-center rounded-md border border-border/70 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
+                Local resume
+              </span>
+            </div>
+          </div>
 
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant='ghost'
                 className={cn(
-                  'shrink-0 w-7 h-7 p-0 text-muted-foreground/50',
+                  'h-11 w-11 shrink-0 p-0 text-muted-foreground/50 lg:h-7 lg:w-7',
                   'max-md:opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-150',
                   'hover:text-foreground hover:bg-muted/60',
                   isOpen && 'opacity-100'
@@ -171,10 +184,21 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
           </div>
         )}
 
-        <div className='flex items-center justify-between mt-auto pt-2 border-t border-border'>
-          <span className='text-xs text-muted-foreground tabular-nums'>
+        <div className='mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 lg:pt-2'>
+          <span className='min-w-0 truncate text-xs tabular-nums text-muted-foreground'>
             Updated {formattedDate}
           </span>
+          <Button
+            asChild
+            size='sm'
+            variant='outline'
+            className='h-11 shrink-0 px-3 lg:h-8'
+          >
+            <Link to={`/builder/${document.id}`}>
+              <FileSymlink className='w-4 h-4' />
+              Open
+            </Link>
+          </Button>
         </div>
       </article>
 

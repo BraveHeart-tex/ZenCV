@@ -163,7 +163,7 @@ export const DocumentBuilderPdfViewer = observer(
         {previousRenderValue && shouldShowPreviousDocument ? (
           <Document
             key={previousRenderValue}
-            className='previous-document absolute inset-0 flex h-full items-center justify-center opacity-50 transition-opacity duration-200 ease-[var(--ease-out-quart)] motion-reduce:transition-none'
+            className='previous-document absolute inset-0 flex h-full items-center justify-center opacity-50 transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
             file={previousRenderValue}
             loading={null}
           >
@@ -184,7 +184,7 @@ export const DocumentBuilderPdfViewer = observer(
           <Document
             key={render.value}
             className={
-              'absolute inset-0 flex h-full items-center justify-center transition-opacity duration-200 ease-[var(--ease-out-quart)] motion-reduce:transition-none'
+              'absolute inset-0 flex h-full items-center justify-center transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
             }
             file={render.value}
             loading={null}

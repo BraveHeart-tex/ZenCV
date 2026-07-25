@@ -9,6 +9,7 @@ import { DocumentCard } from './DocumentCard';
 
 export const DocumentsPageClient = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
 
   const documents = useLiveQuery(
     async () => {
@@ -43,31 +44,35 @@ export const DocumentsPageClient = () => {
     if (!documents) {
       return null;
     }
-    if (!searchQuery) {
+    if (!normalizedSearchQuery) {
       return documents;
     }
     return documents.filter((doc) =>
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase())
+      doc.title.toLowerCase().includes(normalizedSearchQuery)
     );
-  }, [documents, searchQuery]);
+  }, [documents, normalizedSearchQuery]);
 
   const noDocumentsCreated =
-    documents !== null && documents.length === 0 && !searchQuery;
+    documents !== null && documents.length === 0 && !normalizedSearchQuery;
+  const documentCount = filteredDocuments?.length ?? 0;
+  const documentCountLabel = `${documentCount} ${
+    documentCount === 1 ? 'resume' : 'resumes'
+  }`;
 
   if (noDocumentsCreated) {
     return (
-      <div className='flex flex-col items-center justify-center flex-1 h-full min-h-[60vh] gap-6'>
-        <div className='flex flex-col items-center gap-4'>
+      <div className='flex min-w-0 flex-1 flex-col items-center justify-center gap-6 h-full min-h-[60vh] px-2'>
+        <div className='flex w-full max-w-sm flex-col items-center gap-4 text-center'>
           <div className='rounded-2xl border border-border bg-muted/30 p-5'>
             <FileText className='w-8 h-8 text-muted-foreground/60' />
           </div>
-          <div className='space-y-1.5 text-center'>
+          <div className='min-w-0 space-y-1.5'>
             <h2 className='text-xl font-semibold tracking-tight'>
-              No documents yet
+              No resumes yet
             </h2>
-            <p className='text-sm text-muted-foreground max-w-xs'>
-              Create your first document and start building a resume that gets
-              you hired.
+            <p className='max-w-xs text-wrap text-sm text-muted-foreground'>
+              Create your first resume and keep it ready for the next
+              application.
             </p>
           </div>
           <CreateDocumentDialog />
@@ -78,9 +83,9 @@ export const DocumentsPageClient = () => {
 
   if (!documents) {
     return (
-      <div className='flex flex-col gap-6'>
+      <div className='flex min-w-0 flex-col gap-5'>
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
-        <div className='md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid grid-cols-1 gap-4'>
+        <div className='grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4'>
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               // biome-ignore lint/suspicious/noArrayIndexKey: Index is fine here for skeletons
@@ -94,18 +99,18 @@ export const DocumentsPageClient = () => {
   }
 
   return (
-    <div className='flex flex-col gap-6'>
-      <div className='flex items-center justify-between gap-4'>
+    <div className='flex min-w-0 flex-col gap-6'>
+      <div className='flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
         <CreateDocumentDialog />
       </div>
 
-      {filteredDocuments?.length === 0 && searchQuery ? (
-        <div className='flex flex-col items-center justify-center gap-3 py-16 text-center'>
+      {filteredDocuments?.length === 0 && normalizedSearchQuery ? (
+        <div className='flex min-w-0 flex-col items-center justify-center gap-3 py-16 text-center'>
           <Search className='w-6 h-6 text-muted-foreground/40' />
-          <div className='space-y-1'>
-            <p className='text-sm font-medium'>
-              No results for "{searchQuery}"
+          <div className='min-w-0 max-w-sm space-y-1'>
+            <p className='break-words text-sm font-medium'>
+              No results for "{searchQuery.trim()}"
             </p>
             <p className='text-xs text-muted-foreground'>
               Try searching with a different term.
@@ -113,20 +118,19 @@ export const DocumentsPageClient = () => {
           </div>
         </div>
       ) : (
-        <div className='flex flex-col gap-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-2'>
-              <h2 className='text-sm font-semibold tracking-tight'>
-                Documents
+        <div className='flex min-w-0 flex-col gap-4'>
+          <div className='flex min-w-0 items-end justify-between gap-4'>
+            <div className='min-w-0 space-y-1'>
+              <h2 className='text-base font-semibold tracking-tight'>
+                Resume library
               </h2>
-              <span className='text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md tabular-nums'>
-                {filteredDocuments?.length ?? 0}
-              </span>
+              <p className='text-sm text-muted-foreground'>
+                {documentCountLabel} stored locally in this browser.
+              </p>
             </div>
           </div>
 
-          <div className='md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 grid grid-cols-1 gap-4'>
-            <CreateDocumentDialog triggerVariant='card' />
+          <div className='grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4'>
             {filteredDocuments?.map((document) => (
               <DocumentCard key={document.id} document={document} />
             ))}
@@ -145,10 +149,12 @@ const SearchBar = ({
   onChange: (v: string) => void;
 }) => (
   <div className='relative w-full md:max-w-sm'>
-    <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/60 pointer-events-none' />
+    <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60' />
     <Input
-      placeholder='Search documents...'
-      className='pl-9 bg-muted/30 border-border/60 focus:border-border transition-colors'
+      type='search'
+      aria-label='Search resumes'
+      placeholder='Search resumes...'
+      className='h-11 border-border/60 bg-muted/30 pl-9 transition-colors focus:border-border lg:h-9'
       value={value}
       onChange={(e) => onChange(e.target.value)}
     />

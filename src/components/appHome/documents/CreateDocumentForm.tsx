@@ -33,7 +33,6 @@ import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBu
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import type { UseState } from '@/lib/types/utils.types';
-import { cn } from '@/lib/utils/stringUtils';
 import {
   type CreateDocumentFormData,
   createNewDocumentSchema,
@@ -111,6 +110,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       shouldUseSampleData: false,
     },
   });
+  const isSubmitting = form.formState.isSubmitting;
 
   const onSubmit = async (data: CreateDocumentFormData) => {
     const {
@@ -151,6 +151,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
               <FormControl>
                 <Input
                   type='text'
+                  maxLength={100}
                   {...field}
                   placeholder='e.g. ABC Company — Software Engineer'
                 />
@@ -232,8 +233,8 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                     Start with sample data
                   </FormLabel>
                   <p className='text-xs text-muted-foreground'>
-                    Pre-fill the document with example content to get started
-                    faster
+                    Pre-fill the resume with example content to get started
+                    faster.
                   </p>
                 </div>
               </div>
@@ -242,16 +243,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
           )}
         />
 
-        <div
-          className={cn(
-            'transition-all duration-200',
-            !showSampleData && 'overflow-hidden'
-          )}
-          style={{
-            maxHeight: showSampleData ? '120px' : '0',
-            opacity: showSampleData ? 1 : 0,
-          }}
-        >
+        {showSampleData ? (
           <FormField
             control={form.control}
             name='selectedPrefillStyle'
@@ -280,14 +272,19 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
               </FormItem>
             )}
           />
-        </div>
+        ) : null}
 
-        <div className='flex items-center justify-end gap-2'>
-          <Button type='button' variant='ghost' onClick={() => setOpen(false)}>
+        <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end'>
+          <Button
+            type='button'
+            variant='ghost'
+            onClick={() => setOpen(false)}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type='submit' className='gap-2'>
-            Create document
+          <Button type='submit' className='gap-2' disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create resume'}
             <ArrowRight className='w-4 h-4' />
           </Button>
         </div>
