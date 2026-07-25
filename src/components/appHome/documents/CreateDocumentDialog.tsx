@@ -33,7 +33,7 @@ export const CreateDocumentDialog = ({
           <div className='rounded-lg border border-border/50 bg-muted/40 p-2'>
             <PlusIcon className='w-4 h-4 text-muted-foreground' />
           </div>
-          <span className='break-words text-xs font-medium text-muted-foreground'>
+          <span className='wrap-break-word text-xs font-medium text-muted-foreground'>
             New resume
           </span>
         </button>

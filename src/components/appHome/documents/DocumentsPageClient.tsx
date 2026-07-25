@@ -109,7 +109,7 @@ export const DocumentsPageClient = () => {
         <div className='flex min-w-0 flex-col items-center justify-center gap-3 py-16 text-center'>
           <Search className='w-6 h-6 text-muted-foreground/40' />
           <div className='min-w-0 max-w-sm space-y-1'>
-            <p className='break-words text-sm font-medium'>
+            <p className='wrap-break-word text-sm font-medium'>
               No results for "{searchQuery.trim()}"
             </p>
             <p className='text-xs text-muted-foreground'>
