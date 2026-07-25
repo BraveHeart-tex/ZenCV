@@ -1,9 +1,4 @@
-import {
-  makeAutoObservable,
-  ObservableMap,
-  observable,
-  runInAction,
-} from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { showErrorToast } from '@/components/ui/sonner';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
@@ -12,30 +7,117 @@ import type { BuilderRootStore } from './builderRootStore';
 
 const FIELD_SAVE_DEBOUNCE_MS = 400;
 
-export class BuilderFieldStore {
-  root: BuilderRootStore;
-  fields: DEX_Field[] = [];
-  fieldValues: ObservableMap<DEX_Field['id'], string> = new ObservableMap();
-  private saveVersions = new Map<DEX_Field['id'], number>();
-  private saveTimers = new Map<
-    DEX_Field['id'],
-    ReturnType<typeof setTimeout>
-  >();
-  private lastPersistedValues = new Map<DEX_Field['id'], string>();
+export class FieldModel {
+  private readonly fieldData: Omit<DEX_Field, 'value'>;
+  value: string;
+  private saveVersion = 0;
+  private saveTimer: ReturnType<typeof setTimeout> | null = null;
+  private lastPersistedValue: string;
 
-  constructor(root: BuilderRootStore) {
-    this.root = root;
+  constructor(field: DEX_Field) {
+    const { value, ...fieldData } = field;
+
+    this.fieldData = fieldData;
+    this.value = value ?? '';
+    this.lastPersistedValue = this.value;
+
     makeAutoObservable<
       this,
-      'saveVersions' | 'saveTimers' | 'lastPersistedValues'
+      'fieldData' | 'saveVersion' | 'saveTimer' | 'lastPersistedValue'
     >(
       this,
       {
+        fieldData: false,
+        saveVersion: false,
+        saveTimer: false,
+        lastPersistedValue: false,
+      },
+      { autoBind: true }
+    );
+  }
+
+  get id() {
+    return this.fieldData.id;
+  }
+
+  get itemId() {
+    return this.fieldData.itemId;
+  }
+
+  get name() {
+    return this.fieldData.name;
+  }
+
+  get type() {
+    return this.fieldData.type;
+  }
+
+  setValue(value: string, shouldSaveToStore = true) {
+    const previousValue = this.value;
+
+    this.value = value;
+
+    if (!shouldSaveToStore) {
+      return;
+    }
+
+    this.saveVersion += 1;
+    const saveVersion = this.saveVersion;
+
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        await updateField(this.id, value);
+        this.lastPersistedValue = value;
+      } catch (error) {
+        console.error('setFieldValue error', error);
+        runInAction(() => {
+          if (this.saveVersion === saveVersion) {
+            this.value = this.lastPersistedValue ?? previousValue;
+          }
+        });
+
+        showErrorToast('Could not save this edit.', {
+          description: 'The field was restored to its last saved value.',
+        });
+      } finally {
+        if (this.saveTimer === timer) {
+          this.saveTimer = null;
+        }
+      }
+    }, FIELD_SAVE_DEBOUNCE_MS);
+
+    this.saveTimer = timer;
+  }
+
+  dispose() {
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+      this.saveTimer = null;
+    }
+  }
+
+  toSnapshot(): DEX_Field {
+    return {
+      ...this.fieldData,
+      value: this.value,
+    } as DEX_Field;
+  }
+}
+
+export class BuilderFieldStore {
+  root: BuilderRootStore;
+  fields: FieldModel[] = [];
+
+  constructor(root: BuilderRootStore) {
+    this.root = root;
+    makeAutoObservable(
+      this,
+      {
         fields: observable,
-        fieldValues: observable,
-        saveVersions: false,
-        saveTimers: false,
-        lastPersistedValues: false,
       },
       { autoBind: true }
     );
@@ -53,18 +135,12 @@ export class BuilderFieldStore {
       }
       acc.get(itemId)?.push(curr);
       return acc;
-    }, new Map<DEX_Item['id'], DEX_Field[]>());
+    }, new Map<DEX_Item['id'], FieldModel[]>());
   }
 
   getFieldById(fieldId: DEX_Field['id']): DEX_Field | undefined {
     const field = this.fieldsById.get(fieldId);
-    if (!field) {
-      return undefined;
-    }
-    return {
-      ...field,
-      value: this.fieldValues.get(field.id) ?? field.value ?? '',
-    } as DEX_Field;
+    return field?.toSnapshot();
   }
 
   getFieldValueByName(fieldName: FieldName): string {
@@ -72,22 +148,23 @@ export class BuilderFieldStore {
     if (!field) {
       return '';
     }
-    return this.fieldValues.get(field.id) ?? field.value ?? '';
+    return field.value;
   }
 
   setFields(fields: DEX_Field[]) {
-    this.fields = fields;
-    const nextFieldValues = new ObservableMap<DEX_Field['id'], string>();
-    fields.forEach((field) => {
-      nextFieldValues.set(field.id, field.value ?? '');
-      this.lastPersistedValues.set(field.id, field.value ?? '');
+    this.clear();
+    this.fields = fields.map((field) => new FieldModel(field));
+  }
+
+  addFields(fields: DEX_Field[]) {
+    this.fields.push(...fields.map((field) => new FieldModel(field)));
+  }
+
+  clear() {
+    this.fields.forEach((field) => {
+      field.dispose();
     });
-    this.fieldValues = nextFieldValues;
-    this.saveVersions.clear();
-    this.saveTimers.forEach((timer) => {
-      clearTimeout(timer);
-    });
-    this.saveTimers.clear();
+    this.fields = [];
   }
 
   async setFieldValue(
@@ -103,60 +180,15 @@ export class BuilderFieldStore {
       };
     }
 
-    const previousValue = this.fieldValues.get(fieldId) ?? field.value ?? '';
-
     runInAction(() => {
-      this.fieldValues.set(fieldId, value);
+      field.setValue(value, shouldSaveToStore);
     });
-
-    if (shouldSaveToStore) {
-      const saveVersion = (this.saveVersions.get(fieldId) ?? 0) + 1;
-      this.saveVersions.set(fieldId, saveVersion);
-
-      const existingTimer = this.saveTimers.get(fieldId);
-      if (existingTimer) {
-        clearTimeout(existingTimer);
-      }
-
-      const timer = setTimeout(async () => {
-        try {
-          await updateField(fieldId, value);
-          this.lastPersistedValues.set(fieldId, value);
-        } catch (error) {
-          console.error('setFieldValue error', error);
-          runInAction(() => {
-            if (this.saveVersions.get(fieldId) === saveVersion) {
-              this.fieldValues.set(
-                fieldId,
-                this.lastPersistedValues.get(fieldId) ?? previousValue
-              );
-            }
-          });
-
-          showErrorToast('Could not save this edit.', {
-            description: 'The field was restored to its last saved value.',
-          });
-        } finally {
-          if (this.saveTimers.get(fieldId) === timer) {
-            this.saveTimers.delete(fieldId);
-          }
-        }
-      }, FIELD_SAVE_DEBOUNCE_MS);
-
-      this.saveTimers.set(fieldId, timer);
-    }
 
     return { success: true };
   }
 
   getFieldsByItemId(itemId: DEX_Item['id']): DEX_Field[] {
     const fields = this.fieldsByItemId.get(itemId) || [];
-    return fields.map(
-      (field) =>
-        ({
-          ...field,
-          value: this.fieldValues.get(field.id) ?? field.value ?? '',
-        }) as DEX_Field
-    );
+    return fields.map((field) => field.toSnapshot());
   }
 }

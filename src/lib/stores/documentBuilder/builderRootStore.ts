@@ -39,8 +39,7 @@ export class BuilderRootStore {
       this.documentStore.document = null;
       this.sectionStore.sections = [];
       this.itemStore.items = [];
-      this.fieldStore.fields = [];
-      this.fieldStore.fieldValues.clear();
+      this.fieldStore.clear();
       this.jobPostingStore.jobPosting = null;
       this.UIStore.resetState();
       this.aiSuggestionsStore.resetState();
