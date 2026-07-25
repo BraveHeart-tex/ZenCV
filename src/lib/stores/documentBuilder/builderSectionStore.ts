@@ -2,7 +2,11 @@ import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
-import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
 import {
   bulkUpdateSections,
   deleteSection,
@@ -22,6 +26,7 @@ import type { BuilderRootStore } from './builderRootStore';
 import {
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
+  MAX_PERSONAL_DETAILS_LINKS,
 } from './documentBuilder.constants';
 
 export const parseMetadataToObservable = (raw: unknown) =>
@@ -30,6 +35,12 @@ export const parseMetadataToObservable = (raw: unknown) =>
 interface AddSectionResult {
   itemId: DEX_Item['id'] | undefined;
   sectionId: DEX_Section['id'];
+}
+
+interface CreatedSectionRecords extends AddSectionResult {
+  fields: DEX_Field[];
+  item: DEX_Item;
+  section: DEX_Section;
 }
 
 export class BuilderSectionStore {
@@ -189,91 +200,133 @@ export class BuilderSectionStore {
       return;
     }
 
-    let createdSectionId: DEX_Section['id'] | undefined;
-    let createdItemId: DEX_Item['id'] | undefined;
+    const documentId = this.root.documentStore.document.id;
 
-    const createSection = (): Promise<AddSectionResult | undefined> =>
+    const createSection = (): Promise<CreatedSectionRecords | undefined> =>
       clientDb.transaction(
         'rw',
         [clientDb.sections, clientDb.fields, clientDb.items],
         async () => {
-          if (!this.root.documentStore.document) {
-            return;
+          const documentSections = await clientDb.sections
+            .where('documentId')
+            .equals(documentId)
+            .toArray();
+
+          if (option.type !== INTERNAL_SECTION_TYPES.CUSTOM) {
+            const hasExistingSection = documentSections.some(
+              (section) => section.type === option.type
+            );
+            if (hasExistingSection) {
+              return;
+            }
           }
 
-          const sectionDto = {
-            displayOrder: this.sections.reduce(
+          const sectionDisplayOrder =
+            documentSections.reduce(
               (acc, curr) => Math.max(acc, curr.displayOrder),
-              1
-            ),
+              0
+            ) + 1;
+          const itemDisplayOrder = template.displayOrder;
+          const sectionDto = {
+            displayOrder: sectionDisplayOrder,
             title: option.title,
             defaultTitle: option.defaultTitle,
             type: option.type,
             metadata: option?.metadata,
-            documentId: this.root.documentStore.document.id,
+            documentId,
           };
 
           const sectionId = await clientDb.sections.add(sectionDto);
-          createdSectionId = sectionId;
+          const section = {
+            ...sectionDto,
+            id: sectionId,
+          };
 
-          runInAction(() => {
-            this.sections.push({
-              ...sectionDto,
-              id: sectionId,
-              metadata: parseMetadataToObservable(option.metadata),
-            });
-          });
+          if (option.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
+            const matchingSectionIds = (
+              await clientDb.sections
+                .where('documentId')
+                .equals(documentId)
+                .filter((candidate) => candidate.type === option.type)
+                .toArray()
+            ).map((candidate) => candidate.id);
+            const itemCount = matchingSectionIds.length
+              ? await clientDb.items
+                  .where('sectionId')
+                  .anyOf(matchingSectionIds)
+                  .count()
+              : 0;
 
-          const itemId = await this.root.itemStore.addNewItemEntry(sectionId);
-          createdItemId = itemId;
-
-          if (
-            itemId === undefined &&
-            option.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
-          ) {
-            await clientDb.sections.delete(sectionId);
-            runInAction(() => {
-              this.sections = this.sections.filter(
-                (section) => section.id !== sectionId
-              );
-            });
-            createdSectionId = undefined;
-            return;
+            if (itemCount >= MAX_PERSONAL_DETAILS_LINKS) {
+              await clientDb.sections.delete(sectionId);
+              return;
+            }
           }
 
-          return {
+          const itemId = await clientDb.items.add({
+            sectionId,
+            containerType: template.containerType,
+            displayOrder: itemDisplayOrder,
+          });
+
+          const fieldsPayload = template.fields.map((field) => ({
+            ...field,
             itemId,
+          }));
+
+          const fieldIds = await clientDb.fields.bulkAdd(fieldsPayload, {
+            allKeys: true,
+          });
+
+          const fields = fieldsPayload.map((field, index) => ({
+            ...field,
+            id: fieldIds[index],
+            itemId,
+          })) as DEX_Field[];
+          const item = {
+            id: itemId,
+            sectionId,
+            containerType: template.containerType,
+            displayOrder: itemDisplayOrder,
+          };
+
+          return {
+            fields,
+            item,
+            itemId,
+            section,
             sectionId,
           };
         }
       );
 
-    try {
-      return await createSection();
-    } catch (error) {
-      runInAction(() => {
-        if (createdSectionId !== undefined) {
-          this.sections = this.sections.filter(
-            (section) => section.id !== createdSectionId
-          );
-        }
-        if (createdItemId !== undefined) {
-          this.root.itemStore.items = this.root.itemStore.items.filter(
-            (item) => item.id !== createdItemId
-          );
-          const createdFieldIds = this.root.fieldStore.fields
-            .filter((field) => field.itemId === createdItemId)
-            .map((field) => field.id);
-          this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
-            (field) => field.itemId !== createdItemId
-          );
-          createdFieldIds.forEach((fieldId) => {
-            this.root.fieldStore.fieldValues.delete(fieldId);
-          });
-        }
-      });
-      throw error;
+    const result = await createSection();
+    if (!result) {
+      return;
     }
+
+    if (this.root.documentStore.document?.id !== documentId) {
+      return;
+    }
+
+    runInAction(() => {
+      this.sections.push({
+        ...result.section,
+        metadata: parseMetadataToObservable(result.section.metadata),
+      });
+
+      this.root.itemStore.items.push(result.item);
+      this.root.fieldStore.fields.push(...result.fields);
+      result.fields.forEach((field) => {
+        this.root.fieldStore.fieldValues.set(field.id, field.value ?? '');
+      });
+      this.root.UIStore.toggleItem(result.item.id);
+    });
+
+    return {
+      itemId: result.itemId,
+      sectionId: result.sectionId,
+    };
   }
 
   async removeSection(sectionId: DEX_Section['id']) {
