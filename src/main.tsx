@@ -1,3 +1,4 @@
+import '@fontsource-variable/instrument-sans';
 import { ClerkProvider } from '@clerk/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
