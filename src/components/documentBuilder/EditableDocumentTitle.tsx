@@ -31,8 +31,8 @@ export const EditableDocumentTitle = observer(() => {
   });
 
   return (
-    <div className='flex items-center gap-2 max-w-[95%]'>
-      <h1 className='scroll-m-20 first:mt-0 md:text-3xl overflow-hidden text-2xl font-semibold tracking-tight truncate'>
+    <div className='flex min-w-0 max-w-full items-center gap-1.5 md:gap-2'>
+      <h1 className='scroll-m-20 min-w-0 truncate text-xl font-semibold tracking-tight sm:text-2xl md:text-3xl'>
         {documentTitle}
       </h1>
       <RenameDocumentDialog
@@ -45,6 +45,7 @@ export const EditableDocumentTitle = observer(() => {
             <TooltipTrigger asChild>
               <Button
                 aria-label='Rename document'
+                className='size-9 shrink-0'
                 size='icon'
                 variant='ghost'
                 onClick={() => {

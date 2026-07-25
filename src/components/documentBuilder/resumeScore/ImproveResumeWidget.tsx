@@ -21,12 +21,12 @@ export const ImproveResumeWidget = observer(() => {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className='border-border/70 w-full border-b'
+      className='border-border/70 bg-muted/20 w-full rounded-lg border shadow-xs'
     >
       <CollapsibleTrigger asChild>
         <Button
           variant='ghost'
-          className='hover:bg-muted/60 h-11 w-full justify-start px-1'
+          className='hover:bg-muted/60 h-11 w-full justify-start px-3'
         >
           <LightbulbIcon aria-hidden='true' className='text-muted-foreground' />
           <span className='font-medium'>Resume guidance</span>
@@ -44,7 +44,7 @@ export const ImproveResumeWidget = observer(() => {
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className='space-y-4 pb-5 pt-2'>
+        <div className='space-y-4 px-3 pb-4 pt-1'>
           <div className='space-y-2'>
             <div className='flex items-center justify-between gap-3'>
               <ResumeScoreBadge />

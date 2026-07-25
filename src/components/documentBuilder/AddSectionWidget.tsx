@@ -31,11 +31,16 @@ export const AddSectionWidget = observer(() => {
   });
 
   return (
-    <article className='space-y-2'>
-      <h3 className={cn(builderSectionTitleClassNames, 'text-2xl')}>
-        Add New Section
-      </h3>
-      <div className='md:grid-cols-2 grid gap-2'>
+    <article className='border-border/70 space-y-3 border-t pt-6'>
+      <div className='space-y-1'>
+        <h3 className={cn(builderSectionTitleClassNames, 'text-xl')}>
+          Add section
+        </h3>
+        <p className='text-muted-foreground text-sm'>
+          Add only the sections that strengthen this version of your CV.
+        </p>
+      </div>
+      <div className='grid gap-2 md:grid-cols-2'>
         {OTHER_SECTION_OPTIONS.map((option) => {
           const isAlreadyAdded =
             option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&

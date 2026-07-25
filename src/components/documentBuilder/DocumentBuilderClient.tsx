@@ -30,35 +30,37 @@ export const DocumentBuilderClient = observer(() => {
       <main
         aria-label='Resume editor'
         className={cn(
-          'bg-background hide-scrollbar relative min-h-screen w-full px-3 pb-28 md:px-8 xl:w-1/2 xl:pb-8',
+          'bg-background hide-scrollbar relative min-h-screen w-full px-3 pb-36 md:px-8 xl:w-1/2 xl:border-r xl:pb-10',
           view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
           view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block'
         )}
       >
-        <div className='bg-background/95 supports-[backdrop-filter]:bg-background/85 sticky top-0 z-40 -mx-3 flex items-center justify-between gap-3 border-b px-3 py-3 backdrop-blur md:-mx-8 md:px-8'>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                aria-label='Back to documents'
-                className='size-10 shrink-0 md:size-9'
-                onClick={handleBack}
-                size='icon'
-                variant='outline'
-              >
-                <ArrowLeftIcon aria-hidden='true' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side='bottom'>Back to documents</TooltipContent>
-          </Tooltip>
-          <DocumentBuilderHeader />
-          <DocumentBuilderSettingsWidget />
+        <div className='bg-background/95 supports-[backdrop-filter]:bg-background/85 sticky top-0 z-40 -mx-3 border-b backdrop-blur md:-mx-8'>
+          <div className='mx-auto flex max-w-2xl items-center justify-between gap-2 px-3 py-2.5 md:gap-3 md:px-0 md:py-3'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  aria-label='Back to documents'
+                  className='size-10 shrink-0 md:size-9'
+                  onClick={handleBack}
+                  size='icon'
+                  variant='outline'
+                >
+                  <ArrowLeftIcon aria-hidden='true' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side='bottom'>Back to documents</TooltipContent>
+            </Tooltip>
+            <DocumentBuilderHeader />
+            <DocumentBuilderSettingsWidget />
+          </div>
         </div>
 
-        <div className='mx-auto mt-3 max-w-2xl'>
+        <div className='mx-auto mt-4 max-w-2xl md:mt-5'>
           <ImproveResumeWidget />
         </div>
 
-        <div className='mx-auto mt-5 grid max-w-2xl gap-5 pb-8 md:mt-7 md:gap-6'>
+        <div className='mx-auto mt-6 grid max-w-2xl gap-7 pb-10 md:mt-8 md:gap-8'>
           <DocumentSections />
           <AddSectionWidget />
         </div>
