@@ -1,10 +1,4 @@
-import {
-  computed,
-  makeAutoObservable,
-  ObservableMap,
-  reaction,
-  runInAction,
-} from 'mobx';
+import { makeAutoObservable, ObservableMap, reaction, runInAction } from 'mobx';
 import {
   type DEX_AiSuggestions,
   type DEX_Field,
@@ -34,10 +28,9 @@ export class BuilderAISuggestionsStore {
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  @computed
   get richTextFieldsWithKeywordChecks() {
     return this.root.sectionStore.sections
       .filter((section) =>
@@ -67,23 +60,23 @@ export class BuilderAISuggestionsStore {
     }
   }
 
-  setJobAnalysisResults = (data: JobAnalysisResult) => {
+  setJobAnalysisResults(data: JobAnalysisResult) {
     this.keywordSuggestions = data.keywordSuggestions;
     this.suggestedJobTitle = data.suggestedJobTitle;
-  };
+  }
 
-  resetState = () => {
+  resetState() {
     this.keywordSuggestions = [];
     this.suggestedJobTitle = '';
     this.usedKeywords.clear();
-  };
+  }
 
-  setSuggestions = (aiSuggestion: DEX_AiSuggestions) => {
+  setSuggestions(aiSuggestion: DEX_AiSuggestions) {
     this.keywordSuggestions = aiSuggestion.keywordSuggestions;
     this.suggestedJobTitle = aiSuggestion.suggestedJobTitle;
-  };
+  }
 
-  applySuggestedJobTitle = async (fieldId: DEX_Field['id']) => {
+  async applySuggestedJobTitle(fieldId: DEX_Field['id']) {
     if (!this.suggestedJobTitle) {
       return;
     }
@@ -96,9 +89,9 @@ export class BuilderAISuggestionsStore {
     runInAction(() => {
       this.suggestedJobTitle = '';
     });
-  };
+  }
 
-  private setupReactions = () => {
+  private setupReactions() {
     const checkUsedKeywords = debounce((values: string[]) => {
       runInAction(() => {
         this.usedKeywords.clear();
@@ -128,28 +121,28 @@ export class BuilderAISuggestionsStore {
     );
 
     this.disposers.push(disposer);
-  };
+  }
 
-  private dispose = () => {
+  private dispose() {
     this.disposers.forEach((disposer) => {
       disposer();
     });
     this.disposers = [];
-  };
+  }
 
-  start = () => {
+  start() {
     if (this.isActive) {
       return;
     }
     this.isActive = true;
     this.setupReactions();
-  };
+  }
 
-  stop = () => {
+  stop() {
     if (!this.isActive) {
       return;
     }
     this.isActive = false;
     this.dispose();
-  };
+  }
 }

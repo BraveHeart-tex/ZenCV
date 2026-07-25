@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, runInAction } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import {
   CONTAINER_TYPES,
@@ -24,18 +24,42 @@ export class BuilderItemStore {
 
   items: DEX_Item[] = [];
   private isAddingLink = false;
+  private readonly areAllItemsCollapsibleForSection = computedFn(
+    (sectionId: DEX_Section['id']): boolean => {
+      return (this.itemsBySectionId.get(sectionId) ?? []).every(
+        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
+      );
+    }
+  );
+  private readonly getOrderedItemIdsForSection = computedFn(
+    (sectionId: DEX_Section['id']): DEX_Item['id'][] => {
+      const items = this.itemsBySectionId.get(sectionId) ?? [];
+      return items
+        .slice()
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((item) => item.id);
+    }
+  );
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable<
+      this,
+      'areAllItemsCollapsibleForSection' | 'getOrderedItemIdsForSection'
+    >(
+      this,
+      {
+        areAllItemsCollapsibleForSection: false,
+        getOrderedItemIdsForSection: false,
+      },
+      { autoBind: true }
+    );
   }
 
-  @computed
   get itemsById() {
     return new Map(this.items.map((item) => [item.id, item]));
   }
 
-  @computed
   get itemsBySectionId() {
     const map = new Map<DEX_Section['id'], DEX_Item[]>();
     for (const item of this.items) {
@@ -46,39 +70,29 @@ export class BuilderItemStore {
     return map;
   }
 
-  areAllItemsCollapsible = computedFn(
-    (sectionId: DEX_Section['id']): boolean => {
-      return (this.itemsBySectionId.get(sectionId) ?? []).every(
-        (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
-      );
-    }
-  );
-
-  getItemById = (itemId: DEX_Item['id']): DEX_Item | undefined => {
-    return this.itemsById.get(itemId);
-  };
-
-  getItemsBySectionId = (sectionId: DEX_Section['id']): DEX_Item[] => {
-    return this.itemsBySectionId.get(sectionId) ?? [];
-  };
-
-  getOrderedItemIdsBySectionId(sectionId: DEX_Section['id']): DEX_Item['id'][] {
-    return computed(() => {
-      const items = this.itemsBySectionId.get(sectionId) ?? [];
-      return items
-        .slice()
-        .sort((a, b) => a.displayOrder - b.displayOrder)
-        .map((item) => item.id);
-    }).get();
+  areAllItemsCollapsible(sectionId: DEX_Section['id']): boolean {
+    return this.areAllItemsCollapsibleForSection(sectionId);
   }
 
-  setItems = (items: DEX_Item[]) => {
-    this.items = items;
-  };
+  getItemById(itemId: DEX_Item['id']): DEX_Item | undefined {
+    return this.itemsById.get(itemId);
+  }
 
-  addNewItemEntry = async (
+  getItemsBySectionId(sectionId: DEX_Section['id']): DEX_Item[] {
+    return this.itemsBySectionId.get(sectionId) ?? [];
+  }
+
+  getOrderedItemIdsBySectionId(sectionId: DEX_Section['id']): DEX_Item['id'][] {
+    return this.getOrderedItemIdsForSection(sectionId);
+  }
+
+  setItems(items: DEX_Item[]) {
+    this.items = items;
+  }
+
+  async addNewItemEntry(
     sectionId: DEX_Section['id']
-  ): Promise<DEX_Item['id'] | undefined> => {
+  ): Promise<DEX_Item['id'] | undefined> {
     const section = this.root.sectionStore.getSectionById(sectionId);
     if (!section) {
       return;
@@ -151,9 +165,9 @@ export class BuilderItemStore {
         this.isAddingLink = false;
       }
     }
-  };
+  }
 
-  removeItem = async (itemId: DEX_Item['id']) => {
+  async removeItem(itemId: DEX_Item['id']) {
     const item = this.items.find((item) => item.id === itemId);
     if (!item) {
       return;
@@ -189,9 +203,9 @@ export class BuilderItemStore {
         });
       });
     }
-  };
+  }
 
-  reOrderSectionItems = async (itemIds: DEX_Item['id'][]) => {
+  async reOrderSectionItems(itemIds: DEX_Item['id'][]) {
     if (itemIds.length === 0) {
       return;
     }
@@ -246,5 +260,5 @@ export class BuilderItemStore {
         });
       }
     }
-  };
+  }
 }

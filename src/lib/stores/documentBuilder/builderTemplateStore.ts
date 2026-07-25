@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, reaction, runInAction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import {
   getLinksSectionEntries,
@@ -78,13 +78,34 @@ export class BuilderTemplateStore {
 
   private disposers: (() => void)[] = [];
   private isActive = false;
+  private readonly getSortedSectionItemsForSection = computedFn(
+    (sectionId: number) => {
+      return this.root.itemStore
+        .getItemsBySectionId(sectionId)
+        .toSorted(sortByDisplayOrder);
+    }
+  );
+  private readonly getSortedVisibleSections = computedFn(() => {
+    return this.root.sectionStore.sections
+      .filter((section) => !STATIC_SECTIONS.has(section.type))
+      .toSorted(sortByDisplayOrder);
+  });
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable<
+      this,
+      'getSortedSectionItemsForSection' | 'getSortedVisibleSections'
+    >(
+      this,
+      {
+        getSortedSectionItemsForSection: false,
+        getSortedVisibleSections: false,
+      },
+      { autoBind: true }
+    );
   }
 
-  @computed
   get personalDetails() {
     return {
       firstName: this.root.fieldStore.getFieldValueByName(
@@ -111,7 +132,6 @@ export class BuilderTemplateStore {
     };
   }
 
-  @computed
   get summarySection() {
     return {
       sectionName: this.root.sectionStore.getSectionNameByType(
@@ -123,7 +143,6 @@ export class BuilderTemplateStore {
     };
   }
 
-  @computed
   get mappedSections() {
     return this.getSortedSections().map((section) => {
       const metadata = section.metadata.map((m) => ({ ...m }));
@@ -138,7 +157,6 @@ export class BuilderTemplateStore {
     });
   }
 
-  @computed
   get pdfTemplateData() {
     const mappedSections = this.mappedSections;
     const linksSections = mappedSections.filter(
@@ -162,7 +180,6 @@ export class BuilderTemplateStore {
     };
   }
 
-  @computed
   get resumeStats() {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
@@ -250,7 +267,6 @@ export class BuilderTemplateStore {
     };
   }
 
-  @computed
   get atsCompatibility() {
     const { personalDetails, summarySection, sections } = this.pdfTemplateData;
     const keywordSuggestions = this.root.aiSuggestionsStore.keywordSuggestions;
@@ -333,7 +349,7 @@ export class BuilderTemplateStore {
     };
   }
 
-  resetState = () => {
+  resetState() {
     this.debouncedTemplateData = null;
     this.debouncedResumeStats = { score: 0, suggestions: [] };
     this.debouncedATSCompatibility = {
@@ -342,21 +358,17 @@ export class BuilderTemplateStore {
       totalCount: 0,
       keywordCoverage: 0,
     };
-  };
+  }
 
-  private getSortedSectionItems = computedFn((sectionId: number) => {
-    return this.root.itemStore
-      .getItemsBySectionId(sectionId)
-      .toSorted(sortByDisplayOrder);
-  });
+  private getSortedSectionItems(sectionId: number) {
+    return this.getSortedSectionItemsForSection(sectionId);
+  }
 
-  private getSortedSections = computedFn(() => {
-    return this.root.sectionStore.sections
-      .filter((section) => !STATIC_SECTIONS.has(section.type))
-      .toSorted(sortByDisplayOrder);
-  });
+  private getSortedSections() {
+    return this.getSortedVisibleSections();
+  }
 
-  private setupReactions = () => {
+  private setupReactions() {
     const debouncedTemplateUpdate = debounce((data: PdfTemplateData) => {
       runInAction(() => {
         this.debouncedTemplateData = data;
@@ -407,28 +419,28 @@ export class BuilderTemplateStore {
       debouncedTemplateUpdate.cancel();
       debouncedATSCompatibilityUpdate.cancel();
     });
-  };
+  }
 
-  private dispose = () => {
+  private dispose() {
     this.disposers.forEach((dispose) => {
       dispose();
     });
     this.disposers = [];
-  };
+  }
 
-  start = () => {
+  start() {
     if (this.isActive) {
       return;
     }
     this.isActive = true;
     this.setupReactions();
-  };
+  }
 
-  stop = () => {
+  stop() {
     if (!this.isActive) {
       return;
     }
     this.isActive = false;
     this.dispose();
-  };
+  }
 }

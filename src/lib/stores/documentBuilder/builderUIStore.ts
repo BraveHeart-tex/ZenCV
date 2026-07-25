@@ -22,20 +22,29 @@ export class BuilderUIStore {
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
   isMobileTemplateSelectorVisible: boolean = false;
-
-  constructor(root: BuilderRootStore) {
-    this.root = root;
-    makeAutoObservable(this);
-  }
-
-  isItemOpen = computedFn((id: DEX_Item['id']) => {
+  private readonly isItemOpenForItem = computedFn((id: DEX_Item['id']) => {
     return this.collapsedItemId === id;
   });
 
-  getFieldRefByFieldNameAndSection = (
+  constructor(root: BuilderRootStore) {
+    this.root = root;
+    makeAutoObservable<this, 'isItemOpenForItem'>(
+      this,
+      {
+        isItemOpenForItem: false,
+      },
+      { autoBind: true }
+    );
+  }
+
+  isItemOpen(id: DEX_Item['id']) {
+    return this.isItemOpenForItem(id);
+  }
+
+  getFieldRefByFieldNameAndSection(
     fieldName: FieldName,
     sectionType: SectionType
-  ) => {
+  ) {
     const section = this.root.sectionStore.sections.find(
       (s) => s.type === sectionType
     );
@@ -52,9 +61,9 @@ export class BuilderUIStore {
         return this.fieldRefs.get(field.id.toString());
       }
     }
-  };
+  }
 
-  focusFirstFieldInItem = (itemId: DEX_Item['id']) => {
+  focusFirstFieldInItem(itemId: DEX_Item['id']) {
     const item = this.root.itemStore.getItemById(itemId);
 
     if (!item) {
@@ -80,30 +89,30 @@ export class BuilderUIStore {
     requestAnimationFrame(() => {
       element.focus();
     });
-  };
+  }
 
-  setElementRef = (key: string, value: Nullable<HTMLElement>) => {
+  setElementRef(key: string, value: Nullable<HTMLElement>) {
     this.itemRefs.set(key, value);
-  };
+  }
 
-  toggleTemplateSelectorBottomMenu = () => {
+  toggleTemplateSelectorBottomMenu() {
     this.isMobileTemplateSelectorVisible =
       !this.isMobileTemplateSelectorVisible;
-  };
+  }
 
-  setFieldRef = (key: string, value: Nullable<HTMLElement>) => {
+  setFieldRef(key: string, value: Nullable<HTMLElement>) {
     this.fieldRefs.set(key, value);
-  };
+  }
 
-  toggleItem = (itemId: DEX_Item['id']) => {
+  toggleItem(itemId: DEX_Item['id']) {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
-  };
+  }
 
-  resetState = () => {
+  resetState() {
     this.collapsedItemId = null;
     this.itemRefs = new Map();
     this.fieldRefs = new Map();
     this.isMobileTemplateSelectorVisible = false;
     this.currentView = 'builder';
-  };
+  }
 }

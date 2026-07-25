@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, observable, runInAction } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { clientDb } from '@/lib/client-db/clientDb';
@@ -35,23 +35,34 @@ interface AddSectionResult {
 export class BuilderSectionStore {
   root: BuilderRootStore;
   sections: SectionWithParsedMetadata[] = [];
+  private readonly isSectionFixedForSection = computedFn(
+    (sectionId: DEX_Section['id']) => {
+      const section = this.getSectionById(sectionId);
+      return FIXED_SECTIONS.includes(
+        (section?.type ?? '') as (typeof FIXED_SECTIONS)[number]
+      );
+    }
+  );
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable<this, 'isSectionFixedForSection'>(
+      this,
+      {
+        isSectionFixedForSection: false,
+      },
+      { autoBind: true }
+    );
   }
 
-  @computed
   get sectionsByType() {
     return groupBy(this.sections, 'type');
   }
 
-  @computed
   get sectionsById() {
     return new Map(this.sections.map((section) => [section.id, section]));
   }
 
-  @computed
   get sectionsWithItems() {
     return this.sections.map((section) => {
       return {
@@ -61,7 +72,6 @@ export class BuilderSectionStore {
     });
   }
 
-  @computed
   get orderedSectionIds() {
     return this.sections
       .slice()
@@ -69,48 +79,43 @@ export class BuilderSectionStore {
       .map((s) => s.id);
   }
 
-  getSectionById = (sectionId: DEX_Section['id']) => {
+  getSectionById(sectionId: DEX_Section['id']) {
     return this.sectionsById.get(sectionId);
-  };
+  }
 
-  isSectionFixed = computedFn((sectionId: DEX_Section['id']) => {
-    const section = this.getSectionById(sectionId);
-    return FIXED_SECTIONS.includes(
-      (section?.type ?? '') as (typeof FIXED_SECTIONS)[number]
-    );
-  });
+  isSectionFixed(sectionId: DEX_Section['id']) {
+    return this.isSectionFixedForSection(sectionId);
+  }
 
-  getSectionMetadataOptions = (
+  getSectionMetadataOptions(
     sectionId: DEX_Section['id']
-  ): ParsedSectionMetadata[] => {
+  ): ParsedSectionMetadata[] {
     const section = this.getSectionById(sectionId);
     if (!section || !section?.metadata) {
       return [];
     }
     return section?.metadata || [];
-  };
+  }
 
-  getSectionNameByType = (sectionType: SectionType): string => {
+  getSectionNameByType(sectionType: SectionType): string {
     return (
       this.sections.find((section) => section.type === sectionType)?.title || ''
     );
-  };
+  }
 
-  getSectionItemsBySectionType = (type: SectionType) => {
+  getSectionItemsBySectionType(type: SectionType) {
     const section = this.sectionsByType[type]?.[0];
     return section ? this.root.itemStore.getItemsBySectionId(section.id) : [];
-  };
+  }
 
-  setSections = (sections: SectionWithParsedMetadata[]) => {
+  setSections(sections: SectionWithParsedMetadata[]) {
     this.sections = sections.map((s) => ({
       ...s,
       metadata: parseMetadataToObservable(s.metadata),
     }));
-  };
+  }
 
-  reOrderSections = async (
-    sectionIds: DEX_Section['id'][]
-  ): Promise<StoreResult> => {
+  async reOrderSections(sectionIds: DEX_Section['id'][]): Promise<StoreResult> {
     if (sectionIds.length === 0) {
       return { success: false, error: 'No sections to reorder' };
     }
@@ -170,11 +175,11 @@ export class BuilderSectionStore {
       });
       return { success: false, error: 'Failed to reorder sections' };
     }
-  };
+  }
 
-  addNewSection = async (
+  async addNewSection(
     option: Omit<OtherSectionOption, 'icon'>
-  ): Promise<AddSectionResult | undefined> => {
+  ): Promise<AddSectionResult | undefined> {
     const template = getItemInsertTemplate(option.type);
     if (!template) {
       return;
@@ -269,9 +274,9 @@ export class BuilderSectionStore {
       });
       throw error;
     }
-  };
+  }
 
-  removeSection = async (sectionId: DEX_Section['id']) => {
+  async removeSection(sectionId: DEX_Section['id']) {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) {
       return;
@@ -321,9 +326,9 @@ export class BuilderSectionStore {
         });
       });
     }
-  };
+  }
 
-  renameSection = async (sectionId: DEX_Section['id'], value: string) => {
+  async renameSection(sectionId: DEX_Section['id'], value: string) {
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) {
       return;
@@ -345,15 +350,15 @@ export class BuilderSectionStore {
         section.title = prevTitle;
       });
     }
-  };
+  }
 
-  updateSectionMetadata = async (
+  async updateSectionMetadata(
     sectionId: DEX_Section['id'],
     data: {
       key: SectionMetadataKey;
       value: MetadataValue;
     }
-  ) => {
+  ) {
     const section = this.getSectionById(sectionId);
     if (!section) {
       return;
@@ -380,5 +385,5 @@ export class BuilderSectionStore {
       });
       console.error('Error updating section metadata:', error);
     }
-  };
+  }
 }

@@ -14,14 +14,14 @@ export class BuilderJobPostingStore {
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  setJobPosting = (jobPosting: DEX_JobPosting | null) => {
+  setJobPosting(jobPosting: DEX_JobPosting | null) {
     this.jobPosting = jobPosting;
-  };
+  }
 
-  updateJobPosting = async (data: Partial<JobPostingSchema>) => {
+  async updateJobPosting(data: Partial<JobPostingSchema>) {
     if (!this.root.documentStore.document) {
       return {
         success: false,
@@ -55,9 +55,9 @@ export class BuilderJobPostingStore {
           'An error occurred while updating the job posting. Please try again.',
       };
     }
-  };
+  }
 
-  removeJobPosting = async () => {
+  async removeJobPosting() {
     if (!this.root.documentStore.document) {
       return {
         success: false,
@@ -93,9 +93,9 @@ export class BuilderJobPostingStore {
           'An error occurred while removing the job posting. Please try again.',
       };
     }
-  };
+  }
 
-  addJobPosting = async (data: JobPostingSchema) => {
+  async addJobPosting(data: JobPostingSchema) {
     if (!this.root.documentStore.document) {
       return {
         success: false,
@@ -129,5 +129,5 @@ export class BuilderJobPostingStore {
           'An error occurred while adding the job posting. Please try again.',
       };
     }
-  };
+  }
 }

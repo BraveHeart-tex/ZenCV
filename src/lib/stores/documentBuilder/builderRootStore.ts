@@ -33,7 +33,7 @@ export class BuilderRootStore {
     this.jobPostingStore = new BuilderJobPostingStore(this);
   }
 
-  resetState = () => {
+  resetState() {
     this.dispose();
     runInAction(() => {
       this.documentStore.document = null;
@@ -46,21 +46,21 @@ export class BuilderRootStore {
       this.aiSuggestionsStore.resetState();
       this.templateStore.resetState();
     });
-  };
+  }
 
-  startSession = () => {
+  startSession() {
     this.templateStore.start();
     this.aiSuggestionsStore.start();
-  };
+  }
 
-  dispose = () => {
+  dispose() {
     this.templateStore.stop();
     this.aiSuggestionsStore.stop();
-  };
+  }
 
-  hydrateFromBackend = (
+  hydrateFromBackend(
     result: Extract<GetFullDocumentStructureResponse, { success: true }>
-  ) => {
+  ) {
     const { document, sections, items, fields, aiSuggestions, jobPosting } =
       result;
 
@@ -86,7 +86,7 @@ export class BuilderRootStore {
     if (aiSuggestions) {
       this.aiSuggestionsStore.setSuggestions(aiSuggestions);
     }
-  };
+  }
 }
 
 export const builderRootStore = new BuilderRootStore();

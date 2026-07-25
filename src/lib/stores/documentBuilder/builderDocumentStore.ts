@@ -23,18 +23,20 @@ export class BuilderDocumentStore {
 
   constructor(root: BuilderRootStore) {
     this.root = root;
-    makeAutoObservable(this, {
-      root: false,
-    });
+    makeAutoObservable(
+      this,
+      {
+        root: false,
+      },
+      { autoBind: true }
+    );
   }
 
-  setDocument = (document: DEX_Document) => {
+  setDocument(document: DEX_Document) {
     this.document = document;
-  };
+  }
 
-  initializeStore = async (
-    documentId: DEX_Document['id']
-  ): Promise<StoreResult> => {
+  async initializeStore(documentId: DEX_Document['id']): Promise<StoreResult> {
     try {
       const result = await getFullDocumentStructure(documentId);
       if (!result?.success) {
@@ -57,9 +59,9 @@ export class BuilderDocumentStore {
         error: 'An error occurred while initializing the document store.',
       };
     }
-  };
+  }
 
-  renameDocument = async (newValue: string): Promise<StoreResult> => {
+  async renameDocument(newValue: string): Promise<StoreResult> {
     if (!this.document) {
       return {
         success: false,
@@ -88,7 +90,7 @@ export class BuilderDocumentStore {
         error: 'An error occurred while renaming the document.',
       };
     }
-  };
+  }
 
   get accentColor(): string {
     if (!this.document) {
@@ -102,7 +104,7 @@ export class BuilderDocumentStore {
     );
   }
 
-  changeDocumentTemplateType = async (templateType: ResumeTemplate) => {
+  async changeDocumentTemplateType(templateType: ResumeTemplate) {
     if (!this.document || this.document.templateType === templateType) {
       return;
     }
@@ -143,23 +145,23 @@ export class BuilderDocumentStore {
         }
       });
     }
-  };
+  }
 
-  private setTitle = (title: string) => {
+  private setTitle(title: string) {
     if (!this.document) {
       return;
     }
     this.document.title = title;
-  };
+  }
 
-  private setTemplateType = (templateType: ResumeTemplate) => {
+  private setTemplateType(templateType: ResumeTemplate) {
     if (!this.document) {
       return;
     }
     this.document.templateType = templateType;
-  };
+  }
 
-  updateAccentColor = async (color: string): Promise<StoreResult> => {
+  async updateAccentColor(color: string): Promise<StoreResult> {
     if (!this.document) {
       return { success: false, error: 'Document not found.' };
     }
@@ -188,5 +190,5 @@ export class BuilderDocumentStore {
       });
       return { success: false, error: 'Failed to update accent color.' };
     }
-  };
+  }
 }
