@@ -11,34 +11,36 @@ colors:
   night-surface: "hsl(240 3.7% 15.9%)"
   night-muted: "hsl(240 5% 64.9%)"
   signal-red: "hsl(0 85% 50%)"
-  privacy-green: "hsl(142 71% 45%)"
+  privacy-emerald: "oklch(69.6% 0.17 162.48)"
+  selection-blue: "oklch(62.3% 0.214 259.815)"
+  assistant-violet: "oklch(49.6% 0.265 301.924)"
 typography:
   display:
-    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Instrument Sans Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "4.5rem"
     fontWeight: 700
     lineHeight: 1.08
     letterSpacing: "-0.03em"
   headline:
-    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Instrument Sans Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "2.25rem"
     fontWeight: 700
     lineHeight: 1.15
     letterSpacing: "-0.025em"
   title:
-    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Instrument Sans Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1.125rem"
     fontWeight: 600
     lineHeight: 1.25
     letterSpacing: "-0.015em"
   body:
-    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Instrument Sans Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.625
     letterSpacing: "normal"
   label:
-    fontFamily: "Inter Variable, Inter, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Instrument Sans Variable, ui-sans-serif, system-ui, sans-serif"
     fontSize: "0.75rem"
     fontWeight: 600
     lineHeight: 1.25
@@ -62,7 +64,6 @@ components:
   button-primary:
     backgroundColor: "{colors.studio-ink}"
     textColor: "{colors.paper-white}"
-    typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "8px 16px"
     height: "36px"
@@ -75,17 +76,26 @@ components:
   button-outline:
     backgroundColor: "{colors.paper-white}"
     textColor: "{colors.studio-ink}"
-    typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "8px 16px"
+    height: "36px"
+  button-ghost:
+    backgroundColor: "transparent"
+    textColor: "{colors.studio-ink}"
+    rounded: "{rounded.md}"
+    padding: "8px 12px"
     height: "36px"
   input:
     backgroundColor: "transparent"
     textColor: "{colors.studio-ink}"
-    typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "4px 12px"
     height: "36px"
+  metadata-chip:
+    backgroundColor: "{colors.soft-surface}"
+    textColor: "{colors.quiet-slate}"
+    rounded: "{rounded.md}"
+    padding: "2px 6px"
   card:
     backgroundColor: "{colors.paper-white}"
     textColor: "{colors.studio-ink}"
@@ -94,7 +104,6 @@ components:
   navigation-item:
     backgroundColor: "transparent"
     textColor: "{colors.studio-ink}"
-    typography: "{typography.body}"
     rounded: "{rounded.md}"
     padding: "8px"
     height: "32px"
@@ -133,7 +142,12 @@ Studio Ink, Paper White, and Quiet Slate form a low-chroma working palette desig
 
 ### Secondary
 
-- **Privacy Green** (`{colors.privacy-green}`): A sparing trust and local-data signal. It may mark privacy-positive status, but it does not become general navigation or action color.
+- **Privacy Emerald** (`{colors.privacy-emerald}`): A sparing trust, completion, and local-data signal. It marks privacy-positive status and success, but does not become general navigation or action color.
+
+### Tertiary
+
+- **Selection Blue** (`{colors.selection-blue}`): Template selection rings, checkmarks, and selected template labels only.
+- **Assistant Violet** (`{colors.assistant-violet}`): Explicit AI action controls only; keep it compact and flat, never luminous or ambient.
 - **Signal Red** (`{colors.signal-red}`): Destructive actions and validation failures only.
 
 ### Neutral
@@ -156,10 +170,11 @@ Studio Ink, Paper White, and Quiet Slate form a low-chroma working palette desig
 
 ## Typography
 
-**Display Font:** Inter Variable (with Inter and system sans-serif fallbacks)  
-**Body Font:** Inter Variable (with Inter and system sans-serif fallbacks)
+**Display Font:** Instrument Sans Variable (with system sans-serif fallbacks)
 
-**Character:** Inter provides the neutral clarity required by an editor while its variable weights support an editorial jump from restrained UI text to decisive marketing headlines. Hierarchy comes from scale, weight, and spacing—not multiple typefaces.
+**Body Font:** Instrument Sans Variable (with system sans-serif fallbacks)
+
+**Character:** Instrument Sans brings clear, compact utility to the editor while retaining enough warmth and character for decisive marketing headlines. Its variable weights support the system's editorial jump without introducing a second application-shell typeface. Hierarchy comes from scale, weight, and spacing—not multiple font families.
 
 ### Hierarchy
 
@@ -171,7 +186,7 @@ Studio Ink, Paper White, and Quiet Slate form a low-chroma working palette desig
 
 ### Named Rules
 
-**The One Typeface Rule.** Use Inter throughout the application shell; resume templates own their independent print typography.
+**The One Typeface Rule.** Use Instrument Sans throughout the application shell; resume templates own their independent print typography.
 
 **The Editorial Jump Rule.** Large display type is earned by persuasive or orienting moments. Operational screens use compact titles and strong grouping instead.
 
@@ -193,8 +208,8 @@ The system is flat by default. Fine borders, surface tone, and adjacency establi
 
 ### Shadow Vocabulary
 
-- **Control Rest** (`box-shadow: 0 1px 2px rgb(0 0 0 / 0.05)`): Buttons, inputs, switches, and compact bordered controls.
-- **Card Rest** (`box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06)`): Document cards and reusable card containers.
+- **Control Rest** (`box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05)`): Buttons, inputs, switches, and compact bordered controls.
+- **Card Rest** (`box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)`): Document cards and reusable card containers.
 - **State Lift** (`box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)`): Hovered document and template cards.
 - **Overlay** (`box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`): Dialogs, dropdowns, and popovers.
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-07-25T15:25:37Z",
+  "generatedAt": "2026-07-26T08:13:45Z",
   "title": "Design System: ZenCV",
   "extensions": {
     "colorMeta": {
@@ -139,19 +139,49 @@
           "oklch(95% 0.03 25)"
         ]
       },
-      "privacy-green": {
+      "privacy-emerald": {
         "role": "secondary",
-        "displayName": "Privacy Green",
-        "canonical": "hsl(142 71% 45%)",
+        "displayName": "Privacy Emerald",
+        "canonical": "oklch(69.6% 0.17 162.48)",
         "tonalRamp": [
-          "oklch(15% 0.06 150)",
-          "oklch(26% 0.1 150)",
-          "oklch(38% 0.14 150)",
-          "oklch(50% 0.17 150)",
-          "oklch(62% 0.16 150)",
-          "oklch(74% 0.12 150)",
-          "oklch(86% 0.07 150)",
-          "oklch(95% 0.025 150)"
+          "oklch(15% 0.05 162.48)",
+          "oklch(26% 0.08 162.48)",
+          "oklch(38% 0.11 162.48)",
+          "oklch(50% 0.14 162.48)",
+          "oklch(62% 0.17 162.48)",
+          "oklch(74% 0.14 162.48)",
+          "oklch(86% 0.08 162.48)",
+          "oklch(95% 0.03 162.48)"
+        ]
+      },
+      "selection-blue": {
+        "role": "tertiary",
+        "displayName": "Selection Blue",
+        "canonical": "oklch(62.3% 0.214 259.815)",
+        "tonalRamp": [
+          "oklch(15% 0.07 259.815)",
+          "oklch(26% 0.11 259.815)",
+          "oklch(38% 0.15 259.815)",
+          "oklch(50% 0.19 259.815)",
+          "oklch(62.3% 0.214 259.815)",
+          "oklch(74% 0.16 259.815)",
+          "oklch(86% 0.09 259.815)",
+          "oklch(95% 0.035 259.815)"
+        ]
+      },
+      "assistant-violet": {
+        "role": "tertiary",
+        "displayName": "Assistant Violet",
+        "canonical": "oklch(49.6% 0.265 301.924)",
+        "tonalRamp": [
+          "oklch(15% 0.08 301.924)",
+          "oklch(26% 0.13 301.924)",
+          "oklch(38% 0.2 301.924)",
+          "oklch(49.6% 0.265 301.924)",
+          "oklch(62% 0.22 301.924)",
+          "oklch(74% 0.16 301.924)",
+          "oklch(86% 0.09 301.924)",
+          "oklch(95% 0.035 301.924)"
         ]
       }
     },
@@ -180,12 +210,12 @@
     "shadows": [
       {
         "name": "control-rest",
-        "value": "0 1px 2px rgb(0 0 0 / 0.05)",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
         "purpose": "Compact buttons, inputs, switches, and bordered controls."
       },
       {
         "name": "card-rest",
-        "value": "0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06)",
+        "value": "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
         "purpose": "Document cards and reusable card containers."
       },
       {
@@ -214,6 +244,16 @@
         "name": "surface-gentle",
         "value": "300ms var(--ease-out-quart)",
         "purpose": "Marketing and template card hover transitions."
+      },
+      {
+        "name": "image-gentle",
+        "value": "500ms var(--ease-out-quart)",
+        "purpose": "Subtle template-preview image scaling on hover."
+      },
+      {
+        "name": "landing-entrance",
+        "value": "500ms ease",
+        "purpose": "Staggered fade-and-rise entrance for the landing hero, disabled under reduced motion."
       },
       {
         "name": "preview-crossfade",
@@ -261,7 +301,7 @@
       "refersTo": "button-primary",
       "description": "The default high-emphasis action: compact, neutral, and decisive.",
       "html": "<button class=\"ds-btn-primary\">Start building</button>",
-      "css": ".ds-btn-primary { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 0; border-radius: 6px; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: background-color 200ms ease, box-shadow 200ms ease; } .ds-btn-primary:hover { background: color-mix(in hsl, var(--primary, hsl(240 5.9% 10%)) 90%, transparent); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: none; } .ds-btn-primary:disabled { pointer-events: none; opacity: 0.5; }"
+      "css": ".ds-btn-primary { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 0; border-radius: 6px; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); font: 500 14px/1 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background-color 150ms var(--ease-out-quart), box-shadow 150ms var(--ease-out-quart); } .ds-btn-primary:hover { background: color-mix(in hsl, var(--primary, hsl(240 5.9% 10%)) 90%, transparent); } .ds-btn-primary:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-primary:active { box-shadow: none; } .ds-btn-primary:disabled { pointer-events: none; opacity: 0.5; }"
     },
     {
       "name": "Outline Button",
@@ -269,15 +309,15 @@
       "refersTo": "button-outline",
       "description": "A lower-emphasis action that retains a precise structural edge.",
       "html": "<button class=\"ds-btn-outline\">Browse templates</button>",
-      "css": ".ds-btn-outline { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: background-color 200ms ease, color 200ms ease; } .ds-btn-outline:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-outline:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-outline:active { box-shadow: none; } .ds-btn-outline:disabled { pointer-events: none; opacity: 0.5; }"
+      "css": ".ds-btn-outline { height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 16px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: background-color 150ms var(--ease-out-quart), color 150ms var(--ease-out-quart); } .ds-btn-outline:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-outline:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-outline:active { box-shadow: none; } .ds-btn-outline:disabled { pointer-events: none; opacity: 0.5; }"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
-      "refersTo": "button-outline",
+      "refersTo": "button-ghost",
       "description": "A quiet utility action that becomes visible through interaction.",
       "html": "<button class=\"ds-btn-ghost\">Settings</button>",
-      "css": ".ds-btn-ghost { height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease, color 200ms ease; } .ds-btn-ghost:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-ghost:active { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 80%, var(--foreground, hsl(240 10% 3.9%))); } .ds-btn-ghost:disabled { pointer-events: none; opacity: 0.5; }"
+      "css": ".ds-btn-ghost { height: 36px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 500 14px/1 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; transition: background-color 150ms var(--ease-out-quart), color 150ms var(--ease-out-quart); } .ds-btn-ghost:hover { background: var(--accent, hsl(240 4.8% 95.9%)); color: var(--accent-foreground, hsl(240 5.9% 10%)); } .ds-btn-ghost:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-btn-ghost:active { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 80%, var(--foreground, hsl(240 10% 3.9%))); } .ds-btn-ghost:disabled { pointer-events: none; opacity: 0.5; }"
     },
     {
       "name": "Text Input",
@@ -285,7 +325,15 @@
       "refersTo": "input",
       "description": "A compact canvas-matched field with a crisp neutral focus treatment.",
       "html": "<input class=\"ds-input\" value=\"Software Engineer\" aria-label=\"Wanted job title\">",
-      "css": ".ds-input { width: 320px; height: 36px; padding: 4px 12px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 400 14px/1.4 Inter, ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); transition: border-color 200ms ease, box-shadow 200ms ease; } .ds-input::placeholder { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); } .ds-input:hover { border-color: var(--foreground, hsl(240 10% 3.9%)); } .ds-input:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 1px; } .ds-input:disabled { cursor: not-allowed; opacity: 0.5; }"
+      "css": ".ds-input { width: 320px; height: 36px; padding: 4px 12px; border: 1px solid var(--input, hsl(240 5.9% 90%)); border-radius: 6px; background: transparent; color: var(--foreground, hsl(240 10% 3.9%)); font: 400 14px/1.4 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: border-color 150ms ease, box-shadow 150ms ease; } .ds-input::placeholder { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); } .ds-input:hover { border-color: var(--foreground, hsl(240 10% 3.9%)); } .ds-input:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 1px; } .ds-input:disabled { cursor: not-allowed; opacity: 0.5; }"
+    },
+    {
+      "name": "Metadata Chip",
+      "kind": "chip",
+      "refersTo": "metadata-chip",
+      "description": "A compact, gently rounded label for template and local-storage metadata.",
+      "html": "<span class=\"ds-chip\"><span class=\"ds-chip-dot\" aria-hidden=\"true\"></span>Local resume</span>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border: 1px solid color-mix(in hsl, var(--border, hsl(240 5.9% 90%)) 70%, transparent); border-radius: 6px; background: var(--muted, hsl(240 4.8% 95.9%)); color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font: 500 11px/1.25 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; transition: border-color 150ms var(--ease-out-quart), color 150ms var(--ease-out-quart); } .ds-chip:hover { border-color: var(--border, hsl(240 5.9% 90%)); color: var(--foreground, hsl(240 10% 3.9%)); } .ds-chip:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-chip-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--color-emerald-500, oklch(69.6% 0.17 162.48)); }"
     },
     {
       "name": "Document Card",
@@ -293,7 +341,7 @@
       "refersTo": "card",
       "description": "The canonical interactive record card for locally stored resumes.",
       "html": "<article class=\"ds-document-card\"><strong>Software Engineer</strong><span>Senior Engineer at Northstar</span><small>Updated 25/07/2026</small></article>",
-      "css": ".ds-document-card { width: 280px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 12px; background: var(--card, hsl(0 0% 100%)); color: var(--card-foreground, hsl(240 10% 3.9%)); box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06); font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease; } .ds-document-card strong { font-size: 14px; line-height: 1.35; } .ds-document-card span { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; } .ds-document-card small { padding-top: 8px; border-top: 1px solid var(--border, hsl(240 5.9% 90%)); color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; font-variant-numeric: tabular-nums; } .ds-document-card:hover { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 30%, var(--card, hsl(0 0% 100%))); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); } .ds-document-card:focus-within { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-document-card:active { box-shadow: 0 1px 2px rgb(0 0 0 / 0.05); }"
+      "css": ".ds-document-card { width: 280px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 12px; background: var(--card, hsl(0 0% 100%)); color: var(--card-foreground, hsl(240 10% 3.9%)); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); font-family: \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms var(--ease-out-quart), border-color 200ms var(--ease-out-quart), box-shadow 200ms var(--ease-out-quart); } .ds-document-card strong { font-size: 14px; line-height: 1.35; } .ds-document-card span { color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; } .ds-document-card small { padding-top: 8px; border-top: 1px solid var(--border, hsl(240 5.9% 90%)); color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 12px; font-variant-numeric: tabular-nums; } .ds-document-card:hover { background: color-mix(in hsl, var(--accent, hsl(240 4.8% 95.9%)) 30%, var(--card, hsl(0 0% 100%))); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); } .ds-document-card:focus-within { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-document-card:active { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }"
     },
     {
       "name": "Sidebar Navigation Item",
@@ -301,7 +349,7 @@
       "refersTo": "navigation-item",
       "description": "A compact application destination with neutral active-state emphasis.",
       "html": "<a class=\"ds-nav-item\" href=\"#\">Documents</a>",
-      "css": ".ds-nav-item { width: 220px; height: 32px; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; background: transparent; color: var(--sidebar-foreground, hsl(240 5.3% 26.1%)); font: 400 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; text-decoration: none; transition: background-color 200ms linear, color 200ms linear; } .ds-nav-item:hover { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); } .ds-nav-item:focus-visible { outline: 2px solid var(--sidebar-ring, hsl(217.2 91.2% 59.8%)); outline-offset: 1px; } .ds-nav-item:active, .ds-nav-item[aria-current=\"page\"] { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); font-weight: 500; }"
+      "css": ".ds-nav-item { width: 220px; height: 32px; display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 6px; background: transparent; color: var(--sidebar-foreground, hsl(240 5.3% 26.1%)); font: 400 14px/1 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; text-decoration: none; transition: background-color 200ms linear, color 200ms linear; } .ds-nav-item:hover { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); } .ds-nav-item:focus-visible { outline: 1px solid var(--sidebar-ring, hsl(217.2 91.2% 59.8%)); outline-offset: 1px; } .ds-nav-item:active, .ds-nav-item[aria-current=\"page\"] { background: var(--sidebar-accent, hsl(240 4.8% 95.9%)); color: var(--sidebar-accent-foreground, hsl(240 5.9% 10%)); font-weight: 500; }"
     },
     {
       "name": "Dialog",
@@ -309,7 +357,7 @@
       "refersTo": "dialog",
       "description": "A focused overlay for short protected decisions and forms.",
       "html": "<section class=\"ds-dialog\" role=\"dialog\" aria-labelledby=\"ds-dialog-title\"><h2 id=\"ds-dialog-title\">Rename document</h2><p>Choose a clear title for this resume.</p><div><button class=\"ds-dialog-cancel\">Cancel</button><button class=\"ds-dialog-save\">Save</button></div></section>",
-      "css": ".ds-dialog { width: 420px; display: flex; flex-direction: column; gap: 16px; padding: 24px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 8px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-dialog h2 { margin: 0; font-size: 18px; line-height: 1; letter-spacing: -0.015em; } .ds-dialog p { margin: -8px 0 0; color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 14px; } .ds-dialog > div { display: flex; justify-content: flex-end; gap: 8px; } .ds-dialog button { height: 36px; padding: 8px 16px; border-radius: 6px; font: 500 14px/1 Inter, ui-sans-serif, system-ui, sans-serif; transition: background-color 200ms ease; } .ds-dialog-cancel { border: 1px solid var(--input, hsl(240 5.9% 90%)); background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); } .ds-dialog-save { border: 0; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); } .ds-dialog button:hover { filter: brightness(0.94); } .ds-dialog button:focus-visible { outline: 2px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-dialog button:active { transform: translateY(1px); }"
+      "css": ".ds-dialog { width: 420px; display: flex; flex-direction: column; gap: 16px; padding: 24px; border: 1px solid var(--border, hsl(240 5.9% 90%)); border-radius: 8px; background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); font-family: \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; } .ds-dialog h2 { margin: 0; font-size: 18px; line-height: 1; letter-spacing: -0.015em; } .ds-dialog p { margin: -8px 0 0; color: var(--muted-foreground, hsl(240 3.8% 46.1%)); font-size: 14px; } .ds-dialog > div { display: flex; justify-content: flex-end; gap: 8px; } .ds-dialog button { height: 36px; padding: 8px 16px; border-radius: 6px; font: 500 14px/1 \"Instrument Sans Variable\", ui-sans-serif, system-ui, sans-serif; transition: background-color 150ms var(--ease-out-quart); } .ds-dialog-cancel { border: 1px solid var(--input, hsl(240 5.9% 90%)); background: var(--background, hsl(0 0% 100%)); color: var(--foreground, hsl(240 10% 3.9%)); } .ds-dialog-save { border: 0; background: var(--primary, hsl(240 5.9% 10%)); color: var(--primary-foreground, hsl(0 0% 98%)); } .ds-dialog button:hover { filter: brightness(0.94); } .ds-dialog button:focus-visible { outline: 1px solid var(--ring, hsl(240 10% 3.9%)); outline-offset: 2px; } .ds-dialog button:active { transform: translateY(1px); }"
     }
   ],
   "narrative": {
@@ -340,7 +388,7 @@
       },
       {
         "name": "The One Typeface Rule",
-        "body": "Use Inter throughout the application shell; resume templates own their independent print typography.",
+        "body": "Use Instrument Sans throughout the application shell; resume templates own their independent print typography.",
         "section": "typography"
       },
       {
