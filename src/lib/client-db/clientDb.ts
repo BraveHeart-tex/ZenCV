@@ -3,11 +3,11 @@ import type { TemplateSettings } from '../constants/accentColors';
 import { INTERNAL_TEMPLATE_TYPES } from '../stores/documentBuilder/documentBuilder.constants';
 import type { ResumeTemplate } from '../types/documentBuilder.types';
 import type {
-  DEX_AiSuggestions,
   DEX_Document,
   DEX_Field,
   DEX_Item,
-  DEX_JobPosting,
+  DEX_LegacyJobPosting,
+  DEX_LegacySuggestions,
   DEX_Section,
   DEX_Setting,
   EditorPreferences,
@@ -19,8 +19,8 @@ export const clientDb = new Dexie('cv-builder-db') as Dexie & {
   items: EntityTable<DEX_Item, 'id'>;
   fields: EntityTable<DEX_Field, 'id'>;
   settings: EntityTable<DEX_Setting<string>, 'key'>;
-  jobPostings: EntityTable<DEX_JobPosting, 'id'>;
-  aiSuggestions: EntityTable<DEX_AiSuggestions, 'id'>;
+  jobPostings: EntityTable<DEX_LegacyJobPosting, 'id'>;
+  aiSuggestions: EntityTable<DEX_LegacySuggestions, 'id'>;
 };
 
 clientDb.version(1).stores({

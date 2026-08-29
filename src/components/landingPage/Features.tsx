@@ -2,10 +2,8 @@ import {
   ArrowDown,
   Download,
   FileText,
-  FolderArchive,
   Palette,
   ShieldCheck,
-  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/stringUtils';
 
@@ -15,14 +13,7 @@ const features = [
     label: 'Local workspace',
     title: 'Your resume starts and stays in your browser.',
     description:
-      'Create, edit, and export without making an account. Your document data is stored locally unless you choose an AI action.',
-  },
-  {
-    icon: Sparkles,
-    label: 'Opt-in AI',
-    title: 'AI help appears only at the moments you ask for it.',
-    description:
-      'Generate summaries, improve wording, analyze job posts, and get suggestions from explicit actions in the editor.',
+      'Create, edit, and export without making an account. Your document data stays stored locally in your browser.',
   },
   {
     icon: Download,
@@ -80,14 +71,6 @@ export const Features = () => {
               <div className='rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border/70'>
                 Export PDF
               </div>
-            </div>
-
-            <div className='flex items-start gap-3 rounded-lg border border-dashed border-emerald-500/35 bg-emerald-500/8 p-3 text-sm text-emerald-800 dark:text-emerald-200'>
-              <FolderArchive className='mt-0.5 size-4 shrink-0' />
-              <p>
-                AI processing is separate from core editing and only runs after
-                a deliberate AI action.
-              </p>
             </div>
           </div>
         </div>

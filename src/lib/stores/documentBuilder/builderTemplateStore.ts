@@ -52,19 +52,6 @@ const checkSummaryLength = (summary: string) => {
   return sentences.length >= 3 && sentences.length <= 5;
 };
 
-const calculateKeywordCoverage = (content: string, keywords: string[]) => {
-  if (keywords.length === 0) {
-    return 0;
-  }
-
-  const normalizedContent = content.toLowerCase();
-  const matchedKeywords = keywords.filter((keyword) =>
-    normalizedContent.includes(keyword.toLowerCase())
-  );
-
-  return matchedKeywords.length / keywords.length;
-};
-
 export class BuilderTemplateStore {
   root: BuilderRootStore;
   debouncedTemplateData: PdfTemplateData | null = null;
@@ -73,7 +60,6 @@ export class BuilderTemplateStore {
     checks: [],
     passedCount: 0,
     totalCount: 0,
-    keywordCoverage: 0,
   };
 
   private disposers: (() => void)[] = [];
@@ -269,7 +255,6 @@ export class BuilderTemplateStore {
 
   get atsCompatibility() {
     const { personalDetails, summarySection, sections } = this.pdfTemplateData;
-    const keywordSuggestions = this.root.aiSuggestionsStore.keywordSuggestions;
     const workExperienceSections = sections.filter(
       (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
     );
@@ -281,22 +266,6 @@ export class BuilderTemplateStore {
             (field) => field.name === FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
           )?.value;
         })
-    );
-
-    const allResumeText = [
-      personalDetails.jobTitle,
-      summarySection.summary,
-      ...sections.flatMap((section) =>
-        section.items.flatMap((item) => item.fields.map((field) => field.value))
-      ),
-    ]
-      .map((value) => removeHTMLTags(value).toLowerCase().trim())
-      .filter(Boolean)
-      .join(' ');
-
-    const keywordCoverage = calculateKeywordCoverage(
-      allResumeText,
-      keywordSuggestions
     );
 
     const checks = [
@@ -334,18 +303,12 @@ export class BuilderTemplateStore {
           quantifiedAchievementRegex.test(removeHTMLTags(description || ''))
         ),
       },
-      {
-        id: 'keyword_coverage',
-        label: 'Covers 50%+ of job keywords',
-        pass: keywordSuggestions.length > 0 ? keywordCoverage >= 0.5 : false,
-      },
     ];
 
     return {
       checks,
       passedCount: checks.filter((check) => check.pass).length,
       totalCount: checks.length,
-      keywordCoverage,
     };
   }
 
@@ -356,7 +319,6 @@ export class BuilderTemplateStore {
       checks: [],
       passedCount: 0,
       totalCount: 0,
-      keywordCoverage: 0,
     };
   }
 

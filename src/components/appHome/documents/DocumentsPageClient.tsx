@@ -3,7 +3,6 @@ import { FileText, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { clientDb } from '@/lib/client-db/clientDb';
-import type { DEX_JobPosting } from '@/lib/client-db/clientDbSchema';
 import { CreateDocumentDialog } from './CreateDocumentDialog';
 import { DocumentCard } from './DocumentCard';
 
@@ -13,28 +12,7 @@ export const DocumentsPageClient = () => {
 
   const documents = useLiveQuery(
     async () => {
-      const documents = await clientDb.documents.toArray();
-      const jobPostingIds = [
-        ...new Set(
-          documents.map((doc) => doc.jobPostingId).filter((id) => id !== null)
-        ),
-      ];
-      const jobPostingsMap = new Map<DEX_JobPosting['id'], DEX_JobPosting>();
-      if (jobPostingIds.length) {
-        const jobPostings = await clientDb.jobPostings
-          .where('id')
-          .anyOf(jobPostingIds)
-          .toArray();
-        jobPostings.forEach((jp) => {
-          jobPostingsMap.set(jp.id, jp);
-        });
-      }
-      return documents.map((doc) => ({
-        ...doc,
-        jobPosting: doc.jobPostingId
-          ? jobPostingsMap.get(doc.jobPostingId) || null
-          : null,
-      }));
+      return clientDb.documents.toArray();
     },
     [],
     null

@@ -1,5 +1,4 @@
 import type { UpdateSpec } from 'dexie';
-import { getAiSuggestionsByDocumentId } from '@/lib/client-db/aiSuggestionsService';
 import {
   bulkAddFields,
   bulkDeleteFields,
@@ -12,10 +11,6 @@ import {
   getItemIdsBySectionIds,
   getItemsWithSectionIds,
 } from '@/lib/client-db/itemService';
-import {
-  getJobPosting,
-  removeJobPostingByDocumentId,
-} from '@/lib/client-db/jobPostingService';
 import {
   bulkAddSections,
   bulkDeleteSections,
@@ -36,14 +31,12 @@ import type { ResumeTemplate } from '../types/documentBuilder.types';
 import { excludeObjectKeys } from '../utils/objectUtils';
 import { clientDb } from './clientDb';
 import type {
-  DEX_AiSuggestions,
   DEX_Document,
   DEX_Field,
   DEX_InsertDocumentModel,
   DEX_InsertFieldModel,
   DEX_InsertItemModel,
   DEX_Item,
-  DEX_JobPosting,
   DEX_Section,
   SelectField,
 } from './clientDbSchema';
@@ -53,11 +46,9 @@ export type GetFullDocumentStructureResponse =
   | {
       success: true;
       document: DEX_Document;
-      jobPosting: DEX_JobPosting | null;
       sections: DEX_Section[];
       items: DEX_Item[];
       fields: DEX_Field[];
-      aiSuggestions: DEX_AiSuggestions | null;
     };
 
 export async function createDocument(
@@ -145,38 +136,23 @@ export async function getFullDocumentStructure(
 ): Promise<GetFullDocumentStructureResponse> {
   return clientDb.transaction(
     'r',
-    [
-      clientDb.documents,
-      clientDb.sections,
-      clientDb.items,
-      clientDb.fields,
-      clientDb.jobPostings,
-      clientDb.aiSuggestions,
-    ],
+    [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
       const document = await getDocumentById(documentId);
       if (!document) {
         return { success: false, error: 'Document not found.' };
       }
 
-      const [jobPosting, sections, aiSuggestions] = await Promise.all([
-        document.jobPostingId
-          ? getJobPosting(document.jobPostingId)
-          : Promise.resolve(null),
-        getSectionsByDocumentId(document.id),
-        getAiSuggestionsByDocumentId(document.id),
-      ]);
+      const sections = await getSectionsByDocumentId(document.id);
 
       // 3️⃣ Early exit if no sections
       if (!sections.length) {
         return {
           success: true,
           document,
-          jobPosting: jobPosting ?? null,
           sections: [],
           items: [],
           fields: [],
-          aiSuggestions,
         };
       }
 
@@ -187,11 +163,9 @@ export async function getFullDocumentStructure(
         return {
           success: true,
           document,
-          jobPosting: jobPosting ?? null,
           sections,
           items: [],
           fields: [],
-          aiSuggestions,
         };
       }
 
@@ -201,11 +175,9 @@ export async function getFullDocumentStructure(
       return {
         success: true,
         document,
-        jobPosting: jobPosting ?? null,
         sections,
         items,
         fields,
-        aiSuggestions,
       };
     }
   );
@@ -228,14 +200,7 @@ export async function renameDocument(
 export async function deleteDocument(documentId: DEX_Document['id']) {
   return clientDb.transaction(
     'rw',
-    [
-      clientDb.documents,
-      clientDb.sections,
-      clientDb.items,
-      clientDb.fields,
-      clientDb.jobPostings,
-      clientDb.aiSuggestions,
-    ],
+    [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
     async () => {
       await clientDb.documents.delete(documentId);
 
@@ -247,7 +212,6 @@ export async function deleteDocument(documentId: DEX_Document['id']) {
 
       const fieldIds = await getFieldIdsByItemIds(itemIds);
       await bulkDeleteFields(fieldIds);
-      await removeJobPostingByDocumentId(documentId);
     }
   );
 }

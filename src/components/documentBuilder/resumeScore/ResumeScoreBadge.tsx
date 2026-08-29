@@ -21,7 +21,7 @@ export const ResumeScoreBadge = observer(
         >
           {score}%
         </span>
-        {showLabel && !builderRootStore.documentStore.document?.jobPostingId ? (
+        {showLabel ? (
           <span className='text-muted-foreground text-sm font-medium'>
             Your Resume Score
           </span>

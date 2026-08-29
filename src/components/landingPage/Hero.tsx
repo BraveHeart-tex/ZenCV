@@ -57,8 +57,7 @@ export const Hero = () => {
             style={{ animation: 'fadeUp 0.5s 0.2s ease both' }}
           >
             A private-first CV builder with structured editing, live PDF
-            preview, professional templates, and optional AI help when you
-            choose it.
+            preview, and professional templates.
           </p>
 
           <div

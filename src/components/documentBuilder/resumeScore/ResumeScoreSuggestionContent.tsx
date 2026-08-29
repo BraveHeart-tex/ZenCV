@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
-import { AiSuggestionsContent } from '@/components/documentBuilder/aiSuggestions/AiSuggestionsContent';
 import { AtsCompatibilityChecks } from '@/components/documentBuilder/resumeScore/AtsCompatibilityChecks';
 import { ResumeScoreSuggestionItem } from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
@@ -30,7 +29,6 @@ export const ResumeScoreSuggestionContent = observer(
       >
         <div className='py-4'>
           <AtsCompatibilityChecks />
-          <AiSuggestionsContent setOpen={setOpen} />
           {suggestions.length > 0 ? (
             <>
               <SuggestionGroupHeading>

@@ -1,6 +1,5 @@
 // DocumentCard.tsx
 import {
-  BriefcaseBusinessIcon,
   CopyIcon,
   FileSymlink,
   FileText,
@@ -20,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import type { DEX_DocumentWithJobPosting } from '@/lib/client-db/clientDbSchema';
+import type { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import {
   copyDocument,
   deleteDocument,
@@ -32,7 +31,7 @@ import { cn } from '@/lib/utils/stringUtils';
 import { RenameDocumentDialog } from './RenameDocumentDialog';
 
 interface DocumentCardProps {
-  document: DEX_DocumentWithJobPosting;
+  document: DEX_Document;
 }
 
 export const DocumentCard = ({ document }: DocumentCardProps) => {
@@ -170,19 +169,6 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        {document.jobPosting && (
-          <div className='flex items-center gap-1.5 min-w-0'>
-            <div className='shrink-0 bg-muted p-1 rounded-md'>
-              <BriefcaseBusinessIcon className='w-3 h-3 text-muted-foreground' />
-            </div>
-            <span className='text-xs text-muted-foreground truncate'>
-              {document.jobPosting.jobTitle}
-              <span className='text-muted-foreground/50 mx-1'>at</span>
-              {document.jobPosting.companyName}
-            </span>
-          </div>
-        )}
 
         <div className='mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 lg:pt-2'>
           <span className='min-w-0 truncate text-xs tabular-nums text-muted-foreground'>

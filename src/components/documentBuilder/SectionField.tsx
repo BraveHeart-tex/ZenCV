@@ -1,7 +1,6 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useCallback } from 'react';
-import { WantedJobTitleSuggestionPopover } from '@/components/documentBuilder/aiSuggestions/WantedJobTitleSuggestionPopover';
 import { DocumentBuilderSelectInput } from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { BuilderRichTextEditorInput } from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
@@ -14,17 +13,12 @@ import {
   type DEX_Field,
   FIELD_TYPES,
 } from '@/lib/client-db/clientDbSchema';
-import {
-  getFieldHtmlId,
-  getSectionTypeByItemId,
-} from '@/lib/helpers/documentBuilderHelpers';
+import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   FIELD_NAMES,
-  INTERNAL_SECTION_TYPES,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { SectionType } from '@/lib/types/documentBuilder.types';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface SectionFieldProps {
@@ -78,12 +72,6 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
             )}
           >
             <Label htmlFor={htmlInputId}>{field.name}</Label>
-            {field.name === FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE && (
-              <WantedJobTitleSuggestionPopover
-                fieldId={fieldId}
-                value={field.value}
-              />
-            )}
           </div>
           <Input
             id={htmlInputId}
@@ -134,10 +122,6 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <BuilderRichTextEditorInput
             fieldId={fieldId}
             ariaLabelledBy={editorLabelledBy}
-            shouldRenderAiWidget={
-              (getSectionTypeByItemId(field.itemId) as SectionType) ===
-              INTERNAL_SECTION_TYPES.SUMMARY
-            }
           />
         </>
       );

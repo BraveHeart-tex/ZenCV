@@ -1,5 +1,4 @@
 import type { InsertType } from 'dexie';
-import { findValueInItemFields } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { showErrorToast } from '@/components/ui/sonner';
 import {
   CONTAINER_TYPES,
@@ -33,17 +32,13 @@ import {
 import type {
   CollapsibleSectionType,
   FieldInsertTemplate,
-  FieldName,
   FieldValuesForKey,
-  SectionType,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { getDefaultSkillsMetadata } from '../misc/sectionMetadataTemplates';
 import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
-import type { GenerateSummarySchema } from '../validation/generateSummary.schema';
-import type { WorkExperience } from '../validation/workExperience.schema';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id']
@@ -551,143 +546,6 @@ export const downloadPDF = ({
   link.click();
 };
 
-const hasFilledFields = (items: DEX_Item[], fieldNames?: FieldName[]) => {
-  return items.some((item) => {
-    return builderRootStore.fieldStore
-      .getFieldsByItemId(item.id)
-      .some(
-        (field) =>
-          (!fieldNames || fieldNames.includes(field.name)) && field.value
-      );
-  });
-};
-
-export const prepareWorkExperienceEntries =
-  (): GenerateSummarySchema['workExperiences'] => {
-    const workExperienceSection = builderRootStore.sectionStore.sections.find(
-      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
-    );
-
-    if (!workExperienceSection) {
-      return [];
-    }
-
-    const workExperienceItems = builderRootStore.itemStore.getItemsBySectionId(
-      workExperienceSection.id
-    );
-
-    return workExperienceItems.map((item) => {
-      const fields = builderRootStore.fieldStore.getFieldsByItemId(item.id);
-      return {
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.START_DATE
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.END_DATE
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-        ),
-      };
-    });
-  };
-
-export const prepareWorkExperienceEntry = (
-  itemId: DEX_Item['id']
-): WorkExperience | null => {
-  const item = builderRootStore.itemStore.getItemById(itemId);
-  if (!item) {
-    return null;
-  }
-
-  const fields = builderRootStore.fieldStore.getFieldsByItemId(item.id);
-
-  return {
-    jobTitle: findValueInItemFields(
-      fields,
-      FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
-    ),
-    employer: findValueInItemFields(
-      fields,
-      FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
-    ),
-    startDate: findValueInItemFields(
-      fields,
-      FIELD_NAMES.WORK_EXPERIENCE.START_DATE
-    ),
-    endDate: findValueInItemFields(
-      fields,
-      FIELD_NAMES.WORK_EXPERIENCE.END_DATE
-    ),
-    city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-    description: findValueInItemFields(
-      fields,
-      FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-    ),
-  };
-};
-
-export const getWorkExperienceDescriptionField = (
-  itemId: DEX_Item['id']
-): DEX_Field | null => {
-  return (
-    builderRootStore.fieldStore
-      .getFieldsByItemId(itemId)
-      .find(
-        (field) => field.name === FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-      ) || null
-  );
-};
-
-export const getSummaryField = (): DEX_Field | null => {
-  const sectionId = builderRootStore.sectionStore.sections.find(
-    (section) => section.type === INTERNAL_SECTION_TYPES.SUMMARY
-  )?.id;
-
-  if (!sectionId) {
-    return null;
-  }
-
-  const items = builderRootStore.itemStore.getItemsBySectionId(sectionId);
-
-  if (!items.length) {
-    return null;
-  }
-
-  const fields = items.flatMap((item) =>
-    builderRootStore.fieldStore.getFieldsByItemId(item.id)
-  );
-
-  return (
-    fields.find((field) => field.name === FIELD_NAMES.SUMMARY.SUMMARY) || null
-  );
-};
-
-export const setSummaryFieldValue = async (value: string) => {
-  const summaryFieldId = getSummaryField()?.id;
-
-  if (summaryFieldId) {
-    await builderRootStore.fieldStore.setFieldValue(summaryFieldId, value);
-  }
-};
-
-export const getSummaryValue = () => {
-  const summaryField = getSummaryField();
-  return summaryField?.value;
-};
-
 export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
   const item = builderRootStore.itemStore.getItemById(itemId);
   if (!item) {
@@ -697,31 +555,6 @@ export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
   const section = builderRootStore.sectionStore.getSectionById(item?.sectionId);
 
   return section?.type || null;
-};
-
-export const isWorkExperienceIncomplete = (items: DEX_Item[]) => {
-  return !hasFilledFields(items, [
-    FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE,
-    FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION,
-  ]);
-};
-
-export const getWorkExperienceSectionId = () => {
-  return builderRootStore.sectionStore.sections.find(
-    (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
-  )?.id;
-};
-
-export const getOrCreateWorkExperienceItem = async (sectionId: number) => {
-  const items = builderRootStore.sectionStore.getSectionItemsBySectionType(
-    INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
-  );
-
-  if (items.length > 0) {
-    return items[0]?.id;
-  }
-
-  return await builderRootStore.itemStore.addNewItemEntry(sectionId);
 };
 
 export const prepareSectionsInsertData = (
@@ -736,9 +569,3 @@ export const prepareSectionsInsertData = (
     metadata: section?.metadata || '',
     type: section.type,
   }));
-
-export const getKeywordSuggestionScrollEventName = (
-  sectionType: SectionType
-) => {
-  return `SCROLL_TO_KEYWORD_WIDGET_${sectionType}`;
-};

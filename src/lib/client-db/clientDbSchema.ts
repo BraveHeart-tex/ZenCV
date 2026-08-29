@@ -110,28 +110,20 @@ export type DEX_InsertFieldModel = Omit<DEX_Field, 'id'>;
 export interface EditorPreferences {
   askBeforeDeletingItem: boolean;
   askBeforeDeletingSection: boolean;
-  showAiSuggestions: boolean;
 }
 
-type DEX_SettingsKey =
-  | 'language'
-  | 'editorPreferences'
-  | 'customGenerateSummaryPrompt';
+type DEX_SettingsKey = 'language' | 'editorPreferences';
 
 export interface DEX_Setting<T = unknown> {
   key: DEX_SettingsKey;
   value: T;
 }
 
-export interface DEX_JobPosting extends JobPostingSchema {
+export interface DEX_LegacyJobPosting extends JobPostingSchema {
   id: IdType;
 }
 
-export interface DEX_DocumentWithJobPosting extends DEX_Document {
-  jobPosting: DEX_JobPosting | null;
-}
-
-export interface DEX_AiSuggestions {
+export interface DEX_LegacySuggestions {
   id: IdType;
   suggestedJobTitle: string;
   keywordSuggestions: string[];

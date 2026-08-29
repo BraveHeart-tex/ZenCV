@@ -7,7 +7,6 @@ import {
   MAX_VISIBLE_FIELDS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
-import { WorkExperienceBulletWriterWidget } from './aiSuggestions/WorkExperienceBulletWriterWidget';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
 
@@ -38,9 +37,6 @@ const ContainerElement = ({ item }: { item: DEX_Item }) => {
   if (item.containerType === CONTAINER_TYPES.COLLAPSIBLE) {
     return (
       <CollapsibleSectionItemContainer itemId={item.id}>
-        {sectionType === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE ? (
-          <WorkExperienceBulletWriterWidget itemId={item.id} />
-        ) : null}
         {renderFields(fields)}
       </CollapsibleSectionItemContainer>
     );

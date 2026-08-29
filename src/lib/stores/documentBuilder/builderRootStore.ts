@@ -1,8 +1,6 @@
 import { runInAction } from 'mobx';
 import type { GetFullDocumentStructureResponse } from '@/lib/client-db/documentService';
-import { BuilderJobPostingStore } from '@/lib/stores/documentBuilder/builderJobPostingStore';
 import { safeParse } from '@/lib/utils/objectUtils';
-import { BuilderAISuggestionsStore } from './builderAISuggestionsStore';
 import { BuilderDocumentStore } from './builderDocumentStore';
 import { BuilderFieldStore } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
@@ -19,9 +17,6 @@ export class BuilderRootStore {
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
 
-  aiSuggestionsStore: BuilderAISuggestionsStore;
-  jobPostingStore: BuilderJobPostingStore;
-
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
     this.sectionStore = new BuilderSectionStore(this);
@@ -29,8 +24,6 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
-    this.aiSuggestionsStore = new BuilderAISuggestionsStore(this);
-    this.jobPostingStore = new BuilderJobPostingStore(this);
   }
 
   resetState() {
@@ -40,28 +33,23 @@ export class BuilderRootStore {
       this.sectionStore.sections = [];
       this.itemStore.items = [];
       this.fieldStore.clear();
-      this.jobPostingStore.jobPosting = null;
       this.UIStore.resetState();
-      this.aiSuggestionsStore.resetState();
       this.templateStore.resetState();
     });
   }
 
   startSession() {
     this.templateStore.start();
-    this.aiSuggestionsStore.start();
   }
 
   dispose() {
     this.templateStore.stop();
-    this.aiSuggestionsStore.stop();
   }
 
   hydrateFromBackend(
     result: Extract<GetFullDocumentStructureResponse, { success: true }>
   ) {
-    const { document, sections, items, fields, aiSuggestions, jobPosting } =
-      result;
+    const { document, sections, items, fields } = result;
 
     this.documentStore.setDocument(document);
 
@@ -80,11 +68,6 @@ export class BuilderRootStore {
     );
 
     this.fieldStore.setFields(fields);
-    this.jobPostingStore.setJobPosting(jobPosting);
-
-    if (aiSuggestions) {
-      this.aiSuggestionsStore.setSuggestions(aiSuggestions);
-    }
   }
 }
 

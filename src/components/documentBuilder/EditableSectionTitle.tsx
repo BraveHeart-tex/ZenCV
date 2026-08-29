@@ -2,7 +2,6 @@ import { useSortable } from '@dnd-kit/sortable';
 import { GripVertical, TrashIcon } from 'lucide-react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { KeywordSuggestionsWidget } from '@/components/documentBuilder/aiSuggestions/KeywordSuggestionsWidget';
 import { Button } from '@/components/ui/button';
 import { showSuccessToast } from '@/components/ui/sonner';
 import {
@@ -17,7 +16,6 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import {
   DELETABLE_INTERNAL_SECTION_TYPES,
   FIXED_SECTIONS,
-  SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import type { FixedSection } from '@/lib/types/documentBuilder.types';
@@ -91,13 +89,6 @@ export const EditableSectionTitle = observer(
         </h2>
         <div className='flex items-center gap-1'>
           <RenameSectionFormDialog sectionId={sectionId} />
-          {SECTIONS_WITH_KEYWORD_SUGGESTION_WIDGET.has(section.type) ? (
-            <KeywordSuggestionsWidget
-              sectionId={section.id}
-              sectionType={section.type}
-            />
-          ) : null}
-
           {isSectionDeletable && (
             <div className='lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out'>
               <Tooltip>

@@ -6,9 +6,6 @@ import { SuggestionGroupHeading } from './SuggestionGroupHeading';
 export const AtsCompatibilityChecks = observer(() => {
   const atsCompatibility =
     builderRootStore.templateStore.debouncedATSCompatibility;
-  const hasJobKeywordContext =
-    builderRootStore.aiSuggestionsStore.keywordSuggestions.length > 0;
-
   if (atsCompatibility.checks.length === 0) {
     return null;
   }
@@ -16,13 +13,10 @@ export const AtsCompatibilityChecks = observer(() => {
   return (
     <div className='space-y-4 py-4'>
       <div className='space-y-1'>
-        <SuggestionGroupHeading>ATS Compatibility</SuggestionGroupHeading>
+        <SuggestionGroupHeading>Resume checks</SuggestionGroupHeading>
         <p className='text-muted-foreground text-sm'>
           {atsCompatibility.passedCount} of {atsCompatibility.totalCount} checks
           passed
-          {hasJobKeywordContext
-            ? ` · ${Math.round(atsCompatibility.keywordCoverage * 100)}% keyword coverage`
-            : ''}
         </p>
       </div>
 
@@ -42,11 +36,6 @@ export const AtsCompatibilityChecks = observer(() => {
             )}
             <div className='flex-1'>
               <p className='text-sm font-medium'>{check.label}</p>
-              {check.id === 'keyword_coverage' && !hasJobKeywordContext ? (
-                <p className='text-muted-foreground text-xs'>
-                  Add a job posting to measure keyword coverage.
-                </p>
-              ) : null}
             </div>
           </div>
         ))}

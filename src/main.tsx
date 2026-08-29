@@ -1,5 +1,4 @@
 import '@fontsource-variable/instrument-sans';
-import { ClerkProvider } from '@clerk/react';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -34,13 +33,9 @@ window.addEventListener('unhandledrejection', (event) => {
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <GlobalErrorBoundary>
-      <ClerkProvider
-        publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-      >
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ClerkProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </GlobalErrorBoundary>
   </StrictMode>
 );

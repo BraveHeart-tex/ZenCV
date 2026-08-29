@@ -1,9 +1,4 @@
-import {
-  isObservable,
-  isObservableMap,
-  isObservableSet,
-  runInAction,
-} from 'mobx';
+import { isObservable, runInAction } from 'mobx';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
   DEX_Field,
@@ -22,11 +17,9 @@ import {
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from '../documentBuilder.constants';
 import {
-  buildAiSuggestions,
   buildDocument,
   buildField,
   buildItem,
-  buildJobPosting,
   buildParsedSection,
   buildSection,
   createSectionOption,
@@ -53,11 +46,6 @@ const serviceMocks = vi.hoisted(() => ({
   },
   field: {
     updateField: vi.fn(),
-  },
-  jobPosting: {
-    addJobPosting: vi.fn(),
-    removeJobPostingByDocumentId: vi.fn(),
-    updateJobPosting: vi.fn(),
   },
   toast: {
     showErrorToast: vi.fn(),
@@ -167,7 +155,6 @@ vi.mock('@/lib/client-db/documentService', () => serviceMocks.document);
 vi.mock('@/lib/client-db/sectionService', () => serviceMocks.section);
 vi.mock('@/lib/client-db/itemService', () => serviceMocks.item);
 vi.mock('@/lib/client-db/fieldService', () => serviceMocks.field);
-vi.mock('@/lib/client-db/jobPostingService', () => serviceMocks.jobPosting);
 vi.mock('@/components/ui/sonner', () => serviceMocks.toast);
 vi.mock('@/lib/client-db/clientDb', () => ({
   clientDb: clientDbMock.clientDb,
@@ -208,11 +195,6 @@ beforeEach(() => {
   serviceMocks.item.bulkUpdateItems.mockResolvedValue(1);
   serviceMocks.item.deleteItem.mockResolvedValue(undefined);
   serviceMocks.field.updateField.mockResolvedValue(1);
-  serviceMocks.jobPosting.addJobPosting.mockResolvedValue(51);
-  serviceMocks.jobPosting.removeJobPostingByDocumentId.mockResolvedValue(
-    undefined
-  );
-  serviceMocks.jobPosting.updateJobPosting.mockResolvedValue(1);
 });
 
 afterEach(() => {
@@ -231,12 +213,6 @@ describe('BuilderRootStore', () => {
     expect(root.fieldStore.constructor.name).toBe('BuilderFieldStore');
     expect(root.UIStore.constructor.name).toBe('BuilderUIStore');
     expect(root.templateStore.constructor.name).toBe('BuilderTemplateStore');
-    expect(root.aiSuggestionsStore.constructor.name).toBe(
-      'BuilderAISuggestionsStore'
-    );
-    expect(root.jobPostingStore.constructor.name).toBe(
-      'BuilderJobPostingStore'
-    );
   });
 
   it('hydrates backend data sorted by displayOrder and observable metadata', () => {
@@ -264,20 +240,11 @@ describe('BuilderRootStore', () => {
         buildItem({ id: 1, displayOrder: 1 }),
       ],
       fields: [buildField()],
-      aiSuggestions: buildAiSuggestions(),
-      jobPosting: buildJobPosting(),
     });
 
     expect(root.sectionStore.orderedSectionIds).toEqual([1, 2]);
     expect(root.itemStore.items.map((item) => item.id)).toEqual([1, 2]);
     expect(isObservable(root.sectionStore.sections[0].metadata[0])).toBe(true);
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual([
-      'React',
-      'TypeScript',
-    ]);
-    expect(root.jobPostingStore.jobPosting?.jobTitle).toBe(
-      'Senior Product Engineer'
-    );
   });
 
   it('starts and stops reaction-backed stores and resetState clears all stores', async () => {
@@ -301,9 +268,7 @@ describe('BuilderRootStore', () => {
     expect(root.sectionStore.sections).toEqual([]);
     expect(root.itemStore.items).toEqual([]);
     expect(root.fieldStore.fields).toEqual([]);
-    expect(root.jobPostingStore.jobPosting).toBeNull();
     expect(root.UIStore.currentView).toBe(BUILDER_CURRENT_VIEWS.BUILDER);
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual([]);
     expect(root.templateStore.debouncedTemplateData).toBeNull();
   });
 });
@@ -317,8 +282,6 @@ describe('BuilderDocumentStore', () => {
       sections: [buildSection()],
       items: [buildItem()],
       fields: [buildField()],
-      aiSuggestions: null,
-      jobPosting: null,
     });
 
     await expect(root.documentStore.initializeStore(1)).resolves.toEqual({
@@ -773,18 +736,14 @@ describe('BuilderTemplateStore', () => {
     expect(root.templateStore.pdfTemplateData.accentColor).toBe('#10b981');
   });
 
-  it('computes resume score, suggestions, ATS checks, and keyword coverage', () => {
+  it('computes resume score, suggestions, and local resume checks', () => {
     const { root } = hydrateBasicResume();
-    root.aiSuggestionsStore.setJobAnalysisResults({
-      keywordSuggestions: ['React', 'Leadership'],
-      suggestedJobTitle: 'Lead Engineer',
-    });
 
     expect(root.templateStore.resumeStats.score).toBeGreaterThan(0);
     expect(root.templateStore.resumeStats.suggestions.length).toBeGreaterThan(
       0
     );
-    expect(root.templateStore.atsCompatibility.keywordCoverage).toBe(0.5);
+    expect(root.templateStore.atsCompatibility.totalCount).toBe(6);
     expect(root.templateStore.atsCompatibility.passedCount).toBeGreaterThan(0);
   });
 
@@ -815,186 +774,6 @@ describe('BuilderTemplateStore', () => {
     expect(
       root.templateStore.debouncedTemplateData?.personalDetails.firstName
     ).toBe('Grace');
-  });
-});
-
-describe('BuilderAISuggestionsStore', () => {
-  it('sets job analysis and persisted suggestions and reset clears keywords/title/used keywords', () => {
-    const { root } = hydrateBasicResume();
-
-    root.aiSuggestionsStore.setJobAnalysisResults({
-      keywordSuggestions: ['MobX'],
-      suggestedJobTitle: 'Frontend Engineer',
-    });
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual(['MobX']);
-    expect(root.aiSuggestionsStore.suggestedJobTitle).toBe('Frontend Engineer');
-
-    root.aiSuggestionsStore.setSuggestions(
-      buildAiSuggestions({ keywordSuggestions: ['React'] })
-    );
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual(['React']);
-
-    runInAction(() => root.aiSuggestionsStore.usedKeywords.add('React'));
-    root.aiSuggestionsStore.resetState();
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual([]);
-    expect(root.aiSuggestionsStore.suggestedJobTitle).toBe('');
-    expect(root.aiSuggestionsStore.usedKeywords.size).toBe(0);
-    expect(isObservableSet(root.aiSuggestionsStore.usedKeywords)).toBe(true);
-  });
-
-  it('discovers rich-text keyword fields and debounces used keyword detection', async () => {
-    const { root } = hydrateBasicResume();
-    root.aiSuggestionsStore.setJobAnalysisResults({
-      keywordSuggestions: ['React', 'TypeScript'],
-      suggestedJobTitle: 'Engineer',
-    });
-
-    expect(
-      root.aiSuggestionsStore.richTextFieldsWithKeywordChecks.map(
-        (field) => field.id
-      )
-    ).toEqual([6, 7]);
-
-    root.aiSuggestionsStore.start();
-    await root.fieldStore.setFieldValue(
-      7,
-      '<p>React and TypeScript</p>',
-      false
-    );
-    expect(root.aiSuggestionsStore.usedKeywords.size).toBe(0);
-    vi.advanceTimersByTime(500);
-    expect([...root.aiSuggestionsStore.usedKeywords]).toEqual([
-      'React',
-      'TypeScript',
-    ]);
-
-    root.aiSuggestionsStore.stop();
-    await root.fieldStore.setFieldValue(7, '<p>No keywords</p>', false);
-    vi.advanceTimersByTime(500);
-    expect([...root.aiSuggestionsStore.usedKeywords]).toEqual([
-      'React',
-      'TypeScript',
-    ]);
-  });
-
-  it('sets summary suggestions and documents singleton dependency for applying job title', async () => {
-    hydrateBasicResume(builderRootStore);
-    builderRootStore.aiSuggestionsStore.setSummarySuggestion(
-      'Generated summary'
-    );
-    expect(
-      isObservableMap(builderRootStore.aiSuggestionsStore.fieldSuggestions)
-    ).toBe(true);
-    expect(builderRootStore.aiSuggestionsStore.fieldSuggestions.get(6)).toEqual(
-      expect.objectContaining({ value: 'Generated summary' })
-    );
-
-    const localRoot = hydrateBasicResume().root;
-    localRoot.aiSuggestionsStore.setJobAnalysisResults({
-      keywordSuggestions: [],
-      suggestedJobTitle: 'Singleton Title',
-    });
-    await localRoot.aiSuggestionsStore.applySuggestedJobTitle(3);
-    expect(localRoot.fieldStore.getFieldById(3)?.value).toBe(
-      'Product Engineer'
-    );
-    expect(builderRootStore.fieldStore.getFieldById(3)?.value).toBe(
-      'Singleton Title'
-    );
-    expect(localRoot.aiSuggestionsStore.suggestedJobTitle).toBe('');
-  });
-});
-
-describe('BuilderJobPostingStore', () => {
-  it('adds, updates, removes, and clears document/AI state on removal', async () => {
-    const { root } = hydrateBasicResume();
-    root.jobPostingStore.setJobPosting(null);
-    if (root.documentStore.document) {
-      root.documentStore.document.jobPostingId = null;
-    }
-
-    await expect(
-      root.jobPostingStore.addJobPosting(buildJobPosting())
-    ).resolves.toEqual({
-      success: true,
-      message: 'Job posting added successfully.',
-    });
-    expect(root.documentStore.document?.jobPostingId).toBe(51);
-    expect(root.jobPostingStore.jobPosting?.jobTitle).toBe(
-      'Senior Product Engineer'
-    );
-
-    await expect(
-      root.jobPostingStore.updateJobPosting({ jobTitle: 'Staff Engineer' })
-    ).resolves.toEqual({
-      success: true,
-      message: 'Job posting updated successfully.',
-    });
-    expect(root.jobPostingStore.jobPosting?.jobTitle).toBe('Staff Engineer');
-
-    root.aiSuggestionsStore.setJobAnalysisResults({
-      keywordSuggestions: ['React'],
-      suggestedJobTitle: 'Engineer',
-    });
-    await expect(root.jobPostingStore.removeJobPosting()).resolves.toEqual({
-      success: true,
-      message: 'Job posting removed successfully.',
-    });
-    expect(root.documentStore.document?.jobPostingId).toBeNull();
-    expect(root.jobPostingStore.jobPosting).toBeNull();
-    expect(root.aiSuggestionsStore.keywordSuggestions).toEqual([]);
-  });
-
-  it('returns missing document/connection and service failure responses', async () => {
-    const root = createTestRootStore();
-    await expect(
-      root.jobPostingStore.addJobPosting(buildJobPosting())
-    ).resolves.toEqual({
-      success: false,
-      message: 'Document not found.',
-    });
-
-    root.documentStore.setDocument(buildDocument());
-    await expect(
-      root.jobPostingStore.updateJobPosting({ jobTitle: 'x' })
-    ).resolves.toEqual({
-      success: false,
-      message: 'The document has no job posting connection.',
-    });
-    await expect(root.jobPostingStore.removeJobPosting()).resolves.toEqual({
-      success: false,
-      message: 'The document has no job posting connection.',
-    });
-
-    root.jobPostingStore.setJobPosting(buildJobPosting());
-    serviceMocks.jobPosting.updateJobPosting.mockRejectedValue(new Error('no'));
-    await expect(
-      root.jobPostingStore.updateJobPosting({ jobTitle: 'x' })
-    ).resolves.toEqual({
-      success: false,
-      message:
-        'An error occurred while updating the job posting. Please try again.',
-    });
-
-    serviceMocks.jobPosting.addJobPosting.mockRejectedValue(new Error('no'));
-    root.jobPostingStore.setJobPosting(null);
-    await expect(
-      root.jobPostingStore.addJobPosting(buildJobPosting())
-    ).resolves.toEqual({
-      success: false,
-      message:
-        'An error occurred while adding the job posting. Please try again.',
-    });
-
-    serviceMocks.jobPosting.removeJobPostingByDocumentId.mockRejectedValue(
-      new Error('no')
-    );
-    root.jobPostingStore.setJobPosting(buildJobPosting());
-    await expect(root.jobPostingStore.removeJobPosting()).resolves.toEqual({
-      success: false,
-      message:
-        'An error occurred while removing the job posting. Please try again.',
-    });
   });
 });
 

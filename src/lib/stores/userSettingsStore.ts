@@ -9,14 +9,9 @@ interface GeneralSettings {
   language: Language;
 }
 
-interface ModelSettings {
-  customGenerateSummaryPrompt: string;
-}
-
 interface UserSettingsState {
   generalSettings: GeneralSettings;
   editorPreferences: EditorPreferences;
-  modelSettings: ModelSettings;
 }
 
 const defaultSettings: UserSettingsState = {
@@ -26,10 +21,6 @@ const defaultSettings: UserSettingsState = {
   editorPreferences: {
     askBeforeDeletingItem: true,
     askBeforeDeletingSection: true,
-    showAiSuggestions: true,
-  },
-  modelSettings: {
-    customGenerateSummaryPrompt: '',
   },
 };
 
@@ -38,7 +29,6 @@ class UserSettingsStore {
   editorPreferences: EditorPreferences = {
     ...defaultSettings.editorPreferences,
   };
-  modelSettings: ModelSettings = { ...defaultSettings.modelSettings };
 
   constructor() {
     makeAutoObservable(this);
@@ -68,14 +58,17 @@ class UserSettingsStore {
       (partialSettings.language as Language) ??
       defaultSettings.generalSettings.language;
 
+    const storedEditorPreferences = partialSettings.editorPreferences as
+      | Partial<EditorPreferences>
+      | undefined;
     this.editorPreferences = {
-      ...defaultSettings.editorPreferences,
-      ...(partialSettings.editorPreferences as Partial<EditorPreferences>),
+      askBeforeDeletingItem:
+        storedEditorPreferences?.askBeforeDeletingItem ??
+        defaultSettings.editorPreferences.askBeforeDeletingItem,
+      askBeforeDeletingSection:
+        storedEditorPreferences?.askBeforeDeletingSection ??
+        defaultSettings.editorPreferences.askBeforeDeletingSection,
     };
-
-    this.modelSettings.customGenerateSummaryPrompt =
-      (partialSettings.customGenerateSummaryPrompt as string) ??
-      defaultSettings.modelSettings.customGenerateSummaryPrompt;
   }
 }
 

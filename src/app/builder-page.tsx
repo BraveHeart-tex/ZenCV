@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ProtectedServiceDialog } from '@/components/auth/ProtectedServiceDialog';
 import { DocumentBuilderViewToggle } from '@/components/documentBuilder/builderViewOptions/DocumentBuilderViewToggle';
 import { DocumentBuilderClient } from '@/components/documentBuilder/DocumentBuilderClient';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
@@ -9,7 +8,6 @@ import { ResumeOverview } from '@/components/documentBuilder/resumeOverview/Resu
 import { TemplateGallery } from '@/components/documentBuilder/templateGallery/TemplateGallery';
 import { LazyMotionWrapper } from '@/components/ui/LazyMotionWrapper';
 import { showErrorToast } from '@/components/ui/sonner';
-import { BuilderAiSuggestionsProvider } from '@/hooks/useBuilderAiSuggestions';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
@@ -83,20 +81,17 @@ export const BuilderPage = observer(() => {
     hasMountedPreview || view === BUILDER_CURRENT_VIEWS.PREVIEW;
 
   return (
-    <BuilderAiSuggestionsProvider>
-      <LazyMotionWrapper>
-        <div>
-          <ResumeOverview />
-          <DocumentBuilderClient />
-          {shouldMountPreview ? (
-            <Suspense fallback={<PreviewSkeleton />}>
-              <DocumentBuilderPreview />
-            </Suspense>
-          ) : null}
-        </div>
-        <DocumentBuilderViewToggle />
-      </LazyMotionWrapper>
-      <ProtectedServiceDialog />
-    </BuilderAiSuggestionsProvider>
+    <LazyMotionWrapper>
+      <div>
+        <ResumeOverview />
+        <DocumentBuilderClient />
+        {shouldMountPreview ? (
+          <Suspense fallback={<PreviewSkeleton />}>
+            <DocumentBuilderPreview />
+          </Suspense>
+        ) : null}
+      </div>
+      <DocumentBuilderViewToggle />
+    </LazyMotionWrapper>
   );
 });

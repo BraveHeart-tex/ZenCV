@@ -11,8 +11,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils/stringUtils';
-import { DocumentJobPostingIndicator } from '../DocumentJobPostingIndicator';
-import { TailorForJobPostingBanner } from './TailorForJobPostingBanner';
 
 export const ImproveResumeWidget = observer(() => {
   const [open, setOpen] = useState(false);
@@ -48,11 +46,9 @@ export const ImproveResumeWidget = observer(() => {
           <div className='space-y-2'>
             <div className='flex items-center justify-between gap-3'>
               <ResumeScoreBadge />
-              <DocumentJobPostingIndicator />
             </div>
             <ResumeScoreProgressBar />
           </div>
-          <TailorForJobPostingBanner />
           <ResumeScoreSuggestionContent setOpen={setOpen} />
         </div>
       </CollapsibleContent>

@@ -1,10 +1,8 @@
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import type {
-  DEX_AiSuggestions,
   DEX_Document,
   DEX_Field,
   DEX_Item,
-  DEX_JobPosting,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { CONTAINER_TYPES, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
@@ -86,27 +84,6 @@ export const buildField = (
     ...overrides,
   }) as DEX_Field;
 
-export const buildJobPosting = (
-  overrides: Partial<DEX_JobPosting> = {}
-): DEX_JobPosting => ({
-  id: 50,
-  jobTitle: 'Senior Product Engineer',
-  companyName: 'Acme',
-  roleDescription:
-    'Build reliable product experiences with React and TypeScript. Partner with design, product, and engineering teams to improve resume creation workflows, maintain quality, and ship thoughtful user-facing features across the app.',
-  ...overrides,
-});
-
-export const buildAiSuggestions = (
-  overrides: Partial<DEX_AiSuggestions> = {}
-): DEX_AiSuggestions => ({
-  id: 60,
-  documentId: 1,
-  suggestedJobTitle: 'Product Engineer',
-  keywordSuggestions: ['React', 'TypeScript'],
-  ...overrides,
-});
-
 export const hydrateBasicResume = (root = createTestRootStore()) => {
   const document = buildDocument({
     templateType: INTERNAL_TEMPLATE_TYPES.TOKYO,
@@ -115,7 +92,7 @@ export const hydrateBasicResume = (root = createTestRootStore()) => {
         accentColor: '#10b981',
       },
     }),
-    jobPostingId: 50,
+    jobPostingId: null,
   });
 
   const sections = [
@@ -251,8 +228,6 @@ export const hydrateBasicResume = (root = createTestRootStore()) => {
     sections,
     items,
     fields,
-    aiSuggestions: buildAiSuggestions(),
-    jobPosting: buildJobPosting(),
   });
 
   return { root, document, sections, items, fields };
