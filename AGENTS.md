@@ -26,3 +26,13 @@ Read only what the task needs:
 ## Gotchas
 
 - `vite.config.ts` owns manual chunking; preserve lazy boundaries for heavy editor/PDF/AI code.
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs are tracked in GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+This repo uses a single-context domain-doc layout. See `docs/agents/domain.md`.
