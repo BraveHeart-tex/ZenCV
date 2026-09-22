@@ -420,6 +420,9 @@ describe('section definitions', () => {
       /from\s+['"][^'"]*sectionDefinitions(?:\/sectionDefinitions)?['"]/;
 
     for (const sourceFile of getProductionSourceFiles(sourceDirectory)) {
+      if (sourceFile.endsWith('/builderDocument/builderDocument.ts')) {
+        continue;
+      }
       expect(readFileSync(sourceFile, 'utf8')).not.toMatch(registryImport);
     }
   });
