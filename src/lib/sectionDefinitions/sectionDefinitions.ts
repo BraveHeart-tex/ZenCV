@@ -1109,6 +1109,13 @@ export const validateSectionMetadata = (
       );
     }
   }
+  for (const contract of contracts) {
+    if (!seen.has(contract.key)) {
+      problems.push(
+        `section ${definition.key} is missing metadata key: ${contract.key}`
+      );
+    }
+  }
   return problems;
 };
 
