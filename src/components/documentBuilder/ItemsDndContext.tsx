@@ -41,7 +41,7 @@ export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     }
 
     const newItems = arrayMove(items, activeIndex, overIndex);
-    await builderRootStore.itemStore.reOrderSectionItems(newItems);
+    await builderRootStore.reorderItems(newItems);
   });
 
   const sensors = useSensors(

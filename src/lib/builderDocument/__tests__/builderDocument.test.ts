@@ -1,7 +1,6 @@
 import { autorun } from 'mobx';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type {
-  DEX_Document,
   DEX_Field,
   DEX_Item,
   DEX_Section,
@@ -14,11 +13,13 @@ import {
   deleteItem,
 } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
+import { BuilderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   hydrateBuilderDocument,
   type ItemId,
   type PersistedDocumentRecords,
 } from '../builderDocument';
+import { builderDocumentFixture as fixture } from './builderDocumentFixture';
 
 vi.mock('@/lib/client-db/fieldService', () => ({ updateField: vi.fn() }));
 vi.mock('@/lib/client-db/itemService', () => ({
@@ -65,6 +66,90 @@ const commandDocument = (workItems = 1) => {
 };
 
 describe('Builder Document item commands', () => {
+  it('projects user item commands into the existing builder renderer', async () => {
+    const root = new BuilderRootStore();
+    const records = fixture();
+    const workItem = records.items.find(
+      (item) => item.sectionId === 12
+    ) as DEX_Item;
+    const extraItem = { ...workItem, id: 90, displayOrder: 2 };
+    const extraFields = records.fields
+      .filter((field) => field.itemId === workItem.id)
+      .map((field) => ({
+        ...field,
+        id: field.id + 1000,
+        itemId: extraItem.id,
+      }));
+    const completeRecords = {
+      ...records,
+      sections: [...records.sections],
+      items: [...records.items, extraItem],
+      fields: [...records.fields, ...extraFields],
+    };
+    root.hydrateFromBackend({ success: true, ...completeRecords });
+    expect(
+      root.installDocumentModel({ success: true, ...completeRecords })
+    ).toBe(true);
+    const section = root.documentModel?.workExperience;
+    expect(section).toBeDefined();
+    if (!section) {
+      return;
+    }
+    const initialItem = section.items[0];
+    const initialField = root.fieldStore.fieldsByItemId.get(
+      initialItem.id
+    )?.[0];
+    let failDelete: (error: Error) => void = () => {};
+    vi.mocked(deleteItem).mockImplementationOnce(
+      () =>
+        new Promise((_, reject) => {
+          failDelete = reject;
+        })
+    );
+
+    const removal = root.removeItem(initialItem.id);
+    await Promise.resolve();
+    expect(root.itemStore.getItemById(initialItem.id)).toBeUndefined();
+    failDelete(new Error('offline'));
+    expect(await removal).toBe(false);
+    expect(root.itemStore.getItemById(initialItem.id)).toBeDefined();
+    expect(root.fieldStore.fieldsByItemId.get(initialItem.id)?.[0]).toBe(
+      initialField
+    );
+
+    const definitions = Object.values(section.definition.fields);
+    vi.mocked(addItemFromTemplate).mockResolvedValueOnce({
+      item: {
+        id: 99,
+        sectionId: section.id,
+        containerType: 'collapsible',
+        displayOrder: 3,
+      },
+      fields: definitions.map((definition, index) => ({
+        id: 2000 + index,
+        itemId: 99,
+        name: definition.persistedName,
+        type: definition.expectedPersistedType,
+        value: '',
+      })) as DEX_Field[],
+    });
+    expect(await root.addItem(section.id)).toBe(99);
+    expect(root.itemStore.getItemById(99)).toBeDefined();
+    expect(root.fieldStore.getFieldsByItemId(99)).toHaveLength(
+      definitions.length
+    );
+    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(3);
+    expect(await root.reorderItems([99, initialItem.id, extraItem.id])).toBe(
+      true
+    );
+    expect(root.itemStore.getOrderedItemIdsBySectionId(section.id)).toEqual([
+      99,
+      initialItem.id,
+      extraItem.id,
+    ]);
+    root.resetState();
+  });
+
   it('leaves the graph untouched when insertion fails', async () => {
     const document = commandDocument();
     const original = document.workExperience.items[0];
@@ -241,6 +326,32 @@ describe('Builder Document item commands', () => {
     );
   });
 
+  it('keeps ordered item IDs controlled by document commands', () => {
+    const document = commandDocument(2);
+    const section = document.workExperience;
+    const original = section.itemIds;
+
+    expect(Object.isFrozen(original)).toBe(true);
+    expect(() => (original as ItemId[]).reverse()).toThrow();
+    expect(section.itemIds).toEqual(original);
+    expect(section.items.map((item) => item.id)).toEqual(original);
+  });
+
+  it('rolls back when a reorder updates fewer persisted rows than requested', async () => {
+    const document = commandDocument(2);
+    const section = document.workExperience;
+    const [first, second] = section.items;
+    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(1);
+
+    expect(await document.reorderItems(section.id, [second.id, first.id])).toBe(
+      false
+    );
+    expect(section.items).toEqual([first, second]);
+    expect(section.itemIds).toEqual([first.id, second.id]);
+    expect(first.displayOrder).toBe(1);
+    expect(second.displayOrder).toBe(2);
+  });
+
   it('normalizes gapped sibling orders even when the requested order is unchanged', async () => {
     const records = fixture();
     const items = records.items.map((item) =>
@@ -263,55 +374,6 @@ describe('Builder Document item commands', () => {
     ]);
   });
 });
-
-const fixture = (): PersistedDocumentRecords => {
-  const document = {
-    id: 1,
-    title: 'Resume',
-    templateType: 'tokyo',
-    templateSettings: '{}',
-    createdAt: '',
-    updatedAt: '',
-    jobPostingId: null,
-  } as DEX_Document;
-  const keys = ['personalDetails', 'summary', 'workExperience'] as const;
-  const sections: DEX_Section[] = [];
-  const items: DEX_Item[] = [];
-  const fields: DEX_Field[] = [];
-  keys.forEach((key, index) => {
-    const definition = sectionDefinitions[key];
-    const sectionId = index + 10;
-    const itemId = index + 20;
-    sections.push({
-      id: sectionId,
-      documentId: 1,
-      title: definition.label,
-      defaultTitle: definition.label,
-      type: definition.persistedType,
-      displayOrder: index + 1,
-      metadata: '',
-    } as DEX_Section);
-    items.push({
-      id: itemId,
-      sectionId,
-      containerType: definition.expectedContainerType,
-      displayOrder: 1,
-    });
-    Object.values(definition.fields).forEach((field, fieldIndex) => {
-      fields.push({
-        id: index * 100 + fieldIndex + 1,
-        itemId,
-        name: field.persistedName,
-        type: field.expectedPersistedType,
-        value: `value-${field.key}`,
-        ...(field.control === 'select'
-          ? { selectType: 'basic', options: [...field.options] }
-          : {}),
-      } as DEX_Field);
-    });
-  });
-  return { document, sections, items, fields };
-};
 
 const failure = (records: PersistedDocumentRecords) => {
   const result = hydrateBuilderDocument(records);

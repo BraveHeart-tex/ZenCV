@@ -320,6 +320,8 @@ export class BuilderSectionStore {
       this.root.UIStore.toggleItem(result.item.id);
     });
 
+    await this.root.refreshDocumentModel();
+
     return {
       itemId: result.itemId,
       sectionId: result.sectionId,
@@ -370,7 +372,9 @@ export class BuilderSectionStore {
         this.root.itemStore.items = prevItems;
         this.root.fieldStore.fields = prevFields;
       });
+      return;
     }
+    await this.root.refreshDocumentModel();
   }
 
   async renameSection(sectionId: DEX_Section['id'], value: string) {

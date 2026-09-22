@@ -1,5 +1,6 @@
 import { isObservable, runInAction } from 'mobx';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import type {
   DEX_Field,
   DEX_Item,
@@ -276,6 +277,25 @@ describe('BuilderRootStore', () => {
 describe('BuilderDocumentStore', () => {
   it('initializes successfully and starts reactions', async () => {
     const root = createTestRootStore();
+    const records = builderDocumentFixture();
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValue({
+      success: true,
+      document: records.document,
+      sections: [...records.sections],
+      items: [...records.items],
+      fields: [...records.fields],
+    });
+
+    await expect(root.documentStore.initializeStore(1)).resolves.toEqual({
+      success: true,
+    });
+    vi.advanceTimersByTime(TEMPLATE_DATA_DEBOUNCE_MS);
+    expect(root.documentStore.document?.id).toBe(1);
+    expect(root.templateStore.debouncedTemplateData).not.toBeNull();
+  });
+
+  it('rejects an incomplete document before starting a session', async () => {
+    const root = createTestRootStore();
     serviceMocks.document.getFullDocumentStructure.mockResolvedValue({
       success: true,
       document: buildDocument(),
@@ -285,11 +305,11 @@ describe('BuilderDocumentStore', () => {
     });
 
     await expect(root.documentStore.initializeStore(1)).resolves.toEqual({
-      success: true,
+      success: false,
+      error: 'The document contains records the builder cannot load.',
     });
-    vi.advanceTimersByTime(TEMPLATE_DATA_DEBOUNCE_MS);
-    expect(root.documentStore.document?.id).toBe(1);
-    expect(root.templateStore.debouncedTemplateData).not.toBeNull();
+    expect(root.documentModel).toBeNull();
+    expect(root.documentStore.document).toBeNull();
   });
 
   it('returns failure when initialization service fails or throws', async () => {

@@ -81,8 +81,9 @@ export const CollapsibleSectionItemContainer = observer(
         !userSettingsStore.editorPreferences.askBeforeDeletingItem;
 
       if (shouldNotAskForConfirmation) {
-        await builderRootStore.itemStore.removeItem(itemId);
-        showSuccessToast('Entry deleted successfully.');
+        if (await builderRootStore.removeItem(itemId)) {
+          showSuccessToast('Entry deleted successfully.');
+        }
         return;
       }
 
@@ -92,8 +93,9 @@ export const CollapsibleSectionItemContainer = observer(
         confirmText: 'Delete',
         cancelText: 'Cancel',
         onConfirm: async () => {
-          await builderRootStore.itemStore.removeItem(itemId);
-          showSuccessToast('Entry deleted successfully.');
+          if (await builderRootStore.removeItem(itemId)) {
+            showSuccessToast('Entry deleted successfully.');
+          }
 
           runInAction(() => {
             confirmDialogStore.hideDialog();

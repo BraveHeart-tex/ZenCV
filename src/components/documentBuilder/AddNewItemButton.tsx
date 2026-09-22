@@ -13,8 +13,7 @@ interface AddNewItemButtonProps {
 export const AddNewItemButton = observer(
   ({ sectionId }: AddNewItemButtonProps) => {
     const handleAddItem = action(async () => {
-      const itemId =
-        await builderRootStore.itemStore.addNewItemEntry(sectionId);
+      const itemId = await builderRootStore.addItem(sectionId);
       if (!itemId) {
         return;
       }

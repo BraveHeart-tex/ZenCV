@@ -1,8 +1,19 @@
-import { runInAction } from 'mobx';
-import type { GetFullDocumentStructureResponse } from '@/lib/client-db/documentService';
+import { type IReactionDisposer, reaction, runInAction } from 'mobx';
+import {
+  type BuilderDocumentModel,
+  type FieldId,
+  hydrateBuilderDocument,
+  type ItemId,
+  type SectionId,
+} from '@/lib/builderDocument/builderDocument';
+import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
+import {
+  type GetFullDocumentStructureResponse,
+  getFullDocumentStructure,
+} from '@/lib/client-db/documentService';
 import { safeParse } from '@/lib/utils/objectUtils';
 import { BuilderDocumentStore } from './builderDocumentStore';
-import { BuilderFieldStore } from './builderFieldStore';
+import { BuilderFieldStore, FieldModel } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderTemplateStore } from './builderTemplateStore';
@@ -16,6 +27,10 @@ export class BuilderRootStore {
 
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
+  documentModel: BuilderDocumentModel | null = null;
+  private stopItemProjection: IReactionDisposer | null = null;
+  private projectedItems = new Map<number, DEX_Item>();
+  private projectedFields = new Map<number, FieldModel>();
 
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
@@ -29,6 +44,9 @@ export class BuilderRootStore {
   resetState() {
     this.dispose();
     runInAction(() => {
+      this.documentModel = null;
+      this.projectedItems.clear();
+      this.projectedFields.clear();
       this.documentStore.document = null;
       this.sectionStore.sections = [];
       this.itemStore.items = [];
@@ -44,6 +62,164 @@ export class BuilderRootStore {
 
   dispose() {
     this.templateStore.stop();
+    this.stopItemProjection?.();
+    this.stopItemProjection = null;
+  }
+
+  installDocumentModel(
+    records: Extract<GetFullDocumentStructureResponse, { success: true }>,
+    hydrateLegacyStores = false
+  ): boolean {
+    const result = hydrateBuilderDocument(records);
+    if (!result.success) {
+      return false;
+    }
+    if (hydrateLegacyStores) {
+      this.stopItemProjection?.();
+      this.projectedItems.clear();
+      this.projectedFields.clear();
+      this.hydrateFromBackend(records);
+    }
+    this.stopItemProjection?.();
+    this.documentModel = result.document;
+    for (const item of this.itemStore.items) {
+      this.projectedItems.set(item.id, item);
+    }
+    for (const field of this.fieldStore.fields) {
+      this.projectedFields.set(field.id, field);
+    }
+    const model = result.document;
+    this.stopItemProjection = reaction(
+      () =>
+        model.sections.flatMap((section) =>
+          section.items.map((item) => [
+            item.id,
+            item.displayOrder,
+            ...item.fieldIds,
+          ])
+        ),
+      () => this.projectItems(),
+      { fireImmediately: true }
+    );
+    return true;
+  }
+
+  private projectItems(): void {
+    const model = this.documentModel;
+    if (!model) {
+      return;
+    }
+    runInAction(() => {
+      const items: DEX_Item[] = [];
+      const fields: FieldModel[] = [];
+      for (const section of model.sections) {
+        for (const item of section.items) {
+          let projectedItem = this.projectedItems.get(item.id);
+          if (!projectedItem) {
+            projectedItem = {
+              id: item.id,
+              sectionId: item.sectionId,
+              containerType: item.containerType,
+              displayOrder: item.displayOrder,
+            };
+            this.projectedItems.set(item.id, projectedItem);
+          }
+          projectedItem.displayOrder = item.displayOrder;
+          items.push(projectedItem);
+          for (const field of item.editableFields) {
+            let projectedField = this.projectedFields.get(field.id);
+            if (!projectedField) {
+              const definition = Object.values(section.definition.fields).find(
+                (candidate) => candidate.key === field.fieldKey
+              );
+              if (!definition) {
+                throw new Error('Field definition missing during projection');
+              }
+              projectedField = new FieldModel({
+                id: field.id,
+                itemId: item.id,
+                name: definition.persistedName,
+                type: definition.expectedPersistedType,
+                value: field.value,
+                ...(definition.expectedPersistedType === 'select'
+                  ? { selectType: 'basic', options: definition.options ?? null }
+                  : {}),
+              } as DEX_Field);
+              this.projectedFields.set(field.id, projectedField);
+            }
+            fields.push(projectedField);
+          }
+        }
+      }
+      this.itemStore.items = items;
+      this.fieldStore.fields = fields;
+    });
+  }
+
+  async addItem(sectionId: number): Promise<number | undefined> {
+    const itemId = await this.documentModel?.addItem(sectionId as SectionId);
+    if (itemId) {
+      runInAction(() => this.UIStore.toggleItem(itemId));
+    }
+    return itemId;
+  }
+
+  async removeItem(itemId: number): Promise<boolean> {
+    const removed = await this.documentModel?.removeItem(itemId as ItemId);
+    if (removed) {
+      this.projectedItems.delete(itemId);
+      for (const [fieldId, field] of this.projectedFields) {
+        if (field.itemId === itemId) {
+          field.dispose();
+          this.projectedFields.delete(fieldId);
+        }
+      }
+    }
+    return removed ?? false;
+  }
+
+  async reorderItems(itemIds: readonly number[]): Promise<boolean> {
+    if (itemIds.length === 0) {
+      return false;
+    }
+    const sectionId = this.documentModel?.itemsById.get(
+      itemIds[0] as ItemId
+    )?.sectionId;
+    if (!sectionId) {
+      return false;
+    }
+    return (
+      (await this.documentModel?.reorderItems(
+        sectionId,
+        itemIds as ItemId[]
+      )) ?? false
+    );
+  }
+
+  async refreshDocumentModel(): Promise<void> {
+    const documentId = this.documentStore.document?.id;
+    if (!this.documentModel || !documentId) {
+      return;
+    }
+    const records = await getFullDocumentStructure(documentId);
+    if (!records.success || !this.installDocumentModel(records)) {
+      throw new Error('Failed to refresh Builder Document');
+    }
+    const model = this.documentModel;
+    if (!model) {
+      return;
+    }
+    for (const itemId of this.projectedItems.keys()) {
+      if (!model.itemsById.has(itemId as ItemId)) {
+        this.projectedItems.delete(itemId);
+      }
+    }
+    for (const [fieldId, field] of this.projectedFields) {
+      if (!model.fieldsById.has(fieldId as FieldId)) {
+        field.dispose();
+        this.projectedFields.delete(fieldId);
+      }
+    }
   }
 
   hydrateFromBackend(

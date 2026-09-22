@@ -21,7 +21,13 @@ export async function deleteItem(itemId: DEX_Item['id']) {
 export async function bulkUpdateItems(
   keysAndChanges: { key: DEX_Item['id']; changes: UpdateSpec<DEX_Item> }[]
 ) {
-  return clientDb.items.bulkUpdate(keysAndChanges);
+  return clientDb.transaction('rw', clientDb.items, async () => {
+    const updated = await clientDb.items.bulkUpdate(keysAndChanges);
+    if (updated !== keysAndChanges.length) {
+      throw new Error('Some items no longer exist');
+    }
+    return updated;
+  });
 }
 
 export async function addItemFromTemplate(
