@@ -436,6 +436,22 @@ describe('Semantic Field editing', () => {
     expect(field.isDirty).toBe(false);
   });
 
+  it('notifies MobX reactions when a debounced save fails and rolls back', async () => {
+    vi.useFakeTimers();
+    vi.mocked(updateField).mockRejectedValue(new Error('offline'));
+    const { field, item } = roleField();
+    const values: string[] = [];
+    const stop = autorun(() => values.push(item.editableFields[0].value));
+
+    field.setDebounced('Unsaved');
+    await vi.advanceTimersByTimeAsync(400);
+
+    expect(values).toEqual(['value-role', 'Unsaved', 'value-role']);
+    expect(field.isDirty).toBe(false);
+    expect(updateField).toHaveBeenCalledWith(field.id, 'Unsaved');
+    stop();
+  });
+
   it('treats a missing persistence record as a failed commit', async () => {
     vi.mocked(updateField).mockResolvedValue(0);
     const { field } = roleField();
@@ -508,6 +524,32 @@ describe('Semantic Field editing', () => {
     expect(await active).toBe(true);
     expect(await queued).toBe(false);
     expect(updateField).toHaveBeenCalledTimes(1);
+  });
+
+  it('rolls back an active failed write after disposal and notifies MobX reactions', async () => {
+    let rejectSave: (error: Error) => void = () => {};
+    vi.mocked(updateField).mockImplementationOnce(
+      () =>
+        new Promise<number>((_resolve, reject) => {
+          rejectSave = reject;
+        })
+    );
+    const { field, document } = roleField();
+    const values: string[] = [];
+    const stop = autorun(() =>
+      values.push(document.fieldsById.get(field.id)?.value ?? '')
+    );
+
+    field.setDraft('Unsaved');
+    const active = field.commit();
+    await Promise.resolve();
+    field.dispose();
+    rejectSave(new Error('offline'));
+
+    expect(await active).toBe(false);
+    expect(values).toEqual(['value-role', 'Unsaved', 'value-role']);
+    expect(field.isDirty).toBe(false);
+    stop();
   });
 
   it('rolls back pending edits and disposes idempotently without sending them', async () => {
