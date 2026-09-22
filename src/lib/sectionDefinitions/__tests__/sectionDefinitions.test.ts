@@ -85,8 +85,21 @@ describe('section definitions', () => {
     expect(
       validateSectionMetadata(sectionDefinitions.skills, [
         { key: 'showExperienceLevel', label: 'Show level', value: '1' },
+        { key: 'isCommaSeparated', label: 'Comma separated', value: '0' },
       ])
     ).toEqual([]);
+    expect(validateSectionMetadata(sectionDefinitions.skills, [])).toEqual([
+      'section skills is missing metadata key: showExperienceLevel',
+      'section skills is missing metadata key: isCommaSeparated',
+    ]);
+    expect(
+      validateSectionMetadata(sectionDefinitions.skills, [
+        { key: 'showExperienceLevel', label: 'Show level', value: '1' },
+      ])
+    ).toEqual(['section skills is missing metadata key: isCommaSeparated']);
+    expect(validateSectionMetadata(sectionDefinitions.references, [])).toEqual([
+      'section references is missing metadata key: hideReferences',
+    ]);
     expect(validateSectionMetadata(sectionDefinitions.summary, [])).toEqual([]);
     expect(
       validateSectionMetadata(sectionDefinitions.summary, [
