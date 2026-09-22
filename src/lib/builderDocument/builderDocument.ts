@@ -62,7 +62,6 @@ export class SemanticField<
   readonly definition: PublicFieldDefinition<S, K>;
   value: string;
   private persistedValue: string;
-  #persisted: Omit<DEX_Field, 'value'>;
   #version = 0;
   #timer: ReturnType<typeof setTimeout> | null = null;
   #saveTail: Promise<void> = Promise.resolve();
@@ -90,8 +89,6 @@ export class SemanticField<
     >;
     this.value = record.value;
     this.persistedValue = record.value;
-    const { value: _value, ...persisted } = record;
-    this.#persisted = persisted;
     makeObservable<this, 'persistedValue'>(this, {
       value: observable,
       persistedValue: observable,
@@ -189,7 +186,7 @@ export class SemanticField<
         return false;
       }
       try {
-        const updated = await updateField(this.#persisted.id, value);
+        const updated = await updateField(this.id, value);
         if (updated === 0) {
           throw new Error('Field no longer exists');
         }
@@ -199,7 +196,7 @@ export class SemanticField<
         return true;
       } catch {
         runInAction(() => {
-          if (this.#version === version && !this.#disposed) {
+          if (this.#version === version) {
             this.value = this.persistedValue;
           }
         });
