@@ -1,16 +1,24 @@
 import { autorun } from 'mobx';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type {
   DEX_Document,
   DEX_Field,
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
+import { updateField } from '@/lib/client-db/fieldService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import {
   hydrateBuilderDocument,
   type PersistedDocumentRecords,
 } from '../builderDocument';
+
+vi.mock('@/lib/client-db/fieldService', () => ({ updateField: vi.fn() }));
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.mocked(updateField).mockReset();
+});
 
 const fixture = (): PersistedDocumentRecords => {
   const document = {
@@ -370,5 +378,151 @@ describe('Builder Document hydration', () => {
         (diagnostic) => diagnostic.type === 'invalidFieldStructure'
       )
     ).toHaveLength(1);
+  });
+});
+
+describe('Semantic Field editing', () => {
+  const roleField = () => {
+    const result = hydrateBuilderDocument(fixture());
+    if (!result.success) {
+      throw new Error('Fixture failed hydration');
+    }
+    const item = result.document.workExperience.items[0];
+    return { field: item.fields.role, item, document: result.document };
+  };
+
+  it('keeps draft edits observable through typed and generic access without saving', async () => {
+    vi.useFakeTimers();
+    const { field, item, document } = roleField();
+    const values: string[] = [];
+    const stop = autorun(() => values.push(item.editableFields[0].value));
+    field.setDraft('Draft');
+    await vi.runAllTimersAsync();
+    stop();
+    expect(values).toEqual(['value-role', 'Draft']);
+    expect(document.fieldsById.get(field.id)).toBe(field);
+    expect(item.field('role')).toBe(field);
+    expect(updateField).not.toHaveBeenCalled();
+  });
+
+  it('debounces edits and flushes the current value with durable success', async () => {
+    vi.useFakeTimers();
+    vi.mocked(updateField).mockResolvedValue(1);
+    const { field } = roleField();
+    field.setDebounced('First');
+    await vi.advanceTimersByTimeAsync(200);
+    field.setDebounced('Second');
+    await vi.advanceTimersByTimeAsync(399);
+    expect(updateField).not.toHaveBeenCalled();
+    expect(field.value).toBe('Second');
+    expect(await field.flush()).toBe(true);
+    expect(updateField).toHaveBeenCalledTimes(1);
+    expect(updateField).toHaveBeenCalledWith(field.id, 'Second');
+    expect(field.isDirty).toBe(false);
+    await vi.runAllTimersAsync();
+    expect(updateField).toHaveBeenCalledTimes(1);
+  });
+
+  it('commits immediately and rolls back to the latest durable value on failure', async () => {
+    vi.mocked(updateField)
+      .mockResolvedValueOnce(1)
+      .mockRejectedValueOnce(new Error('offline'));
+    const { field } = roleField();
+    field.setDraft('Saved');
+    expect(await field.commit()).toBe(true);
+    field.setDraft('Failed');
+    expect(await field.commit()).toBe(false);
+    expect(field.value).toBe('Saved');
+    expect(field.isDirty).toBe(false);
+  });
+
+  it('treats a missing persistence record as a failed commit', async () => {
+    vi.mocked(updateField).mockResolvedValue(0);
+    const { field } = roleField();
+    field.setDraft('Lost');
+    expect(await field.commit()).toBe(false);
+    expect(field.value).toBe('value-role');
+  });
+
+  it('preserves newer edits when an older save fails and reports flush failure', async () => {
+    let rejectSave: (error: Error) => void = () => {};
+    vi.mocked(updateField)
+      .mockImplementationOnce(
+        () =>
+          new Promise<number>((_resolve, reject) => {
+            rejectSave = reject;
+          })
+      )
+      .mockRejectedValueOnce(new Error('offline'));
+    const { field } = roleField();
+    field.setDraft('Older');
+    const older = field.commit();
+    field.setDraft('Newer');
+    await Promise.resolve();
+    rejectSave(new Error('offline'));
+    expect(await older).toBe(false);
+    expect(field.value).toBe('Newer');
+    expect(await field.flush()).toBe(false);
+    expect(field.value).toBe('value-role');
+  });
+
+  it('rolls a failed newer edit back to an older save that completed meanwhile', async () => {
+    let resolveSave: (value: number) => void = () => {};
+    vi.mocked(updateField)
+      .mockImplementationOnce(
+        () =>
+          new Promise<number>((resolve) => {
+            resolveSave = resolve;
+          })
+      )
+      .mockRejectedValueOnce(new Error('offline'));
+    const { field } = roleField();
+    field.setDraft('Durable');
+    const older = field.commit();
+    await Promise.resolve();
+    field.setDraft('Failed');
+    const newer = field.commit();
+    resolveSave(1);
+    expect(await older).toBe(true);
+    expect(await newer).toBe(false);
+    expect(field.value).toBe('Durable');
+    expect(field.isDirty).toBe(false);
+  });
+
+  it('cancels queued writes on disposal while allowing an active write to settle', async () => {
+    let resolveSave: (value: number) => void = () => {};
+    vi.mocked(updateField).mockImplementationOnce(
+      () =>
+        new Promise<number>((resolve) => {
+          resolveSave = resolve;
+        })
+    );
+    const { field } = roleField();
+    field.setDraft('Started');
+    const active = field.commit();
+    await Promise.resolve();
+    field.setDraft('Queued');
+    const queued = field.commit();
+    field.dispose();
+    resolveSave(1);
+    expect(await active).toBe(true);
+    expect(await queued).toBe(false);
+    expect(updateField).toHaveBeenCalledTimes(1);
+  });
+
+  it('rolls back pending edits and disposes idempotently without sending them', async () => {
+    vi.useFakeTimers();
+    const { field } = roleField();
+    field.setDebounced('Pending');
+    expect(await field.rollback()).toBe(true);
+    expect(field.value).toBe('value-role');
+    field.setDebounced('Discarded');
+    field.dispose();
+    field.dispose();
+    await vi.runAllTimersAsync();
+    expect(updateField).not.toHaveBeenCalled();
+    expect(() => field.setDraft('Too late')).toThrow('disposed');
+    expect(() => field.setDebounced('Too late')).toThrow('disposed');
+    expect(await field.commit()).toBe(false);
   });
 });

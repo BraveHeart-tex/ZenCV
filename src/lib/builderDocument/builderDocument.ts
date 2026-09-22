@@ -1,10 +1,17 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+} from 'mobx';
 import type {
   DEX_Document,
   DEX_Field,
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
+import { updateField } from '@/lib/client-db/fieldService';
 import {
   analyzeItemFields,
   type DefinitionDiagnostic,
@@ -21,6 +28,8 @@ export type DocumentId = number & { readonly __documentId: unique symbol };
 export type SectionId = number & { readonly __sectionId: unique symbol };
 export type ItemId = number & { readonly __itemId: unique symbol };
 export type FieldId = number & { readonly __fieldId: unique symbol };
+
+const FIELD_SAVE_DEBOUNCE_MS = 400;
 
 type AnyFieldKey<S extends SectionKey> = S extends SectionKey
   ? FieldKey<S>
@@ -52,7 +61,14 @@ export class SemanticField<
   readonly fieldKey: K;
   readonly definition: PublicFieldDefinition<S, K>;
   value: string;
-  #persisted: DEX_Field;
+  private persistedValue: string;
+  #persisted: Omit<DEX_Field, 'value'>;
+  #version = 0;
+  #timer: ReturnType<typeof setTimeout> | null = null;
+  #saveTail: Promise<void> = Promise.resolve();
+  #pendingCount = 0;
+  #lastQueued: { version: number; promise: Promise<boolean> } | null = null;
+  #disposed = false;
 
   constructor(
     record: DEX_Field,
@@ -73,11 +89,16 @@ export class SemanticField<
       K
     >;
     this.value = record.value;
-    this.#persisted = { ...record };
-    makeObservable(this, {
+    this.persistedValue = record.value;
+    const { value: _value, ...persisted } = record;
+    this.#persisted = persisted;
+    makeObservable<this, 'persistedValue'>(this, {
       value: observable,
+      persistedValue: observable,
       isDirty: computed,
       setDraft: action,
+      setDebounced: action,
+      rollback: action,
     });
   }
 
@@ -86,11 +107,113 @@ export class SemanticField<
   }
 
   get isDirty(): boolean {
-    return this.value !== this.#persisted.value;
+    return this.value !== this.persistedValue;
   }
 
   setDraft(value: string): void {
+    this.#assertActive();
+    this.#cancelTimer();
     this.value = value;
+    this.#version += 1;
+  }
+
+  setDebounced(value: string): void {
+    this.setDraft(value);
+    this.#timer = setTimeout(() => {
+      this.#timer = null;
+      void this.#queueSave(this.#version, this.value);
+    }, FIELD_SAVE_DEBOUNCE_MS);
+  }
+
+  commit(): Promise<boolean> {
+    if (this.#disposed) {
+      return Promise.resolve(false);
+    }
+    this.#cancelTimer();
+    return this.#queueSave(this.#version, this.value);
+  }
+
+  flush(): Promise<boolean> {
+    if (this.#disposed) {
+      return Promise.resolve(false);
+    }
+    this.#cancelTimer();
+    if (this.#lastQueued?.version === this.#version) {
+      return this.#lastQueued.promise;
+    }
+    if (!this.isDirty && this.#pendingCount === 0) {
+      return Promise.resolve(true);
+    }
+    return this.#queueSave(this.#version, this.value);
+  }
+
+  rollback(): Promise<boolean> {
+    this.#assertActive();
+    this.#cancelTimer();
+    this.value = this.persistedValue;
+    this.#version += 1;
+    if (this.#pendingCount === 0) {
+      return Promise.resolve(true);
+    }
+    return this.#queueSave(this.#version, this.value);
+  }
+
+  dispose(): void {
+    if (this.#disposed) {
+      return;
+    }
+    this.#disposed = true;
+    this.#cancelTimer();
+  }
+
+  #assertActive(): void {
+    if (this.#disposed) {
+      throw new Error('Semantic Field is disposed');
+    }
+  }
+
+  #cancelTimer(): void {
+    if (this.#timer !== null) {
+      clearTimeout(this.#timer);
+      this.#timer = null;
+    }
+  }
+
+  #queueSave(version: number, value: string): Promise<boolean> {
+    if (this.#lastQueued?.version === version) {
+      return this.#lastQueued.promise;
+    }
+    this.#pendingCount += 1;
+    const promise = this.#saveTail.then(async () => {
+      if (this.#disposed) {
+        return false;
+      }
+      try {
+        const updated = await updateField(this.#persisted.id, value);
+        if (updated === 0) {
+          throw new Error('Field no longer exists');
+        }
+        runInAction(() => {
+          this.persistedValue = value;
+        });
+        return true;
+      } catch {
+        runInAction(() => {
+          if (this.#version === version && !this.#disposed) {
+            this.value = this.persistedValue;
+          }
+        });
+        return false;
+      }
+    });
+    this.#saveTail = promise.then(() => {
+      this.#pendingCount -= 1;
+      if (this.#lastQueued?.promise === promise) {
+        this.#lastQueued = null;
+      }
+    });
+    this.#lastQueued = { version, promise };
+    return promise;
   }
 }
 
