@@ -1,14 +1,117 @@
 import { describe, expect, it } from 'vitest';
 import {
+  coursesSectionFields,
+  customSectionFields,
+  educationFields,
+  employmentHistoryFields,
+  hobbiesSectionFields,
+  languagesSectionFields,
+  personalDetailsSectionFields,
+  referencesSectionFields,
+  skillsSectionFields,
+  summarySectionFields,
+  websitesAndLinkFields,
+} from '@/lib/misc/fieldTemplates';
+import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import {
   analyzeItemFields,
   createSectionDefinitionRegistry,
   getSectionDefinition,
   InvalidSectionDefinitionsError,
   resolveFieldDefinition,
   resolveSectionDefinition,
+  sectionDefinitions,
 } from '../sectionDefinitions';
 
 describe('section definitions', () => {
+  it('characterizes every current section and field template exactly', () => {
+    const expectedTemplates = [
+      [
+        'personalDetails',
+        INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+        personalDetailsSectionFields,
+      ],
+      ['summary', INTERNAL_SECTION_TYPES.SUMMARY, summarySectionFields],
+      [
+        'workExperience',
+        INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+        employmentHistoryFields,
+      ],
+      ['education', INTERNAL_SECTION_TYPES.EDUCATION, educationFields],
+      [
+        'websitesSocialLinks',
+        INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+        websitesAndLinkFields,
+      ],
+      ['skills', INTERNAL_SECTION_TYPES.SKILLS, skillsSectionFields],
+      ['custom', INTERNAL_SECTION_TYPES.CUSTOM, customSectionFields],
+      [
+        'internships',
+        INTERNAL_SECTION_TYPES.INTERNSHIPS,
+        employmentHistoryFields,
+      ],
+      ['hobbies', INTERNAL_SECTION_TYPES.HOBBIES, hobbiesSectionFields],
+      [
+        'references',
+        INTERNAL_SECTION_TYPES.REFERENCES,
+        referencesSectionFields,
+      ],
+      ['courses', INTERNAL_SECTION_TYPES.COURSES, coursesSectionFields],
+      ['languages', INTERNAL_SECTION_TYPES.LANGUAGES, languagesSectionFields],
+    ] as const;
+
+    expect(Object.keys(sectionDefinitions)).toEqual(
+      expectedTemplates.map(([key]) => key)
+    );
+
+    for (const [key, persistedType, template] of expectedTemplates) {
+      const definition = sectionDefinitions[key];
+
+      expect(definition.persistedType).toBe(persistedType);
+      expect(Object.values(definition.fields)).toHaveLength(template.length);
+      expect(Object.values(definition.fields)).toEqual(
+        expect.arrayContaining(
+          template.map((field, order) =>
+            expect.objectContaining({
+              persistedName: field.name,
+              expectedPersistedType: field.type,
+              order,
+              options:
+                field.type === 'select' && 'options' in field
+                  ? field.options
+                  : undefined,
+              placeholder:
+                field.type === 'textarea' ? field.placeholder : undefined,
+              richText:
+                field.type === 'rich-text'
+                  ? field.placeholder
+                    ? expect.objectContaining({ guidance: field.placeholder })
+                    : expect.objectContaining({
+                        characterCounter: expect.any(Boolean),
+                      })
+                  : undefined,
+            })
+          )
+        )
+      );
+    }
+
+    expect(sectionDefinitions.custom.fields.description.richText).toEqual({
+      characterCounter: false,
+    });
+  });
+
+  it('keeps shared persisted field names distinct within their sections', () => {
+    expect(resolveFieldDefinition('workExperience', 'Job Title')?.key).toBe(
+      'role'
+    );
+    expect(resolveFieldDefinition('internships', 'Job Title')?.key).toBe(
+      'role'
+    );
+    expect(resolveFieldDefinition('education', 'City')?.key).toBe('city');
+    expect(resolveFieldDefinition('custom', 'City')?.key).toBe('city');
+  });
+
   it('resolves the Work Experience definition and its current persisted tokens', () => {
     const definition = getSectionDefinition('workExperience');
 
