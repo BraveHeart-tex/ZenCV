@@ -23,7 +23,9 @@ import {
   InvalidSectionDefinitionsError,
   resolveFieldDefinition,
   resolveSectionDefinition,
+  type SectionDefinitionInput,
   sectionDefinitions,
+  validateSectionMetadata,
 } from '../sectionDefinitions';
 
 const sourceDirectory = join(
@@ -45,6 +47,111 @@ const getProductionSourceFiles = (directory: string): string[] =>
   });
 
 describe('section definitions', () => {
+  it('declares the Section and Item Cardinality and persisted container type', () => {
+    const expected = {
+      personalDetails: ['required-one', 1, 1, 'static'],
+      summary: ['required-one', 1, 1, 'static'],
+      workExperience: ['required-one', 1, undefined, 'collapsible'],
+      education: ['optional-one', 1, undefined, 'collapsible'],
+      websitesSocialLinks: ['optional-one', 0, 4, 'collapsible'],
+      skills: ['optional-one', 1, undefined, 'collapsible'],
+      custom: ['many', 1, undefined, 'collapsible'],
+      internships: ['optional-one', 1, undefined, 'collapsible'],
+      hobbies: ['optional-one', 1, 1, 'static'],
+      references: ['optional-one', 1, undefined, 'collapsible'],
+      courses: ['optional-one', 1, undefined, 'collapsible'],
+      languages: ['optional-one', 1, undefined, 'collapsible'],
+    } as const;
+
+    for (const [
+      key,
+      [sectionCardinality, min, max, containerType],
+    ] of Object.entries(expected)) {
+      const definition = sectionDefinitions[key as keyof typeof expected];
+      expect(definition.sectionCardinality).toBe(sectionCardinality);
+      expect(definition.itemCardinality).toEqual({ min, ...(max && { max }) });
+      expect(definition.expectedContainerType).toBe(containerType);
+    }
+  });
+
+  it('validates declared metadata and rejects metadata elsewhere', () => {
+    expect(sectionDefinitions.skills.metadata).toEqual([
+      { key: 'showExperienceLevel', allowedValues: ['0', '1'] },
+      { key: 'isCommaSeparated', allowedValues: ['0', '1'] },
+    ]);
+    expect(sectionDefinitions.references.metadata).toEqual([
+      { key: 'hideReferences', allowedValues: ['0', '1'] },
+    ]);
+    expect(
+      validateSectionMetadata(sectionDefinitions.skills, [
+        { key: 'showExperienceLevel', label: 'Show level', value: '1' },
+      ])
+    ).toEqual([]);
+    expect(validateSectionMetadata(sectionDefinitions.summary, [])).toEqual([]);
+    expect(
+      validateSectionMetadata(sectionDefinitions.summary, [
+        { key: 'unexpected', label: 'Unexpected', value: '1' },
+      ])
+    ).toEqual(['section summary does not allow metadata']);
+    expect(
+      validateSectionMetadata(sectionDefinitions.references, [
+        { key: 'hideReferences', label: 'Hide', value: 'bad' },
+        { key: 'hideReferences', label: '', value: '1' },
+        { key: 'unknown', label: 'Unknown', value: '1' },
+      ])
+    ).toEqual([
+      'section references metadata hideReferences has invalid value',
+      'section references has duplicate metadata key: hideReferences',
+      'section references metadata hideReferences has invalid label',
+      'section references has unknown metadata key: unknown',
+    ]);
+  });
+
+  it('reports every invalid runtime declaration in stable order', () => {
+    const bad = {
+      key: 'broken',
+      persistedType: 'broken',
+      label: 'Broken',
+      sectionCardinality: 'invalid',
+      itemCardinality: { min: 2, max: 1 },
+      expectedContainerType: 'invalid',
+      metadata: [
+        { key: '', allowedValues: [] },
+        { key: 'repeated', allowedValues: ['0', '0'] },
+        { key: 'repeated', allowedValues: ['0', '1'] },
+      ],
+      initialFocusFieldKey: 'name',
+      fields: [
+        {
+          key: 'name',
+          persistedName: 'Name',
+          label: 'Name',
+          expectedPersistedType: 'string',
+          control: 'text',
+          order: 0,
+          visibility: 'primary',
+          width: 'full',
+        },
+      ],
+    } as unknown as SectionDefinitionInput;
+
+    try {
+      createSectionDefinitionRegistry([bad]);
+      throw new Error('expected invalid definitions');
+    } catch (error) {
+      expect(error).toBeInstanceOf(InvalidSectionDefinitionsError);
+      expect((error as InvalidSectionDefinitionsError).problems).toEqual([
+        'section broken has invalid section cardinality',
+        'section broken has invalid item cardinality',
+        'section broken has invalid container type',
+        'section broken has an empty metadata key',
+        'section broken metadata <empty metadata key> has invalid allowed values',
+        'section broken metadata repeated has invalid allowed values',
+        'section broken has duplicate metadata key: repeated',
+      ]);
+    }
+  });
+
   it('characterizes every current section and field template exactly', () => {
     const expectedTemplates = [
       [
@@ -174,6 +281,11 @@ describe('section definitions', () => {
     expect(Object.isFrozen(definition)).toBe(true);
     expect(Object.isFrozen(definition.fields)).toBe(true);
     expect(Object.isFrozen(definition.fields.description.richText)).toBe(true);
+    expect(Object.isFrozen(definition.itemCardinality)).toBe(true);
+    expect(Object.isFrozen(sectionDefinitions.skills.metadata)).toBe(true);
+    expect(
+      Object.isFrozen(sectionDefinitions.skills.metadata[0].allowedValues)
+    ).toBe(true);
   });
 
   it('analyzes fields by explicit definition order instead of input position', () => {
@@ -323,6 +435,9 @@ describe('section definitions', () => {
           key: '',
           persistedType: '',
           label: 'Broken',
+          sectionCardinality: 'required-one',
+          itemCardinality: { min: 1, max: 1 },
+          expectedContainerType: 'static',
           initialFocusFieldKey: 'missing',
           fields: [
             {
@@ -351,6 +466,9 @@ describe('section definitions', () => {
           key: '',
           persistedType: '',
           label: 'Also broken',
+          sectionCardinality: 'required-one',
+          itemCardinality: { min: 1, max: 1 },
+          expectedContainerType: 'static',
           initialFocusFieldKey: 'missing',
           fields: [],
         },
@@ -363,6 +481,9 @@ describe('section definitions', () => {
           key: 'duplicate',
           persistedType: 'duplicate',
           label: 'Duplicate',
+          sectionCardinality: 'required-one',
+          itemCardinality: { min: 1, max: 1 },
+          expectedContainerType: 'static',
           initialFocusFieldKey: 'date',
           fields: [
             {
@@ -386,6 +507,9 @@ describe('section definitions', () => {
           key: 'duplicate',
           persistedType: 'duplicate',
           label: 'Duplicate',
+          sectionCardinality: 'required-one',
+          itemCardinality: { min: 1, max: 1 },
+          expectedContainerType: 'static',
           initialFocusFieldKey: 'date',
           fields: [
             {

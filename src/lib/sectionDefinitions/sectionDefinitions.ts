@@ -51,8 +51,17 @@ export interface SectionDefinitionInput {
   key: string;
   persistedType: string;
   label: string;
+  sectionCardinality: 'required-one' | 'optional-one' | 'many';
+  itemCardinality: { min: number; max?: number };
+  expectedContainerType: 'static' | 'collapsible';
+  metadata?: readonly MetadataDefinitionInput[];
   initialFocusFieldKey: string;
   fields: readonly FieldDefinitionInput[];
+}
+
+export interface MetadataDefinitionInput {
+  key: string;
+  allowedValues: readonly string[];
 }
 
 type SectionRegistry<Entry extends SectionDefinitionInput> = DeepReadonly<
@@ -129,6 +138,67 @@ const validateRegistry = (entries: readonly SectionDefinitionInput[]) => {
 
     if (!section.label) {
       problems.push(`section ${sectionContext} has an empty section label`);
+    }
+    if (
+      !['required-one', 'optional-one', 'many'].includes(
+        section.sectionCardinality
+      )
+    ) {
+      problems.push(
+        `section ${sectionContext} has invalid section cardinality`
+      );
+    }
+    if (
+      !section.itemCardinality ||
+      !Number.isInteger(section.itemCardinality.min) ||
+      section.itemCardinality.min < 0 ||
+      (section.itemCardinality.max !== undefined &&
+        (!Number.isInteger(section.itemCardinality.max) ||
+          section.itemCardinality.max < section.itemCardinality.min))
+    ) {
+      problems.push(`section ${sectionContext} has invalid item cardinality`);
+    }
+    if (!['static', 'collapsible'].includes(section.expectedContainerType)) {
+      problems.push(`section ${sectionContext} has invalid container type`);
+    }
+    if (section.metadata !== undefined) {
+      if (!Array.isArray(section.metadata) || section.metadata.length === 0) {
+        problems.push(
+          `section ${sectionContext} has an empty metadata contract`
+        );
+      } else {
+        const metadataKeys = new Set<string>();
+        for (const entry of section.metadata) {
+          if (!entry || typeof entry !== 'object') {
+            problems.push(
+              `section ${sectionContext} has invalid metadata entry`
+            );
+            continue;
+          }
+          if (typeof entry.key !== 'string' || !entry.key) {
+            problems.push(
+              `section ${sectionContext} has an empty metadata key`
+            );
+          } else if (metadataKeys.has(entry.key)) {
+            problems.push(
+              `section ${sectionContext} has duplicate metadata key: ${entry.key}`
+            );
+          }
+          metadataKeys.add(entry.key);
+          if (
+            !Array.isArray(entry.allowedValues) ||
+            entry.allowedValues.length === 0 ||
+            entry.allowedValues.some(
+              (value: string) => typeof value !== 'string' || !value
+            ) ||
+            new Set(entry.allowedValues).size !== entry.allowedValues.length
+          ) {
+            problems.push(
+              `section ${sectionContext} metadata ${entry.key || '<empty metadata key>'} has invalid allowed values`
+            );
+          }
+        }
+      }
     }
     if (section.fields.length === 0) {
       problems.push(`section ${sectionContext} must define at least one field`);
@@ -261,6 +331,11 @@ export const createSectionDefinitionRegistry = <
       section.key,
       {
         ...section,
+        itemCardinality: { ...section.itemCardinality },
+        metadata: section.metadata?.map((entry) => ({
+          key: entry.key,
+          allowedValues: [...entry.allowedValues],
+        })),
         fields: Object.fromEntries(
           section.fields.map((field) => [
             field.key,
@@ -284,6 +359,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'personalDetails',
     persistedType: 'personal-details',
+    sectionCardinality: 'required-one',
+    itemCardinality: { min: 1, max: 1 },
+    expectedContainerType: 'static',
     label: 'Personal Details',
     initialFocusFieldKey: 'wantedJobTitle',
     fields: [
@@ -372,6 +450,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'summary',
     persistedType: 'summary',
+    sectionCardinality: 'required-one',
+    itemCardinality: { min: 1, max: 1 },
+    expectedContainerType: 'static',
     label: 'Summary',
     initialFocusFieldKey: 'summary',
     fields: [
@@ -395,6 +476,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'workExperience',
     persistedType: 'work-experience',
+    sectionCardinality: 'required-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Work Experience',
     initialFocusFieldKey: 'role',
     fields: [
@@ -478,6 +562,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'education',
     persistedType: 'education',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Education',
     initialFocusFieldKey: 'school',
     fields: [
@@ -553,6 +640,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'websitesSocialLinks',
     persistedType: 'websites-social-links',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 0, max: 4 },
+    expectedContainerType: 'collapsible',
     label: 'Links',
     initialFocusFieldKey: 'label',
     fields: [
@@ -581,6 +671,13 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'skills',
     persistedType: 'skills',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
+    metadata: [
+      { key: 'showExperienceLevel', allowedValues: ['0', '1'] },
+      { key: 'isCommaSeparated', allowedValues: ['0', '1'] },
+    ],
     label: 'Skills',
     initialFocusFieldKey: 'skill',
     fields: [
@@ -610,6 +707,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'custom',
     persistedType: 'custom',
+    sectionCardinality: 'many',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Custom Section',
     initialFocusFieldKey: 'activityName',
     fields: [
@@ -671,6 +771,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'internships',
     persistedType: 'internships',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Internships',
     initialFocusFieldKey: 'role',
     fields: [
@@ -746,6 +849,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'hobbies',
     persistedType: 'hobbies',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1, max: 1 },
+    expectedContainerType: 'static',
     label: 'Hobbies',
     initialFocusFieldKey: 'whatYouLike',
     fields: [
@@ -765,6 +871,10 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'references',
     persistedType: 'references',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
+    metadata: [{ key: 'hideReferences', allowedValues: ['0', '1'] }],
     label: 'References',
     initialFocusFieldKey: 'referentFullName',
     fields: [
@@ -813,6 +923,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'courses',
     persistedType: 'courses',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Courses',
     initialFocusFieldKey: 'course',
     fields: [
@@ -863,6 +976,9 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
   {
     key: 'languages',
     persistedType: 'languages',
+    sectionCardinality: 'optional-one',
+    itemCardinality: { min: 1 },
+    expectedContainerType: 'collapsible',
     label: 'Languages',
     initialFocusFieldKey: 'language',
     fields: [
@@ -941,6 +1057,60 @@ export const resolveFieldDefinition = <Section extends SectionKey>(
   Object.values(sectionDefinitions[sectionKey].fields).find(
     (field) => field.persistedName === persistedName
   ) as FieldDefinition<Section> | undefined;
+
+export const validateSectionMetadata = (
+  definition: SectionDefinition,
+  metadata: unknown
+): readonly string[] => {
+  if (!Array.isArray(metadata)) {
+    return ['metadata must be an array'];
+  }
+  const contracts = 'metadata' in definition ? definition.metadata : undefined;
+  if (!contracts) {
+    return metadata.length === 0
+      ? []
+      : [`section ${definition.key} does not allow metadata`];
+  }
+
+  const problems: string[] = [];
+  const seen = new Set<string>();
+  for (const [index, entry] of metadata.entries()) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      problems.push(`metadata entry ${index} must be an object`);
+      continue;
+    }
+    const record = entry as Record<string, unknown>;
+    const key = record.key;
+    if (typeof key !== 'string') {
+      problems.push(`metadata entry ${index} must have a string key`);
+      continue;
+    }
+    const contract = contracts.find((item) => item.key === key);
+    if (!contract) {
+      problems.push(
+        `section ${definition.key} has unknown metadata key: ${key}`
+      );
+      continue;
+    }
+    if (seen.has(key)) {
+      problems.push(
+        `section ${definition.key} has duplicate metadata key: ${key}`
+      );
+    }
+    seen.add(key);
+    if (typeof record.label !== 'string' || !record.label) {
+      problems.push(
+        `section ${definition.key} metadata ${key} has invalid label`
+      );
+    }
+    if (!contract.allowedValues.some((value) => value === record.value)) {
+      problems.push(
+        `section ${definition.key} metadata ${key} has invalid value`
+      );
+    }
+  }
+  return problems;
+};
 
 export type DefinitionDiagnostic =
   | Readonly<{
