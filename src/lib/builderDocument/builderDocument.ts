@@ -13,6 +13,13 @@ import type {
 } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
 import {
+  addItemFromTemplate,
+  addItemFromTemplateWithSectionTypeLimit,
+  bulkUpdateItems,
+  deleteItem,
+} from '@/lib/client-db/itemService';
+import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
+import {
   analyzeItemFields,
   type DefinitionDiagnostic,
   type FieldDefinition,
@@ -23,6 +30,7 @@ import {
   sectionDefinitions,
   validateSectionMetadata,
 } from '@/lib/sectionDefinitions/sectionDefinitions';
+import type { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
 
 export type DocumentId = number & { readonly __documentId: unique symbol };
 export type SectionId = number & { readonly __sectionId: unique symbol };
@@ -219,6 +227,7 @@ export class BuilderItemModel<S extends SectionKey = SectionKey> {
   readonly sectionId: SectionId;
   readonly sectionKey: S;
   readonly containerType: DEX_Item['containerType'];
+  displayOrder: number;
   readonly fieldIds: readonly FieldId[];
   readonly fields: S extends 'custom' ? undefined : FieldsFor<S>;
   #document: BuilderDocumentModel;
@@ -234,11 +243,13 @@ export class BuilderItemModel<S extends SectionKey = SectionKey> {
     this.sectionId = record.sectionId as SectionId;
     this.sectionKey = sectionKey;
     this.containerType = record.containerType;
+    this.displayOrder = record.displayOrder;
     this.fieldIds = Object.freeze([...fieldIds]);
     this.fields = (sectionKey === 'custom'
       ? undefined
       : Object.freeze(fields)) as unknown as BuilderItemModel<S>['fields'];
     this.#document = document;
+    makeObservable(this, { displayOrder: observable });
   }
 
   get editableFields(): readonly SemanticField<S>[] {
@@ -264,7 +275,7 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     label: string;
     value: string;
   }>[];
-  readonly itemIds: readonly ItemId[];
+  itemIds: ItemId[];
   #document: BuilderDocumentModel;
 
   constructor(
@@ -287,8 +298,9 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     this.metadata = Object.freeze(
       metadata.map((entry) => Object.freeze({ ...entry }))
     );
-    this.itemIds = Object.freeze([...itemIds]);
+    this.itemIds = [...itemIds];
     this.#document = document;
+    makeObservable(this, { itemIds: observable.shallow });
   }
 
   get items(): readonly BuilderItemModel<S>[] {
@@ -316,6 +328,7 @@ export class BuilderDocumentModel {
     deep: false,
   });
   readonly sectionIds: readonly SectionId[];
+  #commandTail: Promise<void> = Promise.resolve();
 
   constructor(record: DEX_Document, sectionIds: readonly SectionId[]) {
     this.id = record.id as DocumentId;
@@ -383,6 +396,175 @@ export class BuilderDocumentModel {
     return this.sections.filter(
       (section) => section.sectionKey === 'custom'
     ) as BuilderSectionModel<'custom'>[];
+  }
+
+  #enqueue<Result>(command: () => Promise<Result>): Promise<Result> {
+    const result = this.#commandTail.then(command);
+    this.#commandTail = result.then(
+      () => undefined,
+      () => undefined
+    );
+    return result;
+  }
+
+  addItem(sectionId: SectionId): Promise<ItemId | undefined> {
+    return this.#enqueue(async () => {
+      const section = this.sectionsById.get(sectionId);
+      if (!section) {
+        return undefined;
+      }
+      const max =
+        'max' in section.definition.itemCardinality
+          ? section.definition.itemCardinality.max
+          : undefined;
+      if (max !== undefined && section.itemIds.length >= max) {
+        return undefined;
+      }
+      const template = getItemInsertTemplate(
+        section.definition.persistedType as TemplatedSectionType
+      );
+      if (!template) {
+        return undefined;
+      }
+      const displayOrder =
+        Math.max(0, ...section.items.map((item) => item.displayOrder)) + 1;
+      const input = { ...template, sectionId, displayOrder };
+      const result =
+        max !== undefined && section.sectionKey === 'websitesSocialLinks'
+          ? await addItemFromTemplateWithSectionTypeLimit(input, max)
+          : await addItemFromTemplate(input);
+      if (!result) {
+        return undefined;
+      }
+      const fieldInputs = result.fields.map((field) => ({
+        id: field.id,
+        name: field.name,
+        type: field.type,
+      }));
+      const analysis = analyzeItemFields(
+        { type: section.definition.persistedType } as DEX_Section,
+        fieldInputs
+      );
+      if (analysis.diagnostics.length > 0) {
+        throw new Error('Persisted item does not match its Section Definition');
+      }
+      const recordsById = new Map(
+        result.fields.map((field) => [field.id, field])
+      );
+      const typedFields: Record<string, SemanticField> = {};
+      const fields = analysis.entries.map(({ field, definition }) => {
+        const model = new SemanticField(
+          recordsById.get(Number(field.id)) as DEX_Field,
+          section.sectionKey,
+          definition
+        );
+        typedFields[model.fieldKey] = model;
+        return model;
+      });
+      const item = new BuilderItemModel(
+        result.item,
+        section.sectionKey,
+        fields.map((field) => field.id),
+        typedFields,
+        this
+      );
+      runInAction(() => {
+        for (const field of fields) {
+          this.fieldsById.set(field.id, field);
+        }
+        this.itemsById.set(item.id, item);
+        section.itemIds.push(item.id);
+      });
+      return item.id;
+    });
+  }
+
+  removeItem(itemId: ItemId): Promise<boolean> {
+    return this.#enqueue(async () => {
+      const item = this.itemsById.get(itemId);
+      const section = item && this.sectionsById.get(item.sectionId);
+      if (
+        !item ||
+        !section ||
+        section.itemIds.length <= section.definition.itemCardinality.min
+      ) {
+        return false;
+      }
+      const index = section.itemIds.indexOf(itemId);
+      const fields = item.fieldIds.map(
+        (id) => this.fieldsById.get(id) as SemanticField
+      );
+      runInAction(() => {
+        section.itemIds.splice(index, 1);
+        this.itemsById.delete(itemId);
+        for (const field of fields) {
+          this.fieldsById.delete(field.id);
+        }
+      });
+      try {
+        await deleteItem(itemId);
+        for (const field of fields) {
+          field.dispose();
+        }
+        return true;
+      } catch {
+        runInAction(() => {
+          for (const field of fields) {
+            this.fieldsById.set(field.id, field);
+          }
+          this.itemsById.set(itemId, item);
+          section.itemIds.splice(index, 0, itemId);
+        });
+        return false;
+      }
+    });
+  }
+
+  reorderItems(
+    sectionId: SectionId,
+    itemIds: readonly ItemId[]
+  ): Promise<boolean> {
+    return this.#enqueue(async () => {
+      const section = this.sectionsById.get(sectionId);
+      if (
+        !section ||
+        itemIds.length !== section.itemIds.length ||
+        new Set(itemIds).size !== itemIds.length ||
+        itemIds.some((id) => !section.itemIds.includes(id))
+      ) {
+        return false;
+      }
+      const previousIds = [...section.itemIds];
+      const previousOrders = section.items.map(
+        (item) => [item.id, item.displayOrder] as const
+      );
+      const changes = itemIds.flatMap((id, index) => {
+        const item = this.itemsById.get(id) as BuilderItemModel;
+        return item.displayOrder === index + 1
+          ? []
+          : [{ key: id, changes: { displayOrder: index + 1 } }];
+      });
+      runInAction(() => {
+        section.itemIds.splice(0, section.itemIds.length, ...itemIds);
+        itemIds.forEach((id, index) => {
+          (this.itemsById.get(id) as BuilderItemModel).displayOrder = index + 1;
+        });
+      });
+      try {
+        if (changes.length > 0) {
+          await bulkUpdateItems(changes);
+        }
+        return true;
+      } catch {
+        runInAction(() => {
+          section.itemIds.splice(0, section.itemIds.length, ...previousIds);
+          for (const [id, order] of previousOrders) {
+            (this.itemsById.get(id) as BuilderItemModel).displayOrder = order;
+          }
+        });
+        return false;
+      }
+    });
   }
 }
 
