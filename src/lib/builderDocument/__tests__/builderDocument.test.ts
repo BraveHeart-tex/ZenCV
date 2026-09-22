@@ -7,17 +7,261 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
+import {
+  addItemFromTemplate,
+  addItemFromTemplateWithSectionTypeLimit,
+  bulkUpdateItems,
+  deleteItem,
+} from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import {
   hydrateBuilderDocument,
+  type ItemId,
   type PersistedDocumentRecords,
 } from '../builderDocument';
 
 vi.mock('@/lib/client-db/fieldService', () => ({ updateField: vi.fn() }));
+vi.mock('@/lib/client-db/itemService', () => ({
+  addItemFromTemplate: vi.fn(),
+  addItemFromTemplateWithSectionTypeLimit: vi.fn(),
+  bulkUpdateItems: vi.fn(),
+  deleteItem: vi.fn(),
+}));
 
 afterEach(() => {
   vi.useRealTimers();
   vi.mocked(updateField).mockReset();
+  vi.mocked(addItemFromTemplate).mockReset();
+  vi.mocked(addItemFromTemplateWithSectionTypeLimit).mockReset();
+  vi.mocked(bulkUpdateItems).mockReset();
+  vi.mocked(deleteItem).mockReset();
+});
+
+const commandDocument = (workItems = 1) => {
+  const records = fixture();
+  const work = records.items.find((item) => item.sectionId === 12) as DEX_Item;
+  const workFields = records.fields.filter((field) => field.itemId === work.id);
+  const extraItems = Array.from({ length: workItems - 1 }, (_, index) => ({
+    ...work,
+    id: 30 + index,
+    displayOrder: index + 2,
+  }));
+  const extraFields = extraItems.flatMap((item, index) =>
+    workFields.map((field) => ({
+      ...field,
+      id: 1000 + index * 100 + field.id,
+      itemId: item.id,
+    }))
+  );
+  const result = hydrateBuilderDocument({
+    ...records,
+    items: [...records.items, ...extraItems],
+    fields: [...records.fields, ...extraFields],
+  });
+  if (!result.success) {
+    throw new Error('Invalid command fixture');
+  }
+  return result.document;
+};
+
+describe('Builder Document item commands', () => {
+  it('leaves the graph untouched when insertion fails', async () => {
+    const document = commandDocument();
+    const original = document.workExperience.items[0];
+    vi.mocked(addItemFromTemplate).mockRejectedValueOnce(new Error('offline'));
+    await expect(document.addItem(document.workExperience.id)).rejects.toThrow(
+      'offline'
+    );
+    expect(document.workExperience.items).toEqual([original]);
+    expect(document.itemsById.size).toBe(3);
+  });
+
+  it('creates a complete graph only after durable insertion', async () => {
+    const document = commandDocument();
+    const section = document.workExperience;
+    const oldItem = section.items[0];
+    let finish: (value: { item: DEX_Item; fields: DEX_Field[] }) => void =
+      () => {};
+    vi.mocked(addItemFromTemplate).mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    const pending = document.addItem(section.id);
+    await Promise.resolve();
+    expect(section.items).toEqual([oldItem]);
+    const definitions = Object.values(section.definition.fields);
+    finish({
+      item: {
+        id: 99,
+        sectionId: section.id,
+        containerType: 'collapsible',
+        displayOrder: 2,
+      },
+      fields: definitions.map((definition, index) => ({
+        id: 2000 + index,
+        itemId: 99,
+        name: definition.persistedName,
+        type: definition.expectedPersistedType,
+        value: '',
+      })) as DEX_Field[],
+    });
+    expect(await pending).toBe(99);
+    const item = section.items[1];
+    expect(item).toBe(document.itemsById.get(99 as ItemId));
+    expect(item.editableFields).toHaveLength(definitions.length);
+    expect(item.fields.role).toBe(document.fieldsById.get(item.fieldIds[0]));
+    expect(section.items[0]).toBe(oldItem);
+  });
+
+  it('rejects minimum and maximum Item Cardinality before persistence', async () => {
+    const document = commandDocument();
+    expect(await document.removeItem(document.workExperience.items[0].id)).toBe(
+      false
+    );
+    expect(await document.addItem(document.personalDetails.id)).toBeUndefined();
+    expect(deleteItem).not.toHaveBeenCalled();
+    expect(addItemFromTemplate).not.toHaveBeenCalled();
+
+    const records = fixture();
+    const definition = sectionDefinitions.websitesSocialLinks;
+    const section: DEX_Section = {
+      id: 50,
+      documentId: 1,
+      title: 'Links',
+      defaultTitle: 'Links',
+      type: definition.persistedType,
+      displayOrder: 4,
+      metadata: '',
+    };
+    const items = Array.from({ length: 4 }, (_, index) => ({
+      id: 60 + index,
+      sectionId: 50,
+      containerType: definition.expectedContainerType,
+      displayOrder: index + 1,
+    }));
+    const fields = items.flatMap((item, index) =>
+      Object.values(definition.fields).map((field, fieldIndex) => ({
+        id: 3000 + index * 10 + fieldIndex,
+        itemId: item.id,
+        name: field.persistedName,
+        type: field.expectedPersistedType,
+        value: '',
+      }))
+    ) as DEX_Field[];
+    const hydrated = hydrateBuilderDocument({
+      ...records,
+      sections: [...records.sections, section],
+      items: [...records.items, ...items],
+      fields: [...records.fields, ...fields],
+    });
+    expect(hydrated.success).toBe(true);
+    if (hydrated.success) {
+      expect(
+        await hydrated.document.addItem(
+          50 as typeof hydrated.document.workExperience.id
+        )
+      ).toBeUndefined();
+      expect(addItemFromTemplateWithSectionTypeLimit).not.toHaveBeenCalled();
+    }
+  });
+
+  it('detaches optimistically, restores exact identity and order on failure, then disposes after success', async () => {
+    const document = commandDocument(3);
+    const section = document.workExperience;
+    const [first, middle, last] = section.items;
+    const fields = middle.editableFields;
+    let rejectDelete: (error: Error) => void = () => {};
+    vi.mocked(deleteItem).mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectDelete = reject;
+        })
+    );
+    const pending = document.removeItem(middle.id);
+    await Promise.resolve();
+    expect(section.items).toEqual([first, last]);
+    expect(document.itemsById.has(middle.id)).toBe(false);
+    rejectDelete(new Error('offline'));
+    expect(await pending).toBe(false);
+    expect(section.items).toEqual([first, middle, last]);
+    expect(document.itemsById.get(middle.id)).toBe(middle);
+    expect(document.fieldsById.get(fields[0].id)).toBe(fields[0]);
+    fields[0].setDraft('still active');
+
+    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
+    expect(await document.removeItem(middle.id)).toBe(true);
+    expect(section.items).toEqual([first, last]);
+    expect(() => fields[0].setDraft('disposed')).toThrow('disposed');
+  });
+
+  it('reorders by identity, persists contiguous orders, rolls back, and serializes commands', async () => {
+    const document = commandDocument(3);
+    const section = document.workExperience;
+    const [first, middle, last] = section.items;
+    const field = last.editableFields[0];
+    let finish: () => void = () => {};
+    vi.mocked(bulkUpdateItems).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = () => resolve(3);
+        })
+    );
+    const reorder = document.reorderItems(section.id, [
+      last.id,
+      first.id,
+      middle.id,
+    ]);
+    const remove = document.removeItem(middle.id);
+    await Promise.resolve();
+    expect(section.items).toEqual([last, first, middle]);
+    expect(deleteItem).not.toHaveBeenCalled();
+    expect(bulkUpdateItems).toHaveBeenCalledWith([
+      { key: last.id, changes: { displayOrder: 1 } },
+      { key: first.id, changes: { displayOrder: 2 } },
+      { key: middle.id, changes: { displayOrder: 3 } },
+    ]);
+    finish();
+    expect(await reorder).toBe(true);
+    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
+    expect(await remove).toBe(true);
+    expect(section.items).toEqual([last, first]);
+    expect(section.items[0].editableFields[0]).toBe(field);
+
+    vi.mocked(bulkUpdateItems).mockRejectedValueOnce(new Error('offline'));
+    expect(await document.reorderItems(section.id, [first.id, last.id])).toBe(
+      false
+    );
+    expect(section.items).toEqual([last, first]);
+    expect(last.displayOrder).toBe(1);
+    expect(first.displayOrder).toBe(2);
+    expect(await document.reorderItems(section.id, [first.id, first.id])).toBe(
+      false
+    );
+  });
+
+  it('normalizes gapped sibling orders even when the requested order is unchanged', async () => {
+    const records = fixture();
+    const items = records.items.map((item) =>
+      item.sectionId === 12 ? { ...item, displayOrder: 9 } : item
+    );
+    const hydrated = hydrateBuilderDocument({ ...records, items });
+    expect(hydrated.success).toBe(true);
+    if (!hydrated.success) {
+      return;
+    }
+    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(1);
+    const section = hydrated.document.workExperience;
+    const item = section.items[0];
+    expect(await hydrated.document.reorderItems(section.id, [item.id])).toBe(
+      true
+    );
+    expect(item.displayOrder).toBe(1);
+    expect(bulkUpdateItems).toHaveBeenCalledWith([
+      { key: item.id, changes: { displayOrder: 1 } },
+    ]);
+  });
 });
 
 const fixture = (): PersistedDocumentRecords => {
