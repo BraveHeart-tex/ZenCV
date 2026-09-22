@@ -6,6 +6,7 @@ Read only what the task needs:
 - `docs/task-recipes.md` - recipe index; read only the matching task recipe.
 - `PRODUCT.md` - product/privacy claims; do not invent evidence.
 - `DESIGN.md` - UI tone, layout, colors, motion.
+- Follow the commit and pull-request conventions in CONTRIBUTING.md.
 
 ## Task Routing
 
