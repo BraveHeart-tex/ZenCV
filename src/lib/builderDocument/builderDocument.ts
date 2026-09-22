@@ -466,6 +466,10 @@ export const hydrateBuilderDocument = ({
     number,
     readonly { key: string; label: string; value: string }[]
   >();
+  const resolvedFieldsByItem = new Map<
+    number,
+    readonly { record: DEX_Field; definition: FieldDefinition }[]
+  >();
   for (const section of sortedSections) {
     if (section.documentId !== document.id) {
       diagnostics.push({
@@ -530,14 +534,15 @@ export const hydrateBuilderDocument = ({
         });
       }
       const itemFields = fieldsByItem.get(item.id) ?? [];
-      const analysis = analyzeItemFields(
-        section,
-        itemFields.map((field) => ({
-          id: field.id,
-          name: field.name,
-          type: field.type,
-        }))
+      const fieldInputs = itemFields.map((field) => ({
+        id: field.id,
+        name: field.name,
+        type: field.type,
+      }));
+      const recordsByInput = new Map<object, DEX_Field>(
+        fieldInputs.map((input, index) => [input, itemFields[index]] as const)
       );
+      const analysis = analyzeItemFields(section, fieldInputs);
       for (const diagnostic of analysis.diagnostics) {
         diagnostics.push({
           ...diagnostic,
@@ -545,11 +550,13 @@ export const hydrateBuilderDocument = ({
           itemId: item.id,
         });
       }
-      for (const entry of analysis.entries) {
-        const record = itemFields.find((field) => field.id === entry.field.id);
-        if (record) {
-          checkFieldStructure(record, entry.definition, diagnostics);
-        }
+      const resolvedFields = analysis.entries.map((entry) => ({
+        record: recordsByInput.get(entry.field) as DEX_Field,
+        definition: entry.definition,
+      }));
+      resolvedFieldsByItem.set(item.id, resolvedFields);
+      for (const { record, definition: fieldDefinition } of resolvedFields) {
+        checkFieldStructure(record, fieldDefinition, diagnostics);
       }
     }
   }
@@ -594,24 +601,16 @@ export const hydrateBuilderDocument = ({
     );
     model.sectionsById.set(sectionModel.id, sectionModel);
     for (const item of sectionItems) {
-      const analysis = analyzeItemFields(
-        section,
-        (fieldsByItem.get(item.id) ?? []).map((field) => ({
-          id: field.id,
-          name: field.name,
-          type: field.type,
-        }))
-      );
       const typedFields: Record<string, SemanticField> = {};
       const fieldIds: FieldId[] = [];
-      for (const entry of analysis.entries) {
-        const record = (fieldsByItem.get(item.id) ?? []).find(
-          (field) => field.id === entry.field.id
-        ) as DEX_Field;
+      for (const {
+        record,
+        definition: fieldDefinition,
+      } of resolvedFieldsByItem.get(item.id) ?? []) {
         const fieldModel = new SemanticField(
           record,
           definition.key as SectionKey,
-          entry.definition
+          fieldDefinition
         );
         model.fieldsById.set(fieldModel.id, fieldModel);
         typedFields[fieldModel.fieldKey] = fieldModel;

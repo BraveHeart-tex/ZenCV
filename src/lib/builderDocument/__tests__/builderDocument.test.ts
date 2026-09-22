@@ -334,4 +334,41 @@ describe('Builder Document hydration', () => {
       })
     );
   });
+
+  it('validates each record when two fields share an ID', () => {
+    const records = fixture();
+    const role = records.fields.find((field) => field.name === 'Job Title');
+    const employer = records.fields.find((field) => field.name === 'Employer');
+    if (!role || !employer) {
+      throw new Error('Missing Work Experience fields');
+    }
+    const duplicate = {
+      ...employer,
+      id: role.id,
+      value: 42 as unknown as string,
+    } as DEX_Field;
+    const fields = records.fields.map((field) =>
+      field === employer ? duplicate : field
+    );
+    const diagnostics = failure({ ...records, fields });
+    expect(diagnostics).toEqual(
+      failure({ ...records, fields: [...fields].reverse() })
+    );
+    expect(diagnostics).toEqual(
+      expect.arrayContaining([
+        { type: 'duplicateId', entity: 'field', id: role.id },
+        {
+          type: 'invalidFieldStructure',
+          entity: 'field',
+          id: role.id,
+          detail: 'value must be a string',
+        },
+      ])
+    );
+    expect(
+      diagnostics.filter(
+        (diagnostic) => diagnostic.type === 'invalidFieldStructure'
+      )
+    ).toHaveLength(1);
+  });
 });
