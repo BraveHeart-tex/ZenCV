@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   coursesSectionFields,
@@ -22,6 +25,24 @@ import {
   resolveSectionDefinition,
   sectionDefinitions,
 } from '../sectionDefinitions';
+
+const sourceDirectory = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../..'
+);
+
+const getProductionSourceFiles = (directory: string): string[] =>
+  readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) {
+      return entry.name === '__tests__' ? [] : getProductionSourceFiles(path);
+    }
+
+    return /\.(?:ts|tsx)$/.test(entry.name) &&
+      entry.name !== 'sectionDefinitions.ts'
+      ? [path]
+      : [];
+  });
 
 describe('section definitions', () => {
   it('characterizes every current section and field template exactly', () => {
@@ -156,14 +177,15 @@ describe('section definitions', () => {
   });
 
   it('analyzes fields by explicit definition order instead of input position', () => {
-    const result = analyzeItemFields({ type: 'work-experience' }, [
+    const fields = [
       { id: 4, name: 'Description', type: 'rich-text' },
       { id: 1, name: 'Job Title', type: 'string' },
       { id: 3, name: 'End Date', type: 'date-month' },
       { id: 2, name: 'Start Date', type: 'date-month' },
       { id: 5, name: 'Employer', type: 'string' },
       { id: 6, name: 'City', type: 'string' },
-    ]);
+    ] as const;
+    const result = analyzeItemFields({ type: 'work-experience' }, fields);
 
     expect(result.entries.map((entry) => entry.definition.key)).toEqual([
       'role',
@@ -176,6 +198,15 @@ describe('section definitions', () => {
     expect(result.entries.map((entry) => entry.field.id)).toEqual([
       1, 5, 2, 3, 6, 4,
     ]);
+    expect(result.entries.map((entry) => entry.field)).toEqual([
+      fields[1],
+      fields[4],
+      fields[3],
+      fields[2],
+      fields[5],
+      fields[0],
+    ]);
+    expect(result.entries[0]?.field).toBe(fields[1]);
     expect(result.diagnostics).toEqual([]);
   });
 
@@ -188,28 +219,6 @@ describe('section definitions', () => {
     ]);
 
     expect(result.diagnostics).toEqual([
-      {
-        type: 'incompatibleFieldType',
-        sectionKey: 'workExperience',
-        fieldKey: 'role',
-        persistedFieldName: 'Job Title',
-        recordIds: [1],
-        expectedPersistedType: 'string',
-        actualPersistedType: 'textarea',
-      },
-      {
-        type: 'duplicateField',
-        sectionKey: 'workExperience',
-        fieldKey: 'employer',
-        persistedFieldName: 'Employer',
-        recordIds: [2, 3],
-      },
-      {
-        type: 'unknownField',
-        sectionKey: 'workExperience',
-        persistedFieldName: 'Retired field',
-        recordIds: [4],
-      },
       {
         type: 'missingField',
         sectionKey: 'workExperience',
@@ -234,7 +243,60 @@ describe('section definitions', () => {
         fieldKey: 'description',
         persistedFieldName: 'Description',
       },
+      {
+        type: 'incompatibleFieldType',
+        sectionKey: 'workExperience',
+        fieldKey: 'role',
+        persistedFieldName: 'Job Title',
+        recordIds: [1],
+        expectedPersistedType: 'string',
+        actualPersistedType: 'textarea',
+      },
+      {
+        type: 'duplicateField',
+        sectionKey: 'workExperience',
+        fieldKey: 'employer',
+        persistedFieldName: 'Employer',
+        recordIds: [2, 3],
+      },
+      {
+        type: 'unknownField',
+        sectionKey: 'workExperience',
+        persistedFieldName: 'Retired field',
+        recordIds: [4],
+      },
     ]);
+    expect(result.entries).toEqual([
+      {
+        field: { id: 1, name: 'Job Title', type: 'textarea' },
+        definition: getSectionDefinition('workExperience').fields.role,
+      },
+    ]);
+  });
+
+  it('does not resolve duplicate records', () => {
+    const result = analyzeItemFields({ type: 'work-experience' }, [
+      { id: 1, name: 'Job Title', type: 'string' },
+      { id: 2, name: 'Job Title', type: 'string' },
+    ]);
+
+    expect(result.entries).toEqual([]);
+    expect(result.diagnostics).toContainEqual({
+      type: 'duplicateField',
+      sectionKey: 'workExperience',
+      fieldKey: 'role',
+      persistedFieldName: 'Job Title',
+      recordIds: [1, 2],
+    });
+  });
+
+  it('keeps the registry out of production module imports', () => {
+    const registryImport =
+      /from\s+['"][^'"]*sectionDefinitions(?:\/sectionDefinitions)?['"]/;
+
+    for (const sourceFile of getProductionSourceFiles(sourceDirectory)) {
+      expect(readFileSync(sourceFile, 'utf8')).not.toMatch(registryImport);
+    }
   });
 
   it('reports an unknown section once without inventing field identities', () => {
@@ -248,6 +310,7 @@ describe('section definitions', () => {
         {
           type: 'unknownSection',
           persistedSectionType: 'retired-section',
+          recordIds: [1],
         },
       ],
     });
