@@ -946,6 +946,7 @@ export type DefinitionDiagnostic =
   | Readonly<{
       type: 'unknownSection';
       persistedSectionType: string;
+      recordIds: readonly (string | number)[];
     }>
   | Readonly<{
       type: 'unknownField';
@@ -998,24 +999,26 @@ export const analyzeItemFields = (
         {
           type: 'unknownSection',
           persistedSectionType: section.type,
+          recordIds: fields.map((field) => field.id),
         },
       ],
     });
   }
 
   const sectionKey = definition.key as SectionKey;
-  const resolved = fields.flatMap((field, inputOrder) => {
-    const fieldDefinition = resolveFieldDefinition(sectionKey, field.name);
-    return fieldDefinition
-      ? [{ field, definition: fieldDefinition, inputOrder }]
-      : [];
-  });
   const fieldsByPersistedName = new Map<string, PersistedFieldInput[]>();
   for (const field of fields) {
     const matchingFields = fieldsByPersistedName.get(field.name) ?? [];
     matchingFields.push(field);
     fieldsByPersistedName.set(field.name, matchingFields);
   }
+  const resolved = fields.flatMap((field, inputOrder) => {
+    const fieldDefinition = resolveFieldDefinition(sectionKey, field.name);
+    const matches = fieldsByPersistedName.get(field.name) ?? [];
+    return fieldDefinition && matches.length === 1
+      ? [{ field, definition: fieldDefinition, inputOrder }]
+      : [];
+  });
 
   const inputDiagnostics: {
     inputOrder: number;
@@ -1086,14 +1089,14 @@ export const analyzeItemFields = (
           left.inputOrder - right.inputOrder
       )
       .map(({ field, definition: fieldDefinition }) => ({
-        field: { ...field },
+        field,
         definition: fieldDefinition,
       })),
     diagnostics: [
+      ...missingDiagnostics,
       ...inputDiagnostics
         .sort((left, right) => left.inputOrder - right.inputOrder)
         .map(({ diagnostic }) => diagnostic),
-      ...missingDiagnostics,
     ],
   });
 };
