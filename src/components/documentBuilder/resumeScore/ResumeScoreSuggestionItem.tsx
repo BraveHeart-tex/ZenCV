@@ -95,9 +95,7 @@ export const ResumeScoreSuggestionItem = observer(
           return;
         }
 
-        const addedItemId = await builderRootStore.itemStore.addNewItemEntry(
-          section.id
-        );
+        const addedItemId = await builderRootStore.addItem(section.id);
         if (!addedItemId) {
           return;
         }

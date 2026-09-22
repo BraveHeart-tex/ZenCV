@@ -1,6 +1,7 @@
 import {
   action,
   computed,
+  type IObservableArray,
   makeObservable,
   observable,
   runInAction,
@@ -275,7 +276,6 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     label: string;
     value: string;
   }>[];
-  itemIds: ItemId[];
   #document: BuilderDocumentModel;
 
   constructor(
@@ -298,9 +298,14 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     this.metadata = Object.freeze(
       metadata.map((entry) => Object.freeze({ ...entry }))
     );
-    this.itemIds = [...itemIds];
+    sectionItemIds.set(this, observable.array([...itemIds], { deep: false }));
     this.#document = document;
-    makeObservable(this, { itemIds: observable.shallow });
+  }
+
+  get itemIds(): readonly ItemId[] {
+    return Object.freeze([
+      ...(sectionItemIds.get(this) as IObservableArray<ItemId>),
+    ]);
   }
 
   get items(): readonly BuilderItemModel<S>[] {
@@ -309,6 +314,16 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     );
   }
 }
+
+const sectionItemIds = new WeakMap<
+  BuilderSectionModel,
+  IObservableArray<ItemId>
+>();
+
+const mutableItemIds = (
+  section: BuilderSectionModel
+): IObservableArray<ItemId> =>
+  sectionItemIds.get(section) as IObservableArray<ItemId>;
 
 export class BuilderDocumentModel {
   readonly id: DocumentId;
@@ -473,7 +488,7 @@ export class BuilderDocumentModel {
           this.fieldsById.set(field.id, field);
         }
         this.itemsById.set(item.id, item);
-        section.itemIds.push(item.id);
+        mutableItemIds(section).push(item.id);
       });
       return item.id;
     });
@@ -495,7 +510,7 @@ export class BuilderDocumentModel {
         (id) => this.fieldsById.get(id) as SemanticField
       );
       runInAction(() => {
-        section.itemIds.splice(index, 1);
+        mutableItemIds(section).splice(index, 1);
         this.itemsById.delete(itemId);
         for (const field of fields) {
           this.fieldsById.delete(field.id);
@@ -513,7 +528,7 @@ export class BuilderDocumentModel {
             this.fieldsById.set(field.id, field);
           }
           this.itemsById.set(itemId, item);
-          section.itemIds.splice(index, 0, itemId);
+          mutableItemIds(section).splice(index, 0, itemId);
         });
         return false;
       }
@@ -545,19 +560,22 @@ export class BuilderDocumentModel {
           : [{ key: id, changes: { displayOrder: index + 1 } }];
       });
       runInAction(() => {
-        section.itemIds.splice(0, section.itemIds.length, ...itemIds);
+        mutableItemIds(section).replace([...itemIds]);
         itemIds.forEach((id, index) => {
           (this.itemsById.get(id) as BuilderItemModel).displayOrder = index + 1;
         });
       });
       try {
         if (changes.length > 0) {
-          await bulkUpdateItems(changes);
+          const updated = await bulkUpdateItems(changes);
+          if (updated !== changes.length) {
+            throw new Error('Some items no longer exist');
+          }
         }
         return true;
       } catch {
         runInAction(() => {
-          section.itemIds.splice(0, section.itemIds.length, ...previousIds);
+          mutableItemIds(section).replace(previousIds);
           for (const [id, order] of previousOrders) {
             (this.itemsById.get(id) as BuilderItemModel).displayOrder = order;
           }

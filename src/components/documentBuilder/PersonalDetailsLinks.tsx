@@ -36,9 +36,7 @@ export const PersonalDetailsLinks = observer(() => {
     try {
       const result = linksSection
         ? {
-            itemId: await builderRootStore.itemStore.addNewItemEntry(
-              linksSection.id
-            ),
+            itemId: await builderRootStore.addItem(linksSection.id),
           }
         : await builderRootStore.sectionStore.addNewSection({
             title: 'Links',

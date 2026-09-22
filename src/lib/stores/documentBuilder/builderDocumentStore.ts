@@ -46,7 +46,12 @@ export class BuilderDocumentStore {
         };
       }
 
-      this.root.hydrateFromBackend(result);
+      if (!this.root.installDocumentModel(result, true)) {
+        return {
+          success: false,
+          error: 'The document contains records the builder cannot load.',
+        };
+      }
       this.root.startSession();
 
       return {
