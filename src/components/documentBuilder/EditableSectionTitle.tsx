@@ -3,7 +3,7 @@ import { GripVertical, TrashIcon } from 'lucide-react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
-import { showSuccessToast } from '@/components/ui/sonner';
+import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import {
   Tooltip,
   TooltipContent,
@@ -13,12 +13,8 @@ import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import {
-  DELETABLE_INTERNAL_SECTION_TYPES,
-  FIXED_SECTIONS,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
-import type { FixedSection } from '@/lib/types/documentBuilder.types';
 import { RenameSectionFormDialog } from './RenameSectionFormDialog';
 
 const getSectionTitleId = (sectionId: DEX_Section['id']) =>
@@ -42,8 +38,13 @@ export const EditableSectionTitle = observer(
         !userSettingsStore.editorPreferences.askBeforeDeletingSection;
 
       if (shouldNotAskConfirmation) {
-        await builderRootStore.sectionStore.removeSection(sectionId);
-        showSuccessToast('Section removed successfully.');
+        const removed =
+          await builderRootStore.sectionStore.removeSection(sectionId);
+        if (removed) {
+          showSuccessToast('Section removed successfully.');
+        } else {
+          showErrorToast('Could not remove section. Please try again.');
+        }
         return;
       }
 
@@ -52,8 +53,14 @@ export const EditableSectionTitle = observer(
         message: 'This action cannot be undone',
         doNotAskAgainEnabled: true,
         onConfirm: async () => {
-          await builderRootStore.sectionStore.removeSection(sectionId);
-          showSuccessToast('Section removed successfully.');
+          const removed =
+            await builderRootStore.sectionStore.removeSection(sectionId);
+          if (removed) {
+            showSuccessToast('Section removed successfully.');
+          } else {
+            showErrorToast('Could not remove section. Please try again.');
+            return;
+          }
 
           runInAction(() => {
             confirmDialogStore.hideDialog();
@@ -69,7 +76,7 @@ export const EditableSectionTitle = observer(
 
     return (
       <div className='group flex items-center w-full gap-1'>
-        {FIXED_SECTIONS.includes(section.type as FixedSection) ? null : (
+        {builderRootStore.sectionStore.isSectionFixed(sectionId) ? null : (
           <Button
             variant='outline'
             size='icon'

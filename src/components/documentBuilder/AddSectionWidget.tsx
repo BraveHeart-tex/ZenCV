@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
+import { showErrorToast } from '@/components/ui/sonner';
 import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
@@ -27,6 +28,8 @@ export const AddSectionWidget = observer(() => {
     const result = await builderRootStore.sectionStore.addNewSection(option);
     if (result?.itemId) {
       builderRootStore.UIStore.focusFirstFieldInItem(result.itemId);
+    } else {
+      showErrorToast('Could not add section. Please try again.');
     }
   });
 

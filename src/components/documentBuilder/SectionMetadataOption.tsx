@@ -1,5 +1,6 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { showErrorToast } from '@/components/ui/sonner';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import {
   CHECKED_METADATA_VALUE,
@@ -23,10 +24,16 @@ const MetadataSwitch = observer(
       value={option.value}
       checked={option.value === CHECKED_METADATA_VALUE}
       onCheckedChange={action(async (checked) => {
-        await builderRootStore.sectionStore.updateSectionMetadata(sectionId, {
-          key: option.key,
-          value: checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE,
-        });
+        const result =
+          await builderRootStore.sectionStore.updateSectionMetadata(sectionId, {
+            key: option.key,
+            value: checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE,
+          });
+        if (result && !result.success) {
+          showErrorToast(
+            'Could not update section settings. Please try again.'
+          );
+        }
       })}
     />
   )
