@@ -1,7 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { DEX_Document } from '@/lib/client-db/clientDbSchema';
 import {
-  getFullDocumentStructure,
   renameDocument,
   updateDocument,
 } from '@/lib/client-db/documentService';
@@ -37,33 +36,19 @@ export class BuilderDocumentStore {
   }
 
   async initializeStore(documentId: DEX_Document['id']): Promise<StoreResult> {
-    try {
-      const result = await getFullDocumentStructure(documentId);
-      if (!result?.success) {
-        return {
-          success: false,
-          error: result?.error,
-        };
-      }
-
-      if (!this.root.installDocumentModel(result, true)) {
-        return {
-          success: false,
-          error: 'The document contains records the builder cannot load.',
-        };
-      }
-      this.root.startSession();
-
+    const state = await this.root.session.load(documentId);
+    if (state.status === 'ready') {
       return {
         success: true,
       };
-    } catch (error) {
-      console.error('initializeStore error', error);
-      return {
-        success: false,
-        error: 'An error occurred while initializing the document store.',
-      };
     }
+    return {
+      success: false,
+      error:
+        state.status === 'failed'
+          ? state.message
+          : 'The document could not be loaded.',
+    };
   }
 
   async renameDocument(newValue: string): Promise<StoreResult> {
