@@ -17,6 +17,7 @@ import { BuilderDocumentStore } from './builderDocumentStore';
 import { BuilderFieldStore, FieldModel } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
+import { BuilderSession } from './builderSession';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
 
@@ -28,6 +29,7 @@ export class BuilderRootStore {
 
   UIStore: BuilderUIStore;
   templateStore: BuilderTemplateStore;
+  session: BuilderSession;
   documentModel: BuilderDocumentModel | null = null;
   private stopItemProjection: IReactionDisposer | null = null;
   private stopSectionProjection: IReactionDisposer | null = null;
@@ -42,9 +44,20 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
+    this.session = new BuilderSession({
+      clearPublishedDocument: () => this.clearPublishedDocument(),
+      publishDocument: (records, document) => {
+        this.publishDocumentModel(records, document, true);
+        this.startSession();
+      },
+    });
   }
 
   resetState() {
+    this.session.discard();
+  }
+
+  private clearPublishedDocument() {
     this.dispose();
     runInAction(() => {
       this.documentModel = null;
@@ -80,6 +93,15 @@ export class BuilderRootStore {
     if (!result.success) {
       return false;
     }
+    this.publishDocumentModel(records, result.document, hydrateLegacyStores);
+    return true;
+  }
+
+  publishDocumentModel(
+    records: Extract<GetFullDocumentStructureResponse, { success: true }>,
+    document: BuilderDocumentModel,
+    hydrateLegacyStores = false
+  ): void {
     if (hydrateLegacyStores) {
       this.stopItemProjection?.();
       this.stopSectionProjection?.();
@@ -89,7 +111,7 @@ export class BuilderRootStore {
       this.hydrateFromBackend(records);
     }
     this.stopItemProjection?.();
-    this.documentModel = result.document;
+    this.documentModel = document;
     for (const item of this.itemStore.items) {
       this.projectedItems.set(item.id, item);
     }
@@ -99,7 +121,7 @@ export class BuilderRootStore {
     for (const section of this.sectionStore.sections) {
       this.projectedSections.set(section.id, section);
     }
-    const model = result.document;
+    const model = document;
     this.stopSectionProjection = reaction(
       () =>
         model.sections.map((section) => [
@@ -123,7 +145,6 @@ export class BuilderRootStore {
       () => this.projectItems(),
       { fireImmediately: true }
     );
-    return true;
   }
 
   private projectSections(): void {
@@ -168,13 +189,19 @@ export class BuilderRootStore {
 
   disposeProjectedSection(sectionId: number): void {
     this.projectedSections.delete(sectionId);
+    this.UIStore.itemRefs.delete(sectionId.toString());
     for (const [itemId, item] of this.projectedItems) {
       if (item.sectionId === sectionId) {
         this.projectedItems.delete(itemId);
+        this.UIStore.itemRefs.delete(itemId.toString());
+        if (this.UIStore.collapsedItemId === itemId) {
+          this.UIStore.collapsedItemId = null;
+        }
         for (const [fieldId, field] of this.projectedFields) {
           if (field.itemId === itemId) {
             field.dispose();
             this.projectedFields.delete(fieldId);
+            this.UIStore.fieldRefs.delete(fieldId.toString());
           }
         }
       }
@@ -251,10 +278,15 @@ export class BuilderRootStore {
     const removed = await this.documentModel?.removeItem(itemId as ItemId);
     if (removed) {
       this.projectedItems.delete(itemId);
+      this.UIStore.itemRefs.delete(itemId.toString());
+      if (this.UIStore.collapsedItemId === itemId) {
+        this.UIStore.collapsedItemId = null;
+      }
       for (const [fieldId, field] of this.projectedFields) {
         if (field.itemId === itemId) {
           field.dispose();
           this.projectedFields.delete(fieldId);
+          this.UIStore.fieldRefs.delete(fieldId.toString());
         }
       }
     }

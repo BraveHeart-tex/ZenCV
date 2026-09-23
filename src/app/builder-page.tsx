@@ -6,6 +6,7 @@ import { DocumentBuilderClient } from '@/components/documentBuilder/DocumentBuil
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
 import { ResumeOverview } from '@/components/documentBuilder/resumeOverview/ResumeOverview';
 import { TemplateGallery } from '@/components/documentBuilder/templateGallery/TemplateGallery';
+import { Button } from '@/components/ui/button';
 import { LazyMotionWrapper } from '@/components/ui/LazyMotionWrapper';
 import { showErrorToast } from '@/components/ui/sonner';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
@@ -23,28 +24,23 @@ export const BuilderPage = observer(() => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const documentId = id ? +id : null;
+  const session = builderRootStore.session;
   const view = builderRootStore.UIStore.currentView;
   const [hasMountedPreview, setHasMountedPreview] = useState(false);
 
   useEffect(() => {
+    if (!documentId) {
+      navigate('/documents', { replace: true });
+      return;
+    }
     if (
-      !documentId ||
-      builderRootStore.documentStore.document?.id === documentId
+      session.state.status === 'ready' &&
+      session.state.documentId === documentId
     ) {
       return;
     }
-
-    const init = async () => {
-      const result =
-        await builderRootStore.documentStore.initializeStore(documentId);
-      if (!result?.success) {
-        showErrorToast(result.error);
-        navigate('/documents');
-      }
-    };
-
-    init();
-  }, [documentId, navigate]);
+    void session.load(documentId);
+  }, [documentId, navigate, session]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(DESKTOP_PREVIEW_MEDIA_QUERY);
@@ -69,6 +65,37 @@ export const BuilderPage = observer(() => {
     }
   }, [view]);
 
+  const returnToDocuments = async () => {
+    if (!(await session.prepareNavigation())) {
+      showErrorToast('Finish saving your changes before leaving.');
+      return;
+    }
+    navigate('/documents');
+  };
+
+  if (session.state.status === 'loading' || session.state.status === 'idle') {
+    return <PreviewSkeleton />;
+  }
+
+  if (session.state.status === 'failed') {
+    return (
+      <main className='bg-background flex min-h-screen items-center justify-center p-6'>
+        <section className='border-border bg-card w-full max-w-md rounded-xl border p-6'>
+          <h1 className='text-lg font-semibold'>Unable to open this resume</h1>
+          <p className='text-muted-foreground mt-2 text-sm leading-6'>
+            {session.state.message}
+          </p>
+          <div className='mt-6 flex flex-wrap gap-3'>
+            <Button onClick={() => void session.retry()}>Try again</Button>
+            <Button onClick={() => navigate('/documents')} variant='outline'>
+              Return to documents
+            </Button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   if (view === BUILDER_CURRENT_VIEWS.TEMPLATES) {
     return (
       <LazyMotionWrapper>
@@ -84,7 +111,7 @@ export const BuilderPage = observer(() => {
     <LazyMotionWrapper>
       <div>
         <ResumeOverview />
-        <DocumentBuilderClient />
+        <DocumentBuilderClient onReturnToDocuments={returnToDocuments} />
         {shouldMountPreview ? (
           <Suspense fallback={<PreviewSkeleton />}>
             <DocumentBuilderPreview />

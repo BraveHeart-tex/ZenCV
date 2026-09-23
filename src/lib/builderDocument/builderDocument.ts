@@ -358,6 +358,8 @@ export class BuilderDocumentModel {
   });
   readonly sectionIds: IObservableArray<SectionId>;
   #commandTail: Promise<void> = Promise.resolve();
+  #acceptingCommands = true;
+  #commandFailed = false;
 
   constructor(record: DEX_Document, sectionIds: readonly SectionId[]) {
     this.id = record.id as DocumentId;
@@ -428,12 +430,46 @@ export class BuilderDocumentModel {
   }
 
   #enqueue<Result>(command: () => Promise<Result>): Promise<Result> {
+    if (!this.#acceptingCommands) {
+      return Promise.reject(new Error('Builder Document is closing'));
+    }
     const result = this.#commandTail.then(command);
     this.#commandTail = result.then(
-      () => undefined,
-      () => undefined
+      (value) => {
+        if (
+          value === false ||
+          (typeof value === 'object' &&
+            value !== null &&
+            'success' in value &&
+            value.success === false)
+        ) {
+          this.#commandFailed = true;
+        }
+      },
+      () => {
+        this.#commandFailed = true;
+      }
     );
     return result;
+  }
+
+  async closeAndFlush(): Promise<boolean> {
+    this.#acceptingCommands = false;
+    await this.#commandTail;
+    if (this.#commandFailed) {
+      return false;
+    }
+    const results = await Promise.all(
+      [...this.fieldsById.values()].map((field) => field.flush())
+    );
+    return results.every(Boolean);
+  }
+
+  discard(): void {
+    this.#acceptingCommands = false;
+    for (const field of this.fieldsById.values()) {
+      field.dispose();
+    }
   }
 
   addSection(

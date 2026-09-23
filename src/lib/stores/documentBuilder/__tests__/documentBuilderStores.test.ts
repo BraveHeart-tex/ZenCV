@@ -418,6 +418,138 @@ describe('BuilderDocumentStore', () => {
   });
 });
 
+describe('BuilderSession', () => {
+  const recordsFor = (documentId: number) => {
+    const records = builderDocumentFixture();
+    return {
+      success: true as const,
+      document: { ...records.document, id: documentId },
+      sections: records.sections.map((section) => ({
+        ...section,
+        documentId,
+      })),
+      items: [...records.items],
+      fields: [...records.fields],
+    };
+  };
+
+  it('publishes one ready document and clears an unrelated document on failure', async () => {
+    const root = createTestRootStore();
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValueOnce(
+      recordsFor(1)
+    );
+
+    await root.session.load(1);
+    expect(root.session.state.status).toBe('ready');
+    expect(root.documentStore.document?.id).toBe(1);
+
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValueOnce({
+      success: false,
+      error: 'Document not found.',
+    });
+    await root.session.load(2);
+
+    expect(root.session.state).toEqual({
+      status: 'failed',
+      documentId: 2,
+      message: 'Document not found.',
+    });
+    expect(root.documentModel).toBeNull();
+    expect(root.documentStore.document).toBeNull();
+  });
+
+  it('disposes stale load candidates and only publishes the current generation', async () => {
+    const root = createTestRootStore();
+    let resolveFirst!: (value: ReturnType<typeof recordsFor>) => void;
+    serviceMocks.document.getFullDocumentStructure
+      .mockImplementationOnce(
+        () =>
+          new Promise<ReturnType<typeof recordsFor>>((resolve) => {
+            resolveFirst = resolve;
+          })
+      )
+      .mockResolvedValueOnce(recordsFor(2));
+
+    const firstLoad = root.session.load(1);
+    await root.session.load(2);
+    resolveFirst(recordsFor(1));
+    await firstLoad;
+
+    expect(root.session.state.status).toBe('ready');
+    expect(root.session.document?.id).toBe(2);
+    expect(root.documentStore.document?.id).toBe(2);
+  });
+
+  it('retries failures and only leaves after commands and semantic fields succeed', async () => {
+    const root = createTestRootStore();
+    serviceMocks.document.getFullDocumentStructure
+      .mockResolvedValueOnce({ success: false, error: 'Document not found.' })
+      .mockResolvedValueOnce(recordsFor(1));
+
+    await root.session.load(1);
+    await root.session.retry();
+    const document = root.session.document;
+    const field = document?.fieldsById.values().next().value;
+    expect(field).toBeDefined();
+    field?.setDraft('Saved before leaving');
+
+    await expect(root.session.prepareNavigation()).resolves.toBe(true);
+    expect(serviceMocks.field.updateField).toHaveBeenCalledWith(
+      field?.id,
+      'Saved before leaving'
+    );
+    expect(root.session.state).toEqual({ status: 'idle' });
+    expect(root.UIStore.fieldRefs.size).toBe(0);
+  });
+
+  it('retains the ready document when a command or field flush fails', async () => {
+    const root = createTestRootStore();
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValue(
+      recordsFor(1)
+    );
+    await root.session.load(1);
+    const document = root.session.document;
+    const field = document?.fieldsById.values().next().value;
+    serviceMocks.field.updateField.mockRejectedValueOnce(new Error('offline'));
+    field?.setDraft('Unsaved');
+
+    await expect(root.session.prepareNavigation()).resolves.toBe(false);
+    expect(root.session.document).toBe(document);
+
+    const commandRoot = createTestRootStore();
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValue(
+      recordsFor(1)
+    );
+    await commandRoot.session.load(1);
+    const commandDocument = commandRoot.session.document;
+    const command = commandDocument?.renameSection(999 as never, 'Missing');
+    await expect(command).resolves.toEqual({
+      success: false,
+      error: 'Section not found',
+    });
+    await expect(commandRoot.session.prepareNavigation()).resolves.toBe(false);
+    expect(commandRoot.session.document).toBe(commandDocument);
+  });
+
+  it('discards pending semantic field edits and clears UI-only references', async () => {
+    const root = createTestRootStore();
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValue(
+      recordsFor(1)
+    );
+    await root.session.load(1);
+    const field = root.session.document?.fieldsById.values().next().value;
+    field?.setDebounced('Discarded');
+    root.UIStore.setFieldRef('field', null);
+
+    root.session.discard();
+    vi.advanceTimersByTime(400);
+
+    expect(serviceMocks.field.updateField).not.toHaveBeenCalled();
+    expect(root.session.state).toEqual({ status: 'idle' });
+    expect(root.UIStore.fieldRefs.size).toBe(0);
+  });
+});
+
 describe('BuilderSectionStore', () => {
   it('derives maps, order, getters, fixed sections, and observable metadata', () => {
     const root = createTestRootStore();
