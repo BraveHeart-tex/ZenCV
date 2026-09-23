@@ -2,13 +2,19 @@ import {
   BookOpenTextIcon,
   BriefcaseBusinessIcon,
   ContactIcon,
+  GraduationCapIcon,
   GuitarIcon,
   LanguagesIcon,
+  LinkIcon,
   SlidersHorizontalIcon,
+  SparklesIcon,
 } from 'lucide-react';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
-import { getDefaultReferencesMetadata } from '@/lib/misc/sectionMetadataTemplates';
+import {
+  getDefaultReferencesMetadata,
+  getDefaultSkillsMetadata,
+} from '@/lib/misc/sectionMetadataTemplates';
 import type { SectionType } from '@/lib/types/documentBuilder.types';
 
 export const INTERNAL_SECTION_TYPES = {
@@ -48,6 +54,9 @@ export const DELETABLE_INTERNAL_SECTION_TYPES = new Map<SectionType, boolean>([
   [INTERNAL_SECTION_TYPES.COURSES, true],
   [INTERNAL_SECTION_TYPES.LANGUAGES, true],
   [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
+  [INTERNAL_SECTION_TYPES.EDUCATION, true],
+  [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS, true],
+  [INTERNAL_SECTION_TYPES.SKILLS, true],
 ]);
 
 export const SECTION_DESCRIPTIONS_BY_TYPE = {
@@ -239,6 +248,25 @@ export const SECTION_SUGGESTION_CONFIG = [
 ];
 
 export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
+  {
+    icon: GraduationCapIcon,
+    title: 'Education',
+    type: INTERNAL_SECTION_TYPES.EDUCATION,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+  {
+    icon: LinkIcon,
+    title: 'Links',
+    type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
+  {
+    icon: SparklesIcon,
+    title: 'Skills',
+    type: INTERNAL_SECTION_TYPES.SKILLS,
+    metadata: getDefaultSkillsMetadata(),
+    containerType: CONTAINER_TYPES.COLLAPSIBLE,
+  },
   {
     icon: SlidersHorizontalIcon,
     title: 'Custom Section',

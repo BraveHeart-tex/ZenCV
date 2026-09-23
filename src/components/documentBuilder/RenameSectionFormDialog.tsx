@@ -42,10 +42,14 @@ export const RenameSectionFormDialog = observer(
           return;
         }
 
-        await builderRootStore.sectionStore.renameSection(
+        const result = await builderRootStore.sectionStore.renameSection(
           sectionId,
           enteredTitle
         );
+        if (!result?.success) {
+          showErrorToast('Could not rename section. Please try again.');
+          return;
+        }
         showSuccessToast('Section renamed successfully');
         setOpen(false);
       }

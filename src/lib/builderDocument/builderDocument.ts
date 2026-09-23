@@ -6,6 +6,7 @@ import {
   observable,
   runInAction,
 } from 'mobx';
+import { clientDb } from '@/lib/client-db/clientDb';
 import type {
   DEX_Document,
   DEX_Field,
@@ -19,6 +20,11 @@ import {
   bulkUpdateItems,
   deleteItem,
 } from '@/lib/client-db/itemService';
+import {
+  bulkUpdateSections,
+  deleteSection,
+  updateSection,
+} from '@/lib/client-db/sectionService';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import {
   analyzeItemFields,
@@ -31,7 +37,10 @@ import {
   sectionDefinitions,
   validateSectionMetadata,
 } from '@/lib/sectionDefinitions/sectionDefinitions';
-import type { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
+import type {
+  StoreResult,
+  TemplatedSectionType,
+} from '@/lib/types/documentBuilder.types';
 
 export type DocumentId = number & { readonly __documentId: unique symbol };
 export type SectionId = number & { readonly __sectionId: unique symbol };
@@ -269,13 +278,14 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   readonly documentId: DocumentId;
   readonly sectionKey: S;
   readonly definition: SectionDefinition<S>;
-  readonly title: string;
+  title: string;
   readonly defaultTitle: string;
-  readonly metadata: readonly Readonly<{
+  readonly metadata: {
     key: string;
     label: string;
     value: string;
-  }>[];
+  }[];
+  displayOrder: number;
   #document: BuilderDocumentModel;
 
   constructor(
@@ -295,11 +305,15 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     this.definition = definition;
     this.title = record.title;
     this.defaultTitle = record.defaultTitle;
-    this.metadata = Object.freeze(
-      metadata.map((entry) => Object.freeze({ ...entry }))
-    );
+    this.metadata = metadata.map((entry) => ({ ...entry }));
+    this.displayOrder = record.displayOrder;
     sectionItemIds.set(this, observable.array([...itemIds], { deep: false }));
     this.#document = document;
+    makeObservable(this, {
+      title: observable,
+      metadata: observable,
+      displayOrder: observable,
+    });
   }
 
   get itemIds(): readonly ItemId[] {
@@ -342,7 +356,7 @@ export class BuilderDocumentModel {
   readonly fieldsById = observable.map<FieldId, SemanticField>([], {
     deep: false,
   });
-  readonly sectionIds: readonly SectionId[];
+  readonly sectionIds: IObservableArray<SectionId>;
   #commandTail: Promise<void> = Promise.resolve();
 
   constructor(record: DEX_Document, sectionIds: readonly SectionId[]) {
@@ -353,7 +367,7 @@ export class BuilderDocumentModel {
     this.createdAt = record.createdAt;
     this.updatedAt = record.updatedAt;
     this.jobPostingId = record.jobPostingId;
-    this.sectionIds = Object.freeze([...sectionIds]);
+    this.sectionIds = observable.array([...sectionIds], { deep: false });
   }
 
   get sections(): readonly BuilderSectionModel[] {
@@ -420,6 +434,318 @@ export class BuilderDocumentModel {
       () => undefined
     );
     return result;
+  }
+
+  addSection(
+    input: Pick<DEX_Section, 'type' | 'title' | 'defaultTitle'> & {
+      metadata?: DEX_Section['metadata'];
+    }
+  ): Promise<StoreResult<{ sectionId: SectionId; itemId: ItemId }>> {
+    return this.#enqueue(async () => {
+      const definition = resolveSectionDefinition(input.type);
+      const template = getItemInsertTemplate(
+        input.type as TemplatedSectionType
+      );
+      if (
+        !definition ||
+        !template ||
+        definition.sectionCardinality === 'required-one'
+      ) {
+        return { success: false, error: 'Section cannot be added' };
+      }
+      if (
+        definition.sectionCardinality === 'optional-one' &&
+        this.section(definition.key)
+      ) {
+        return { success: false, error: 'Section already exists' };
+      }
+      const metadata = parseMetadata(input.metadata);
+      if (validateSectionMetadata(definition, metadata).length > 0) {
+        return { success: false, error: 'Invalid section metadata' };
+      }
+      const fieldsAnalysis = analyzeItemFields(
+        { type: input.type },
+        template.fields.map((field, index) => ({
+          id: index,
+          name: field.name,
+          type: field.type,
+        }))
+      );
+      if (
+        fieldsAnalysis.diagnostics.length > 0 ||
+        template.containerType !== definition.expectedContainerType
+      ) {
+        return {
+          success: false,
+          error: 'Section template does not match its definition',
+        };
+      }
+      try {
+        const created = await clientDb.transaction(
+          'rw',
+          [clientDb.sections, clientDb.items, clientDb.fields],
+          async () => {
+            const persisted = await clientDb.sections
+              .where('documentId')
+              .equals(this.id)
+              .toArray();
+            if (
+              definition.sectionCardinality === 'optional-one' &&
+              persisted.some((section) => section.type === input.type)
+            ) {
+              return undefined;
+            }
+            const displayOrder =
+              Math.max(0, ...persisted.map((section) => section.displayOrder)) +
+              1;
+            const sectionInput = {
+              documentId: this.id,
+              type: input.type,
+              title: input.title,
+              defaultTitle: input.defaultTitle,
+              metadata: input.metadata ?? '',
+              displayOrder,
+            };
+            const sectionId = await clientDb.sections.add(sectionInput);
+            const itemInput = {
+              sectionId,
+              containerType: template.containerType,
+              displayOrder: template.displayOrder,
+            };
+            const itemId = await clientDb.items.add(itemInput);
+            const fieldInputs = template.fields.map((field) => ({
+              ...field,
+              itemId,
+            }));
+            const fieldIds = await clientDb.fields.bulkAdd(fieldInputs, {
+              allKeys: true,
+            });
+            return {
+              section: { ...sectionInput, id: sectionId } as DEX_Section,
+              item: { ...itemInput, id: itemId } as DEX_Item,
+              fields: fieldInputs.map((field, index) => ({
+                ...field,
+                id: fieldIds[index],
+              })) as DEX_Field[],
+            };
+          }
+        );
+        if (!created) {
+          return { success: false, error: 'Section already exists' };
+        }
+        const analysis = analyzeItemFields(
+          created.section,
+          created.fields.map((field) => ({
+            id: field.id,
+            name: field.name,
+            type: field.type,
+          }))
+        );
+        const recordsById = new Map(
+          created.fields.map((field) => [field.id, field])
+        );
+        const typedFields: Record<string, SemanticField> = {};
+        const fields = analysis.entries.map(
+          ({ field, definition: fieldDefinition }) => {
+            const model = new SemanticField(
+              recordsById.get(Number(field.id)) as DEX_Field,
+              definition.key as SectionKey,
+              fieldDefinition as FieldDefinition<SectionKey>
+            );
+            typedFields[model.fieldKey] = model;
+            return model;
+          }
+        );
+        const item = new BuilderItemModel(
+          created.item,
+          definition.key,
+          fields.map((field) => field.id),
+          typedFields,
+          this
+        );
+        const section = new BuilderSectionModel(
+          created.section,
+          definition,
+          metadata as BuilderSectionModel['metadata'],
+          [item.id],
+          this
+        );
+        runInAction(() => {
+          for (const field of fields) {
+            this.fieldsById.set(field.id, field);
+          }
+          this.itemsById.set(item.id, item);
+          this.sectionsById.set(section.id, section);
+          this.sectionIds.push(section.id);
+        });
+        return {
+          success: true,
+          data: { sectionId: section.id, itemId: item.id },
+        };
+      } catch {
+        return { success: false, error: 'Failed to add section' };
+      }
+    });
+  }
+
+  removeSection(sectionId: SectionId): Promise<boolean> {
+    return this.#enqueue(async () => {
+      const section = this.sectionsById.get(sectionId);
+      if (
+        !section ||
+        section.definition.sectionCardinality === 'required-one'
+      ) {
+        return false;
+      }
+      const index = this.sectionIds.indexOf(sectionId);
+      const items = section.itemIds.map(
+        (id) => this.itemsById.get(id) as BuilderItemModel
+      );
+      const fields = items.flatMap((item) =>
+        item.fieldIds.map((id) => this.fieldsById.get(id) as SemanticField)
+      );
+      runInAction(() => {
+        this.sectionIds.splice(index, 1);
+        this.sectionsById.delete(sectionId);
+        for (const item of items) {
+          this.itemsById.delete(item.id);
+        }
+        for (const field of fields) {
+          this.fieldsById.delete(field.id);
+        }
+      });
+      try {
+        await deleteSection(sectionId);
+        for (const field of fields) {
+          field.dispose();
+        }
+        return true;
+      } catch {
+        runInAction(() => {
+          for (const field of fields) {
+            this.fieldsById.set(field.id, field);
+          }
+          for (const item of items) {
+            this.itemsById.set(item.id, item);
+          }
+          this.sectionsById.set(sectionId, section);
+          this.sectionIds.splice(index, 0, sectionId);
+        });
+        return false;
+      }
+    });
+  }
+
+  renameSection(sectionId: SectionId, title: string): Promise<StoreResult> {
+    return this.#enqueue(async () => {
+      const section = this.sectionsById.get(sectionId);
+      if (!section) {
+        return { success: false, error: 'Section not found' };
+      }
+      const previous = section.title;
+      runInAction(() => {
+        section.title = title;
+      });
+      try {
+        if ((await updateSection(sectionId, { title })) === 0) {
+          throw new Error('Section no longer exists');
+        }
+        return { success: true };
+      } catch {
+        runInAction(() => {
+          section.title = previous;
+        });
+        return { success: false, error: 'Failed to rename section' };
+      }
+    });
+  }
+
+  updateSectionMetadata(
+    sectionId: SectionId,
+    key: string,
+    value: string
+  ): Promise<StoreResult> {
+    return this.#enqueue(async () => {
+      const section = this.sectionsById.get(sectionId);
+      if (!section) {
+        return { success: false, error: 'Section not found' };
+      }
+      const entry = section.metadata.find((item) => item.key === key);
+      if (!entry) {
+        return { success: false, error: 'Metadata key not found' };
+      }
+      const proposed = section.metadata.map((item) =>
+        item.key === key ? { ...item, value } : { ...item }
+      );
+      if (validateSectionMetadata(section.definition, proposed).length > 0) {
+        return { success: false, error: 'Invalid section metadata' };
+      }
+      const previous = entry.value;
+      runInAction(() => {
+        entry.value = value;
+      });
+      try {
+        if (
+          (await updateSection(sectionId, {
+            metadata: JSON.stringify(proposed),
+          })) === 0
+        ) {
+          throw new Error('Section no longer exists');
+        }
+        return { success: true };
+      } catch {
+        runInAction(() => {
+          entry.value = previous;
+        });
+        return { success: false, error: 'Failed to update section metadata' };
+      }
+    });
+  }
+
+  reorderSections(sectionIds: readonly SectionId[]): Promise<StoreResult> {
+    return this.#enqueue(async () => {
+      if (
+        sectionIds.length !== this.sectionIds.length ||
+        new Set(sectionIds).size !== sectionIds.length ||
+        sectionIds.some((id) => !this.sectionsById.has(id))
+      ) {
+        return { success: false, error: 'Invalid section order' };
+      }
+      const previousIds = [...this.sectionIds];
+      const previousOrders = new Map(
+        this.sections.map((section) => [section.id, section.displayOrder])
+      );
+      const changes = sectionIds.flatMap((id, index) =>
+        previousOrders.get(id) === index + 1
+          ? []
+          : [{ key: id, changes: { displayOrder: index + 1 } }]
+      );
+      runInAction(() => {
+        this.sectionIds.replace([...sectionIds]);
+        sectionIds.forEach((id, index) => {
+          (this.sectionsById.get(id) as BuilderSectionModel).displayOrder =
+            index + 1;
+        });
+      });
+      try {
+        if (
+          changes.length > 0 &&
+          (await bulkUpdateSections(changes)) !== changes.length
+        ) {
+          throw new Error('Some sections no longer exist');
+        }
+        return { success: true };
+      } catch {
+        runInAction(() => {
+          this.sectionIds.replace(previousIds);
+          for (const [id, order] of previousOrders) {
+            (this.sectionsById.get(id) as BuilderSectionModel).displayOrder =
+              order;
+          }
+        });
+        return { success: false, error: 'Failed to reorder sections' };
+      }
+    });
   }
 
   addItem(sectionId: SectionId): Promise<ItemId | undefined> {

@@ -1,6 +1,7 @@
 import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { clientDb } from '@/lib/client-db/clientDb';
 import type {
   DEX_Field,
@@ -95,6 +96,12 @@ export class BuilderSectionStore {
   }
 
   isSectionFixed(sectionId: DEX_Section['id']) {
+    const modelSection = this.root.documentModel?.sectionsById.get(
+      sectionId as SectionId
+    );
+    if (modelSection) {
+      return modelSection.definition.sectionCardinality === 'required-one';
+    }
     return this.isSectionFixedForSection(sectionId);
   }
 
@@ -127,6 +134,9 @@ export class BuilderSectionStore {
   }
 
   async reOrderSections(sectionIds: DEX_Section['id'][]): Promise<StoreResult> {
+    if (this.root.documentModel) {
+      return this.root.documentModel.reorderSections(sectionIds as SectionId[]);
+    }
     if (sectionIds.length === 0) {
       return { success: false, error: 'No sections to reorder' };
     }
@@ -191,6 +201,16 @@ export class BuilderSectionStore {
   async addNewSection(
     option: Omit<OtherSectionOption, 'icon'>
   ): Promise<AddSectionResult | undefined> {
+    if (this.root.documentModel) {
+      const result = await this.root.documentModel.addSection(option);
+      if (!result.success || !result.data) {
+        return undefined;
+      }
+      runInAction(() =>
+        this.root.UIStore.toggleItem(result.data?.itemId as number)
+      );
+      return result.data;
+    }
     const template = getItemInsertTemplate(option.type);
     if (!template) {
       return;
@@ -329,6 +349,15 @@ export class BuilderSectionStore {
   }
 
   async removeSection(sectionId: DEX_Section['id']) {
+    if (this.root.documentModel) {
+      const removed = await this.root.documentModel.removeSection(
+        sectionId as SectionId
+      );
+      if (removed) {
+        this.root.disposeProjectedSection(sectionId);
+      }
+      return removed;
+    }
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) {
       return;
@@ -378,6 +407,12 @@ export class BuilderSectionStore {
   }
 
   async renameSection(sectionId: DEX_Section['id'], value: string) {
+    if (this.root.documentModel) {
+      return this.root.documentModel.renameSection(
+        sectionId as SectionId,
+        value
+      );
+    }
     const section = this.sections.find((section) => section.id === sectionId);
     if (!section) {
       return;
@@ -408,6 +443,13 @@ export class BuilderSectionStore {
       value: MetadataValue;
     }
   ) {
+    if (this.root.documentModel) {
+      return this.root.documentModel.updateSectionMetadata(
+        sectionId as SectionId,
+        data.key,
+        data.value
+      );
+    }
     const section = this.getSectionById(sectionId);
     if (!section) {
       return;
