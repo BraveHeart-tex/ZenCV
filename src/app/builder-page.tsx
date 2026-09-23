@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useBlocker, useNavigate, useParams } from 'react-router-dom';
 import { DocumentBuilderViewToggle } from '@/components/documentBuilder/builderViewOptions/DocumentBuilderViewToggle';
 import { DocumentBuilderClient } from '@/components/documentBuilder/DocumentBuilderClient';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
@@ -27,6 +27,7 @@ export const BuilderPage = observer(() => {
   const session = builderRootStore.session;
   const view = builderRootStore.UIStore.currentView;
   const [hasMountedPreview, setHasMountedPreview] = useState(false);
+  const blocker = useBlocker(session.state.status === 'ready');
 
   useEffect(() => {
     if (!documentId) {
@@ -65,11 +66,22 @@ export const BuilderPage = observer(() => {
     }
   }, [view]);
 
-  const returnToDocuments = async () => {
-    if (!(await session.prepareNavigation())) {
-      showErrorToast('Finish saving your changes before leaving.');
+  useEffect(() => {
+    if (blocker.state !== 'blocked') {
       return;
     }
+
+    void (async () => {
+      if (await session.prepareNavigation()) {
+        blocker.proceed();
+        return;
+      }
+      showErrorToast('Finish saving your changes before leaving.');
+      blocker.reset();
+    })();
+  }, [blocker, session]);
+
+  const returnToDocuments = () => {
     navigate('/documents');
   };
 

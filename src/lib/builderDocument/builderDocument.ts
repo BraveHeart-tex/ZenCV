@@ -457,12 +457,18 @@ export class BuilderDocumentModel {
     this.#acceptingCommands = false;
     await this.#commandTail;
     if (this.#commandFailed) {
+      this.#commandFailed = false;
+      this.#acceptingCommands = true;
       return false;
     }
     const results = await Promise.all(
       [...this.fieldsById.values()].map((field) => field.flush())
     );
-    return results.every(Boolean);
+    if (!results.every(Boolean)) {
+      this.#acceptingCommands = true;
+      return false;
+    }
+    return true;
   }
 
   discard(): void {
