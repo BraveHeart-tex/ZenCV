@@ -1,7 +1,7 @@
 import '@fontsource-variable/instrument-sans';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { App } from './app/App';
 import './app/globals.css';
 import '@/styles/shepherd.css';
@@ -9,6 +9,8 @@ import '@/styles/tiptap.css';
 import 'shepherd.js/dist/css/shepherd.css';
 import * as Sentry from '@sentry/react';
 import { GlobalErrorBoundary } from './components/ErrorBoundary';
+
+const router = createBrowserRouter([{ path: '*', Component: App }]);
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -33,9 +35,7 @@ window.addEventListener('unhandledrejection', (event) => {
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <GlobalErrorBoundary>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </GlobalErrorBoundary>
   </StrictMode>
 );

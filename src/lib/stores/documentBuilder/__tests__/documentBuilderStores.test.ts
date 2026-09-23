@@ -1,6 +1,7 @@
 import { isObservable, runInAction } from 'mobx';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import { BuilderDocumentModel } from '@/lib/builderDocument/builderDocument';
 import type {
   DEX_Field,
   DEX_Item,
@@ -516,6 +517,9 @@ describe('BuilderSession', () => {
     await expect(root.session.prepareNavigation()).resolves.toBe(false);
     expect(root.session.document).toBe(document);
 
+    serviceMocks.field.updateField.mockResolvedValueOnce(1);
+    await expect(root.session.prepareNavigation()).resolves.toBe(true);
+
     const commandRoot = createTestRootStore();
     serviceMocks.document.getFullDocumentStructure.mockResolvedValue(
       recordsFor(1)
@@ -529,6 +533,28 @@ describe('BuilderSession', () => {
     });
     await expect(commandRoot.session.prepareNavigation()).resolves.toBe(false);
     expect(commandRoot.session.document).toBe(commandDocument);
+    await expect(commandRoot.session.prepareNavigation()).resolves.toBe(true);
+  });
+
+  it('disposes a candidate that resolves after the session is discarded', async () => {
+    const root = createTestRootStore();
+    let resolveLoad!: (value: ReturnType<typeof recordsFor>) => void;
+    const discard = vi.spyOn(BuilderDocumentModel.prototype, 'discard');
+    serviceMocks.document.getFullDocumentStructure.mockImplementationOnce(
+      () =>
+        new Promise<ReturnType<typeof recordsFor>>((resolve) => {
+          resolveLoad = resolve;
+        })
+    );
+
+    const load = root.session.load(1);
+    root.session.discard();
+    resolveLoad(recordsFor(1));
+    await load;
+
+    expect(discard).toHaveBeenCalledOnce();
+    expect(root.session.state).toEqual({ status: 'idle' });
+    expect(root.documentModel).toBeNull();
   });
 
   it('discards pending semantic field edits and clears UI-only references', async () => {
