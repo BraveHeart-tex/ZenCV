@@ -2,53 +2,29 @@ import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
 import type { SectionId } from '@/lib/builderDocument/builderDocument';
-import { clientDb } from '@/lib/client-db/clientDb';
 import type {
-  DEX_Field,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
-import {
-  bulkUpdateSections,
-  deleteSection,
-  updateSection,
-} from '@/lib/client-db/sectionService';
-import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
-import type {
-  MetadataValue,
   ParsedSectionMetadata,
-  SectionMetadataKey,
   SectionType,
   SectionWithParsedMetadata,
   StoreResult,
 } from '@/lib/types/documentBuilder.types';
 import { groupBy, safeParse } from '@/lib/utils/objectUtils';
 import type { BuilderRootStore } from './builderRootStore';
-import {
-  FIXED_SECTIONS,
-  INTERNAL_SECTION_TYPES,
-  MAX_PERSONAL_DETAILS_LINKS,
-} from './documentBuilder.constants';
+import { FIXED_SECTIONS } from './documentBuilder.constants';
 
 export const parseMetadataToObservable = (raw: unknown) =>
   safeParse<ParsedSectionMetadata[]>(raw, []).map((m) => observable(m));
 
 interface AddSectionResult {
-  itemId: DEX_Item['id'] | undefined;
-  sectionId: DEX_Section['id'];
-}
-
-interface CreatedSectionRecords extends AddSectionResult {
-  fields: DEX_Field[];
-  item: DEX_Item;
-  section: DEX_Section;
+  itemId: number | undefined;
+  sectionId: number;
 }
 
 export class BuilderSectionStore {
   root: BuilderRootStore;
   sections: SectionWithParsedMetadata[] = [];
   private readonly isSectionFixedForSection = computedFn(
-    (sectionId: DEX_Section['id']) => {
+    (sectionId: number) => {
       const section = this.getSectionById(sectionId);
       return FIXED_SECTIONS.includes(
         (section?.type ?? '') as (typeof FIXED_SECTIONS)[number]
@@ -91,11 +67,11 @@ export class BuilderSectionStore {
       .map((s) => s.id);
   }
 
-  getSectionById(sectionId: DEX_Section['id']) {
+  getSectionById(sectionId: number) {
     return this.sectionsById.get(sectionId);
   }
 
-  isSectionFixed(sectionId: DEX_Section['id']) {
+  isSectionFixed(sectionId: number) {
     const modelSection = this.root.documentModel?.sectionsById.get(
       sectionId as SectionId
     );
@@ -105,9 +81,7 @@ export class BuilderSectionStore {
     return this.isSectionFixedForSection(sectionId);
   }
 
-  getSectionMetadataOptions(
-    sectionId: DEX_Section['id']
-  ): ParsedSectionMetadata[] {
+  getSectionMetadataOptions(sectionId: number): ParsedSectionMetadata[] {
     const section = this.getSectionById(sectionId);
     if (!section || !section?.metadata) {
       return [];
@@ -133,348 +107,68 @@ export class BuilderSectionStore {
     }));
   }
 
-  async reOrderSections(sectionIds: DEX_Section['id'][]): Promise<StoreResult> {
-    if (this.root.documentModel) {
-      return this.root.documentModel.reorderSections(sectionIds as SectionId[]);
+  async reOrderSections(sectionIds: number[]): Promise<StoreResult> {
+    const model = this.root.documentModel;
+    if (!model) {
+      return { success: false, error: 'Builder document is not ready' };
     }
-    if (sectionIds.length === 0) {
-      return { success: false, error: 'No sections to reorder' };
-    }
-
-    const newDisplayOrders = sectionIds.map((id, index) => ({
-      id,
-      displayOrder: index + 1,
-    }));
-
-    const changedSections = newDisplayOrders.filter((newOrder) => {
-      const prevItem = this.sections.find(
-        (section) => section.id === newOrder.id
-      );
-      return prevItem && prevItem.displayOrder !== newOrder.displayOrder;
-    });
-
-    if (changedSections.length === 0) {
-      return { success: true };
-    }
-
-    const previousDisplayOrders = new Map(
-      changedSections.map(({ id }) => [
-        id,
-        this.sectionsById.get(id)?.displayOrder ?? 0,
-      ])
-    );
-
-    runInAction(() => {
-      this.sections.forEach((section) => {
-        const newOrder = newDisplayOrders.find((o) => o.id === section.id);
-        if (newOrder && newOrder?.displayOrder !== section.displayOrder) {
-          section.displayOrder = newOrder.displayOrder;
-        }
-      });
-    });
-
-    try {
-      await bulkUpdateSections(
-        changedSections.map((section) => ({
-          key: section.id,
-          changes: {
-            displayOrder: section.displayOrder,
-          },
-        }))
-      );
-
-      return { success: true };
-    } catch (error) {
-      console.error('bulkUpdateSections error', error);
-      runInAction(() => {
-        this.sections.forEach((section) => {
-          const previousDisplayOrder = previousDisplayOrders.get(section.id);
-          if (previousDisplayOrder !== undefined) {
-            section.displayOrder = previousDisplayOrder;
-          }
-        });
-      });
-      return { success: false, error: 'Failed to reorder sections' };
-    }
+    return model.reorderSections(sectionIds as SectionId[]);
   }
 
   async addNewSection(
     option: Omit<OtherSectionOption, 'icon'>
   ): Promise<AddSectionResult | undefined> {
-    if (this.root.documentModel) {
-      const result = await this.root.documentModel.addSection(option);
-      if (!result.success || !result.data) {
-        return undefined;
-      }
-      runInAction(() =>
-        this.root.UIStore.toggleItem(result.data?.itemId as number)
-      );
-      return result.data;
+    const model = this.root.documentModel;
+    if (!model) {
+      return undefined;
     }
-    const template = getItemInsertTemplate(option.type);
-    if (!template) {
-      return;
+    const result = await model.addSection(option);
+    if (!result.success) {
+      return undefined;
     }
-
-    if (!this.root.documentStore.document) {
-      return;
+    const data = result.data;
+    if (!data) {
+      return undefined;
     }
-
-    const documentId = this.root.documentStore.document.id;
-
-    const createSection = (): Promise<CreatedSectionRecords | undefined> =>
-      clientDb.transaction(
-        'rw',
-        [clientDb.sections, clientDb.fields, clientDb.items],
-        async () => {
-          const documentSections = await clientDb.sections
-            .where('documentId')
-            .equals(documentId)
-            .toArray();
-
-          if (option.type !== INTERNAL_SECTION_TYPES.CUSTOM) {
-            const hasExistingSection = documentSections.some(
-              (section) => section.type === option.type
-            );
-            if (hasExistingSection) {
-              return;
-            }
-          }
-
-          const sectionDisplayOrder =
-            documentSections.reduce(
-              (acc, curr) => Math.max(acc, curr.displayOrder),
-              0
-            ) + 1;
-          const itemDisplayOrder = template.displayOrder;
-          const sectionDto = {
-            displayOrder: sectionDisplayOrder,
-            title: option.title,
-            defaultTitle: option.defaultTitle,
-            type: option.type,
-            metadata: option?.metadata,
-            documentId,
-          };
-
-          const sectionId = await clientDb.sections.add(sectionDto);
-          const section = {
-            ...sectionDto,
-            id: sectionId,
-          };
-
-          if (option.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS) {
-            const matchingSectionIds = (
-              await clientDb.sections
-                .where('documentId')
-                .equals(documentId)
-                .filter((candidate) => candidate.type === option.type)
-                .toArray()
-            ).map((candidate) => candidate.id);
-            const itemCount = matchingSectionIds.length
-              ? await clientDb.items
-                  .where('sectionId')
-                  .anyOf(matchingSectionIds)
-                  .count()
-              : 0;
-
-            if (itemCount >= MAX_PERSONAL_DETAILS_LINKS) {
-              await clientDb.sections.delete(sectionId);
-              return;
-            }
-          }
-
-          const itemId = await clientDb.items.add({
-            sectionId,
-            containerType: template.containerType,
-            displayOrder: itemDisplayOrder,
-          });
-
-          const fieldsPayload = template.fields.map((field) => ({
-            ...field,
-            itemId,
-          }));
-
-          const fieldIds = await clientDb.fields.bulkAdd(fieldsPayload, {
-            allKeys: true,
-          });
-
-          const fields = fieldsPayload.map((field, index) => ({
-            ...field,
-            id: fieldIds[index],
-            itemId,
-          })) as DEX_Field[];
-          const item = {
-            id: itemId,
-            sectionId,
-            containerType: template.containerType,
-            displayOrder: itemDisplayOrder,
-          };
-
-          return {
-            fields,
-            item,
-            itemId,
-            section,
-            sectionId,
-          };
-        }
-      );
-
-    const result = await createSection();
-    if (!result) {
-      return;
-    }
-
-    if (this.root.documentStore.document?.id !== documentId) {
-      return;
-    }
-
-    runInAction(() => {
-      this.sections.push({
-        ...result.section,
-        metadata: parseMetadataToObservable(result.section.metadata),
-      });
-
-      this.root.itemStore.items.push(result.item);
-      this.root.fieldStore.addFields(result.fields);
-      this.root.UIStore.toggleItem(result.item.id);
-    });
-
-    await this.root.refreshDocumentModel();
-
-    return {
-      itemId: result.itemId,
-      sectionId: result.sectionId,
-    };
+    runInAction(() => this.root.UIStore.toggleItem(data.itemId));
+    return data;
   }
 
-  async removeSection(sectionId: DEX_Section['id']) {
-    if (this.root.documentModel) {
-      const removed = await this.root.documentModel.removeSection(
-        sectionId as SectionId
-      );
-      if (removed) {
-        this.root.disposeProjectedSection(sectionId);
-      }
-      return removed;
+  async removeSection(sectionId: number): Promise<boolean> {
+    const model = this.root.documentModel;
+    if (!model) {
+      return false;
     }
-    const section = this.sections.find((section) => section.id === sectionId);
-    if (!section) {
-      return;
+    const removed = await model.removeSection(sectionId as SectionId);
+    if (removed) {
+      this.root.disposeProjectedSection(sectionId);
     }
-
-    const itemIdsToKeep = this.root.itemStore.items
-      .filter((item) => item.sectionId !== sectionId)
-      .map((item) => item.id);
-
-    const prevSections = this.sections;
-    const prevItems = this.root.itemStore.items;
-    const prevFields = this.root.fieldStore.fields;
-    const itemIdsToRemove = this.root.itemStore.items
-      .filter((item) => item.sectionId === sectionId)
-      .map((item) => item.id);
-    const removedFields = this.root.fieldStore.fields.filter((field) =>
-      itemIdsToRemove.includes(field.itemId)
-    );
-
-    runInAction(() => {
-      this.sections = this.sections.filter(
-        (section) => section.id !== sectionId
-      );
-      this.root.itemStore.items = this.root.itemStore.items.filter(
-        (item) => item.sectionId !== sectionId
-      );
-      this.root.fieldStore.fields = this.root.fieldStore.fields.filter(
-        (field) => itemIdsToKeep.includes(field.itemId)
-      );
-    });
-
-    try {
-      await deleteSection(sectionId);
-      removedFields.forEach((field) => {
-        field.dispose();
-      });
-    } catch (error) {
-      console.error('Error deleting section:', error);
-      runInAction(() => {
-        this.sections = prevSections;
-        this.root.itemStore.items = prevItems;
-        this.root.fieldStore.fields = prevFields;
-      });
-      return;
-    }
-    await this.root.refreshDocumentModel();
+    return removed;
   }
 
-  async renameSection(sectionId: DEX_Section['id'], value: string) {
-    if (this.root.documentModel) {
-      return this.root.documentModel.renameSection(
-        sectionId as SectionId,
-        value
-      );
+  async renameSection(sectionId: number, value: string): Promise<StoreResult> {
+    const model = this.root.documentModel;
+    if (!model) {
+      return { success: false, error: 'Builder document is not ready' };
     }
-    const section = this.sections.find((section) => section.id === sectionId);
-    if (!section) {
-      return;
-    }
-
-    const prevTitle = section.title;
-
-    runInAction(() => {
-      section.title = value;
-    });
-
-    try {
-      await updateSection(sectionId, {
-        title: value,
-      });
-    } catch (error) {
-      console.error('Error updating section title:', error);
-      runInAction(() => {
-        section.title = prevTitle;
-      });
-    }
+    return model.renameSection(sectionId as SectionId, value);
   }
 
   async updateSectionMetadata(
-    sectionId: DEX_Section['id'],
+    sectionId: number,
     data: {
-      key: SectionMetadataKey;
-      value: MetadataValue;
+      key: string;
+      value: string;
     }
-  ) {
-    if (this.root.documentModel) {
-      return this.root.documentModel.updateSectionMetadata(
-        sectionId as SectionId,
-        data.key,
-        data.value
-      );
+  ): Promise<StoreResult> {
+    const model = this.root.documentModel;
+    if (!model) {
+      return { success: false, error: 'Builder document is not ready' };
     }
-    const section = this.getSectionById(sectionId);
-    if (!section) {
-      return;
-    }
-
-    const metadata = section.metadata.find((m) => m.key === data.key);
-    if (!metadata) {
-      return;
-    }
-
-    const prev = metadata.value;
-
-    runInAction(() => {
-      metadata.value = data.value;
-    });
-
-    try {
-      await updateSection(sectionId, {
-        metadata: JSON.stringify(section.metadata),
-      });
-    } catch (error) {
-      runInAction(() => {
-        metadata.value = prev;
-      });
-      console.error('Error updating section metadata:', error);
-    }
+    return model.updateSectionMetadata(
+      sectionId as SectionId,
+      data.key,
+      data.value
+    );
   }
 }

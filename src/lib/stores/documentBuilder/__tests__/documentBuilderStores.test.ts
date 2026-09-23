@@ -445,7 +445,7 @@ describe('BuilderSectionStore', () => {
     expect(isObservable(root.sectionStore.sections[0].metadata[0])).toBe(true);
   });
 
-  it('reorders sections: empty, no-op, success, and rollback', async () => {
+  it('does not run section commands before the builder document is hydrated', async () => {
     const root = createTestRootStore();
     root.sectionStore.setSections([
       buildParsedSection({ id: 1, displayOrder: 1 }),
@@ -454,139 +454,28 @@ describe('BuilderSectionStore', () => {
 
     await expect(root.sectionStore.reOrderSections([])).resolves.toEqual({
       success: false,
-      error: 'No sections to reorder',
+      error: 'Builder document is not ready',
     });
-    await expect(root.sectionStore.reOrderSections([1, 2])).resolves.toEqual({
-      success: true,
-    });
-    expect(serviceMocks.section.bulkUpdateSections).not.toHaveBeenCalled();
-
-    await expect(root.sectionStore.reOrderSections([2, 1])).resolves.toEqual({
-      success: true,
-    });
-    expect(root.sectionStore.orderedSectionIds).toEqual([2, 1]);
-
-    serviceMocks.section.bulkUpdateSections.mockRejectedValue(new Error('no'));
-    await expect(root.sectionStore.reOrderSections([1, 2])).resolves.toEqual({
-      success: false,
-      error: 'Failed to reorder sections',
-    });
-    expect(root.sectionStore.orderedSectionIds).toEqual([2, 1]);
-  });
-
-  it('adds sections and handles duplicate, non-template, no-document, and link-limit guards', async () => {
-    const root = createTestRootStore();
-    root.documentStore.setDocument(buildDocument());
-    clientDbMock.state.sections = [
-      buildSection({ id: 3, type: INTERNAL_SECTION_TYPES.COURSES }),
-    ];
-
-    await expect(
-      root.sectionStore.addNewSection(
-        createSectionOption(INTERNAL_SECTION_TYPES.COURSES)
-      )
-    ).resolves.toBeUndefined();
-
-    await expect(
-      root.sectionStore.addNewSection(
-        createSectionOption(
-          INTERNAL_SECTION_TYPES.PERSONAL_DETAILS as Parameters<
-            typeof createSectionOption
-          >[0]
-        )
-      )
-    ).resolves.toBeUndefined();
-
-    root.documentStore.document = null;
     await expect(
       root.sectionStore.addNewSection(createSectionOption())
     ).resolves.toBeUndefined();
-
-    root.documentStore.setDocument(buildDocument());
-    clientDbMock.state.sections = [];
+    await expect(root.sectionStore.removeSection(1)).resolves.toBe(false);
     await expect(
-      root.sectionStore.addNewSection(createSectionOption())
+      root.sectionStore.renameSection(1, 'Renamed')
     ).resolves.toEqual({
-      itemId: 300,
-      sectionId: 200,
+      success: false,
+      error: 'Builder document is not ready',
     });
-    expect(root.sectionStore.sections.at(-1)?.title).toBe('Custom Section');
-    expect(root.fieldStore.fields.length).toBeGreaterThan(0);
-
-    const linksRoot = createTestRootStore();
-    linksRoot.documentStore.setDocument(buildDocument());
-    clientDbMock.reset();
-    clientDbMock.state.sections = [
-      buildSection({
-        id: 5,
-        type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
-      }),
-    ];
-    clientDbMock.state.items = Array.from(
-      { length: MAX_PERSONAL_DETAILS_LINKS },
-      (_, index) => buildItem({ id: index + 1, sectionId: 5 })
-    );
     await expect(
-      linksRoot.sectionStore.addNewSection(
-        createSectionOption(INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS)
-      )
-    ).resolves.toBeUndefined();
-  });
-
-  it('removes sections and disposes removed fields only after service success', async () => {
-    const { root } = hydrateBasicResume();
-    const removedField = root.fieldStore.fields.find(
-      (field) => field.itemId === 3
-    );
-    removedField?.setValue('pending save');
-
-    await root.sectionStore.removeSection(3);
-    expect(root.sectionStore.getSectionById(3)).toBeUndefined();
-    expect(root.itemStore.getItemById(3)).toBeUndefined();
-    vi.advanceTimersByTime(400);
-    expect(serviceMocks.field.updateField).not.toHaveBeenCalled();
-
-    const failed = hydrateBasicResume().root;
-    serviceMocks.section.deleteSection.mockRejectedValue(
-      new Error('delete failed')
-    );
-    await failed.sectionStore.removeSection(3);
-    expect(failed.sectionStore.getSectionById(3)).toBeDefined();
-    expect(failed.itemStore.getItemById(3)).toBeDefined();
-  });
-
-  it('renames sections and updates metadata with rollback', async () => {
-    const root = createTestRootStore();
-    root.sectionStore.setSections([
-      buildParsedSection({
-        id: 4,
-        type: INTERNAL_SECTION_TYPES.SKILLS,
-      }),
-    ]);
-
-    await root.sectionStore.renameSection(4, 'Core Skills');
-    expect(root.sectionStore.getSectionById(4)?.title).toBe('Core Skills');
-
-    serviceMocks.section.updateSection.mockRejectedValueOnce(
-      new Error('rename failed')
-    );
-    await root.sectionStore.renameSection(4, 'Broken');
-    expect(root.sectionStore.getSectionById(4)?.title).toBe('Core Skills');
-
-    await root.sectionStore.updateSectionMetadata(4, {
-      key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-      value: '0',
+      root.sectionStore.updateSectionMetadata(1, { key: 'key', value: 'value' })
+    ).resolves.toEqual({
+      success: false,
+      error: 'Builder document is not ready',
     });
-    expect(root.sectionStore.getSectionMetadataOptions(4)[0].value).toBe('0');
-
-    serviceMocks.section.updateSection.mockRejectedValueOnce(
-      new Error('metadata failed')
-    );
-    await root.sectionStore.updateSectionMetadata(4, {
-      key: SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL,
-      value: '1',
-    });
-    expect(root.sectionStore.getSectionMetadataOptions(4)[0].value).toBe('0');
+    expect(root.sectionStore.orderedSectionIds).toEqual([1, 2]);
+    expect(serviceMocks.section.bulkUpdateSections).not.toHaveBeenCalled();
+    expect(serviceMocks.section.deleteSection).not.toHaveBeenCalled();
+    expect(serviceMocks.section.updateSection).not.toHaveBeenCalled();
   });
 });
 
