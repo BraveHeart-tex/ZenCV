@@ -35,11 +35,11 @@ describe('current store projection architecture', () => {
     expect(consumers).toEqual([...CURRENT_STORE_PROJECTION_IMPORT_ALLOWLIST]);
   });
 
-  it('contains persistence DTO imports inside the approved legacy boundary', () => {
-    const builderFiles = listSourceFiles(
-      join(sourceRoot, 'lib/stores/documentBuilder')
-    );
-    const consumers = builderFiles
+  it('contains persistence DTO imports inside approved domain and legacy boundaries', () => {
+    const consumers = [
+      ...listSourceFiles(join(sourceRoot, 'lib/builderDocument')),
+      ...listSourceFiles(join(sourceRoot, 'lib/stores/documentBuilder')),
+    ]
       .filter((path) =>
         readFileSync(path, 'utf8').includes('client-db/clientDbSchema')
       )
@@ -47,7 +47,7 @@ describe('current store projection architecture', () => {
       .filter((path) => !path.includes('/__tests__/'));
 
     expect(consumers.sort()).toEqual(
-      [...CURRENT_STORE_DTO_IMPORT_ALLOWLIST].slice(1).sort()
+      [...CURRENT_STORE_DTO_IMPORT_ALLOWLIST].sort()
     );
   });
 });

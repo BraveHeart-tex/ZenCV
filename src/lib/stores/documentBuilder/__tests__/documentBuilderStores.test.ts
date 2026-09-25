@@ -279,6 +279,101 @@ describe('BuilderRootStore', () => {
     );
   });
 
+  it('projects representative semantic sections, items, fields, and template data', () => {
+    const root = createTestRootStore();
+    const records = builderDocumentFixture();
+
+    expect(
+      root.installDocumentModel(
+        {
+          success: true,
+          document: records.document,
+          sections: [...records.sections],
+          items: [...records.items],
+          fields: [...records.fields],
+        },
+        true
+      )
+    ).toBe(true);
+
+    const model = root.documentModel;
+    if (!model) {
+      throw new Error('Builder document model was not installed');
+    }
+    expect(root.sectionStore.sections).toMatchObject(
+      model.sections.map((section) => ({
+        id: section.id,
+        title: section.title,
+        displayOrder: section.displayOrder,
+        metadata: section.metadata,
+      }))
+    );
+    expect(root.itemStore.items).toMatchObject(
+      model.sections.flatMap((section) =>
+        section.items.map((item) => ({
+          id: item.id,
+          sectionId: item.sectionId,
+          containerType: item.containerType,
+          displayOrder: item.displayOrder,
+        }))
+      )
+    );
+    expect(
+      root.fieldStore.getFieldsByItemId(model.personalDetails.items[0]?.id ?? 0)
+    ).toMatchObject(
+      model.personalDetails.items[0]?.editableFields.map((field) => ({
+        id: field.id,
+        itemId: field.itemId,
+        value: field.value,
+      })) ?? []
+    );
+
+    root.startSession();
+    vi.advanceTimersByTime(TEMPLATE_DATA_DEBOUNCE_MS);
+    expect(
+      root.templateStore.debouncedTemplateData?.personalDetails
+    ).toMatchObject({
+      firstName: model.personalDetails.items[0]?.field('firstName')?.value,
+      lastName: model.personalDetails.items[0]?.field('lastName')?.value,
+    });
+  });
+
+  it('replaces projected semantic field views after a document refresh', async () => {
+    const root = createTestRootStore();
+    const records = builderDocumentFixture();
+    const replacement = {
+      success: true as const,
+      document: { ...records.document },
+      sections: records.sections.map((section) => ({ ...section })),
+      items: records.items.map((item) => ({ ...item })),
+      fields: records.fields.map((field) =>
+        field.id === 1 ? { ...field, value: 'Refreshed Ada' } : { ...field }
+      ),
+    };
+
+    expect(
+      root.installDocumentModel(
+        {
+          success: true,
+          document: records.document,
+          sections: [...records.sections],
+          items: [...records.items],
+          fields: [...records.fields],
+        },
+        true
+      )
+    ).toBe(true);
+    serviceMocks.document.getFullDocumentStructure.mockResolvedValue(
+      replacement
+    );
+
+    await root.refreshDocumentModel();
+    await root.fieldStore.setFieldValue(1, 'Grace', false);
+
+    expect(root.fieldStore.getFieldById(1)?.value).toBe('Grace');
+    expect(root.documentModel?.fieldsById.get(1 as never)?.value).toBe('Grace');
+  });
+
   it('starts and stops reaction-backed stores and resetState clears all stores', async () => {
     const { root } = hydrateBasicResume();
 
