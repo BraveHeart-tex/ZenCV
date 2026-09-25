@@ -43,6 +43,18 @@ class CurrentSectionView {
   get metadata() {
     return this.section.metadata.map((entry) => ({ ...entry }));
   }
+
+  toSnapshot(): SectionWithParsedMetadata {
+    return {
+      id: this.id,
+      documentId: this.documentId,
+      type: this.type,
+      title: this.title,
+      defaultTitle: this.defaultTitle,
+      displayOrder: this.displayOrder,
+      metadata: this.metadata as SectionWithParsedMetadata['metadata'],
+    };
+  }
 }
 
 class CurrentItemView {
@@ -62,6 +74,15 @@ class CurrentItemView {
 
   get displayOrder() {
     return this.item.displayOrder;
+  }
+
+  toSnapshot(): DEX_Item {
+    return {
+      id: this.id,
+      sectionId: this.sectionId,
+      containerType: this.containerType,
+      displayOrder: this.displayOrder,
+    };
   }
 }
 
@@ -110,18 +131,9 @@ export class CurrentStoreProjection {
     if (!document) {
       return this.root.sectionStore.sections;
     }
-    return document.sections.map((section) => ({
-      id: section.id,
-      documentId: section.documentId,
-      type: section.definition.persistedType,
-      title: section.title,
-      defaultTitle: section.defaultTitle,
-      displayOrder: section.displayOrder,
-      metadata: section.metadata.map(
-        (entry) =>
-          ({ ...entry }) as SectionWithParsedMetadata['metadata'][number]
-      ),
-    }));
+    return document.sections.map((section) =>
+      this.getProjectedSection(section).toSnapshot()
+    );
   }
 
   get accentColor(): string {
@@ -146,12 +158,9 @@ export class CurrentStoreProjection {
     const section = document.sections.find(
       (candidate) => candidate.id === sectionId
     );
-    return (section?.items ?? []).map((item) => ({
-      id: item.id,
-      sectionId: item.sectionId,
-      containerType: item.containerType,
-      displayOrder: item.displayOrder,
-    }));
+    return (section?.items ?? []).map((item) =>
+      this.getProjectedItem(item).toSnapshot()
+    );
   }
 
   getFieldsByItemId(itemId: number): DEX_Field[] {
@@ -241,24 +250,36 @@ export class CurrentStoreProjection {
     this.projectedFields.clear();
   }
 
+  private getProjectedSection(
+    section: BuilderSectionModel
+  ): CurrentSectionView {
+    let projectedSection = this.projectedSections.get(section.id);
+    if (!projectedSection) {
+      projectedSection = new CurrentSectionView(section);
+      this.projectedSections.set(section.id, projectedSection);
+    }
+    return projectedSection;
+  }
+
+  private getProjectedItem(item: BuilderItemModel): CurrentItemView {
+    let projectedItem = this.projectedItems.get(item.id);
+    if (!projectedItem) {
+      projectedItem = new CurrentItemView(item);
+      this.projectedItems.set(item.id, projectedItem);
+    }
+    return projectedItem;
+  }
+
   private projectItems(): void {
     runInAction(() => {
       const sections: SectionWithParsedMetadata[] = [];
       const items: DEX_Item[] = [];
       const fields: FieldModel[] = [];
       for (const section of this.root.documentModel?.sections ?? []) {
-        let projectedSection = this.projectedSections.get(section.id);
-        if (!projectedSection) {
-          projectedSection = new CurrentSectionView(section);
-          this.projectedSections.set(section.id, projectedSection);
-        }
+        const projectedSection = this.getProjectedSection(section);
         sections.push(projectedSection as SectionWithParsedMetadata);
         for (const item of section.items) {
-          let projectedItem = this.projectedItems.get(item.id);
-          if (!projectedItem) {
-            projectedItem = new CurrentItemView(item);
-            this.projectedItems.set(item.id, projectedItem);
-          }
+          const projectedItem = this.getProjectedItem(item);
           items.push(projectedItem as DEX_Item);
           for (const field of item.editableFields) {
             let projectedField = this.projectedFields.get(field.id);
