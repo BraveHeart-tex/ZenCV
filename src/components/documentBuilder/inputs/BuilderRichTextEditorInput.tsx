@@ -1,5 +1,6 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { RichTextCharacterCounter } from '@/components/documentBuilder/RichTextCharacterCounter';
 import { RichTextEditor } from '@/components/richTextEditor/RichTextEditor';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
@@ -40,6 +41,7 @@ export const BuilderRichTextEditorInput = observer(
           fieldValue={field.value}
           itemId={field.itemId}
         />
+        <FieldPersistenceError field={field} />
       </div>
     );
   }

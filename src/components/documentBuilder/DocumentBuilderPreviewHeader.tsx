@@ -10,8 +10,7 @@ import { Button } from '../ui/button';
 
 export const DocumentBuilderPreviewHeader = observer(() => {
   const view = builderRootStore.UIStore.currentView;
-  const documentTitle =
-    builderRootStore.documentStore.document?.title || 'Untitled';
+  const documentTitle = builderRootStore.document?.title || 'Untitled';
   const previousRenderValue = pdfViewerStore.previousRenderValue;
 
   return (

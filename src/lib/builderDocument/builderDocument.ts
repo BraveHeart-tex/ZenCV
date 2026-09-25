@@ -29,6 +29,11 @@ import {
   deleteSection,
   updateSection,
 } from '@/lib/client-db/sectionService';
+import {
+  getDefaultAccentColorForTemplate,
+  parseTemplateSettings,
+  serializeTemplateSettings,
+} from '@/lib/constants/accentColors';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import {
   analyzeItemFields,
@@ -42,6 +47,7 @@ import {
   validateSectionMetadata,
 } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type {
+  ResumeTemplate,
   StoreResult,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
@@ -85,6 +91,7 @@ export class SemanticField<
   readonly fieldKey: K;
   readonly definition: PublicFieldDefinition<S, K>;
   value: string;
+  saveError: string | null = null;
   private persistedValue: string;
   #version = 0;
   #timer: ReturnType<typeof setTimeout> | null = null;
@@ -115,6 +122,7 @@ export class SemanticField<
     this.persistedValue = record.value;
     makeObservable<this, 'persistedValue'>(this, {
       value: observable,
+      saveError: observable,
       persistedValue: observable,
       isDirty: computed,
       setDraft: action,
@@ -135,6 +143,7 @@ export class SemanticField<
     this.#assertActive();
     this.#cancelTimer();
     this.value = value;
+    this.saveError = null;
     this.#version += 1;
   }
 
@@ -222,6 +231,7 @@ export class SemanticField<
         runInAction(() => {
           if (this.#version === version) {
             this.value = this.persistedValue;
+            this.saveError = 'Could not save this change. Please try again.';
           }
         });
         return false;
@@ -389,6 +399,13 @@ export class BuilderDocumentModel {
     );
   }
 
+  get accentColor(): string {
+    return (
+      parseTemplateSettings(this.templateSettings)[this.templateType]
+        ?.accentColor ?? getDefaultAccentColorForTemplate(this.templateType)
+    );
+  }
+
   section<S extends SectionKey>(key: S): BuilderSectionModel<S> | undefined {
     return this.sections.find((section) => section.sectionKey === key) as
       | BuilderSectionModel<S>
@@ -533,6 +550,30 @@ export class BuilderDocumentModel {
         });
         return { success: false, error: 'Failed to update document' };
       }
+    });
+  }
+
+  changeTemplate(templateType: ResumeTemplate): Promise<StoreResult> {
+    const settings = parseTemplateSettings(this.templateSettings);
+    if (!settings[templateType]) {
+      settings[templateType] = {
+        accentColor: getDefaultAccentColorForTemplate(templateType),
+      };
+    }
+    return this.updateDocument({
+      templateType,
+      templateSettings: serializeTemplateSettings(settings),
+    });
+  }
+
+  changeAccent(color: string): Promise<StoreResult> {
+    const settings = parseTemplateSettings(this.templateSettings);
+    return this.updateDocument({
+      templateType: this.templateType,
+      templateSettings: serializeTemplateSettings({
+        ...settings,
+        [this.templateType]: { accentColor: color },
+      }),
     });
   }
 

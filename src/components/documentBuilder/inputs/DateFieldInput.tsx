@@ -9,6 +9,7 @@ import {
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useMemo, useRef } from 'react';
+import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -243,6 +244,7 @@ export const DateFieldInput = observer(
             </PopoverContent>
           </Popover>
         </div>
+        <FieldPersistenceError field={field} />
       </div>
     );
   }

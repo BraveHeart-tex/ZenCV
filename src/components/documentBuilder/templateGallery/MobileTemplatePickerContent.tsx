@@ -24,7 +24,7 @@ export const MobileTemplatePickerContent = observer(() => {
       return;
     }
     const selectedIndex = templateOptionsWithImages.findIndex(
-      (t) => t.value === builderRootStore.documentStore.document?.templateType
+      (t) => t.value === builderRootStore.document?.templateType
     );
     if (selectedIndex !== -1) {
       // slight delay to let animation complete

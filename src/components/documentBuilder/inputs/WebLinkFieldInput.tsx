@@ -1,6 +1,7 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useState } from 'react';
+import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
@@ -67,6 +68,7 @@ export const WebLinkFieldInput = observer(
             Enter a valid HTTP or HTTPS URL.
           </p>
         ) : null}
+        <FieldPersistenceError field={field} />
       </>
     );
   }

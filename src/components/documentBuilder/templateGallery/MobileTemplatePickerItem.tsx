@@ -16,12 +16,10 @@ interface MobileTemplatePickerItemProps {
 export const MobileTemplatePickerItem = observer(
   ({ template }: MobileTemplatePickerItemProps) => {
     const isSelected =
-      builderRootStore.documentStore.document?.templateType === template.value;
+      builderRootStore.document?.templateType === template.value;
 
     const handleSelectTemplate = action(async () => {
-      await builderRootStore.documentStore.changeDocumentTemplateType(
-        template.value
-      );
+      await builderRootStore.document?.changeTemplate(template.value);
     });
 
     return (

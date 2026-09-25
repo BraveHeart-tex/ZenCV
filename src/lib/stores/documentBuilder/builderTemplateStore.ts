@@ -159,8 +159,11 @@ export class BuilderTemplateStore {
       },
       summarySection: this.summarySection,
       sections,
-      accentColor: this.root.documentStore.accentColor,
+      accentColor:
+        this.root.activeDocument?.accentColor ??
+        this.root.documentStore.accentColor,
       templateType:
+        this.root.activeDocument?.templateType ??
         this.root.documentStore.document?.templateType ??
         INTERNAL_TEMPLATE_TYPES.MANHATTAN,
     };

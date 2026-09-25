@@ -14,7 +14,7 @@ import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore'
 import { cn } from '@/lib/utils/stringUtils';
 
 export const AccentColorPicker = observer(() => {
-  const { document } = builderRootStore.documentStore;
+  const document = builderRootStore.document;
 
   if (
     !document ||
@@ -23,10 +23,10 @@ export const AccentColorPicker = observer(() => {
     return null;
   }
 
-  const currentColor = builderRootStore.documentStore.accentColor;
+  const currentColor = document.accentColor;
 
   const handleColorChange = async (color: string) => {
-    await builderRootStore.documentStore.updateAccentColor(color);
+    await document.changeAccent(color);
   };
 
   const isCustomColor = !ACCENT_COLOR_PRESETS.some(

@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
-import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
@@ -16,14 +15,9 @@ import { SectionItem } from './SectionItem';
 export const PersonalDetailsLinks = observer(() => {
   const [isAdding, setIsAdding] = useState(false);
   const isAddingRef = useRef(false);
-  const linksSections =
-    builderRootStore.sectionStore.sectionsByType[
-      INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
-    ] ?? [];
-  const linksSection = linksSections[0];
-  const itemIds = linksSections.flatMap((section) =>
-    builderRootStore.itemStore.getOrderedItemIdsBySectionId(section.id)
-  );
+  const document = builderRootStore.document;
+  const linksSection = document?.websitesSocialLinks;
+  const itemIds = linksSection?.itemIds ?? [];
   const isAtLimit = itemIds.length >= MAX_PERSONAL_DETAILS_LINKS;
 
   const handleAddLink = async () => {
@@ -34,19 +28,19 @@ export const PersonalDetailsLinks = observer(() => {
     isAddingRef.current = true;
     setIsAdding(true);
     try {
-      const result = linksSection
-        ? {
-            itemId: await builderRootStore.addItem(linksSection.id),
-          }
-        : await builderRootStore.sectionStore.addNewSection({
-            title: 'Links',
-            defaultTitle: 'Links',
-            type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
-            containerType: CONTAINER_TYPES.COLLAPSIBLE,
-          });
-
-      if (result?.itemId) {
-        scrollItemIntoView(result.itemId);
+      let itemId: number | undefined;
+      if (linksSection) {
+        itemId = await builderRootStore.addItem(linksSection.id);
+      } else {
+        const result = await document?.addSection({
+          title: 'Links',
+          defaultTitle: 'Links',
+          type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+        });
+        itemId = result?.success ? result.data?.itemId : undefined;
+      }
+      if (itemId) {
+        scrollItemIntoView(itemId);
       }
     } catch {
       showErrorToast('Failed to add link.');
@@ -68,7 +62,7 @@ export const PersonalDetailsLinks = observer(() => {
 
       {itemIds.length ? (
         <div className='space-y-2'>
-          <ItemsDndContext items={itemIds}>
+          <ItemsDndContext items={[...itemIds]}>
             {itemIds.map((itemId) => (
               <SectionItem itemId={itemId} key={itemId} />
             ))}

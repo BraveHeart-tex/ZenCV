@@ -16,12 +16,12 @@ import {
 } from '@dnd-kit/sortable';
 import { action } from 'mobx';
 import type React from 'react';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
-  sectionIds: DEX_Section['id'][];
+  sectionIds: readonly SectionId[];
 }
 
 export const SectionsDndContext = ({
@@ -36,24 +36,27 @@ export const SectionsDndContext = ({
       return;
     }
 
-    const activeIndex = sectionIds.indexOf(activeId as DEX_Section['id']);
-    const overIndex = sectionIds.indexOf(overId as DEX_Section['id']);
+    const activeIndex = sectionIds.indexOf(activeId as SectionId);
+    const overIndex = sectionIds.indexOf(overId as SectionId);
 
     if (activeIndex === -1 || overIndex === -1) {
       return;
     }
 
-    const newSections = arrayMove(sectionIds, activeIndex, overIndex);
-    const reorderedVisibleSections = [...newSections];
+    const newSections = arrayMove([...sectionIds], activeIndex, overIndex);
+    const reorderedVisibleSections = [...newSections] as SectionId[];
     const visibleSectionIds = new Set(sectionIds);
-    const allSectionsWithHiddenPositionsPreserved =
-      builderRootStore.sectionStore.orderedSectionIds.map((sectionId) =>
+    const allSectionsWithHiddenPositionsPreserved = (
+      builderRootStore.document?.sections ?? []
+    )
+      .map((section) => section.id)
+      .map((sectionId) =>
         visibleSectionIds.has(sectionId)
           ? (reorderedVisibleSections.shift() ?? sectionId)
           : sectionId
       );
 
-    await builderRootStore.sectionStore.reOrderSections(
+    await builderRootStore.document?.reorderSections(
       allSectionsWithHiddenPositionsPreserved
     );
   });
@@ -73,7 +76,7 @@ export const SectionsDndContext = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext
-        items={sectionIds}
+        items={[...sectionIds]}
         strategy={verticalListSortingStrategy}
       >
         {children}
