@@ -7,10 +7,7 @@ import {
   type DEX_Item,
   type DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import {
-  getTriggerContent,
-  scrollItemIntoView,
-} from '@/lib/helpers/documentBuilderHelpers';
+import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
@@ -18,6 +15,7 @@ import {
   getItemContainerId,
   getSectionContainerId,
 } from '@/lib/utils/stringUtils';
+import { getCollapsibleItemContent } from '../collapsibleItemContainer/getCollapsibleItemContent';
 import type { FocusState } from './ResumeOverview';
 
 interface ResumeOverViewContentProps {
@@ -121,7 +119,7 @@ export const ResumeOverViewContent = observer(
                               onClick={() => handleScrollToItem(item.id)}
                             >
                               <span className='truncate'>
-                                {getTriggerContent(item.id).title}
+                                {getCollapsibleItemContent(item.id).title}
                               </span>
                             </Button>
                           );

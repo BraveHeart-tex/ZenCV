@@ -75,7 +75,7 @@ export const getEducationSectionEntries = (section: TemplateDataSection) => {
         city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
         description: findValueInItemFields(
           fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
+          FIELD_NAMES.EDUCATION.DESCRIPTION
         ),
       };
     })

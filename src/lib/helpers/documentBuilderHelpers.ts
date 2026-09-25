@@ -212,18 +212,16 @@ export const getTriggerContent = (
     };
   }
 
-  const sectionTypeToTitle: Record<
-    CollapsibleSectionType,
-    { title: string; description: string }
+  const sectionTypeToTitle: Partial<
+    Record<CollapsibleSectionType, { title: string; description: string }>
   > = {
-    [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]: getEmploymentHistoryTitle(itemId),
     [INTERNAL_SECTION_TYPES.EDUCATION]: getEducationSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
       getWebsitesSocialLinksTitle(itemId),
     [INTERNAL_SECTION_TYPES.SKILLS]: getSkillsSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.COURSES]: getCoursesSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.LANGUAGES]: getLanguagesSectionTitle(itemId),
-    [INTERNAL_SECTION_TYPES.INTERNSHIPS]: getEmploymentHistoryTitle(itemId),
+    [INTERNAL_SECTION_TYPES.INTERNSHIPS]: getInternshipsSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.CUSTOM]: getCustomSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.REFERENCES]: getReferencesSectionTitle(itemId),
   };
@@ -243,38 +241,28 @@ const getItemFieldValue = (
   fieldName: FieldName
 ): string => builderSession.getItemFieldValue(itemId as ItemId, fieldName);
 
-const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
-  const getEmploymentHistoryFieldValue = (
-    fieldName: FieldValuesForKey<'WORK_EXPERIENCE'>
+const getInternshipsSectionTitle = (itemId: DEX_Item['id']) => {
+  const getInternshipFieldValue = (
+    fieldName: FieldValuesForKey<'INTERNSHIPS'>
   ) => {
     return getItemFieldValue(itemId, fieldName);
   };
 
-  const jobTitle = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
-  );
-  const startDate = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.WORK_EXPERIENCE.START_DATE
-  );
-  const endDate = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.WORK_EXPERIENCE.END_DATE
-  );
-  const employer = getEmploymentHistoryFieldValue(
-    FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
-  );
-
-  let triggerTitle = jobTitle
-    ? `${employer ? `${jobTitle} at ${employer}` : jobTitle}`
-    : employer;
-  let description = `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`;
-  if (!jobTitle && !employer) {
-    triggerTitle = '(Untitled)';
-    description = '';
-  }
+  const jobTitle = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.JOB_TITLE);
+  const startDate = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.START_DATE);
+  const endDate = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.END_DATE);
+  const employer = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.EMPLOYER);
+  const hasTitle = Boolean(jobTitle || employer);
 
   return {
-    title: triggerTitle,
-    description,
+    title: jobTitle
+      ? employer
+        ? `${jobTitle} at ${employer}`
+        : jobTitle
+      : employer || '(Untitled)',
+    description: hasTitle
+      ? `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`
+      : '',
   };
 };
 
