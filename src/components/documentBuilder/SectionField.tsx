@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { useCallback } from 'react';
 import { DocumentBuilderSelectInput } from '@/components/documentBuilder/DocumentBuilderSelectInput';
+import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { BuilderRichTextEditorInput } from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
 import { WebLinkFieldInput } from '@/components/documentBuilder/inputs/WebLinkFieldInput';
@@ -138,6 +139,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
       )}
     >
       {renderInput()}
+      <FieldPersistenceError field={field} />
     </div>
   );
 });

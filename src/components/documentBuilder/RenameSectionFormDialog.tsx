@@ -12,19 +12,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface RenameSectionFormDialogProps {
-  sectionId: DEX_Section['id'];
+  sectionId: number;
 }
 
 export const RenameSectionFormDialog = observer(
   ({ sectionId }: RenameSectionFormDialogProps) => {
     const [open, setOpen] = useState(false);
-    const section = builderRootStore.sectionStore.getSectionById(sectionId);
+    const section = builderRootStore.getSection(sectionId);
 
     const [enteredTitle, setEnteredTitle] = useState(section?.title || '');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -42,8 +41,8 @@ export const RenameSectionFormDialog = observer(
           return;
         }
 
-        const result = await builderRootStore.sectionStore.renameSection(
-          sectionId,
+        const result = await builderRootStore.document?.renameSection(
+          section.id,
           enteredTitle
         );
         if (!result?.success) {

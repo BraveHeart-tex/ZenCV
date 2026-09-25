@@ -459,22 +459,15 @@ describe('BuilderDocumentStore', () => {
     });
   });
 
-  it('renames optimistically and rolls back on failure', async () => {
+  it('requires an active Builder Document for mutations', async () => {
     const { root } = hydrateBasicResume();
 
     await expect(
       root.documentStore.renameDocument('New title')
     ).resolves.toEqual({
-      success: true,
-    });
-    expect(root.documentStore.document?.title).toBe('New title');
-
-    serviceMocks.document.renameDocument.mockRejectedValue(new Error('nope'));
-    await expect(root.documentStore.renameDocument('Broken')).resolves.toEqual({
       success: false,
-      error: 'An error occurred while renaming the document.',
+      error: 'Builder document is not ready.',
     });
-    expect(root.documentStore.document?.title).toBe('New title');
   });
 
   it('computes accent color fallbacks and per-template settings', () => {
@@ -497,50 +490,26 @@ describe('BuilderDocumentStore', () => {
     expect(root.documentStore.accentColor).toBe('#c8a96e');
   });
 
-  it('changes template/settings together and rolls back on failure', async () => {
+  it('does not mutate template settings without a Builder Document', async () => {
     const { root } = hydrateBasicResume();
 
     await root.documentStore.changeDocumentTemplateType(
       INTERNAL_TEMPLATE_TYPES.SYDNEY
     );
     expect(root.documentStore.document?.templateType).toBe(
-      INTERNAL_TEMPLATE_TYPES.SYDNEY
-    );
-    expect(root.documentStore.accentColor).toBe('#111111');
-    expect(serviceMocks.document.updateDocument).toHaveBeenCalledWith(
-      1,
-      expect.objectContaining({ templateType: INTERNAL_TEMPLATE_TYPES.SYDNEY })
-    );
-
-    serviceMocks.document.updateDocument.mockRejectedValue(
-      new Error('persist failed')
-    );
-    await root.documentStore.changeDocumentTemplateType(
-      INTERNAL_TEMPLATE_TYPES.DUBAI
-    );
-    expect(root.documentStore.document?.templateType).toBe(
-      INTERNAL_TEMPLATE_TYPES.SYDNEY
+      INTERNAL_TEMPLATE_TYPES.TOKYO
     );
   });
 
-  it('updates accent color and rolls back on failure', async () => {
+  it('requires an active Builder Document for accent updates', async () => {
     const { root } = hydrateBasicResume();
 
     await expect(
       root.documentStore.updateAccentColor('#111111')
     ).resolves.toEqual({
-      success: true,
-    });
-    expect(root.documentStore.accentColor).toBe('#111111');
-
-    serviceMocks.document.updateDocument.mockRejectedValue(new Error('no'));
-    await expect(
-      root.documentStore.updateAccentColor('#222222')
-    ).resolves.toEqual({
       success: false,
-      error: 'Failed to update accent color.',
+      error: 'Builder document is not ready.',
     });
-    expect(root.documentStore.accentColor).toBe('#111111');
   });
 });
 

@@ -53,16 +53,20 @@ export class BuilderRootStore {
     return this.session.document;
   }
 
+  get activeDocument(): BuilderDocumentModel | null {
+    return this.document ?? this.documentModel;
+  }
+
   getSection(sectionId: number) {
-    return this.document?.sectionsById.get(sectionId as SectionId);
+    return this.activeDocument?.sectionsById.get(sectionId as SectionId);
   }
 
   getItem(itemId: number) {
-    return this.document?.itemsById.get(itemId as ItemId);
+    return this.activeDocument?.itemsById.get(itemId as ItemId);
   }
 
   getField(fieldId: number) {
-    return this.document?.fieldsById.get(fieldId as FieldId);
+    return this.activeDocument?.fieldsById.get(fieldId as FieldId);
   }
 
   resetState() {
@@ -122,7 +126,7 @@ export class BuilderRootStore {
   }
 
   async addItem(sectionId: number): Promise<number | undefined> {
-    const itemId = await this.documentModel?.addItem(sectionId as SectionId);
+    const itemId = await this.activeDocument?.addItem(sectionId as SectionId);
     if (itemId) {
       runInAction(() => this.UIStore.toggleItem(itemId));
     }
@@ -130,9 +134,19 @@ export class BuilderRootStore {
   }
 
   async removeItem(itemId: number): Promise<boolean> {
-    const removed = await this.documentModel?.removeItem(itemId as ItemId);
+    const removed = await this.activeDocument?.removeItem(itemId as ItemId);
     if (removed) {
       this.currentStoreProjection.disposeProjectedItem(itemId);
+    }
+    return removed ?? false;
+  }
+
+  async removeSection(sectionId: number): Promise<boolean> {
+    const removed = await this.activeDocument?.removeSection(
+      sectionId as SectionId
+    );
+    if (removed) {
+      this.currentStoreProjection.disposeProjectedSection(sectionId);
     }
     return removed ?? false;
   }
@@ -141,14 +155,14 @@ export class BuilderRootStore {
     if (itemIds.length === 0) {
       return false;
     }
-    const sectionId = this.documentModel?.itemsById.get(
+    const sectionId = this.activeDocument?.itemsById.get(
       itemIds[0] as ItemId
     )?.sectionId;
     if (!sectionId) {
       return false;
     }
     return (
-      (await this.documentModel?.reorderItems(
+      (await this.activeDocument?.reorderItems(
         sectionId,
         itemIds as ItemId[]
       )) ?? false

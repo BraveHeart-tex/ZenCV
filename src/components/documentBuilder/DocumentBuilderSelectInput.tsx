@@ -1,5 +1,6 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -46,6 +47,7 @@ export const DocumentBuilderSelectInput = observer(
             ))}
           </SelectContent>
         </Select>
+        <FieldPersistenceError field={field} />
       </div>
     );
   }

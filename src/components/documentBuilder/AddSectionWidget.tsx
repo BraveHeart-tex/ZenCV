@@ -25,9 +25,10 @@ export interface OtherSectionOption
 
 export const AddSectionWidget = observer(() => {
   const handleAddSection = action(async (option: OtherSectionOption) => {
-    const result = await builderRootStore.sectionStore.addNewSection(option);
-    if (result?.itemId) {
-      builderRootStore.UIStore.focusFirstFieldInItem(result.itemId);
+    const result = await builderRootStore.document?.addSection(option);
+    if (result?.success && result.data) {
+      builderRootStore.UIStore.toggleItem(result.data.itemId);
+      builderRootStore.UIStore.focusFirstFieldInItem(result.data.itemId);
     } else {
       showErrorToast('Could not add section. Please try again.');
     }
@@ -47,8 +48,8 @@ export const AddSectionWidget = observer(() => {
         {OTHER_SECTION_OPTIONS.map((option) => {
           const isAlreadyAdded =
             option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
-            builderRootStore.sectionStore.sections.some(
-              (section) => section.type === option.type
+            builderRootStore.document?.sections.some(
+              (section) => section.definition.persistedType === option.type
             );
 
           return (

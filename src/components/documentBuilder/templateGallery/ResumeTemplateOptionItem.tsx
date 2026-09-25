@@ -12,13 +12,10 @@ interface ResumeTemplateOptionItemProps {
 
 export const ResumeTemplateOptionItem = observer(
   ({ option }: ResumeTemplateOptionItemProps) => {
-    const isSelected =
-      builderRootStore.documentStore.document?.templateType === option.value;
+    const isSelected = builderRootStore.document?.templateType === option.value;
 
     const handleOptionClick = action(async () => {
-      await builderRootStore.documentStore.changeDocumentTemplateType(
-        option.value
-      );
+      await builderRootStore.document?.changeTemplate(option.value);
     });
 
     return (

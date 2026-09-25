@@ -10,8 +10,7 @@ import { AccentColorPicker } from '../AccentColorPicker';
 import { MobileTemplatePickerTrigger } from './MobileTemplatePickerTrigger';
 
 export const TemplateGalleryHeader = observer(() => {
-  const documentTitle =
-    builderRootStore.documentStore.document?.title || 'Untitled';
+  const documentTitle = builderRootStore.document?.title || 'Untitled';
 
   return (
     <div className='flex items-center justify-between w-full p-4'>

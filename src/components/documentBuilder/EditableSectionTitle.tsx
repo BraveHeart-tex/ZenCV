@@ -9,37 +9,32 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { DELETABLE_INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import { RenameSectionFormDialog } from './RenameSectionFormDialog';
 
-const getSectionTitleId = (sectionId: DEX_Section['id']) =>
-  `section-title-${sectionId}`;
+const getSectionTitleId = (sectionId: number) => `section-title-${sectionId}`;
 
 export const EditableSectionTitle = observer(
-  ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const section = builderRootStore.sectionStore.getSectionById(sectionId);
+  ({ sectionId }: { sectionId: number }) => {
+    const section = builderRootStore.getSection(sectionId);
     const { attributes, listeners } = useSortable({ id: sectionId });
 
     if (!section) {
       return null;
     }
 
-    const isSectionDeletable = DELETABLE_INTERNAL_SECTION_TYPES.has(
-      section.type
-    );
+    const isSectionDeletable =
+      section.definition.sectionCardinality !== 'required-one';
 
     const handleDeleteSection = action(async () => {
       const shouldNotAskConfirmation =
         !userSettingsStore.editorPreferences.askBeforeDeletingSection;
 
       if (shouldNotAskConfirmation) {
-        const removed =
-          await builderRootStore.sectionStore.removeSection(sectionId);
+        const removed = await builderRootStore.removeSection(section.id);
         if (removed) {
           showSuccessToast('Section removed successfully.');
         } else {
@@ -53,8 +48,7 @@ export const EditableSectionTitle = observer(
         message: 'This action cannot be undone',
         doNotAskAgainEnabled: true,
         onConfirm: async () => {
-          const removed =
-            await builderRootStore.sectionStore.removeSection(sectionId);
+          const removed = await builderRootStore.removeSection(section.id);
           if (removed) {
             showSuccessToast('Section removed successfully.');
           } else {
@@ -76,7 +70,7 @@ export const EditableSectionTitle = observer(
 
     return (
       <div className='group flex items-center w-full gap-1'>
-        {builderRootStore.sectionStore.isSectionFixed(sectionId) ? null : (
+        {section.definition.sectionCardinality === 'required-one' ? null : (
           <Button
             variant='outline'
             size='icon'

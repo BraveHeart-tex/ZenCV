@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import {
   getTextColorForBackground,
   scrollItemIntoView,
@@ -51,8 +50,10 @@ export const ResumeScoreSuggestionItem = observer(
       }
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
-        const section = builderRootStore.sectionStore.sections.find(
-          (section) => section.type === suggestion.sectionType
+        const document = builderRootStore.document;
+        const section = document?.sections.find(
+          (candidate) =>
+            candidate.definition.persistedType === suggestion.sectionType
         );
 
         if (!section) {
@@ -63,9 +64,8 @@ export const ResumeScoreSuggestionItem = observer(
             return;
           }
 
-          const result =
-            await builderRootStore.sectionStore.addNewSection(sectionOption);
-          const itemId = result?.itemId;
+          const result = await document?.addSection(sectionOption);
+          const itemId = result?.success ? result.data?.itemId : undefined;
 
           if (itemId) {
             scrollItemIntoView(itemId);
@@ -73,22 +73,17 @@ export const ResumeScoreSuggestionItem = observer(
           return;
         }
 
-        const firstEmptySectionItem = builderRootStore.itemStore.items
-          .filter((item) => item.sectionId === section.id)
-          .reduce(
-            (best, item) => {
-              const fields = builderRootStore.fieldStore.getFieldsByItemId(
-                item.id
-              );
-              if (fields.every((field) => !field.value)) {
-                return !best || item.displayOrder < best?.displayOrder
-                  ? item
-                  : best;
-              }
-              return best;
-            },
-            null as DEX_Item | null
-          );
+        const firstEmptySectionItem = section.items.reduce(
+          (best, item) => {
+            if (item.editableFields.every((field) => !field.value)) {
+              return !best || item.displayOrder < best?.displayOrder
+                ? item
+                : best;
+            }
+            return best;
+          },
+          null as (typeof section.items)[number] | null
+        );
 
         if (firstEmptySectionItem) {
           scrollItemIntoView(firstEmptySectionItem.id);
