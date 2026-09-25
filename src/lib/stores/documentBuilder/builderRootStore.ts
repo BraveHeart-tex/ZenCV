@@ -1,25 +1,23 @@
-import { type IReactionDisposer, reaction, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 import {
   type BuilderDocumentModel,
-  type FieldId,
   hydrateBuilderDocument,
   type ItemId,
   type SectionId,
 } from '@/lib/builderDocument/builderDocument';
-import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import {
   type GetFullDocumentStructureResponse,
   getFullDocumentStructure,
 } from '@/lib/client-db/documentService';
-import type { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
 import { safeParse } from '@/lib/utils/objectUtils';
 import { BuilderDocumentStore } from './builderDocumentStore';
-import { BuilderFieldStore, FieldModel } from './builderFieldStore';
+import { BuilderFieldStore } from './builderFieldStore';
 import { BuilderItemStore } from './builderItemStore';
 import { BuilderSectionStore } from './builderSectionStore';
 import { BuilderSession } from './builderSession';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
+import { CurrentStoreProjection } from './currentStoreProjection';
 
 export class BuilderRootStore {
   documentStore: BuilderDocumentStore;
@@ -31,11 +29,7 @@ export class BuilderRootStore {
   templateStore: BuilderTemplateStore;
   session: BuilderSession;
   documentModel: BuilderDocumentModel | null = null;
-  private stopItemProjection: IReactionDisposer | null = null;
-  private stopSectionProjection: IReactionDisposer | null = null;
-  private projectedSections = new Map<number, SectionWithParsedMetadata>();
-  private projectedItems = new Map<number, DEX_Item>();
-  private projectedFields = new Map<number, FieldModel>();
+  private currentStoreProjection: CurrentStoreProjection;
 
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);
@@ -44,6 +38,7 @@ export class BuilderRootStore {
     this.fieldStore = new BuilderFieldStore(this);
     this.UIStore = new BuilderUIStore(this);
     this.templateStore = new BuilderTemplateStore(this);
+    this.currentStoreProjection = new CurrentStoreProjection(this);
     this.session = new BuilderSession({
       clearPublishedDocument: () => this.clearPublishedDocument(),
       publishDocument: (records, document) => {
@@ -61,9 +56,7 @@ export class BuilderRootStore {
     this.dispose();
     runInAction(() => {
       this.documentModel = null;
-      this.projectedItems.clear();
-      this.projectedFields.clear();
-      this.projectedSections.clear();
+      this.currentStoreProjection.clear();
       this.documentStore.document = null;
       this.sectionStore.sections = [];
       this.itemStore.items = [];
@@ -79,10 +72,7 @@ export class BuilderRootStore {
 
   dispose() {
     this.templateStore.stop();
-    this.stopItemProjection?.();
-    this.stopItemProjection = null;
-    this.stopSectionProjection?.();
-    this.stopSectionProjection = null;
+    this.currentStoreProjection.clear();
   }
 
   installDocumentModel(
@@ -103,167 +93,15 @@ export class BuilderRootStore {
     hydrateLegacyStores = false
   ): void {
     if (hydrateLegacyStores) {
-      this.stopItemProjection?.();
-      this.stopSectionProjection?.();
-      this.projectedItems.clear();
-      this.projectedFields.clear();
-      this.projectedSections.clear();
+      this.currentStoreProjection.clear();
       this.hydrateFromBackend(records);
     }
-    this.stopItemProjection?.();
     this.documentModel = document;
-    for (const item of this.itemStore.items) {
-      this.projectedItems.set(item.id, item);
-    }
-    for (const field of this.fieldStore.fields) {
-      this.projectedFields.set(field.id, field);
-    }
-    for (const section of this.sectionStore.sections) {
-      this.projectedSections.set(section.id, section);
-    }
-    const model = document;
-    this.stopSectionProjection = reaction(
-      () =>
-        model.sections.map((section) => [
-          section.id,
-          section.title,
-          section.displayOrder,
-          ...section.metadata.map((entry) => `${entry.key}:${entry.value}`),
-        ]),
-      () => this.projectSections(),
-      { fireImmediately: true }
-    );
-    this.stopItemProjection = reaction(
-      () =>
-        model.sections.flatMap((section) =>
-          section.items.map((item) => [
-            item.id,
-            item.displayOrder,
-            ...item.fieldIds,
-          ])
-        ),
-      () => this.projectItems(),
-      { fireImmediately: true }
-    );
-  }
-
-  private projectSections(): void {
-    const model = this.documentModel;
-    if (!model) {
-      return;
-    }
-    runInAction(() => {
-      this.sectionStore.sections = model.sections.map((section) => {
-        let projected = this.projectedSections.get(section.id);
-        if (!projected) {
-          projected = {
-            id: section.id,
-            documentId: section.documentId,
-            type: section.definition.persistedType,
-            title: section.title,
-            defaultTitle: section.defaultTitle,
-            displayOrder: section.displayOrder,
-            metadata: section.metadata.map((entry) => ({
-              ...entry,
-            })) as SectionWithParsedMetadata['metadata'],
-          };
-          this.projectedSections.set(section.id, projected);
-        }
-        projected.title = section.title;
-        projected.displayOrder = section.displayOrder;
-        for (const entry of section.metadata) {
-          const matching = projected.metadata.find(
-            (item) => item.key === entry.key
-          );
-          if (matching) {
-            matching.value = entry.value as typeof matching.value;
-          }
-        }
-        return projected;
-      });
-      for (const section of this.sectionStore.sections) {
-        this.projectedSections.set(section.id, section);
-      }
-    });
+    this.currentStoreProjection.publish(document);
   }
 
   disposeProjectedSection(sectionId: number): void {
-    this.projectedSections.delete(sectionId);
-    this.UIStore.itemRefs.delete(sectionId.toString());
-    for (const [itemId, item] of this.projectedItems) {
-      if (item.sectionId === sectionId) {
-        this.projectedItems.delete(itemId);
-        this.UIStore.itemRefs.delete(itemId.toString());
-        if (this.UIStore.collapsedItemId === itemId) {
-          this.UIStore.collapsedItemId = null;
-        }
-        for (const [fieldId, field] of this.projectedFields) {
-          if (field.itemId === itemId) {
-            field.dispose();
-            this.projectedFields.delete(fieldId);
-            this.UIStore.fieldRefs.delete(fieldId.toString());
-          }
-        }
-      }
-    }
-  }
-
-  private projectItems(): void {
-    const model = this.documentModel;
-    if (!model) {
-      return;
-    }
-    runInAction(() => {
-      const items: DEX_Item[] = [];
-      const fields: FieldModel[] = [];
-      for (const section of model.sections) {
-        for (const item of section.items) {
-          let projectedItem = this.projectedItems.get(item.id);
-          if (!projectedItem) {
-            projectedItem = {
-              id: item.id,
-              sectionId: item.sectionId,
-              containerType: item.containerType,
-              displayOrder: item.displayOrder,
-            };
-            this.projectedItems.set(item.id, projectedItem);
-          }
-          projectedItem.displayOrder = item.displayOrder;
-          items.push(projectedItem);
-          for (const field of item.editableFields) {
-            let projectedField = this.projectedFields.get(field.id);
-            if (!projectedField) {
-              const definition = Object.values(section.definition.fields).find(
-                (candidate) => candidate.key === field.fieldKey
-              );
-              if (!definition) {
-                throw new Error('Field definition missing during projection');
-              }
-              projectedField = new FieldModel({
-                id: field.id,
-                itemId: item.id,
-                name: definition.persistedName,
-                type: definition.expectedPersistedType,
-                value: field.value,
-                ...(definition.expectedPersistedType === 'select'
-                  ? { selectType: 'basic', options: definition.options ?? null }
-                  : {}),
-              } as DEX_Field);
-              this.projectedFields.set(field.id, projectedField);
-            }
-            fields.push(projectedField);
-          }
-        }
-      }
-      this.itemStore.items = items;
-      this.fieldStore.fields = fields;
-      for (const item of this.itemStore.items) {
-        this.projectedItems.set(item.id, item);
-      }
-      for (const field of this.fieldStore.fields) {
-        this.projectedFields.set(field.id, field);
-      }
-    });
+    this.currentStoreProjection.disposeProjectedSection(sectionId);
   }
 
   async addItem(sectionId: number): Promise<number | undefined> {
@@ -277,18 +115,7 @@ export class BuilderRootStore {
   async removeItem(itemId: number): Promise<boolean> {
     const removed = await this.documentModel?.removeItem(itemId as ItemId);
     if (removed) {
-      this.projectedItems.delete(itemId);
-      this.UIStore.itemRefs.delete(itemId.toString());
-      if (this.UIStore.collapsedItemId === itemId) {
-        this.UIStore.collapsedItemId = null;
-      }
-      for (const [fieldId, field] of this.projectedFields) {
-        if (field.itemId === itemId) {
-          field.dispose();
-          this.projectedFields.delete(fieldId);
-          this.UIStore.fieldRefs.delete(fieldId.toString());
-        }
-      }
+      this.currentStoreProjection.disposeProjectedItem(itemId);
     }
     return removed ?? false;
   }
@@ -324,17 +151,7 @@ export class BuilderRootStore {
     if (!model) {
       return;
     }
-    for (const itemId of this.projectedItems.keys()) {
-      if (!model.itemsById.has(itemId as ItemId)) {
-        this.projectedItems.delete(itemId);
-      }
-    }
-    for (const [fieldId, field] of this.projectedFields) {
-      if (!model.fieldsById.has(fieldId as FieldId)) {
-        field.dispose();
-        this.projectedFields.delete(fieldId);
-      }
-    }
+    this.currentStoreProjection.prune(model);
   }
 
   hydrateFromBackend(

@@ -1,5 +1,6 @@
 import { makeAutoObservable, observable, runInAction } from 'mobx';
 import { showErrorToast } from '@/components/ui/sonner';
+import type { SemanticField } from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { updateField } from '@/lib/client-db/fieldService';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
@@ -9,25 +10,34 @@ const FIELD_SAVE_DEBOUNCE_MS = 400;
 
 export class FieldModel {
   private readonly fieldData: Omit<DEX_Field, 'value'>;
-  value: string;
+  private readonly semanticField: SemanticField | null;
+  private legacyValue: string;
   private saveVersion = 0;
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private lastPersistedValue: string;
 
-  constructor(field: DEX_Field) {
+  constructor(field: DEX_Field, semanticField: SemanticField | null = null) {
     const { value, ...fieldData } = field;
 
     this.fieldData = fieldData;
-    this.value = value ?? '';
-    this.lastPersistedValue = this.value;
+    this.semanticField = semanticField;
+    this.legacyValue = value ?? '';
+    this.lastPersistedValue = this.legacyValue;
 
     makeAutoObservable<
       this,
-      'fieldData' | 'saveVersion' | 'saveTimer' | 'lastPersistedValue'
+      | 'fieldData'
+      | 'semanticField'
+      | 'legacyValue'
+      | 'saveVersion'
+      | 'saveTimer'
+      | 'lastPersistedValue'
     >(
       this,
       {
         fieldData: false,
+        semanticField: false,
+        legacyValue: observable,
         saveVersion: false,
         saveTimer: false,
         lastPersistedValue: false,
@@ -52,10 +62,22 @@ export class FieldModel {
     return this.fieldData.type;
   }
 
+  get value() {
+    return this.semanticField?.value ?? this.legacyValue;
+  }
+
   setValue(value: string, shouldSaveToStore = true) {
+    if (this.semanticField) {
+      if (shouldSaveToStore) {
+        this.semanticField.setDebounced(value);
+      } else {
+        this.semanticField.setDraft(value);
+      }
+      return;
+    }
     const previousValue = this.value;
 
-    this.value = value;
+    this.legacyValue = value;
 
     if (!shouldSaveToStore) {
       return;
@@ -76,7 +98,7 @@ export class FieldModel {
         console.error('setFieldValue error', error);
         runInAction(() => {
           if (this.saveVersion === saveVersion) {
-            this.value = this.lastPersistedValue ?? previousValue;
+            this.legacyValue = this.lastPersistedValue ?? previousValue;
           }
         });
 

@@ -249,6 +249,36 @@ describe('BuilderRootStore', () => {
     expect(isObservable(root.sectionStore.sections[0].metadata[0])).toBe(true);
   });
 
+  it('projects semantic fields as current record views without owning their values', () => {
+    const root = createTestRootStore();
+    const records = builderDocumentFixture();
+
+    expect(
+      root.installDocumentModel(
+        {
+          success: true,
+          document: records.document,
+          sections: [...records.sections],
+          items: [...records.items],
+          fields: [...records.fields],
+        },
+        true
+      )
+    ).toBe(true);
+
+    const semanticField =
+      root.documentModel?.personalDetails.items[0]?.field('firstName');
+    expect(semanticField).toBeDefined();
+    expect(root.fieldStore.getFieldById(semanticField?.id ?? 0)?.value).toBe(
+      semanticField?.value
+    );
+
+    semanticField?.setDraft('Grace');
+    expect(root.fieldStore.getFieldById(semanticField?.id ?? 0)?.value).toBe(
+      'Grace'
+    );
+  });
+
   it('starts and stops reaction-backed stores and resetState clears all stores', async () => {
     const { root } = hydrateBasicResume();
 
