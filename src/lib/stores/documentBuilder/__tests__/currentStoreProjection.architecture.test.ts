@@ -19,6 +19,14 @@ const listSourceFiles = (directory: string): string[] =>
 
 const relativePath = (path: string) => path.slice(process.cwd().length + 1);
 
+const WORK_PERSISTED_LABEL_REFERENCE =
+  /FIELD_NAMES\.WORK_EXPERIENCE|persistedName:\s*'(?:Job Title|Employer|Start Date|End Date|City|Description)'/;
+
+const WORK_PERSISTED_LABEL_ALLOWLIST = [
+  'src/lib/misc/fieldTemplates.ts',
+  'src/lib/sectionDefinitions/sectionDefinitions.ts',
+];
+
 describe('current store projection architecture', () => {
   it('has one explicit projection importer', () => {
     const consumers = listSourceFiles(sourceRoot)
@@ -49,5 +57,17 @@ describe('current store projection architecture', () => {
     expect(consumers.sort()).toEqual(
       [...CURRENT_STORE_DTO_IMPORT_ALLOWLIST].sort()
     );
+  });
+
+  it('keeps Work Experience persisted labels within compatibility and template inputs', () => {
+    const consumers = listSourceFiles(sourceRoot)
+      .filter((path) => !path.includes('/__tests__/'))
+      .filter((path) =>
+        WORK_PERSISTED_LABEL_REFERENCE.test(readFileSync(path, 'utf8'))
+      )
+      .map(relativePath)
+      .sort();
+
+    expect(consumers).toEqual([...WORK_PERSISTED_LABEL_ALLOWLIST].sort());
   });
 });
