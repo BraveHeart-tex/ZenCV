@@ -78,6 +78,7 @@ export interface PdfTemplateData {
     sectionName: string;
     summary: string;
   };
+  readonly workExperienceSection: WorkExperienceSectionSnapshot | null;
   sections: TemplateDataSection[];
   accentColor: string;
   templateType: ResumeTemplate;
