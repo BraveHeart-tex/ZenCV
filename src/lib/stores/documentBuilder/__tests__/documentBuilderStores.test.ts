@@ -897,6 +897,42 @@ describe('BuilderTemplateStore', () => {
     expect(root.templateStore.pdfTemplateData.accentColor).toBe('#10b981');
   });
 
+  it('reads template, score, and ATS data through the current projection', () => {
+    const root = createTestRootStore();
+    const records = builderDocumentFixture();
+
+    expect(
+      root.installDocumentModel(
+        {
+          success: true,
+          document: records.document,
+          sections: [...records.sections],
+          items: [...records.items],
+          fields: [...records.fields],
+        },
+        true
+      )
+    ).toBe(true);
+
+    runInAction(() => {
+      root.sectionStore.sections = [];
+      root.itemStore.items = [];
+      root.fieldStore.fields = [];
+    });
+
+    expect(root.templateStore.pdfTemplateData.personalDetails).toMatchObject({
+      firstName: 'value-firstName',
+      lastName: 'value-lastName',
+      jobTitle: 'value-wantedJobTitle',
+      email: 'value-email',
+    });
+    expect(root.templateStore.resumeStats.score).toBeGreaterThan(0);
+    expect(root.templateStore.atsCompatibility).toMatchObject({
+      totalCount: 6,
+      passedCount: expect.any(Number),
+    });
+  });
+
   it('computes resume score, suggestions, and local resume checks', () => {
     const { root } = hydrateBasicResume();
 

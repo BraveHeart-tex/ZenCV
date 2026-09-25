@@ -66,13 +66,13 @@ export class BuilderTemplateStore {
   private isActive = false;
   private readonly getSortedSectionItemsForSection = computedFn(
     (sectionId: number) => {
-      return this.root.itemStore
+      return this.root.currentStoreProjection
         .getItemsBySectionId(sectionId)
         .toSorted(sortByDisplayOrder);
     }
   );
   private readonly getSortedVisibleSections = computedFn(() => {
-    return this.root.sectionStore.sections
+    return this.root.currentStoreProjection.sections
       .filter((section) => !STATIC_SECTIONS.has(section.type))
       .toSorted(sortByDisplayOrder);
   });
@@ -94,25 +94,25 @@ export class BuilderTemplateStore {
 
   get personalDetails() {
     return {
-      firstName: this.root.fieldStore.getFieldValueByName(
+      firstName: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME
       ),
-      lastName: this.root.fieldStore.getFieldValueByName(
+      lastName: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME
       ),
-      jobTitle: this.root.fieldStore.getFieldValueByName(
+      jobTitle: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE
       ),
-      address: this.root.fieldStore.getFieldValueByName(
+      address: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.ADDRESS
       ),
-      city: this.root.fieldStore.getFieldValueByName(
+      city: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.CITY
       ),
-      phone: this.root.fieldStore.getFieldValueByName(
+      phone: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.PHONE
       ),
-      email: this.root.fieldStore.getFieldValueByName(
+      email: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.PERSONAL_DETAILS.EMAIL
       ),
     };
@@ -120,10 +120,10 @@ export class BuilderTemplateStore {
 
   get summarySection() {
     return {
-      sectionName: this.root.sectionStore.getSectionNameByType(
+      sectionName: this.root.currentStoreProjection.getSectionNameByType(
         INTERNAL_SECTION_TYPES.SUMMARY
       ),
-      summary: this.root.fieldStore.getFieldValueByName(
+      summary: this.root.currentStoreProjection.getFieldValueByName(
         FIELD_NAMES.SUMMARY.SUMMARY
       ),
     };
@@ -137,7 +137,7 @@ export class BuilderTemplateStore {
         metadata,
         items: this.getSortedSectionItems(section.id).map((item) => ({
           ...item,
-          fields: this.root.fieldStore.getFieldsByItemId(item.id),
+          fields: this.root.currentStoreProjection.getFieldsByItemId(item.id),
         })),
       };
     });
@@ -159,12 +159,9 @@ export class BuilderTemplateStore {
       },
       summarySection: this.summarySection,
       sections,
-      accentColor:
-        this.root.activeDocument?.accentColor ??
-        this.root.documentStore.accentColor,
+      accentColor: this.root.currentStoreProjection.accentColor,
       templateType:
-        this.root.activeDocument?.templateType ??
-        this.root.documentStore.document?.templateType ??
+        this.root.currentStoreProjection.templateType ??
         INTERNAL_TEMPLATE_TYPES.MANHATTAN,
     };
   }
@@ -178,7 +175,7 @@ export class BuilderTemplateStore {
       fieldName?: string
     ) =>
       items?.some((item) =>
-        this.root.fieldStore
+        this.root.currentStoreProjection
           .getFieldsByItemId(item.id)
           .some(
             (field) => (!fieldName || field.name === fieldName) && field.value
@@ -187,7 +184,8 @@ export class BuilderTemplateStore {
 
     SECTION_SUGGESTION_CONFIG.forEach(
       ({ type, scoreValue, label, fieldName }) => {
-        const items = this.root.sectionStore.getSectionItemsBySectionType(type);
+        const items =
+          this.root.currentStoreProjection.getSectionItemsBySectionType(type);
 
         if (items && hasFilledFields(items, fieldName)) {
           score += scoreValue;
@@ -206,9 +204,10 @@ export class BuilderTemplateStore {
       }
     );
 
-    const skillsItems = this.root.sectionStore.getSectionItemsBySectionType(
-      INTERNAL_SECTION_TYPES.SKILLS
-    );
+    const skillsItems =
+      this.root.currentStoreProjection.getSectionItemsBySectionType(
+        INTERNAL_SECTION_TYPES.SKILLS
+      );
     if (skillsItems) {
       const addedSkills = skillsItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL)
@@ -225,9 +224,10 @@ export class BuilderTemplateStore {
       }
     }
 
-    const languageItems = this.root.sectionStore.getSectionItemsBySectionType(
-      INTERNAL_SECTION_TYPES.LANGUAGES
-    );
+    const languageItems =
+      this.root.currentStoreProjection.getSectionItemsBySectionType(
+        INTERNAL_SECTION_TYPES.LANGUAGES
+      );
     if (languageItems) {
       const addedLanguages = languageItems.filter((item) =>
         hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE)
