@@ -49,6 +49,26 @@ describe('BuilderSession', () => {
     expect(session.currentStoreProjection.sections).toEqual([]);
   });
 
+  it('keeps the generic load failure for malformed Work Experience fields', async () => {
+    const records = builderDocumentFixture();
+    const session = new BuilderSession({
+      loadRecords: async () => ({
+        success: true,
+        document: records.document,
+        sections: [...records.sections],
+        items: [...records.items],
+        fields: records.fields.filter((field) => field.name !== 'Employer'),
+      }),
+    });
+
+    await expect(session.load(records.document.id)).resolves.toEqual({
+      status: 'failed',
+      documentId: records.document.id,
+      message: 'The document contains records the builder cannot load.',
+    });
+    expect(session.document).toBeNull();
+  });
+
   it('retains projection, PDF, score, and ATS behavior through the session', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({

@@ -81,6 +81,8 @@ type FieldsFor<S extends SectionKey> = {
   readonly [K in FieldKey<S>]: SemanticField<S, Extract<K, string>>;
 };
 
+export type WorkExperienceFields = FieldsFor<'workExperience'>;
+
 export class SemanticField<
   S extends SectionKey = SectionKey,
   K extends string = AnyFieldKey<S> & string,
@@ -289,6 +291,64 @@ export class BuilderItemModel<S extends SectionKey = SectionKey> {
   }
 }
 
+/** A read-only semantic view of one ordered Work Experience Item. */
+export class WorkExperienceEntry {
+  readonly id: ItemId;
+  readonly role: SemanticField<'workExperience', 'role'>;
+  readonly employer: SemanticField<'workExperience', 'employer'>;
+  readonly startDate: SemanticField<'workExperience', 'startDate'>;
+  readonly endDate: SemanticField<'workExperience', 'endDate'>;
+  readonly city: SemanticField<'workExperience', 'city'>;
+  readonly description: SemanticField<'workExperience', 'description'>;
+
+  constructor(item: WorkExperienceItemModel) {
+    this.id = item.id;
+    this.role = item.fields.role;
+    this.employer = item.fields.employer;
+    this.startDate = item.fields.startDate;
+    this.endDate = item.fields.endDate;
+    this.city = item.fields.city;
+    this.description = item.fields.description;
+    makeObservable(this, {
+      heading: computed,
+      dateDescription: computed,
+    });
+  }
+
+  get heading(): string {
+    const role = this.role.value.trim();
+    const employer = this.employer.value.trim();
+    if (role && employer) {
+      return `${role} at ${employer}`;
+    }
+    return role || employer || '(Untitled)';
+  }
+
+  get dateDescription(): string {
+    if (this.heading === '(Untitled)') {
+      return '';
+    }
+    const startDate = this.startDate.value.trim();
+    const endDate = this.endDate.value.trim();
+    return [startDate, endDate].filter(Boolean).join(' - ');
+  }
+}
+
+export class WorkExperienceItemModel extends BuilderItemModel<'workExperience'> {
+  declare readonly fields: WorkExperienceFields;
+  readonly entry: WorkExperienceEntry;
+
+  constructor(
+    record: DEX_Item,
+    fieldIds: readonly FieldId[],
+    fields: WorkExperienceFields,
+    document: BuilderDocumentModel
+  ) {
+    super(record, 'workExperience', fieldIds, fields, document);
+    this.entry = new WorkExperienceEntry(this);
+  }
+}
+
 export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   readonly id: SectionId;
   readonly documentId: DocumentId;
@@ -341,6 +401,55 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   get items(): readonly BuilderItemModel<S>[] {
     return this.itemIds.map(
       (id) => this.#document.itemsById.get(id) as unknown as BuilderItemModel<S>
+    );
+  }
+}
+
+/** Typed lifecycle boundary for the required Work Experience section. */
+export class WorkExperienceSectionModel extends BuilderSectionModel<'workExperience'> {
+  readonly #document: BuilderDocumentModel;
+
+  constructor(
+    record: DEX_Section,
+    definition: SectionDefinition<'workExperience'>,
+    metadata: readonly Readonly<{
+      key: string;
+      label: string;
+      value: string;
+    }>[],
+    itemIds: readonly ItemId[],
+    document: BuilderDocumentModel
+  ) {
+    super(record, definition, metadata, itemIds, document);
+    this.#document = document;
+  }
+
+  override get items(): readonly WorkExperienceItemModel[] {
+    return super.items as readonly WorkExperienceItemModel[];
+  }
+
+  get entries(): readonly WorkExperienceEntry[] {
+    return this.items.map((item) => item.entry);
+  }
+
+  async addEntry(): Promise<WorkExperienceItemModel | undefined> {
+    const itemId = await this.#document.addItem(this.id);
+    return itemId
+      ? (this.#document.itemsById.get(itemId) as WorkExperienceItemModel)
+      : undefined;
+  }
+
+  removeEntry(item: WorkExperienceItemModel): Promise<boolean> {
+    if (item.sectionId !== this.id) {
+      return Promise.resolve(false);
+    }
+    return this.#document.removeItem(item.id);
+  }
+
+  reorderEntries(items: readonly WorkExperienceItemModel[]): Promise<boolean> {
+    return this.#document.reorderItems(
+      this.id,
+      items.map((item) => item.id)
     );
   }
 }
@@ -420,10 +529,8 @@ export class BuilderDocumentModel {
   get summary(): BuilderSectionModel<'summary'> {
     return this.section('summary') as BuilderSectionModel<'summary'>;
   }
-  get workExperience(): BuilderSectionModel<'workExperience'> {
-    return this.section(
-      'workExperience'
-    ) as BuilderSectionModel<'workExperience'>;
+  get workExperience(): WorkExperienceSectionModel {
+    return this.section('workExperience') as WorkExperienceSectionModel;
   }
   get education(): BuilderSectionModel<'education'> | undefined {
     return this.section('education');
@@ -943,13 +1050,21 @@ export class BuilderDocumentModel {
         typedFields[model.fieldKey] = model;
         return model;
       });
-      const item = new BuilderItemModel(
-        result.item,
-        section.sectionKey,
-        fields.map((field) => field.id),
-        typedFields,
-        this
-      );
+      const item =
+        section.sectionKey === 'workExperience'
+          ? new WorkExperienceItemModel(
+              result.item,
+              fields.map((field) => field.id),
+              typedFields as WorkExperienceFields,
+              this
+            )
+          : new BuilderItemModel(
+              result.item,
+              section.sectionKey,
+              fields.map((field) => field.id),
+              typedFields,
+              this
+            );
       runInAction(() => {
         for (const field of fields) {
           this.fieldsById.set(field.id, field);
@@ -1379,13 +1494,22 @@ export const hydrateBuilderDocument = ({
   for (const section of orderedSections) {
     const definition = resolved.get(section.id) as SectionDefinition;
     const sectionItems = (itemsBySection.get(section.id) ?? []).sort(byOrder);
-    const sectionModel = new BuilderSectionModel(
-      section,
-      definition,
-      parsedMetadata.get(section.id) ?? [],
-      sectionItems.map((item) => item.id as ItemId),
-      model
-    );
+    const sectionModel =
+      definition.key === 'workExperience'
+        ? new WorkExperienceSectionModel(
+            section,
+            definition as SectionDefinition<'workExperience'>,
+            parsedMetadata.get(section.id) ?? [],
+            sectionItems.map((item) => item.id as ItemId),
+            model
+          )
+        : new BuilderSectionModel(
+            section,
+            definition,
+            parsedMetadata.get(section.id) ?? [],
+            sectionItems.map((item) => item.id as ItemId),
+            model
+          );
     model.sectionsById.set(sectionModel.id, sectionModel);
     for (const item of sectionItems) {
       const typedFields: Record<string, SemanticField> = {};
@@ -1403,13 +1527,21 @@ export const hydrateBuilderDocument = ({
         typedFields[fieldModel.fieldKey] = fieldModel;
         fieldIds.push(fieldModel.id);
       }
-      const itemModel = new BuilderItemModel(
-        item,
-        definition.key as SectionKey,
-        fieldIds,
-        typedFields,
-        model
-      );
+      const itemModel =
+        definition.key === 'workExperience'
+          ? new WorkExperienceItemModel(
+              item,
+              fieldIds,
+              typedFields as WorkExperienceFields,
+              model
+            )
+          : new BuilderItemModel(
+              item,
+              definition.key as SectionKey,
+              fieldIds,
+              typedFields,
+              model
+            );
       model.itemsById.set(itemModel.id, itemModel);
     }
   }
