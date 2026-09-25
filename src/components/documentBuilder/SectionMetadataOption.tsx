@@ -6,7 +6,7 @@ import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 
@@ -23,7 +23,7 @@ const MetadataSwitch = observer(
       value={option.value}
       checked={option.value === CHECKED_METADATA_VALUE}
       onCheckedChange={action(async (checked) => {
-        const result = await builderRootStore.document?.updateSectionMetadata(
+        const result = await builderSession.document?.updateSectionMetadata(
           sectionId as import('@/lib/builderDocument/builderDocument').SectionId,
           option.key,
           checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE

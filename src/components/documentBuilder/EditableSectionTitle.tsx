@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/tooltip';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import { RenameSectionFormDialog } from './RenameSectionFormDialog';
 
@@ -19,7 +19,7 @@ const getSectionTitleId = (sectionId: number) => `section-title-${sectionId}`;
 
 export const EditableSectionTitle = observer(
   ({ sectionId }: { sectionId: number }) => {
-    const section = builderRootStore.getSection(sectionId);
+    const section = builderSession.getSection(sectionId);
     const { attributes, listeners } = useSortable({ id: sectionId });
 
     if (!section) {
@@ -34,7 +34,7 @@ export const EditableSectionTitle = observer(
         !userSettingsStore.editorPreferences.askBeforeDeletingSection;
 
       if (shouldNotAskConfirmation) {
-        const removed = await builderRootStore.removeSection(section.id);
+        const removed = await builderSession.removeSection(section.id);
         if (removed) {
           showSuccessToast('Section removed successfully.');
         } else {
@@ -48,7 +48,7 @@ export const EditableSectionTitle = observer(
         message: 'This action cannot be undone',
         doNotAskAgainEnabled: true,
         onConfirm: async () => {
-          const removed = await builderRootStore.removeSection(section.id);
+          const removed = await builderSession.removeSection(section.id);
           if (removed) {
             showSuccessToast('Section removed successfully.');
           } else {

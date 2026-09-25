@@ -8,12 +8,12 @@ import { PersonalDetailsLinks } from '@/components/documentBuilder/PersonalDetai
 import { SectionDescription } from '@/components/documentBuilder/SectionDescription';
 import { SectionItem } from '@/components/documentBuilder/SectionItem';
 import { SectionMetadataOptions } from '@/components/documentBuilder/SectionMetadataOptions';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 export const DocumentSection = observer(
   ({ sectionId }: { sectionId: number }) => {
-    const section = builderRootStore.getSection(sectionId);
+    const section = builderSession.getSection(sectionId);
     const itemIds = section?.itemIds ?? [];
 
     return (
@@ -42,7 +42,7 @@ export const DocumentSection = observer(
 const ContainerElement = observer(
   ({ children, sectionId }: PropsWithChildren & { sectionId: number }) => {
     if (
-      builderRootStore.getSection(sectionId)?.definition.sectionCardinality ===
+      builderSession.getSection(sectionId)?.definition.sectionCardinality ===
       'required-one'
     ) {
       return (

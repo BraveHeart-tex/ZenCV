@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 export const SectionDescription = observer(
   ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
     const sectionType =
-      builderRootStore.sectionStore.getSectionById(sectionId)?.type;
+      builderSession.getSection(sectionId)?.definition.persistedType;
     const description =
       SECTION_DESCRIPTIONS_BY_TYPE[
         sectionType as keyof typeof SECTION_DESCRIPTIONS_BY_TYPE

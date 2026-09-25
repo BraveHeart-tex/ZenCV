@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react-lite';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
 
 export const SectionItem = observer(({ itemId }: { itemId: number }) => {
-  const item = builderRootStore.getItem(itemId);
+  const item = builderSession.getItem(itemId);
 
   if (!item) {
     return null;
@@ -19,12 +19,12 @@ export const SectionItem = observer(({ itemId }: { itemId: number }) => {
 const ContainerElement = ({
   item,
 }: {
-  item: NonNullable<ReturnType<typeof builderRootStore.getItem>>;
+  item: NonNullable<ReturnType<typeof builderSession.getItem>>;
 }) => {
   const { renderFields } = useFieldMapper();
 
   const fields = item.editableFields;
-  const section = builderRootStore.getSection(item.sectionId);
+  const section = builderSession.getSection(item.sectionId);
 
   if (fields.length > MAX_VISIBLE_FIELDS) {
     return <HidableFieldContainer fields={fields} />;

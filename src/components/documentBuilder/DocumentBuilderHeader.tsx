@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { EditableDocumentTitle } from '@/components/documentBuilder/EditableDocumentTitle';
 import { Skeleton } from '@/components/ui/skeleton';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const DocumentBuilderHeader = observer(() => {
   return (
     <header className='flex min-w-0 flex-1 flex-col items-center justify-center overflow-hidden px-1'>
-      {builderRootStore.document?.title ? (
+      {builderSession.document?.title ? (
         <EditableDocumentTitle />
       ) : (
         <div className='flex items-center gap-2 max-w-[95%]'>

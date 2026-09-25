@@ -13,8 +13,7 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
-import type { BuilderItemId } from './builderItemStore';
-import type { BuilderRootStore } from './builderRootStore';
+import type { BuilderSession } from './builderSession';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
@@ -53,7 +52,7 @@ const checkSummaryLength = (summary: string) => {
 };
 
 export class BuilderTemplateStore {
-  root: BuilderRootStore;
+  root: BuilderSession;
   debouncedTemplateData: PdfTemplateData | null = null;
   debouncedResumeStats: ResumeStats = { score: 0, suggestions: [] };
   debouncedATSCompatibility: ATSCompatibilityReport = {
@@ -77,7 +76,7 @@ export class BuilderTemplateStore {
       .toSorted(sortByDisplayOrder);
   });
 
-  constructor(root: BuilderRootStore) {
+  constructor(root: BuilderSession) {
     this.root = root;
     makeAutoObservable<
       this,
@@ -171,7 +170,7 @@ export class BuilderTemplateStore {
     const suggestions: ResumeSuggestion[] = [];
 
     const hasFilledFields = (
-      items: ReadonlyArray<{ readonly id: BuilderItemId }>,
+      items: ReadonlyArray<{ readonly id: number }>,
       fieldName?: string
     ) =>
       items?.some((item) =>

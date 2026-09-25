@@ -31,7 +31,7 @@ import {
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import { CollapsibleItemHeader } from './CollapsibleItemHeader';
@@ -50,7 +50,7 @@ interface CollapsibleSectionItemContainerProps {
 export const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
-    const open = builderRootStore.UIStore.isItemOpen(itemId);
+    const open = builderSession.UIStore.isItemOpen(itemId);
 
     const {
       attributes,
@@ -71,7 +71,7 @@ export const CollapsibleSectionItemContainer = observer(
         return;
       }
 
-      builderRootStore.UIStore.focusFirstFieldInItem(itemId);
+      builderSession.UIStore.focusFirstFieldInItem(itemId);
     }, [open, itemId]);
 
     const shouldShowDeleteButton = !isDragging && !isOver && !isSorting;
@@ -81,7 +81,7 @@ export const CollapsibleSectionItemContainer = observer(
         !userSettingsStore.editorPreferences.askBeforeDeletingItem;
 
       if (shouldNotAskForConfirmation) {
-        if (await builderRootStore.removeItem(itemId)) {
+        if (await builderSession.removeItem(itemId)) {
           showSuccessToast('Entry deleted successfully.');
         }
         return;
@@ -93,7 +93,7 @@ export const CollapsibleSectionItemContainer = observer(
         confirmText: 'Delete',
         cancelText: 'Cancel',
         onConfirm: async () => {
-          if (await builderRootStore.removeItem(itemId)) {
+          if (await builderSession.removeItem(itemId)) {
             showSuccessToast('Entry deleted successfully.');
           }
 
@@ -119,7 +119,7 @@ export const CollapsibleSectionItemContainer = observer(
           )}
           ref={(ref) => {
             setNodeRef(ref);
-            builderRootStore.UIStore.setElementRef(
+            builderSession.UIStore.setElementRef(
               getItemContainerId(itemId),
               ref
             );
@@ -177,7 +177,7 @@ export const CollapsibleSectionItemContainer = observer(
                     if (isDragging || isSorting || isOver) {
                       return;
                     }
-                    builderRootStore.UIStore.toggleItem(itemId);
+                    builderSession.UIStore.toggleItem(itemId);
                   }}
                 >
                   <CollapsibleItemHeader itemId={itemId} />
@@ -193,7 +193,7 @@ export const CollapsibleSectionItemContainer = observer(
                           variant='ghost'
                           className='flex items-center justify-start w-full gap-2 py-6 border-b rounded-none'
                           onClick={() =>
-                            builderRootStore.UIStore.toggleItem(itemId)
+                            builderSession.UIStore.toggleItem(itemId)
                           }
                         >
                           <PencilIcon className='text-primary' size={18} />
@@ -218,7 +218,7 @@ export const CollapsibleSectionItemContainer = observer(
                     variant='ghost'
                     size='icon'
                     aria-label={open ? 'Collapse entry' : 'Expand entry'}
-                    onClick={() => builderRootStore.UIStore.toggleItem(itemId)}
+                    onClick={() => builderSession.UIStore.toggleItem(itemId)}
                     className={cn(
                       'mr-2 group-hover:text-primary text-muted-foreground transition-all',
                       open ? '[&_svg]:rotate-180' : '[&_svg]:rotate-0'

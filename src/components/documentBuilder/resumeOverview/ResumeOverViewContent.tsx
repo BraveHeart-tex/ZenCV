@@ -11,7 +11,7 @@ import {
   getTriggerContent,
   scrollItemIntoView,
 } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import {
   cn,
@@ -27,7 +27,7 @@ interface ResumeOverViewContentProps {
 
 export const ResumeOverViewContent = observer(
   ({ visible, focusState }: ResumeOverViewContentProps) => {
-    const sectionsWithItems = builderRootStore.sectionStore.sectionsWithItems;
+    const sectionsWithItems = builderSession.document?.sections ?? [];
 
     const handleScrollToSection = (sectionId: DEX_Section['id']) => {
       const container = document.getElementById(

@@ -9,11 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const DocumentBuilderSelectInput = observer(
   ({ fieldId }: { fieldId: number }) => {
-    const field = builderRootStore.getField(fieldId);
+    const field = builderSession.getField(fieldId);
 
     if (!field) {
       return null;
@@ -34,7 +34,7 @@ export const DocumentBuilderSelectInput = observer(
             className='w-full'
             id={htmlInputId}
             ref={(ref) =>
-              builderRootStore.UIStore.setFieldRef(field.id.toString(), ref)
+              builderSession.UIStore.setFieldRef(field.id.toString(), ref)
             }
           >
             <SelectValue placeholder={field.label} />

@@ -1,11 +1,11 @@
 import { CheckCircle2Icon, CircleAlertIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { SuggestionGroupHeading } from './SuggestionGroupHeading';
 
 export const AtsCompatibilityChecks = observer(() => {
   const atsCompatibility =
-    builderRootStore.templateStore.debouncedATSCompatibility;
+    builderSession.templateStore.debouncedATSCompatibility;
   if (atsCompatibility.checks.length === 0) {
     return null;
   }

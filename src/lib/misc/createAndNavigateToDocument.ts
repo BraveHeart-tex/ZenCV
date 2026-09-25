@@ -2,7 +2,7 @@ import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
 import type { DEX_Document } from '../client-db/clientDbSchema';
 import { createDocument } from '../client-db/documentService';
 import { serializeTemplateSettings } from '../constants/accentColors';
-import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
+import { builderSession } from '../stores/documentBuilder/builderSession';
 import type { PrefilledResumeStyle } from '../templates/prefilledTemplates';
 import type { ResumeTemplate } from '../types/documentBuilder.types';
 
@@ -39,7 +39,7 @@ export const createAndNavigateToDocument = async ({
       return;
     }
 
-    await builderRootStore.documentStore.initializeStore(documentId);
+    await builderSession.initializeStore(documentId);
     showSuccessToast('Document created successfully.');
 
     if (onSuccess) {

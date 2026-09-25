@@ -2,15 +2,15 @@ import { ArrowLeftIcon, DownloadIcon, LayoutGridIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { downloadPDF } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { cn } from '@/lib/utils/stringUtils';
 import { Button } from '../ui/button';
 
 export const DocumentBuilderPreviewHeader = observer(() => {
-  const view = builderRootStore.UIStore.currentView;
-  const documentTitle = builderRootStore.document?.title || 'Untitled';
+  const view = builderSession.UIStore.currentView;
+  const documentTitle = builderSession.document?.title || 'Untitled';
   const previousRenderValue = pdfViewerStore.previousRenderValue;
 
   return (
@@ -26,15 +26,14 @@ export const DocumentBuilderPreviewHeader = observer(() => {
         className={cn('xl:hidden', view === 'preview' && 'flex xl:hidden')}
         variant='outline'
         onClick={action(() => {
-          builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
+          builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
         })}
       >
         <ArrowLeftIcon />
       </Button>
       <Button
         onClick={action(async () => {
-          builderRootStore.UIStore.currentView =
-            BUILDER_CURRENT_VIEWS.TEMPLATES;
+          builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.TEMPLATES;
         })}
         className='hover:bg-primary/5 dark:hover:bg-primary/10 sm:mx-0 lg:mr-auto items-center gap-2 px-1 mx-auto'
         variant='ghost'

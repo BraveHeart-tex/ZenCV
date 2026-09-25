@@ -5,7 +5,7 @@ import {
   scrollItemIntoView,
 } from '@/lib/helpers/documentBuilderHelpers';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   OTHER_SECTION_OPTIONS,
   SUGGESTION_ACTION_TYPES,
@@ -33,7 +33,7 @@ export const ResumeScoreSuggestionItem = observer(
         }
 
         const elementRef =
-          builderRootStore.UIStore.getFieldRefByFieldNameAndSection(
+          builderSession.UIStore.getFieldRefByFieldNameAndSection(
             fieldName,
             sectionType
           );
@@ -50,7 +50,7 @@ export const ResumeScoreSuggestionItem = observer(
       }
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
-        const document = builderRootStore.document;
+        const document = builderSession.document;
         const section = document?.sections.find(
           (candidate) =>
             candidate.definition.persistedType === suggestion.sectionType
@@ -90,7 +90,7 @@ export const ResumeScoreSuggestionItem = observer(
           return;
         }
 
-        const addedItemId = await builderRootStore.addItem(section.id);
+        const addedItemId = await builderSession.addItem(section.id);
         if (!addedItemId) {
           return;
         }

@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type React from 'react';
 import { memo } from 'react';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
 
 interface DraggableSectionContainerProps {
@@ -22,7 +22,7 @@ export const DraggableSectionContainer = memo(
       <section
         ref={(ref) => {
           setNodeRef(ref);
-          builderRootStore.UIStore.setElementRef(
+          builderSession.UIStore.setElementRef(
             getSectionContainerId(sectionId),
             ref
           );

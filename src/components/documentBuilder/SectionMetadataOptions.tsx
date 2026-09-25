@@ -1,10 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { SectionMetadataOption } from './SectionMetadataOption';
 
 const MetadataOptionsList = observer(({ sectionId }: { sectionId: number }) => {
-  const sectionMetadataOptions =
-    builderRootStore.getSection(sectionId)?.metadata;
+  const sectionMetadataOptions = builderSession.getSection(sectionId)?.metadata;
 
   if (!sectionMetadataOptions?.length) {
     return null;

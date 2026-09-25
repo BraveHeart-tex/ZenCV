@@ -5,18 +5,18 @@ import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersist
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { normalizeWebUrl } from '@/lib/utils/urlUtils';
 
 export const WebLinkFieldInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
     const [touched, setTouched] = useState(false);
-    const field = builderRootStore.getField(fieldId);
+    const field = builderSession.getField(fieldId);
 
     const setFieldRef = useCallback(
       (ref: HTMLInputElement | null) => {
         if (ref) {
-          builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+          builderSession.UIStore.setFieldRef(fieldId.toString(), ref);
         }
       },
       [fieldId]

@@ -26,7 +26,7 @@ import {
   renameDocument,
 } from '@/lib/client-db/documentService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 import { RenameDocumentDialog } from './RenameDocumentDialog';
 
@@ -48,9 +48,9 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
         try {
           await deleteDocument(document.id);
           showSuccessToast('Resume deleted successfully.');
-          if (builderRootStore.documentStore?.document?.id === document.id) {
-            builderRootStore.resetState();
-            builderRootStore.dispose();
+          if (builderSession.document?.id === document.id) {
+            builderSession.resetState();
+            builderSession.dispose();
           }
         } catch (error) {
           console.error(error);

@@ -38,7 +38,7 @@ import type {
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 import { getDefaultSkillsMetadata } from '../misc/sectionMetadataTemplates';
-import { builderRootStore } from '../stores/documentBuilder/builderRootStore';
+import { builderSession } from '../stores/documentBuilder/builderSession';
 
 export const getInitialDocumentInsertBoilerplate = (
   documentId: DEX_Document['id']
@@ -193,7 +193,7 @@ export const getTriggerContent = (
   title: string;
   description: string;
 } => {
-  const item = builderRootStore.itemStore.getItemById(itemId);
+  const item = builderSession.getItem(itemId);
   if (!item) {
     return {
       description: '',
@@ -201,9 +201,8 @@ export const getTriggerContent = (
     };
   }
 
-  const sectionType = builderRootStore.sectionStore.getSectionById(
-    item.sectionId
-  )?.type as CollapsibleSectionType;
+  const sectionType = builderSession.getSection(item.sectionId)?.definition
+    .persistedType as CollapsibleSectionType;
   if (!sectionType) {
     return {
       description: '',
@@ -237,13 +236,26 @@ export const getTriggerContent = (
   );
 };
 
-const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
+const getItemFieldValue = (itemId: number, fieldName: string): string => {
+  const item = builderSession.getItem(itemId);
+  const section = item ? builderSession.getSection(item.sectionId) : undefined;
+  const definition = section
+    ? Object.values(section.definition.fields).find(
+        (candidate) => candidate.persistedName === fieldName
+      )
+    : undefined;
+  return (
+    item?.editableFields.find(
+      (candidate) => candidate.fieldKey === definition?.key
+    )?.value ?? ''
+  );
+};
 
+const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
   const getEmploymentHistoryFieldValue = (
     fieldName: FieldValuesForKey<'WORK_EXPERIENCE'>
   ) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const jobTitle = getEmploymentHistoryFieldValue(
@@ -275,12 +287,10 @@ const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getEducationFieldValue = (
     fieldName: FieldValuesForKey<'EDUCATION'>
   ) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const schoolTitle = getEducationFieldValue(FIELD_NAMES.EDUCATION.SCHOOL);
@@ -307,12 +317,10 @@ const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getWebsiteFieldValue = (
     fieldName: FieldValuesForKey<'WEBSITES_SOCIAL_LINKS'>
   ) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const labelValue = getWebsiteFieldValue(
@@ -332,17 +340,15 @@ const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getSkillFieldValue = (fieldName: FieldValuesForKey<'SKILLS'>) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
   const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
 
-  const item = builderRootStore.itemStore.getItemById(itemId);
-  const metadata = builderRootStore.sectionStore.sections.find(
+  const item = builderSession.getItem(itemId);
+  const metadata = builderSession.document?.sections.find(
     (section) => section.id === item?.sectionId
   )?.metadata;
   const shouldShowSkillLevel =
@@ -361,10 +367,8 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getLanguageFieldValue = (fieldName: FieldValuesForKey<'LANGUAGES'>) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const language = getLanguageFieldValue(FIELD_NAMES.LANGUAGES.LANGUAGE);
@@ -377,10 +381,8 @@ const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getCourseFieldValue = (fieldName: FieldValuesForKey<'COURSES'>) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const course = getCourseFieldValue(FIELD_NAMES.COURSES.COURSE);
@@ -408,10 +410,8 @@ const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getCustomFieldValue = (fieldName: FieldValuesForKey<'CUSTOM'>) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const name = getCustomFieldValue(FIELD_NAMES.CUSTOM.ACTIVITY_NAME);
@@ -439,12 +439,10 @@ const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
-  const itemFields = builderRootStore.fieldStore.getFieldsByItemId(itemId);
-
   const getReferenceFieldValue = (
     fieldName: FieldValuesForKey<'REFERENCES'>
   ) => {
-    return itemFields.find((field) => field.name === fieldName)?.value || '';
+    return getItemFieldValue(itemId, fieldName);
   };
 
   const referentFullName =
@@ -492,15 +490,15 @@ export const scrollItemIntoView = (
   itemId: DEX_Item['id'],
   onItemInView?: () => void
 ): void => {
-  const element = builderRootStore.UIStore.itemRefs.get(
+  const element = builderSession.UIStore.itemRefs.get(
     getItemContainerId(itemId)
   );
   if (!element) {
     return;
   }
 
-  if (builderRootStore.UIStore.collapsedItemId !== itemId) {
-    builderRootStore.UIStore.toggleItem(itemId);
+  if (builderSession.UIStore.collapsedItemId !== itemId) {
+    builderSession.UIStore.toggleItem(itemId);
   }
 
   const scrollAndHighlight = () => {
@@ -547,14 +545,14 @@ export const downloadPDF = ({
 };
 
 export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
-  const item = builderRootStore.itemStore.getItemById(itemId);
+  const item = builderSession.getItem(itemId);
   if (!item) {
     return null;
   }
 
-  const section = builderRootStore.sectionStore.getSectionById(item?.sectionId);
+  const section = builderSession.getSection(item?.sectionId);
 
-  return section?.type || null;
+  return section?.definition.persistedType || null;
 };
 
 export const prepareSectionsInsertData = (

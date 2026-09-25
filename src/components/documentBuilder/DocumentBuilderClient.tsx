@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { cn } from '@/lib/utils/stringUtils';
 import { DocumentBuilderSettingsWidget } from './DocumentBuilderSettingsWidget';
@@ -22,7 +22,7 @@ type DocumentBuilderClientProps = Readonly<{
 
 export const DocumentBuilderClient = observer(
   ({ onReturnToDocuments }: DocumentBuilderClientProps) => {
-    const view = builderRootStore.UIStore.currentView;
+    const view = builderSession.UIStore.currentView;
 
     const handleBack = () => {
       onReturnToDocuments();

@@ -2,8 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
-import type { BuilderItemId } from './builderItemStore';
-import type { BuilderRootStore } from './builderRootStore';
+import type { BuilderSession } from './builderSession';
 
 export const BUILDER_CURRENT_VIEWS = {
   BUILDER: 'builder',
@@ -12,9 +11,9 @@ export const BUILDER_CURRENT_VIEWS = {
 } as const;
 
 export class BuilderUIStore {
-  root: BuilderRootStore;
+  root: BuilderSession;
 
-  collapsedItemId: Nullable<BuilderItemId> = null;
+  collapsedItemId: Nullable<number> = null;
 
   itemRefs: Map<string, Nullable<HTMLElement>> = new Map();
   fieldRefs: Map<string, Nullable<HTMLElement>> = new Map();
@@ -22,11 +21,11 @@ export class BuilderUIStore {
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
   isMobileTemplateSelectorVisible: boolean = false;
-  private readonly isItemOpenForItem = computedFn((id: BuilderItemId) => {
+  private readonly isItemOpenForItem = computedFn((id: number) => {
     return this.collapsedItemId === id;
   });
 
-  constructor(root: BuilderRootStore) {
+  constructor(root: BuilderSession) {
     this.root = root;
     makeAutoObservable<this, 'isItemOpenForItem'>(
       this,
@@ -37,7 +36,7 @@ export class BuilderUIStore {
     );
   }
 
-  isItemOpen(id: BuilderItemId) {
+  isItemOpen(id: number) {
     return this.isItemOpenForItem(id);
   }
 
@@ -45,47 +44,31 @@ export class BuilderUIStore {
     fieldName: FieldName,
     sectionType: SectionType
   ) {
-    const section = this.root.sectionStore.sections.find(
-      (candidate) => candidate.type === sectionType
+    const section = this.root.document?.sections.find(
+      (candidate) => candidate.definition.persistedType === sectionType
     );
     if (!section) {
       return;
     }
-    for (const item of this.root.itemStore.getItemsBySectionId(section.id)) {
-      const field = this.root.fieldStore
-        .getFieldsByItemId(item.id)
-        .find((candidate) => candidate.name === fieldName);
+    for (const item of section.items) {
+      const definition = Object.values(section.definition.fields).find(
+        (candidate) => candidate.persistedName === fieldName
+      );
+      const field = definition
+        ? item.editableFields.find(
+            (candidate) => candidate.fieldKey === definition.key
+          )
+        : undefined;
       if (field) {
         return this.fieldRefs.get(field.id.toString());
       }
     }
   }
 
-  focusFirstFieldInItem(itemId: BuilderItemId) {
+  focusFirstFieldInItem(itemId: number) {
     const item = this.root.getItem(itemId);
 
     if (!item) {
-      const legacyItem = this.root.itemStore.getItemById(itemId);
-      const firstLegacyField = legacyItem
-        ? this.root.fieldStore.getFieldsByItemId(legacyItem.id)[0]
-        : undefined;
-      const legacyElement = firstLegacyField
-        ? this.fieldRefs.get(firstLegacyField.id.toString())
-        : undefined;
-      if (legacyElement) {
-        requestAnimationFrame(() => {
-          legacyElement.focus();
-        });
-        return;
-      }
-      if (legacyItem) {
-        console.warn(
-          firstLegacyField
-            ? 'No element found to focus'
-            : 'No field found to focus'
-        );
-        return;
-      }
       console.warn('No item found to focus first field');
       return;
     }
@@ -121,7 +104,7 @@ export class BuilderUIStore {
     this.fieldRefs.set(key, value);
   }
 
-  toggleItem(itemId: BuilderItemId) {
+  toggleItem(itemId: number) {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
   }
 

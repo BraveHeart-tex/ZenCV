@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { useAsync } from 'react-use';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { cn } from '@/lib/utils/stringUtils';
 import { PreviewSkeleton } from '../PreviewSkeleton';
@@ -25,7 +25,7 @@ export const GalleryPdfViewer = observer(() => {
 
   useEffect(() => {
     const dispose = reaction(
-      () => builderRootStore.templateStore.debouncedTemplateData,
+      () => builderSession.templateStore.debouncedTemplateData,
       (data) => {
         if (!data) {
           return;
@@ -39,7 +39,7 @@ export const GalleryPdfViewer = observer(() => {
   }, []);
 
   const render = useAsync(async () => {
-    const templateData = builderRootStore.templateStore.debouncedTemplateData;
+    const templateData = builderSession.templateStore.debouncedTemplateData;
     if (!templateData) {
       return null;
     }

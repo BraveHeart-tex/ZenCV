@@ -2,7 +2,7 @@ import { CheckIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 import { TemplateImage } from '../TemplateImage';
 
@@ -12,10 +12,10 @@ interface ResumeTemplateOptionItemProps {
 
 export const ResumeTemplateOptionItem = observer(
   ({ option }: ResumeTemplateOptionItemProps) => {
-    const isSelected = builderRootStore.document?.templateType === option.value;
+    const isSelected = builderSession.document?.templateType === option.value;
 
     const handleOptionClick = action(async () => {
-      await builderRootStore.document?.changeTemplate(option.value);
+      await builderSession.document?.changeTemplate(option.value);
     });
 
     return (

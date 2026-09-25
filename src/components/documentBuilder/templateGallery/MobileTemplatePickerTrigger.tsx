@@ -1,7 +1,7 @@
 import { SlidersHorizontalIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { Button } from '@/components/ui/button';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const MobileTemplatePickerTrigger = () => {
   return (
@@ -11,7 +11,7 @@ export const MobileTemplatePickerTrigger = () => {
       aria-label='Toggle template selector bottom menu'
       className='xl:hidden'
       onClick={action(() => {
-        builderRootStore.UIStore.toggleTemplateSelectorBottomMenu();
+        builderSession.UIStore.toggleTemplateSelectorBottomMenu();
       })}
     >
       <SlidersHorizontalIcon />
