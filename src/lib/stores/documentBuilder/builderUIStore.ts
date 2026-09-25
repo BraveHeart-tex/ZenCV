@@ -74,7 +74,10 @@ export class BuilderUIStore {
       return;
     }
 
-    const firstField = item.editableFields[0];
+    const section = this.root.getSection(item.sectionId);
+    const firstField = section
+      ? item.field(section.definition.initialFocusFieldKey)
+      : undefined;
     if (!firstField) {
       console.warn('No field found to focus');
       return;

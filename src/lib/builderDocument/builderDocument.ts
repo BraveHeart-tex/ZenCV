@@ -76,6 +76,15 @@ type PublicFieldDefinition<S extends SectionKey, K extends string> = Omit<
   readonly order: number;
   readonly placeholder?: string;
   readonly options?: readonly string[];
+  readonly dateRange?: Readonly<{
+    key: string;
+    role: 'start' | 'end';
+    allowPresent: boolean;
+  }>;
+  readonly richText?: Readonly<{
+    guidance?: string;
+    characterCounter: boolean;
+  }>;
 };
 type FieldsFor<S extends SectionKey> = {
   readonly [K in FieldKey<S>]: SemanticField<S, Extract<K, string>>;

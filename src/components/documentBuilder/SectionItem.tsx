@@ -1,11 +1,15 @@
 import { observer } from 'mobx-react-lite';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
-import type { ItemId } from '@/lib/builderDocument/builderDocument';
+import {
+  type ItemId,
+  WorkExperienceItemModel,
+} from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
+import { WorkExperienceForm } from './WorkExperienceForm';
 
 export const SectionItem = observer(({ itemId }: { itemId: ItemId }) => {
   const item = builderSession.getItem(itemId);
@@ -26,6 +30,14 @@ const ContainerElement = ({
 
   const fields = item.editableFields;
   const section = builderSession.getSection(item.sectionId);
+
+  if (item instanceof WorkExperienceItemModel) {
+    return (
+      <CollapsibleSectionItemContainer itemId={item.id}>
+        <WorkExperienceForm entry={item.entry} />
+      </CollapsibleSectionItemContainer>
+    );
+  }
 
   if (fields.length > MAX_VISIBLE_FIELDS) {
     return <HidableFieldContainer fields={fields} />;
