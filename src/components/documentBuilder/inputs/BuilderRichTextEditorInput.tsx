@@ -3,11 +3,11 @@ import { observer } from 'mobx-react-lite';
 import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { RichTextCharacterCounter } from '@/components/documentBuilder/RichTextCharacterCounter';
 import { RichTextEditor } from '@/components/richTextEditor/RichTextEditor';
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface BuilderRichTextEditorInputProps {
-  fieldId: DEX_Field['id'];
+  fieldId: FieldId;
   ariaLabelledBy?: string;
 }
 

@@ -32,11 +32,13 @@ import {
 import type {
   CollapsibleSectionType,
   FieldInsertTemplate,
+  FieldName,
   FieldValuesForKey,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
+import type { ItemId } from '../builderDocument/builderDocument';
 import { getDefaultSkillsMetadata } from '../misc/sectionMetadataTemplates';
 import { builderSession } from '../stores/documentBuilder/builderSession';
 
@@ -193,7 +195,7 @@ export const getTriggerContent = (
   title: string;
   description: string;
 } => {
-  const item = builderSession.getItem(itemId);
+  const item = builderSession.getItem(itemId as ItemId);
   if (!item) {
     return {
       description: '',
@@ -236,20 +238,10 @@ export const getTriggerContent = (
   );
 };
 
-const getItemFieldValue = (itemId: number, fieldName: string): string => {
-  const item = builderSession.getItem(itemId);
-  const section = item ? builderSession.getSection(item.sectionId) : undefined;
-  const definition = section
-    ? Object.values(section.definition.fields).find(
-        (candidate) => candidate.persistedName === fieldName
-      )
-    : undefined;
-  return (
-    item?.editableFields.find(
-      (candidate) => candidate.fieldKey === definition?.key
-    )?.value ?? ''
-  );
-};
+const getItemFieldValue = (
+  itemId: DEX_Item['id'],
+  fieldName: FieldName
+): string => builderSession.getItemFieldValue(itemId as ItemId, fieldName);
 
 const getEmploymentHistoryTitle = (itemId: DEX_Item['id']) => {
   const getEmploymentHistoryFieldValue = (
@@ -347,7 +339,7 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
   const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
   const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
 
-  const item = builderSession.getItem(itemId);
+  const item = builderSession.getItem(itemId as ItemId);
   const metadata = builderSession.document?.sections.find(
     (section) => section.id === item?.sectionId
   )?.metadata;
@@ -498,7 +490,7 @@ export const scrollItemIntoView = (
   }
 
   if (builderSession.UIStore.collapsedItemId !== itemId) {
-    builderSession.UIStore.toggleItem(itemId);
+    builderSession.UIStore.toggleItem(itemId as ItemId);
   }
 
   const scrollAndHighlight = () => {
@@ -545,7 +537,7 @@ export const downloadPDF = ({
 };
 
 export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
-  const item = builderSession.getItem(itemId);
+  const item = builderSession.getItem(itemId as ItemId);
   if (!item) {
     return null;
   }

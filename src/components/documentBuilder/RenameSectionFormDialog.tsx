@@ -12,12 +12,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { dialogFooterClassNames } from '@/lib/constants';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface RenameSectionFormDialogProps {
-  sectionId: number;
+  sectionId: SectionId;
 }
 
 export const RenameSectionFormDialog = observer(

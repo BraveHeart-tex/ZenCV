@@ -1,12 +1,13 @@
 import { observer } from 'mobx-react-lite';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
+import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
 
-export const SectionItem = observer(({ itemId }: { itemId: number }) => {
+export const SectionItem = observer(({ itemId }: { itemId: ItemId }) => {
   const item = builderSession.getItem(itemId);
 
   if (!item) {

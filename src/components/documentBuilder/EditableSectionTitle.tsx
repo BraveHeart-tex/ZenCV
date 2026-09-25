@@ -9,16 +9,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import { RenameSectionFormDialog } from './RenameSectionFormDialog';
 
-const getSectionTitleId = (sectionId: number) => `section-title-${sectionId}`;
+const getSectionTitleId = (sectionId: SectionId) =>
+  `section-title-${sectionId}`;
 
 export const EditableSectionTitle = observer(
-  ({ sectionId }: { sectionId: number }) => {
+  ({ sectionId }: { sectionId: SectionId }) => {
     const section = builderSession.getSection(sectionId);
     const { attributes, listeners } = useSortable({ id: sectionId });
 
