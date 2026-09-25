@@ -35,6 +35,7 @@ import {
 } from '@/lib/helpers/dateInputHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
+import { canMarkDateAsPresent } from './dateFieldInputUtils';
 
 const PRESENT = 'Present';
 
@@ -42,7 +43,6 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
   const field = builderSession.getField(fieldId);
   const htmlInputId = `field-${fieldId}`;
   const inputRef = useRef<HTMLInputElement>(null);
-  const allowsPresent = field?.definition.dateRange?.allowPresent ?? false;
 
   const month = useMemo(() => {
     if (!field?.value) {
@@ -66,6 +66,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
     return null;
   }
 
+  const allowsPresent = canMarkDateAsPresent(field);
   const isPresent = field?.value === PRESENT;
   const isError =
     field.value && field.value !== PRESENT && !isValidDateFormat(field.value);
