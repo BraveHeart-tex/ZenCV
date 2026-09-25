@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
@@ -161,5 +162,61 @@ describe('BuilderSession', () => {
     session.UIStore.focusFirstFieldInItem(personalDetailsItem.id);
     expect(fieldElement.focus).toHaveBeenCalledOnce();
     vi.unstubAllGlobals();
+  });
+
+  it('derives Work Experience score and ATS feedback from semantic entries', async () => {
+    const records = builderDocumentFixture();
+    const workExperienceSection = records.sections.find(
+      (section) => section.type === 'work-experience'
+    );
+    if (!workExperienceSection) {
+      throw new Error('Expected a Work Experience section');
+    }
+    const workExperienceItemIds = new Set(
+      records.items
+        .filter((item) => item.sectionId === workExperienceSection.id)
+        .map((item) => item.id)
+    );
+    const session = new BuilderSession({
+      loadRecords: async () => ({
+        success: true,
+        document: records.document,
+        sections: [...records.sections],
+        items: [...records.items],
+        fields: records.fields.map((field) =>
+          workExperienceItemIds.has(field.itemId)
+            ? ({ ...field, value: '' } as DEX_Field)
+            : field
+        ),
+      }),
+    });
+
+    await session.load(records.document.id);
+
+    const entry = session.document?.workExperience.entries[0];
+    if (!entry) {
+      throw new Error('Expected a Work Experience entry');
+    }
+
+    expect(session.templateStore.resumeStats.suggestions).toContainEqual(
+      expect.objectContaining({ label: 'Add work experience' })
+    );
+    entry.description.setDraft('<ul><li>Increased revenue by 20%</li></ul>');
+
+    expect(session.templateStore.resumeStats.suggestions).not.toContainEqual(
+      expect.objectContaining({ label: 'Add work experience' })
+    );
+    expect(session.templateStore.atsCompatibility.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'work_experience_bullets',
+          pass: true,
+        }),
+        expect.objectContaining({
+          id: 'quantified_achievements',
+          pass: true,
+        }),
+      ])
+    );
   });
 });

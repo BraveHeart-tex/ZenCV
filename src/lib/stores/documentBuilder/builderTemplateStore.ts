@@ -168,6 +168,17 @@ export class BuilderTemplateStore {
   get resumeStats() {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
+    const hasFilledWorkExperience =
+      this.root.document?.workExperience.entries.some((entry) =>
+        [
+          entry.role,
+          entry.employer,
+          entry.startDate,
+          entry.endDate,
+          entry.city,
+          entry.description,
+        ].some((field) => Boolean(field.value))
+      ) ?? false;
 
     const hasFilledFields = (
       items: ReadonlyArray<{ readonly id: number }>,
@@ -185,8 +196,12 @@ export class BuilderTemplateStore {
       ({ type, scoreValue, label, fieldName }) => {
         const items =
           this.root.currentStoreProjection.getSectionItemsBySectionType(type);
+        const hasContent =
+          type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
+            ? hasFilledWorkExperience
+            : hasFilledFields(items, fieldName);
 
-        if (items && hasFilledFields(items, fieldName)) {
+        if (hasContent) {
           score += scoreValue;
         } else {
           suggestions.push({
@@ -259,19 +274,11 @@ export class BuilderTemplateStore {
   }
 
   get atsCompatibility() {
-    const { personalDetails, summarySection, sections } = this.pdfTemplateData;
-    const workExperienceSections = sections.filter(
-      (section) => section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
-    );
-
-    const workExperienceDescriptions = workExperienceSections.flatMap(
-      (section) =>
-        section.items.map((item) => {
-          return item.fields.find(
-            (field) => field.name === FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-          )?.value;
-        })
-    );
+    const { personalDetails, summarySection } = this.pdfTemplateData;
+    const workExperienceDescriptions =
+      this.root.document?.workExperience.entries.map(
+        (entry) => entry.description.value
+      ) ?? [];
 
     const checks = [
       {
