@@ -10,7 +10,7 @@ import {
   type GetFullDocumentStructureResponse,
   getFullDocumentStructure,
 } from '@/lib/client-db/documentService';
-import type { StoreResult } from '@/lib/types/documentBuilder.types';
+import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
 import { CurrentStoreProjection } from './currentStoreProjection';
@@ -58,16 +58,31 @@ export class BuilderSession {
     return this.state.status === 'ready' ? this.state.document : null;
   }
 
-  getSection(sectionId: number) {
-    return this.document?.sectionsById.get(sectionId as SectionId);
+  getSection(sectionId: SectionId) {
+    return this.document?.sectionsById.get(sectionId);
   }
 
-  getItem(itemId: number) {
-    return this.document?.itemsById.get(itemId as ItemId);
+  getItem(itemId: ItemId) {
+    return this.document?.itemsById.get(itemId);
   }
 
-  getField(fieldId: number) {
-    return this.document?.fieldsById.get(fieldId as FieldId);
+  getField(fieldId: FieldId) {
+    return this.document?.fieldsById.get(fieldId);
+  }
+
+  getItemFieldValue(itemId: ItemId, fieldName: FieldName): string {
+    const item = this.getItem(itemId);
+    const section = item ? this.getSection(item.sectionId) : undefined;
+    const definition = section
+      ? Object.values(section.definition.fields).find(
+          (candidate) => candidate.persistedName === fieldName
+        )
+      : undefined;
+    return (
+      item?.editableFields.find(
+        (candidate) => candidate.fieldKey === definition?.key
+      )?.value ?? ''
+    );
   }
 
   async load(documentId: number): Promise<BuilderSessionState> {

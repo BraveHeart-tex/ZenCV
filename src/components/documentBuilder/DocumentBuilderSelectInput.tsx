@@ -9,10 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const DocumentBuilderSelectInput = observer(
-  ({ fieldId }: { fieldId: number }) => {
+  ({ fieldId }: { fieldId: FieldId }) => {
     const field = builderSession.getField(fieldId);
 
     if (!field) {

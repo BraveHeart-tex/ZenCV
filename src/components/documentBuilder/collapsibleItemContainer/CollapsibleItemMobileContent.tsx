@@ -9,12 +9,12 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface CollapsibleItemMobileContentProps {
-  itemId: DEX_Item['id'];
+  itemId: ItemId;
   children: React.ReactNode;
 }
 

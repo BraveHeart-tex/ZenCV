@@ -28,7 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { handleEditorPreferenceChange } from '@/lib/client-db/userSettingsService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -44,7 +44,7 @@ const itemContentTransition = {
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
-  itemId: DEX_Item['id'];
+  itemId: ItemId;
 }
 
 export const CollapsibleSectionItemContainer = observer(

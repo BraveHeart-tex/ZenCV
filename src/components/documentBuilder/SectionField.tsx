@@ -8,11 +8,12 @@ import { WebLinkFieldInput } from '@/components/documentBuilder/inputs/WebLinkFi
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface SectionFieldProps {
-  fieldId: number;
+  fieldId: FieldId;
 }
 
 export const SectionField = observer(({ fieldId }: SectionFieldProps) => {

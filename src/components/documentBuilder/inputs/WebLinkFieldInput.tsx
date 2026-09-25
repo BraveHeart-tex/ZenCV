@@ -4,12 +4,12 @@ import { useCallback, useState } from 'react';
 import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { normalizeWebUrl } from '@/lib/utils/urlUtils';
 
 export const WebLinkFieldInput = observer(
-  ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
+  ({ fieldId }: { fieldId: FieldId }) => {
     const [touched, setTouched] = useState(false);
     const field = builderSession.getField(fieldId);
 
