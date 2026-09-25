@@ -42,6 +42,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
   const field = builderSession.getField(fieldId);
   const htmlInputId = `field-${fieldId}`;
   const inputRef = useRef<HTMLInputElement>(null);
+  const allowsPresent = field?.definition.dateRange?.allowPresent ?? false;
 
   const month = useMemo(() => {
     if (!field?.value) {
@@ -147,23 +148,26 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
           </PopoverTrigger>
 
           <PopoverContent className='w-64 p-0 overflow-hidden' align='start'>
-            {/* Present toggle banner */}
-            <div className='flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/40'>
-              <div className='flex items-center gap-2'>
-                <Switch
-                  checked={isPresent}
-                  onCheckedChange={action(async (checked) => {
-                    field.setDebounced(checked ? PRESENT : '');
-                  })}
-                />
-                <Label className='text-sm cursor-pointer'>Currently here</Label>
+            {allowsPresent ? (
+              <div className='flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/40'>
+                <div className='flex items-center gap-2'>
+                  <Switch
+                    checked={isPresent}
+                    onCheckedChange={action(async (checked) => {
+                      field.setDebounced(checked ? PRESENT : '');
+                    })}
+                  />
+                  <Label className='text-sm cursor-pointer'>
+                    Currently here
+                  </Label>
+                </div>
+                {isPresent && (
+                  <span className='text-xs font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full'>
+                    Present
+                  </span>
+                )}
               </div>
-              {isPresent && (
-                <span className='text-xs font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full'>
-                  Present
-                </span>
-              )}
-            </div>
+            ) : null}
 
             <div
               className={cn(

@@ -30,6 +30,38 @@ describe('BuilderSession', () => {
     expect(session.currentStoreProjection.sections).toEqual([]);
   });
 
+  it('focuses the semantic initial field for a Work Experience entry', async () => {
+    const records = builderDocumentFixture();
+    const session = new BuilderSession({
+      loadRecords: async () => ({
+        success: true,
+        document: records.document,
+        sections: [...records.sections],
+        items: [...records.items],
+        fields: [...records.fields],
+      }),
+    });
+
+    await session.load(records.document.id);
+    const item = session.document?.workExperience.items[0];
+    const role = item?.entry.role;
+    if (!item || !role) {
+      throw new Error('Expected a Work Experience entry and its role field');
+    }
+
+    const roleElement = { focus: vi.fn() } as unknown as HTMLElement;
+    session.UIStore.setFieldRef(role.id.toString(), roleElement);
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+      callback(0);
+      return 1;
+    });
+
+    session.UIStore.focusFirstFieldInItem(item.id);
+
+    expect(roleElement.focus).toHaveBeenCalledOnce();
+    vi.unstubAllGlobals();
+  });
+
   it('does not publish a document when hydration fails', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({

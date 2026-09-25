@@ -33,13 +33,14 @@ export const BuilderRichTextEditorInput = observer(
           id={id}
           ariaLabelledBy={ariaLabelledBy}
           initialValue={field.value}
-          placeholder={field.definition.placeholder || ''}
+          placeholder={field.definition.richText?.guidance || ''}
           onChange={handleRichTextChange}
           footer={null}
         />
         <RichTextCharacterCounter
           fieldValue={field.value}
           itemId={field.itemId}
+          enabled={field.definition.richText?.characterCounter ?? false}
         />
         <FieldPersistenceError field={field} />
       </div>

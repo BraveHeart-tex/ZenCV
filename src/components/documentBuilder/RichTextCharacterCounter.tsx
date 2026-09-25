@@ -10,6 +10,7 @@ import {
 import { cn, removeHTMLTags } from '@/lib/utils/stringUtils';
 
 interface RichTextCharacterCounterProps {
+  enabled: boolean;
   fieldValue: DEX_Field['value'];
   itemId: DEX_Field['itemId'];
 }
@@ -49,10 +50,11 @@ const getExpression = (
 };
 
 export const RichTextCharacterCounter = observer(
-  ({ fieldValue, itemId }: RichTextCharacterCounterProps) => {
+  ({ enabled, fieldValue, itemId }: RichTextCharacterCounterProps) => {
     const sectionType = getSectionTypeByItemId(itemId);
 
     if (
+      !enabled ||
       !sectionType ||
       !SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER.has(sectionType)
     ) {
