@@ -104,13 +104,40 @@ describe('BuilderSession', () => {
 
   it('retains projection, PDF, score, and ATS behavior through the session', async () => {
     const records = builderDocumentFixture();
+    const workExperienceItem = records.items.find((item) => item.id === 22);
+    if (!workExperienceItem) {
+      throw new Error('Expected a Work Experience item');
+    }
+    const secondWorkExperienceItemId = 23;
+    const items = [
+      ...records.items,
+      {
+        ...workExperienceItem,
+        id: secondWorkExperienceItemId,
+        displayOrder: 2,
+      },
+    ];
+    const fields = [
+      ...records.fields,
+      ...records.fields
+        .filter((field) => field.itemId === workExperienceItem.id)
+        .map(
+          (field) =>
+            ({
+              ...field,
+              id: field.id + 1_000,
+              itemId: secondWorkExperienceItemId,
+              value: `second-${field.value}`,
+            }) as DEX_Field
+        ),
+    ];
     const session = new BuilderSession({
       loadRecords: async () => ({
         success: true,
         document: records.document,
         sections: [...records.sections],
-        items: [...records.items],
-        fields: [...records.fields],
+        items,
+        fields,
       }),
     });
 
@@ -148,6 +175,15 @@ describe('BuilderSession', () => {
             endDate: 'value-endDate',
             city: 'value-city',
             description: 'value-description',
+          },
+          {
+            entryId: '23',
+            role: 'second-value-role',
+            employer: 'second-value-employer',
+            startDate: 'second-value-startDate',
+            endDate: 'second-value-endDate',
+            city: 'second-value-city',
+            description: 'second-value-description',
           },
         ],
       }
