@@ -10,11 +10,11 @@ import {
   ACCENT_COLOR_PRESETS,
   ACCENT_COLOR_SUPPORTED_TEMPLATES,
 } from '@/lib/constants/accentColors';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 export const AccentColorPicker = observer(() => {
-  const document = builderRootStore.document;
+  const document = builderSession.document;
 
   if (
     !document ||

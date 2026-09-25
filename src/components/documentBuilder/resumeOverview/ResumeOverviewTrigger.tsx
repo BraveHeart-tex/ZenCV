@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   cn,
   getItemContainerId,
@@ -18,7 +18,7 @@ interface ResumeOverviewTriggerProps {
 
 export const ResumeOverviewTrigger = observer(
   ({ visible, focusState }: ResumeOverviewTriggerProps) => {
-    const sectionsWithItems = builderRootStore.sectionStore.sectionsWithItems;
+    const sectionsWithItems = builderSession.document?.sections ?? [];
 
     return (
       <AnimatePresence>

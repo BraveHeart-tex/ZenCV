@@ -9,7 +9,7 @@ import { TemplateGallery } from '@/components/documentBuilder/templateGallery/Te
 import { Button } from '@/components/ui/button';
 import { LazyMotionWrapper } from '@/components/ui/LazyMotionWrapper';
 import { showErrorToast } from '@/components/ui/sonner';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 const DESKTOP_PREVIEW_MEDIA_QUERY = '(min-width: 1280px)';
@@ -24,8 +24,8 @@ export const BuilderPage = observer(() => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const documentId = id ? +id : null;
-  const session = builderRootStore.session;
-  const view = builderRootStore.UIStore.currentView;
+  const session = builderSession;
+  const view = builderSession.UIStore.currentView;
   const [hasMountedPreview, setHasMountedPreview] = useState(false);
   const blocker = useBlocker(session.state.status === 'ready');
 

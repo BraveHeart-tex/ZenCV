@@ -1,11 +1,11 @@
 import { File } from 'lucide-react';
 import { action } from 'mobx';
 import { Button } from '@/components/ui/button';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 
 export const DocumentBuilderViewToggle = () => {
-  const view = builderRootStore.UIStore.currentView;
+  const view = builderSession.UIStore.currentView;
 
   if (view === BUILDER_CURRENT_VIEWS.PREVIEW) {
     return null;
@@ -17,7 +17,7 @@ export const DocumentBuilderViewToggle = () => {
       className='fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex h-12 max-w-[calc(100%-1.5rem)] items-center justify-center gap-2 rounded-lg px-5 text-base shadow-lg transition-[background-color,box-shadow] duration-200 ease-(--ease-out-quart) active:shadow-md motion-reduce:transition-none sm:right-5 xl:hidden'
       size='lg'
       onClick={action(() => {
-        builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.PREVIEW;
+        builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.PREVIEW;
       })}
     >
       <span className='font-medium'>Preview</span>

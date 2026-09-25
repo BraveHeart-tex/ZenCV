@@ -17,7 +17,7 @@ import {
 import { action } from 'mobx';
 import type React from 'react';
 import type { SectionId } from '@/lib/builderDocument/builderDocument';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface SectionsDndContextProps {
   children: React.ReactNode;
@@ -47,7 +47,7 @@ export const SectionsDndContext = ({
     const reorderedVisibleSections = [...newSections] as SectionId[];
     const visibleSectionIds = new Set(sectionIds);
     const allSectionsWithHiddenPositionsPreserved = (
-      builderRootStore.document?.sections ?? []
+      builderSession.document?.sections ?? []
     )
       .map((section) => section.id)
       .map((sectionId) =>
@@ -56,7 +56,7 @@ export const SectionsDndContext = ({
           : sectionId
       );
 
-    await builderRootStore.document?.reorderSections(
+    await builderSession.document?.reorderSections(
       allSectionsWithHiddenPositionsPreserved
     );
   });

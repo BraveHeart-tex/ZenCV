@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { getScoreColor } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface ResumeScoreBadgeProps {
   showLabel?: boolean;
@@ -8,7 +8,7 @@ interface ResumeScoreBadgeProps {
 
 export const ResumeScoreBadge = observer(
   ({ showLabel = true }: ResumeScoreBadgeProps) => {
-    const score = builderRootStore.templateStore.debouncedResumeStats.score;
+    const score = builderSession.templateStore.debouncedResumeStats.score;
     const colors = getScoreColor(score);
     return (
       <div className='flex items-center gap-2'>

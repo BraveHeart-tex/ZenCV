@@ -2,7 +2,7 @@ import { ChevronLeftIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { downloadPDF } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import { Button } from '../../ui/button';
@@ -10,7 +10,7 @@ import { AccentColorPicker } from '../AccentColorPicker';
 import { MobileTemplatePickerTrigger } from './MobileTemplatePickerTrigger';
 
 export const TemplateGalleryHeader = observer(() => {
-  const documentTitle = builderRootStore.document?.title || 'Untitled';
+  const documentTitle = builderSession.document?.title || 'Untitled';
 
   return (
     <div className='flex items-center justify-between w-full p-4'>
@@ -18,7 +18,7 @@ export const TemplateGalleryHeader = observer(() => {
         variant='ghost'
         className='items-center gap-2 px-1'
         onClick={action(() => {
-          builderRootStore.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
+          builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
         })}
       >
         <ChevronLeftIcon />

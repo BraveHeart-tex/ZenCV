@@ -1,7 +1,7 @@
 import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   getItemContainerId,
   getSectionContainerId,
@@ -34,13 +34,15 @@ export const ResumeOverview = observer(() => {
         return;
       }
 
-      const items = builderRootStore.itemStore.items;
+      const items =
+        builderSession.document?.sections.flatMap((section) => section.items) ??
+        [];
 
       const handleScroll = () => {
         const viewportCenter = window.innerHeight / 2;
         let closestItem: { id: string; distance: number } | null = null;
 
-        builderRootStore.UIStore.itemRefs.forEach((el) => {
+        builderSession.UIStore.itemRefs.forEach((el) => {
           if (!el) {
             return;
           }

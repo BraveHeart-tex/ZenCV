@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { dialogFooterClassNames } from '@/lib/constants';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface RenameSectionFormDialogProps {
@@ -23,7 +23,7 @@ interface RenameSectionFormDialogProps {
 export const RenameSectionFormDialog = observer(
   ({ sectionId }: RenameSectionFormDialogProps) => {
     const [open, setOpen] = useState(false);
-    const section = builderRootStore.getSection(sectionId);
+    const section = builderSession.getSection(sectionId);
 
     const [enteredTitle, setEnteredTitle] = useState(section?.title || '');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export const RenameSectionFormDialog = observer(
           return;
         }
 
-        const result = await builderRootStore.document?.renameSection(
+        const result = await builderSession.document?.renameSection(
           section.id,
           enteredTitle
         );

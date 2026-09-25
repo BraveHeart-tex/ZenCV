@@ -3,14 +3,14 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { RenameDocumentDialog } from '../appHome/documents/RenameDocumentDialog';
 import { Button } from '../ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 export const EditableDocumentTitle = observer(() => {
   const [open, setOpen] = useState(false);
-  const document = builderRootStore.document;
+  const document = builderSession.document;
   const documentTitle = document?.title || '';
 
   const handleRename = action(async (enteredTitle: string) => {

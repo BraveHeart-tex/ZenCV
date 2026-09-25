@@ -11,11 +11,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { MobileTemplatePickerItem } from './MobileTemplatePickerItem';
 
 export const MobileTemplatePickerContent = observer(() => {
-  const isOpen = builderRootStore.UIStore.isMobileTemplateSelectorVisible;
+  const isOpen = builderSession.UIStore.isMobileTemplateSelectorVisible;
   const [api, setApi] = useState<CarouselApi>();
 
   // scroll to selected template when picker opens
@@ -24,7 +24,7 @@ export const MobileTemplatePickerContent = observer(() => {
       return;
     }
     const selectedIndex = templateOptionsWithImages.findIndex(
-      (t) => t.value === builderRootStore.document?.templateType
+      (t) => t.value === builderSession.document?.templateType
     );
     if (selectedIndex !== -1) {
       // slight delay to let animation complete
@@ -56,7 +56,7 @@ export const MobileTemplatePickerContent = observer(() => {
                   size='sm'
                   className='text-muted-foreground h-8 px-3 text-xs'
                   onClick={() => {
-                    builderRootStore.UIStore.toggleTemplateSelectorBottomMenu();
+                    builderSession.UIStore.toggleTemplateSelectorBottomMenu();
                   }}
                 >
                   Done

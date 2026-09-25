@@ -3,10 +3,10 @@ import { DocumentSection } from '@/components/documentBuilder/DocumentSection';
 import { PersonalDetailSectionSkeleton } from '@/components/documentBuilder/PersonalDetailSectionSkeleton';
 import { ProfessionalSummarySkeleton } from '@/components/documentBuilder/ProfessionalSummarySkeleton';
 import { SectionsDndContext } from '@/components/documentBuilder/SectionsDndContext';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const DocumentSections = observer(() => {
-  const sectionIds = (builderRootStore.document?.sections ?? [])
+  const sectionIds = (builderSession.document?.sections ?? [])
     .filter((section) => section.sectionKey !== 'websitesSocialLinks')
     .map((section) => section.id);
 

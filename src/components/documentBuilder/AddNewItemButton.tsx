@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface AddNewItemButtonProps {
   sectionId: DEX_Section['id'];
@@ -13,7 +13,7 @@ interface AddNewItemButtonProps {
 export const AddNewItemButton = observer(
   ({ sectionId }: AddNewItemButtonProps) => {
     const handleAddItem = action(async () => {
-      const itemId = await builderRootStore.addItem(sectionId);
+      const itemId = await builderSession.addItem(sectionId);
       if (!itemId) {
         return;
       }

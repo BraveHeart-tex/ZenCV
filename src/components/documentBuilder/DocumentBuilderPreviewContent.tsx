@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { DocumentBuilderPdfViewer } from '@/components/documentBuilder/DocumentBuilderPdfViewer';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { getPdfTemplateByType } from './pdfViewer/pdfViewer.helpers';
 
 export const DocumentBuilderPreviewContent = observer(() => {
-  const pdfTemplateData = builderRootStore.templateStore.debouncedTemplateData;
+  const pdfTemplateData = builderSession.templateStore.debouncedTemplateData;
   if (!pdfTemplateData) {
     return null;
   }

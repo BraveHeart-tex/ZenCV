@@ -1,10 +1,10 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
 import { cn } from '@/lib/utils/stringUtils';
 
 export const PreviewSkeleton = () => {
-  const view = builderRootStore.UIStore.currentView;
+  const view = builderSession.UIStore.currentView;
 
   return (
     <div

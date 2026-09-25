@@ -17,7 +17,7 @@ import {
 import { action } from 'mobx';
 import type React from 'react';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface ItemsDndContextProps {
   children: React.ReactNode;
@@ -41,7 +41,7 @@ export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
     }
 
     const newItems = arrayMove(items, activeIndex, overIndex);
-    await builderRootStore.reorderItems(newItems);
+    await builderSession.reorderItems(newItems);
   });
 
   const sensors = useSensors(

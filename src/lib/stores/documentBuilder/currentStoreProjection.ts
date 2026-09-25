@@ -1,8 +1,8 @@
-import { type IReactionDisposer, reaction, runInAction } from 'mobx';
 import type {
   BuilderDocumentModel,
   BuilderItemModel,
   BuilderSectionModel,
+  SemanticField,
 } from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
@@ -10,49 +10,22 @@ import type {
   SectionType,
   SectionWithParsedMetadata,
 } from '@/lib/types/documentBuilder.types';
-import { FieldModel } from './builderFieldStore';
-import type { BuilderRootStore } from './builderRootStore';
+import type { BuilderSession } from './builderSession';
 
 class CurrentSectionView {
   constructor(private readonly section: BuilderSectionModel) {}
 
-  get id() {
-    return this.section.id;
-  }
-
-  get documentId() {
-    return this.section.documentId;
-  }
-
-  get type() {
-    return this.section.definition.persistedType;
-  }
-
-  get title() {
-    return this.section.title;
-  }
-
-  get defaultTitle() {
-    return this.section.defaultTitle;
-  }
-
-  get displayOrder() {
-    return this.section.displayOrder;
-  }
-
-  get metadata() {
-    return this.section.metadata.map((entry) => ({ ...entry }));
-  }
-
   toSnapshot(): SectionWithParsedMetadata {
     return {
-      id: this.id,
-      documentId: this.documentId,
-      type: this.type,
-      title: this.title,
-      defaultTitle: this.defaultTitle,
-      displayOrder: this.displayOrder,
-      metadata: this.metadata as SectionWithParsedMetadata['metadata'],
+      id: this.section.id,
+      documentId: this.section.documentId,
+      type: this.section.definition.persistedType,
+      title: this.section.title,
+      defaultTitle: this.section.defaultTitle,
+      displayOrder: this.section.displayOrder,
+      metadata: this.section.metadata.map((entry) => ({
+        ...entry,
+      })) as SectionWithParsedMetadata['metadata'],
     };
   }
 }
@@ -60,132 +33,97 @@ class CurrentSectionView {
 class CurrentItemView {
   constructor(private readonly item: BuilderItemModel) {}
 
-  get id() {
-    return this.item.id;
-  }
-
-  get sectionId() {
-    return this.item.sectionId;
-  }
-
-  get containerType() {
-    return this.item.containerType;
-  }
-
-  get displayOrder() {
-    return this.item.displayOrder;
-  }
-
   toSnapshot(): DEX_Item {
     return {
-      id: this.id,
-      sectionId: this.sectionId,
-      containerType: this.containerType,
-      displayOrder: this.displayOrder,
+      id: this.item.id,
+      sectionId: this.item.sectionId,
+      containerType: this.item.containerType,
+      displayOrder: this.item.displayOrder,
     };
   }
 }
 
+const toFieldSnapshot = (
+  field: SemanticField,
+  section: BuilderSectionModel
+): DEX_Field => {
+  const definition = Object.values(section.definition.fields).find(
+    (candidate) => candidate.key === field.fieldKey
+  );
+  if (!definition) {
+    throw new Error('Field definition missing during projection');
+  }
+  return {
+    id: field.id,
+    itemId: field.itemId,
+    name: definition.persistedName,
+    type: definition.expectedPersistedType,
+    value: field.value,
+    ...(definition.expectedPersistedType === 'select'
+      ? { selectType: 'basic' as const, options: definition.options ?? null }
+      : {}),
+  };
+};
+
 /**
- * Temporary migration boundary for record-shaped Builder Store consumers.
+ * Internal migration boundary for legacy record-shaped consumers.
  *
- * This projection is deleted incrementally: Work Experience in Phase 3,
- * generic renderer consumers in Phase 4, and remaining consumers in Phase 6.
+ * It is read-only and always projects the authoritative Builder Document.
+ * Phase 3 removes Work Experience consumers, Phase 4 generic renderer
+ * consumers, and Phase 6 the remaining consumers and this module.
  */
 export class CurrentStoreProjection {
-  private readonly root: BuilderRootStore;
-  private stopItemProjection: IReactionDisposer | null = null;
+  private document: BuilderDocumentModel | null = null;
   private projectedSections = new Map<number, CurrentSectionView>();
   private projectedItems = new Map<number, CurrentItemView>();
-  private projectedFields = new Map<number, FieldModel>();
 
-  constructor(root: BuilderRootStore) {
-    this.root = root;
-  }
+  constructor(private readonly session: BuilderSession) {}
 
   publish(document: BuilderDocumentModel): void {
-    this.disposeReactions();
-    this.clearViews();
-    this.stopItemProjection = reaction(
-      () =>
-        document.sections.flatMap((section) =>
-          section.items.map((item) => [
-            section.id,
-            item.id,
-            item.displayOrder,
-            ...item.editableFields.map((field) => field.id),
-          ])
-        ),
-      () => this.projectItems(),
-      { fireImmediately: true }
-    );
+    this.clear();
+    this.document = document;
   }
 
   clear(): void {
-    this.disposeReactions();
-    this.clearViews();
+    this.document = null;
+    this.projectedSections.clear();
+    this.projectedItems.clear();
   }
 
   get sections(): SectionWithParsedMetadata[] {
-    const document = this.root.documentModel;
-    if (!document) {
-      return this.root.sectionStore.sections;
-    }
-    return document.sections.map((section) =>
+    return (this.document?.sections ?? []).map((section) =>
       this.getProjectedSection(section).toSnapshot()
     );
   }
 
   get accentColor(): string {
-    return (
-      this.root.activeDocument?.accentColor ??
-      this.root.documentStore.accentColor
-    );
+    return this.document?.accentColor ?? '';
   }
 
   get templateType() {
-    return (
-      this.root.activeDocument?.templateType ??
-      this.root.documentStore.document?.templateType
-    );
+    return this.document?.templateType;
   }
 
   getItemsBySectionId(sectionId: number): DEX_Item[] {
-    const document = this.root.documentModel;
-    if (!document) {
-      return this.root.itemStore.getItemsBySectionId(sectionId);
-    }
-    const section = document.sections.find(
-      (candidate) => candidate.id === sectionId
-    );
+    const section = this.document?.sectionsById.get(sectionId as never);
     return (section?.items ?? []).map((item) =>
       this.getProjectedItem(item).toSnapshot()
     );
   }
 
   getFieldsByItemId(itemId: number): DEX_Field[] {
-    const document = this.root.documentModel;
-    if (!document) {
-      return this.root.fieldStore.getFieldsByItemId(itemId);
-    }
-    const item = document.sections
-      .flatMap((section) => section.items)
-      .find((candidate) => candidate.id === itemId);
+    const item = this.document?.itemsById.get(itemId as never);
     if (!item) {
       return [];
     }
-    return item.editableFields.flatMap((field) => {
-      const projectedField = this.projectedFields.get(field.id);
-      return projectedField ? [projectedField.toSnapshot()] : [];
-    });
+    const section = this.document?.sectionsById.get(item.sectionId);
+    return section
+      ? item.editableFields.map((field) => toFieldSnapshot(field, section))
+      : [];
   }
 
   getFieldValueByName(fieldName: FieldName): string {
-    const document = this.root.documentModel;
-    if (!document) {
-      return this.root.fieldStore.getFieldValueByName(fieldName);
-    }
-    for (const section of document.sections) {
+    for (const section of this.document?.sections ?? []) {
       for (const item of section.items) {
         const field = this.getFieldsByItemId(item.id).find(
           (candidate) => candidate.name === fieldName
@@ -212,10 +150,10 @@ export class CurrentStoreProjection {
   }
 
   disposeProjectedSection(sectionId: number): void {
-    this.root.UIStore.itemRefs.delete(sectionId.toString());
+    this.session.UIStore.itemRefs.delete(sectionId.toString());
     this.projectedSections.delete(sectionId);
     for (const [itemId, item] of this.projectedItems) {
-      if (item.sectionId === sectionId) {
+      if (item.toSnapshot().sectionId === sectionId) {
         this.disposeProjectedItem(itemId);
       }
     }
@@ -223,112 +161,40 @@ export class CurrentStoreProjection {
 
   disposeProjectedItem(itemId: number): void {
     this.projectedItems.delete(itemId);
-    this.root.UIStore.itemRefs.delete(itemId.toString());
-    if (this.root.UIStore.collapsedItemId === itemId) {
-      this.root.UIStore.collapsedItemId = null;
+    this.session.UIStore.itemRefs.delete(itemId.toString());
+    if (this.session.UIStore.collapsedItemId === itemId) {
+      this.session.UIStore.collapsedItemId = null;
     }
-    for (const [fieldId, field] of this.projectedFields) {
-      if (field.itemId === itemId) {
-        field.dispose();
-        this.projectedFields.delete(fieldId);
-        this.root.UIStore.fieldRefs.delete(fieldId.toString());
-      }
-    }
-  }
-
-  private disposeReactions(): void {
-    this.stopItemProjection?.();
-    this.stopItemProjection = null;
-  }
-
-  private clearViews(): void {
-    this.projectedSections.clear();
-    this.projectedItems.clear();
-    this.projectedFields.forEach((field) => {
-      field.dispose();
-    });
-    this.projectedFields.clear();
   }
 
   private getProjectedSection(
     section: BuilderSectionModel
   ): CurrentSectionView {
-    let projectedSection = this.projectedSections.get(section.id);
-    if (!projectedSection) {
-      projectedSection = new CurrentSectionView(section);
-      this.projectedSections.set(section.id, projectedSection);
+    let view = this.projectedSections.get(section.id);
+    if (!view) {
+      view = new CurrentSectionView(section);
+      this.projectedSections.set(section.id, view);
     }
-    return projectedSection;
+    return view;
   }
 
   private getProjectedItem(item: BuilderItemModel): CurrentItemView {
-    let projectedItem = this.projectedItems.get(item.id);
-    if (!projectedItem) {
-      projectedItem = new CurrentItemView(item);
-      this.projectedItems.set(item.id, projectedItem);
+    let view = this.projectedItems.get(item.id);
+    if (!view) {
+      view = new CurrentItemView(item);
+      this.projectedItems.set(item.id, view);
     }
-    return projectedItem;
-  }
-
-  private projectItems(): void {
-    runInAction(() => {
-      const sections: SectionWithParsedMetadata[] = [];
-      const items: DEX_Item[] = [];
-      const fields: FieldModel[] = [];
-      for (const section of this.root.documentModel?.sections ?? []) {
-        const projectedSection = this.getProjectedSection(section);
-        sections.push(projectedSection as SectionWithParsedMetadata);
-        for (const item of section.items) {
-          const projectedItem = this.getProjectedItem(item);
-          items.push(projectedItem as DEX_Item);
-          for (const field of item.editableFields) {
-            let projectedField = this.projectedFields.get(field.id);
-            if (!projectedField) {
-              const definition = Object.values(section.definition.fields).find(
-                (candidate) => candidate.key === field.fieldKey
-              );
-              if (!definition) {
-                throw new Error('Field definition missing during projection');
-              }
-              projectedField = new FieldModel(
-                {
-                  id: field.id,
-                  itemId: item.id,
-                  name: definition.persistedName,
-                  type: definition.expectedPersistedType,
-                  value: field.value,
-                  ...(definition.expectedPersistedType === 'select'
-                    ? {
-                        selectType: 'basic',
-                        options: definition.options ?? null,
-                      }
-                    : {}),
-                } as DEX_Field,
-                field
-              );
-              this.projectedFields.set(field.id, projectedField);
-            }
-            fields.push(projectedField);
-          }
-        }
-      }
-      this.root.sectionStore.sections = sections;
-      this.root.itemStore.items = items;
-      this.root.fieldStore.fields = fields;
-    });
+    return view;
   }
 }
 
 export const CURRENT_STORE_PROJECTION_IMPORT_ALLOWLIST = [
-  'src/lib/stores/documentBuilder/builderRootStore.ts',
+  'src/lib/stores/documentBuilder/builderSession.ts',
   'src/lib/stores/documentBuilder/builderTemplateStore.ts',
 ] as const;
 
 export const CURRENT_STORE_DTO_IMPORT_ALLOWLIST = [
   'src/lib/builderDocument/builderDocument.ts',
   'src/lib/stores/documentBuilder/currentStoreProjection.ts',
-  'src/lib/stores/documentBuilder/builderDocumentStore.ts',
-  'src/lib/stores/documentBuilder/builderFieldStore.ts',
-  'src/lib/stores/documentBuilder/builderItemStore.ts',
   'src/lib/stores/documentBuilder/documentBuilder.constants.ts',
 ] as const;

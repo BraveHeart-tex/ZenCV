@@ -13,7 +13,6 @@ import {
   deleteItem,
 } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
-import { BuilderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   hydrateBuilderDocument,
   type ItemId,
@@ -66,90 +65,6 @@ const commandDocument = (workItems = 1) => {
 };
 
 describe('Builder Document item commands', () => {
-  it('projects user item commands into the existing builder renderer', async () => {
-    const root = new BuilderRootStore();
-    const records = fixture();
-    const workItem = records.items.find(
-      (item) => item.sectionId === 12
-    ) as DEX_Item;
-    const extraItem = { ...workItem, id: 90, displayOrder: 2 };
-    const extraFields = records.fields
-      .filter((field) => field.itemId === workItem.id)
-      .map((field) => ({
-        ...field,
-        id: field.id + 1000,
-        itemId: extraItem.id,
-      }));
-    const completeRecords = {
-      ...records,
-      sections: [...records.sections],
-      items: [...records.items, extraItem],
-      fields: [...records.fields, ...extraFields],
-    };
-    root.hydrateFromBackend({ success: true, ...completeRecords });
-    expect(
-      root.installDocumentModel({ success: true, ...completeRecords })
-    ).toBe(true);
-    const section = root.documentModel?.workExperience;
-    expect(section).toBeDefined();
-    if (!section) {
-      return;
-    }
-    const initialItem = section.items[0];
-    const initialField = root.fieldStore.fieldsByItemId.get(
-      initialItem.id
-    )?.[0];
-    let failDelete: (error: Error) => void = () => {};
-    vi.mocked(deleteItem).mockImplementationOnce(
-      () =>
-        new Promise((_, reject) => {
-          failDelete = reject;
-        })
-    );
-
-    const removal = root.removeItem(initialItem.id);
-    await Promise.resolve();
-    expect(root.itemStore.getItemById(initialItem.id)).toBeUndefined();
-    failDelete(new Error('offline'));
-    expect(await removal).toBe(false);
-    expect(root.itemStore.getItemById(initialItem.id)).toBeDefined();
-    expect(root.fieldStore.fieldsByItemId.get(initialItem.id)?.[0]).toBe(
-      initialField
-    );
-
-    const definitions = Object.values(section.definition.fields);
-    vi.mocked(addItemFromTemplate).mockResolvedValueOnce({
-      item: {
-        id: 99,
-        sectionId: section.id,
-        containerType: 'collapsible',
-        displayOrder: 3,
-      },
-      fields: definitions.map((definition, index) => ({
-        id: 2000 + index,
-        itemId: 99,
-        name: definition.persistedName,
-        type: definition.expectedPersistedType,
-        value: '',
-      })) as DEX_Field[],
-    });
-    expect(await root.addItem(section.id)).toBe(99);
-    expect(root.itemStore.getItemById(99)).toBeDefined();
-    expect(root.fieldStore.getFieldsByItemId(99)).toHaveLength(
-      definitions.length
-    );
-    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(3);
-    expect(await root.reorderItems([99, initialItem.id, extraItem.id])).toBe(
-      true
-    );
-    expect(root.itemStore.getOrderedItemIdsBySectionId(section.id)).toEqual([
-      99,
-      initialItem.id,
-      extraItem.id,
-    ]);
-    root.resetState();
-  });
-
   it('leaves the graph untouched when insertion fails', async () => {
     const document = commandDocument();
     const original = document.workExperience.items[0];

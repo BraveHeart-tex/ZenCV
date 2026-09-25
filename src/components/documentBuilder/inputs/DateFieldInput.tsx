@@ -33,14 +33,14 @@ import {
   getYearFromFieldValue,
   isValidDateFormat,
 } from '@/lib/helpers/dateInputHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 const PRESENT = 'Present';
 
 export const DateFieldInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
-    const field = builderRootStore.getField(fieldId);
+    const field = builderSession.getField(fieldId);
     const htmlInputId = `field-${fieldId}`;
     const inputRef = useRef<HTMLInputElement>(null);
 

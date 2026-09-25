@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import * as motion from 'motion/react-m';
 import { AtsCompatibilityChecks } from '@/components/documentBuilder/resumeScore/AtsCompatibilityChecks';
 import { ResumeScoreSuggestionItem } from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionItem';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import type { UseState } from '@/lib/types/utils.types';
 import { SuggestionGroupHeading } from './SuggestionGroupHeading';
 import { AnimatedSuggestionsContainer } from './SuggestionsContainer';
@@ -14,7 +14,7 @@ interface ResumeScoreSuggestionContentProps {
 export const ResumeScoreSuggestionContent = observer(
   ({ setOpen }: ResumeScoreSuggestionContentProps) => {
     const suggestions =
-      builderRootStore.templateStore.debouncedResumeStats.suggestions;
+      builderSession.templateStore.debouncedResumeStats.suggestions;
 
     return (
       <motion.div

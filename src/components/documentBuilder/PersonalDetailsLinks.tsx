@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   INTERNAL_SECTION_TYPES,
   MAX_PERSONAL_DETAILS_LINKS,
@@ -15,7 +15,7 @@ import { SectionItem } from './SectionItem';
 export const PersonalDetailsLinks = observer(() => {
   const [isAdding, setIsAdding] = useState(false);
   const isAddingRef = useRef(false);
-  const document = builderRootStore.document;
+  const document = builderSession.document;
   const linksSection = document?.websitesSocialLinks;
   const itemIds = linksSection?.itemIds ?? [];
   const isAtLimit = itemIds.length >= MAX_PERSONAL_DETAILS_LINKS;
@@ -30,7 +30,7 @@ export const PersonalDetailsLinks = observer(() => {
     try {
       let itemId: number | undefined;
       if (linksSection) {
-        itemId = await builderRootStore.addItem(linksSection.id);
+        itemId = await builderSession.addItem(linksSection.id);
       } else {
         const result = await document?.addSection({
           title: 'Links',

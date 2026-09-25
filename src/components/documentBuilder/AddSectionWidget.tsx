@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
 import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   builderSectionTitleClassNames,
   INTERNAL_SECTION_TYPES,
@@ -25,10 +25,10 @@ export interface OtherSectionOption
 
 export const AddSectionWidget = observer(() => {
   const handleAddSection = action(async (option: OtherSectionOption) => {
-    const result = await builderRootStore.document?.addSection(option);
+    const result = await builderSession.document?.addSection(option);
     if (result?.success && result.data) {
-      builderRootStore.UIStore.toggleItem(result.data.itemId);
-      builderRootStore.UIStore.focusFirstFieldInItem(result.data.itemId);
+      builderSession.UIStore.toggleItem(result.data.itemId);
+      builderSession.UIStore.focusFirstFieldInItem(result.data.itemId);
     } else {
       showErrorToast('Could not add section. Please try again.');
     }
@@ -48,7 +48,7 @@ export const AddSectionWidget = observer(() => {
         {OTHER_SECTION_OPTIONS.map((option) => {
           const isAlreadyAdded =
             option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
-            builderRootStore.document?.sections.some(
+            builderSession.document?.sections.some(
               (section) => section.definition.persistedType === option.type
             );
 

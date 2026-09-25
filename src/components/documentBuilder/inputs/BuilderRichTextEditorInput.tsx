@@ -4,7 +4,7 @@ import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersist
 import { RichTextCharacterCounter } from '@/components/documentBuilder/RichTextCharacterCounter';
 import { RichTextEditor } from '@/components/richTextEditor/RichTextEditor';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface BuilderRichTextEditorInputProps {
   fieldId: DEX_Field['id'];
@@ -13,7 +13,7 @@ interface BuilderRichTextEditorInputProps {
 
 export const BuilderRichTextEditorInput = observer(
   ({ fieldId, ariaLabelledBy }: BuilderRichTextEditorInputProps) => {
-    const field = builderRootStore.getField(fieldId);
+    const field = builderSession.getField(fieldId);
     if (!field) {
       return null;
     }
@@ -28,7 +28,7 @@ export const BuilderRichTextEditorInput = observer(
       <div>
         <RichTextEditor
           ref={(ref) => {
-            builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+            builderSession.UIStore.setFieldRef(fieldId.toString(), ref);
           }}
           id={id}
           ariaLabelledBy={ariaLabelledBy}

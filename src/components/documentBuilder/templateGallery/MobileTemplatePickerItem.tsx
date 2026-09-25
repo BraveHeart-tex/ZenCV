@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 
 import type { TemplateOptionWithVariants } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { CarouselItem } from '@/components/ui/carousel';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 import { cn } from '@/lib/utils/stringUtils';
 import { TemplateImage } from '../TemplateImage';
@@ -15,11 +15,10 @@ interface MobileTemplatePickerItemProps {
 
 export const MobileTemplatePickerItem = observer(
   ({ template }: MobileTemplatePickerItemProps) => {
-    const isSelected =
-      builderRootStore.document?.templateType === template.value;
+    const isSelected = builderSession.document?.templateType === template.value;
 
     const handleSelectTemplate = action(async () => {
-      await builderRootStore.document?.changeTemplate(template.value);
+      await builderSession.document?.changeTemplate(template.value);
     });
 
     return (

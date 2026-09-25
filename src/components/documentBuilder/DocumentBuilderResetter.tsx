@@ -1,12 +1,12 @@
 import { startTransition, useEffect } from 'react';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 export const DocumentBuilderResetter = () => {
   useEffect(() => {
     return () => {
       startTransition(() => {
-        builderRootStore.resetState();
-        builderRootStore.dispose();
+        builderSession.resetState();
+        builderSession.dispose();
       });
     };
   }, []);

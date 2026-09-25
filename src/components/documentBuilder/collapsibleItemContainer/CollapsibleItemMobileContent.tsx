@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/drawer';
 import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface CollapsibleItemMobileContentProps {
   itemId: DEX_Item['id'];
@@ -20,14 +20,14 @@ interface CollapsibleItemMobileContentProps {
 
 export const CollapsibleItemMobileContent = observer(
   ({ itemId, children }: CollapsibleItemMobileContentProps) => {
-    const open = itemId === builderRootStore.UIStore.collapsedItemId;
+    const open = itemId === builderSession.UIStore.collapsedItemId;
     const { title, description } = getTriggerContent(itemId);
 
     return (
       <Drawer
         open={open}
         onOpenChange={() => {
-          builderRootStore.UIStore.toggleItem(itemId);
+          builderSession.UIStore.toggleItem(itemId);
         }}
       >
         <DrawerContent className='max-h-[98%] overflow-hidden px-0 w-full'>
@@ -41,7 +41,7 @@ export const CollapsibleItemMobileContent = observer(
             {children}
           </div>
           <DrawerFooter className='shrink-0'>
-            <Button onClick={() => builderRootStore.UIStore.toggleItem(itemId)}>
+            <Button onClick={() => builderSession.UIStore.toggleItem(itemId)}>
               Done
             </Button>
             <DrawerClose asChild>

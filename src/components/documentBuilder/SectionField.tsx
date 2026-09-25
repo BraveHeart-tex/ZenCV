@@ -8,7 +8,7 @@ import { WebLinkFieldInput } from '@/components/documentBuilder/inputs/WebLinkFi
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 
 interface SectionFieldProps {
@@ -16,7 +16,7 @@ interface SectionFieldProps {
 }
 
 export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
-  const field = builderRootStore.getField(fieldId);
+  const field = builderSession.getField(fieldId);
 
   const htmlInputId = `field-${fieldId}`;
   const fieldLabelId = `${htmlInputId}-label`;
@@ -31,7 +31,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
   const setFieldRef = useCallback(
     (ref: HTMLElement | null) => {
       if (ref) {
-        builderRootStore.UIStore.setFieldRef(fieldId.toString(), ref);
+        builderSession.UIStore.setFieldRef(fieldId.toString(), ref);
       }
     },
     [fieldId]
@@ -85,8 +85,8 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     }
 
     if (field.definition.control === 'richText') {
-      const item = builderRootStore.getItem(field.itemId);
-      const section = item ? builderRootStore.getSection(item.sectionId) : null;
+      const item = builderSession.getItem(field.itemId);
+      const section = item ? builderSession.getSection(item.sectionId) : null;
       const isCollapsibleItem = item?.containerType === 'collapsible';
       const editorLabelledBy = isCollapsibleItem
         ? fieldLabelId

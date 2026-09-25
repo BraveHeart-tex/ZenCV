@@ -10,7 +10,7 @@ import { useAsync } from 'react-use';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
-import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -81,7 +81,7 @@ export const DocumentBuilderPdfViewer = observer(
 
     useEffect(() => {
       const dispose = reaction(
-        () => builderRootStore.templateStore.debouncedTemplateData,
+        () => builderSession.templateStore.debouncedTemplateData,
         () => {
           setRenderVersion((prev) => prev + 1);
         },

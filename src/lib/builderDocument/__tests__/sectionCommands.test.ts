@@ -5,7 +5,6 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
-import { BuilderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import {
   type FieldId,
   hydrateBuilderDocument,
@@ -190,36 +189,6 @@ describe('Builder Document section commands', () => {
       expect(await model.removeSection(created.data.sectionId)).toBe(true);
       expect((await model.addSection(option(key))).success).toBe(true);
     }
-  });
-
-  it('keeps the current editor projection aligned through removal rollback', async () => {
-    const root = new BuilderRootStore();
-    const fixture = builderDocumentFixture();
-    const records = {
-      ...fixture,
-      sections: [...fixture.sections],
-      items: [...fixture.items],
-      fields: [...fixture.fields],
-    };
-    root.hydrateFromBackend({ success: true, ...records });
-    expect(root.installDocumentModel({ success: true, ...records })).toBe(true);
-    const added = await root.sectionStore.addNewSection(option('custom'));
-    if (!added) {
-      throw new Error('Failed to add section');
-    }
-    const section = root.sectionStore.getSectionById(added.sectionId);
-    const item = root.itemStore.getItemById(added.itemId as number);
-    const field = root.fieldStore.fieldsByItemId.get(
-      added.itemId as number
-    )?.[0];
-    persistence.deleteSection.mockRejectedValueOnce(new Error('offline'));
-    expect(await root.sectionStore.removeSection(added.sectionId)).toBe(false);
-    expect(root.sectionStore.getSectionById(added.sectionId)).toBe(section);
-    expect(root.itemStore.getItemById(added.itemId as number)).toBe(item);
-    expect(
-      root.fieldStore.fieldsByItemId.get(added.itemId as number)?.[0]
-    ).toBe(field);
-    root.resetState();
   });
 
   it('serializes section commands with the structural queue', async () => {
