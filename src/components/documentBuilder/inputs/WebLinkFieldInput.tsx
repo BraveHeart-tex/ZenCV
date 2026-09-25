@@ -4,14 +4,13 @@ import { useCallback, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { normalizeWebUrl } from '@/lib/utils/urlUtils';
 
 export const WebLinkFieldInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
     const [touched, setTouched] = useState(false);
-    const field = builderRootStore.fieldStore.getFieldById(fieldId);
+    const field = builderRootStore.getField(fieldId);
 
     const setFieldRef = useCallback(
       (ref: HTMLInputElement | null) => {
@@ -26,38 +25,27 @@ export const WebLinkFieldInput = observer(
       return null;
     }
 
-    const htmlInputId = getFieldHtmlId(field);
+    const htmlInputId = `field-${fieldId}`;
     const errorId = `${htmlInputId}-error`;
     const hasError =
       touched && !!field.value.trim() && !normalizeWebUrl(field.value);
 
     const handleChange = action(
       (event: React.ChangeEvent<HTMLInputElement>) => {
-        void builderRootStore.fieldStore.setFieldValue(
-          fieldId,
-          event.target.value,
-          false
-        );
+        field.setDraft(event.target.value);
       }
     );
 
     const handleBlur = action(async () => {
       setTouched(true);
-      const currentField = builderRootStore.fieldStore.getFieldById(fieldId);
-      if (!currentField) {
-        return;
-      }
-
-      const normalizedUrl = normalizeWebUrl(currentField.value);
-      await builderRootStore.fieldStore.setFieldValue(
-        fieldId,
-        normalizedUrl ?? currentField.value
-      );
+      const normalizedUrl = normalizeWebUrl(field.value);
+      field.setDraft(normalizedUrl ?? field.value);
+      await field.commit();
     });
 
     return (
       <>
-        <Label htmlFor={htmlInputId}>{field.name}</Label>
+        <Label htmlFor={htmlInputId}>{field.label}</Label>
         <Input
           id={htmlInputId}
           ref={setFieldRef}

@@ -8,29 +8,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { DEX_Field, SelectField } from '@/lib/client-db/clientDbSchema';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 export const DocumentBuilderSelectInput = observer(
-  ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
-    const field = builderRootStore.fieldStore.getFieldById(
-      fieldId
-    ) as SelectField;
+  ({ fieldId }: { fieldId: number }) => {
+    const field = builderRootStore.getField(fieldId);
 
     if (!field) {
       return null;
     }
 
-    const htmlInputId = getFieldHtmlId(field);
+    const htmlInputId = `field-${fieldId}`;
 
     return (
       <div className='flex flex-col gap-2'>
-        <Label htmlFor={htmlInputId}>{field.name}</Label>
+        <Label htmlFor={htmlInputId}>{field.label}</Label>
         <Select
           value={field.value}
           onValueChange={action(async (newValue) => {
-            await builderRootStore.fieldStore.setFieldValue(field.id, newValue);
+            field.setDebounced(newValue);
           })}
         >
           <SelectTrigger
@@ -40,10 +36,10 @@ export const DocumentBuilderSelectInput = observer(
               builderRootStore.UIStore.setFieldRef(field.id.toString(), ref)
             }
           >
-            <SelectValue placeholder={field.name} />
+            <SelectValue placeholder={field.label} />
           </SelectTrigger>
           <SelectContent>
-            {field.options.map((option) => (
+            {(field.definition.options ?? []).map((option) => (
               <SelectItem value={option} key={option}>
                 {option}
               </SelectItem>

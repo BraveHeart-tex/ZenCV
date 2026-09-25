@@ -1,13 +1,12 @@
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
 import { SectionField } from '@/components/documentBuilder/SectionField';
-import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import type { SemanticField } from '@/lib/builderDocument/builderDocument';
 
 export const useFieldMapper = () => {
-  const renderFields = (fields: DEX_Field[]) => {
+  const renderFields = (fields: readonly SemanticField[]) => {
     return fields.map((field, index) => {
-      const isDateField = field.type === FIELD_TYPES.DATE_MONTH;
-      const nextFieldIsDate =
-        fields[index + 1]?.type === FIELD_TYPES.DATE_MONTH;
+      const isDateField = field.definition.control === 'month';
+      const nextFieldIsDate = fields[index + 1]?.definition.control === 'month';
 
       if (isDateField && nextFieldIsDate) {
         return (
