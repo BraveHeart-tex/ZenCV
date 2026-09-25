@@ -30,7 +30,7 @@ export class BuilderRootStore {
   templateStore: BuilderTemplateStore;
   session: BuilderSession;
   documentModel: BuilderDocumentModel | null = null;
-  private currentStoreProjection: CurrentStoreProjection;
+  readonly currentStoreProjection: CurrentStoreProjection;
 
   constructor() {
     this.documentStore = new BuilderDocumentStore(this);

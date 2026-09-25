@@ -5,7 +5,11 @@ import type {
   BuilderSectionModel,
 } from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
-import type { SectionWithParsedMetadata } from '@/lib/types/documentBuilder.types';
+import type {
+  FieldName,
+  SectionType,
+  SectionWithParsedMetadata,
+} from '@/lib/types/documentBuilder.types';
 import { FieldModel } from './builderFieldStore';
 import type { BuilderRootStore } from './builderRootStore';
 
@@ -99,6 +103,103 @@ export class CurrentStoreProjection {
   clear(): void {
     this.disposeReactions();
     this.clearViews();
+  }
+
+  get sections(): SectionWithParsedMetadata[] {
+    const document = this.root.documentModel;
+    if (!document) {
+      return this.root.sectionStore.sections;
+    }
+    return document.sections.map((section) => ({
+      id: section.id,
+      documentId: section.documentId,
+      type: section.definition.persistedType,
+      title: section.title,
+      defaultTitle: section.defaultTitle,
+      displayOrder: section.displayOrder,
+      metadata: section.metadata.map(
+        (entry) =>
+          ({ ...entry }) as SectionWithParsedMetadata['metadata'][number]
+      ),
+    }));
+  }
+
+  get accentColor(): string {
+    return (
+      this.root.activeDocument?.accentColor ??
+      this.root.documentStore.accentColor
+    );
+  }
+
+  get templateType() {
+    return (
+      this.root.activeDocument?.templateType ??
+      this.root.documentStore.document?.templateType
+    );
+  }
+
+  getItemsBySectionId(sectionId: number): DEX_Item[] {
+    const document = this.root.documentModel;
+    if (!document) {
+      return this.root.itemStore.getItemsBySectionId(sectionId);
+    }
+    const section = document.sections.find(
+      (candidate) => candidate.id === sectionId
+    );
+    return (section?.items ?? []).map((item) => ({
+      id: item.id,
+      sectionId: item.sectionId,
+      containerType: item.containerType,
+      displayOrder: item.displayOrder,
+    }));
+  }
+
+  getFieldsByItemId(itemId: number): DEX_Field[] {
+    const document = this.root.documentModel;
+    if (!document) {
+      return this.root.fieldStore.getFieldsByItemId(itemId);
+    }
+    const item = document.sections
+      .flatMap((section) => section.items)
+      .find((candidate) => candidate.id === itemId);
+    if (!item) {
+      return [];
+    }
+    return item.editableFields.flatMap((field) => {
+      const projectedField = this.projectedFields.get(field.id);
+      return projectedField ? [projectedField.toSnapshot()] : [];
+    });
+  }
+
+  getFieldValueByName(fieldName: FieldName): string {
+    const document = this.root.documentModel;
+    if (!document) {
+      return this.root.fieldStore.getFieldValueByName(fieldName);
+    }
+    for (const section of document.sections) {
+      for (const item of section.items) {
+        const field = this.getFieldsByItemId(item.id).find(
+          (candidate) => candidate.name === fieldName
+        );
+        if (field) {
+          return field.value;
+        }
+      }
+    }
+    return '';
+  }
+
+  getSectionNameByType(sectionType: SectionType): string {
+    return (
+      this.sections.find((section) => section.type === sectionType)?.title ?? ''
+    );
+  }
+
+  getSectionItemsBySectionType(sectionType: SectionType): DEX_Item[] {
+    const section = this.sections.find(
+      (candidate) => candidate.type === sectionType
+    );
+    return section ? this.getItemsBySectionId(section.id) : [];
   }
 
   disposeProjectedSection(sectionId: number): void {
@@ -199,6 +300,7 @@ export class CurrentStoreProjection {
 
 export const CURRENT_STORE_PROJECTION_IMPORT_ALLOWLIST = [
   'src/lib/stores/documentBuilder/builderRootStore.ts',
+  'src/lib/stores/documentBuilder/builderTemplateStore.ts',
 ] as const;
 
 export const CURRENT_STORE_DTO_IMPORT_ALLOWLIST = [

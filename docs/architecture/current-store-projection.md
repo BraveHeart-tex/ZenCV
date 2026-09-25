@@ -7,8 +7,9 @@ views only delegate reads to the corresponding Semantic Section, Item, or Field;
 view caches are cleared whenever a new authoritative Builder Document is
 published.
 
-Only `builderRootStore.ts` may import the projection. The architecture test
-enforces that import allowlist and the legacy persistence DTO allowlist.
+Only `builderRootStore.ts` and `builderTemplateStore.ts` may consume the
+projection. The architecture test enforces that allowlist and the legacy
+persistence DTO allowlist.
 
 Deletion plan:
 
