@@ -148,8 +148,11 @@ export class BuilderTemplateStore {
       (section) => section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
     );
     const sections = mappedSections.filter(
-      (section) => section.type !== INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+      (section) =>
+        section.type !== INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS &&
+        section.type !== INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
     );
+    const workExperienceSection = this.root.document?.workExperience;
 
     return {
       personalDetails: {
@@ -157,6 +160,22 @@ export class BuilderTemplateStore {
         links: linksSections.flatMap(getLinksSectionEntries),
       },
       summarySection: this.summarySection,
+      workExperienceSection: workExperienceSection
+        ? {
+            id: workExperienceSection.id,
+            title: workExperienceSection.title,
+            displayOrder: workExperienceSection.displayOrder,
+            entries: workExperienceSection.entries.map((entry) => ({
+              entryId: entry.id.toString(),
+              role: entry.role.value,
+              employer: entry.employer.value,
+              startDate: entry.startDate.value,
+              endDate: entry.endDate.value,
+              city: entry.city.value,
+              description: entry.description.value,
+            })),
+          }
+        : null,
       sections,
       accentColor: this.root.currentStoreProjection.accentColor,
       templateType:

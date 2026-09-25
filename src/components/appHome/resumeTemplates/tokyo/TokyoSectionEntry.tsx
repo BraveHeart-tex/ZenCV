@@ -4,14 +4,14 @@ import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTem
 import type { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { type createTokyoStyles, TOKYO_FONT_SIZE } from './tokyo.styles';
 
-type TokyoSectionEntryProps<T extends Record<string, string>> = {
+type TokyoSectionEntryProps<T extends Readonly<Record<string, string>>> = {
   entry: WithEntryId<T>;
   titleKey: keyof T;
   subtitleKey: keyof T;
   styles: ReturnType<typeof createTokyoStyles>;
 };
 
-export const TokyoSectionEntry = <T extends Record<string, string>>({
+export const TokyoSectionEntry = <T extends Readonly<Record<string, string>>>({
   entry,
   titleKey,
   subtitleKey,

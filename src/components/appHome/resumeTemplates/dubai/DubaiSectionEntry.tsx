@@ -5,14 +5,14 @@ import type { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { DUBAI_FONT_SIZE } from './dubai.styles';
 import type { DubaiStyles } from './dubai.types';
 
-type DubaiSectionEntryProps<T extends Record<string, string>> = {
+type DubaiSectionEntryProps<T extends Readonly<Record<string, string>>> = {
   entry: WithEntryId<T>;
   titleKey: keyof T;
   subtitleKey: keyof T;
   styles: DubaiStyles;
 };
 
-export const DubaiSectionEntry = <T extends Record<string, string>>({
+export const DubaiSectionEntry = <T extends Readonly<Record<string, string>>>({
   entry,
   titleKey,
   subtitleKey,

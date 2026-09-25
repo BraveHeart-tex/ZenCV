@@ -134,6 +134,29 @@ describe('BuilderSession', () => {
         email: 'value-email',
       }
     );
+    expect(session.templateStore.pdfTemplateData.workExperienceSection).toEqual(
+      {
+        id: 12,
+        title: 'Work Experience',
+        displayOrder: 3,
+        entries: [
+          {
+            entryId: '22',
+            role: 'value-role',
+            employer: 'value-employer',
+            startDate: 'value-startDate',
+            endDate: 'value-endDate',
+            city: 'value-city',
+            description: 'value-description',
+          },
+        ],
+      }
+    );
+    expect(session.templateStore.pdfTemplateData.sections).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'work-experience' }),
+      ])
+    );
     expect(session.templateStore.resumeStats.score).toBeGreaterThan(0);
     expect(session.templateStore.atsCompatibility.totalCount).toBe(6);
 

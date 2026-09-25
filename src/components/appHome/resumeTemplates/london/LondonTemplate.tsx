@@ -1,6 +1,10 @@
 import { Document, Page } from '@react-pdf/renderer';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isWorkExperienceSection,
+  mergePdfSections,
+} from '../resumeTemplates.helpers';
 import { LondonCoursesSection } from './LondonCoursesSection';
 import { LondonCustomSection } from './LondonCustomSection';
 import { LondonEducationSection } from './LondonEducationSection';
@@ -19,50 +23,58 @@ export const LondonTemplate = ({
 }: {
   templateData: PdfTemplateData;
 }) => {
-  const { personalDetails, summarySection } = templateData;
+  const { personalDetails, summarySection, workExperienceSection } =
+    templateData;
 
   const renderSections = () => {
-    return templateData.sections.map((section) => {
-      if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-        return (
-          <LondonWorkExperienceSection section={section} key={section.id} />
-        );
-      }
+    return mergePdfSections(templateData.sections, workExperienceSection).map(
+      (section) => {
+        if (isWorkExperienceSection(section)) {
+          return (
+            <LondonWorkExperienceSection
+              workExperienceSection={section}
+              key={section.id}
+            />
+          );
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-        return <LondonEducationSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
+          return <LondonEducationSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
-        return <LondonLanguagesSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
+          return <LondonLanguagesSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-        return <LondonInternshipsSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
+          return (
+            <LondonInternshipsSection section={section} key={section.id} />
+          );
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-        return <LondonCoursesSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
+          return <LondonCoursesSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-        return <LondonHobbiesSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
+          return <LondonHobbiesSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
-        return <LondonCustomSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+          return <LondonCustomSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
-        return <LondonSkillsSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
+          return <LondonSkillsSection section={section} key={section.id} />;
+        }
 
-      if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-        return <LondonReferencesSection section={section} key={section.id} />;
-      }
+        if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
+          return <LondonReferencesSection section={section} key={section.id} />;
+        }
 
-      return null;
-    });
+        return null;
+      }
+    );
   };
 
   return (

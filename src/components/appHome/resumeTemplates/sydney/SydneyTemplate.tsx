@@ -1,6 +1,10 @@
 import { Document, Page } from '@react-pdf/renderer';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isWorkExperienceSection,
+  mergePdfSections,
+} from '../resumeTemplates.helpers';
 import { SydneyCoursesSection } from './SydneyCoursesSection';
 import { SydneyCustomSection } from './SydneyCustomSection';
 import { SydneyEducationSection } from './SydneyEducationSection';
@@ -20,13 +24,18 @@ export const SydneyTemplate = ({
   templateData: PdfTemplateData;
 }) => {
   const styles = createSydneyStyles(templateData.accentColor);
-  const { personalDetails, summarySection, sections } = templateData;
+  const { personalDetails, summarySection, workExperienceSection } =
+    templateData;
+  const sections = mergePdfSections(
+    templateData.sections,
+    workExperienceSection
+  );
 
   const renderSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
+    if (isWorkExperienceSection(section)) {
       return (
         <SydneyWorkExperienceSection
-          section={section}
+          workExperienceSection={section}
           key={section.id}
           styles={styles}
         />

@@ -3,5 +3,7 @@ import type { createTokyoStyles } from './tokyo.styles';
 
 export interface TokyoSectionProps {
   section: TemplateDataSection;
-  styles: ReturnType<typeof createTokyoStyles>;
+  styles: TokyoStyles;
 }
+
+export type TokyoStyles = ReturnType<typeof createTokyoStyles>;

@@ -7,6 +7,7 @@ import type {
   SectionWithParsedMetadata,
   TemplateDataSection,
   WithEntryId,
+  WorkExperienceSectionSnapshot,
 } from '@/lib/types/documentBuilder.types';
 import { getCompactUrlLabel, normalizeWebUrl } from '@/lib/utils/urlUtils';
 
@@ -42,38 +43,20 @@ export const getSectionMetadata = (
   return section.metadata.find((data) => data.key === key)?.value || null;
 };
 
-export const getWorkExperienceSectionEntries = (
-  section: TemplateDataSection
+export const mergePdfSections = (
+  sections: readonly TemplateDataSection[],
+  workExperienceSection: WorkExperienceSectionSnapshot | null
 ) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.START_DATE
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.END_DATE
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-        ),
-      };
-    })
-  );
+  return [
+    ...sections,
+    ...(workExperienceSection ? [workExperienceSection] : []),
+  ].toSorted((a, b) => a.displayOrder - b.displayOrder);
+};
+
+export const isWorkExperienceSection = (
+  section: TemplateDataSection | WorkExperienceSectionSnapshot
+): section is WorkExperienceSectionSnapshot => {
+  return 'entries' in section;
 };
 
 export const getEducationSectionEntries = (section: TemplateDataSection) => {

@@ -1,6 +1,13 @@
 import { Document, Page, View } from '@react-pdf/renderer';
 import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import type {
+  PdfTemplateData,
+  TemplateDataSection,
+} from '@/lib/types/documentBuilder.types';
+import {
+  isWorkExperienceSection,
+  mergePdfSections,
+} from '../resumeTemplates.helpers';
 import { TokyoCoursesSection } from './TokyoCoursesSection';
 import { TokyoCustomSection } from './TokyoCustomSection';
 import { TokyoEducationSection } from './TokyoEducationSection';
@@ -26,17 +33,26 @@ export const TokyoTemplate = ({
   templateData: PdfTemplateData;
 }) => {
   const styles = createTokyoStyles(templateData.accentColor);
-  const { personalDetails, summarySection, sections } = templateData;
+  const { personalDetails, summarySection, workExperienceSection } =
+    templateData;
+  const sections = mergePdfSections(
+    templateData.sections,
+    workExperienceSection
+  );
 
-  const sidebarSections = sections.filter((s) =>
-    SIDEBAR_SECTION_TYPES.has(s.type as never)
+  const sidebarSections = sections.filter(
+    (section): section is TemplateDataSection =>
+      !isWorkExperienceSection(section) &&
+      SIDEBAR_SECTION_TYPES.has(section.type as never)
   );
 
   const mainSections = sections.filter(
-    (s) => !SIDEBAR_SECTION_TYPES.has(s.type as never)
+    (section) =>
+      isWorkExperienceSection(section) ||
+      !SIDEBAR_SECTION_TYPES.has(section.type as never)
   );
 
-  const renderSidebarSection = (section: (typeof sections)[number]) => {
+  const renderSidebarSection = (section: (typeof sidebarSections)[number]) => {
     if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
       return (
         <TokyoSkillsSection
@@ -68,10 +84,10 @@ export const TokyoTemplate = ({
   };
 
   const renderMainSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
+    if (isWorkExperienceSection(section)) {
       return (
         <TokyoWorkExperienceSection
-          section={section}
+          workExperienceSection={section}
           key={section.id}
           styles={styles}
         />

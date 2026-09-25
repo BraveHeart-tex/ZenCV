@@ -78,9 +78,29 @@ export interface PdfTemplateData {
     sectionName: string;
     summary: string;
   };
+  workExperienceSection: WorkExperienceSectionSnapshot | null;
   sections: TemplateDataSection[];
   accentColor: string;
   templateType: ResumeTemplate;
+}
+
+/** Read-only PDF projection of the semantic Work Experience section. */
+export interface WorkExperienceSectionSnapshot {
+  readonly id: number;
+  readonly title: string;
+  readonly displayOrder: number;
+  readonly entries: readonly WorkExperiencePdfEntry[];
+}
+
+export interface WorkExperiencePdfEntry
+  extends Readonly<Record<string, string>> {
+  readonly entryId: string;
+  readonly role: string;
+  readonly employer: string;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly city: string;
+  readonly description: string;
 }
 
 export interface TemplateDataSection extends SectionWithParsedMetadata {

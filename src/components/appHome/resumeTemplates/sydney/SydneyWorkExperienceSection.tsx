@@ -1,26 +1,29 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getWorkExperienceSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { WorkExperienceSectionSnapshot } from '@/lib/types/documentBuilder.types';
 import { SydneySectionEntry } from './SydneySectionEntry';
-import type { SydneySectionProps } from './sydney.types';
+import type { SydneyStyles } from './sydney.types';
 
 export const SydneyWorkExperienceSection = ({
-  section,
+  workExperienceSection,
   styles,
-}: SydneySectionProps) => {
-  const sectionEntries = getWorkExperienceSectionEntries(section);
+}: {
+  workExperienceSection: WorkExperienceSectionSnapshot;
+  styles: SydneyStyles;
+}) => {
+  const { entries: sectionEntries } = workExperienceSection;
   if (!sectionEntries.length) {
     return null;
   }
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionLabel}>{section.title}</Text>
+      <Text style={styles.sectionLabel}>{workExperienceSection.title}</Text>
       {sectionEntries.map((entry) => (
         <SydneySectionEntry
           entry={entry}
           key={entry.entryId}
           titleKey='employer'
-          subtitleKey='jobTitle'
+          subtitleKey='role'
           styles={styles}
         />
       ))}
