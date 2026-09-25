@@ -933,6 +933,46 @@ describe('BuilderTemplateStore', () => {
     });
   });
 
+  it.each([
+    INTERNAL_TEMPLATE_TYPES.MANHATTAN,
+    INTERNAL_TEMPLATE_TYPES.LONDON,
+    INTERNAL_TEMPLATE_TYPES.TOKYO,
+    INTERNAL_TEMPLATE_TYPES.DUBAI,
+    INTERNAL_TEMPLATE_TYPES.SYDNEY,
+  ])('preserves complete template, score, and ATS output for %s', (templateType) => {
+    const root = createTestRootStore();
+    const fixture = builderDocumentFixture();
+    const records = {
+      success: true as const,
+      document: {
+        ...fixture.document,
+        templateType,
+        templateSettings: serializeTemplateSettings({}),
+      },
+      sections: [...fixture.sections],
+      items: [...fixture.items],
+      fields: [...fixture.fields],
+    };
+
+    root.hydrateFromBackend(records);
+    const expectedTemplateData = root.templateStore.pdfTemplateData;
+    const expectedResumeStats = root.templateStore.resumeStats;
+    const expectedATSCompatibility = root.templateStore.atsCompatibility;
+
+    expect(root.installDocumentModel(records, true)).toBe(true);
+    runInAction(() => {
+      root.sectionStore.sections = [];
+      root.itemStore.items = [];
+      root.fieldStore.fields = [];
+    });
+
+    expect(root.templateStore.pdfTemplateData).toEqual(expectedTemplateData);
+    expect(root.templateStore.resumeStats).toEqual(expectedResumeStats);
+    expect(root.templateStore.atsCompatibility).toEqual(
+      expectedATSCompatibility
+    );
+  });
+
   it('computes resume score, suggestions, and local resume checks', () => {
     const { root } = hydrateBasicResume();
 
