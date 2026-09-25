@@ -147,11 +147,6 @@ export class BuilderRootStore {
     if (!records.success || !this.installDocumentModel(records)) {
       throw new Error('Failed to refresh Builder Document');
     }
-    const model = this.documentModel;
-    if (!model) {
-      return;
-    }
-    this.currentStoreProjection.prune(model);
   }
 
   hydrateFromBackend(

@@ -4,7 +4,6 @@ import {
   getLinksSectionEntries,
   sortByDisplayOrder,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
   ATSCompatibilityReport,
   PdfTemplateData,
@@ -170,7 +169,7 @@ export class BuilderTemplateStore {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
 
-    const hasFilledFields = (items: DEX_Item[], fieldName?: string) =>
+    const hasFilledFields = (items: { id: number }[], fieldName?: string) =>
       items?.some((item) =>
         this.root.fieldStore
           .getFieldsByItemId(item.id)

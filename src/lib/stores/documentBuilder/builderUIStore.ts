@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
 import type { BuilderRootStore } from './builderRootStore';
@@ -14,7 +13,7 @@ export const BUILDER_CURRENT_VIEWS = {
 export class BuilderUIStore {
   root: BuilderRootStore;
 
-  collapsedItemId: Nullable<DEX_Item['id']> = null;
+  collapsedItemId: Nullable<number> = null;
 
   itemRefs: Map<string, Nullable<HTMLElement>> = new Map();
   fieldRefs: Map<string, Nullable<HTMLElement>> = new Map();
@@ -22,7 +21,7 @@ export class BuilderUIStore {
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
   isMobileTemplateSelectorVisible: boolean = false;
-  private readonly isItemOpenForItem = computedFn((id: DEX_Item['id']) => {
+  private readonly isItemOpenForItem = computedFn((id: number) => {
     return this.collapsedItemId === id;
   });
 
@@ -37,7 +36,7 @@ export class BuilderUIStore {
     );
   }
 
-  isItemOpen(id: DEX_Item['id']) {
+  isItemOpen(id: number) {
     return this.isItemOpenForItem(id);
   }
 
@@ -63,7 +62,7 @@ export class BuilderUIStore {
     }
   }
 
-  focusFirstFieldInItem(itemId: DEX_Item['id']) {
+  focusFirstFieldInItem(itemId: number) {
     const item = this.root.itemStore.getItemById(itemId);
 
     if (!item) {
@@ -104,7 +103,7 @@ export class BuilderUIStore {
     this.fieldRefs.set(key, value);
   }
 
-  toggleItem(itemId: DEX_Item['id']) {
+  toggleItem(itemId: number) {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
   }
 
