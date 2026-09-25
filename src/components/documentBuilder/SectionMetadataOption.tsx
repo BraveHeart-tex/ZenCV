@@ -1,13 +1,12 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { showErrorToast } from '@/components/ui/sonner';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { BuilderSectionModel } from '@/lib/builderDocument/builderDocument';
 import {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import type { ParsedSectionMetadata } from '@/lib/types/documentBuilder.types';
 import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 
@@ -16,19 +15,19 @@ const MetadataSwitch = observer(
     sectionId,
     option,
   }: {
-    sectionId: DEX_Section['id'];
-    option: ParsedSectionMetadata;
+    sectionId: number;
+    option: BuilderSectionModel['metadata'][number];
   }) => (
     <Switch
       id={option.key}
       value={option.value}
       checked={option.value === CHECKED_METADATA_VALUE}
       onCheckedChange={action(async (checked) => {
-        const result =
-          await builderRootStore.sectionStore.updateSectionMetadata(sectionId, {
-            key: option.key,
-            value: checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE,
-          });
+        const result = await builderRootStore.document?.updateSectionMetadata(
+          sectionId as import('@/lib/builderDocument/builderDocument').SectionId,
+          option.key,
+          checked ? CHECKED_METADATA_VALUE : UNCHECKED_METADATA_VALUE
+        );
         if (result && !result.success) {
           showErrorToast(
             'Could not update section settings. Please try again.'
@@ -43,8 +42,8 @@ export const SectionMetadataOption = ({
   sectionId,
   option,
 }: {
-  sectionId: DEX_Section['id'];
-  option: ParsedSectionMetadata;
+  sectionId: number;
+  option: BuilderSectionModel['metadata'][number];
 }) => {
   return (
     <div className='first:mt-2 flex items-center gap-2'>

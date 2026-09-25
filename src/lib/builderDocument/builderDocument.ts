@@ -13,6 +13,10 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
+import {
+  renameDocument,
+  updateDocument,
+} from '@/lib/client-db/documentService';
 import { updateField } from '@/lib/client-db/fieldService';
 import {
   addItemFromTemplate,
@@ -64,6 +68,8 @@ type PublicFieldDefinition<S extends SectionKey, K extends string> = Omit<
   readonly label: string;
   readonly control: FieldDefinition<S>['control'];
   readonly order: number;
+  readonly placeholder?: string;
+  readonly options?: readonly string[];
 };
 type FieldsFor<S extends SectionKey> = {
   readonly [K in FieldKey<S>]: SemanticField<S, Extract<K, string>>;
@@ -341,9 +347,9 @@ const mutableItemIds = (
 
 export class BuilderDocumentModel {
   readonly id: DocumentId;
-  readonly title: string;
-  readonly templateType: DEX_Document['templateType'];
-  readonly templateSettings: string;
+  title: string;
+  templateType: DEX_Document['templateType'];
+  templateSettings: string;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly jobPostingId: DEX_Document['jobPostingId'];
@@ -370,6 +376,11 @@ export class BuilderDocumentModel {
     this.updatedAt = record.updatedAt;
     this.jobPostingId = record.jobPostingId;
     this.sectionIds = observable.array([...sectionIds], { deep: false });
+    makeObservable(this, {
+      title: observable,
+      templateType: observable,
+      templateSettings: observable,
+    });
   }
 
   get sections(): readonly BuilderSectionModel[] {
@@ -476,6 +487,53 @@ export class BuilderDocumentModel {
     for (const field of this.fieldsById.values()) {
       field.dispose();
     }
+  }
+
+  rename(title: string): Promise<StoreResult> {
+    return this.#enqueue(async () => {
+      const previous = this.title;
+      runInAction(() => {
+        this.title = title;
+      });
+      try {
+        if ((await renameDocument(this.id, title)) === 0) {
+          throw new Error('Document no longer exists');
+        }
+        return { success: true };
+      } catch {
+        runInAction(() => {
+          this.title = previous;
+        });
+        return { success: false, error: 'Failed to rename document' };
+      }
+    });
+  }
+
+  updateDocument(
+    changes: Pick<DEX_Document, 'templateType' | 'templateSettings'>
+  ): Promise<StoreResult> {
+    return this.#enqueue(async () => {
+      const previous = {
+        templateType: this.templateType,
+        templateSettings: this.templateSettings,
+      };
+      runInAction(() => {
+        this.templateType = changes.templateType;
+        this.templateSettings = changes.templateSettings;
+      });
+      try {
+        if ((await updateDocument(this.id, changes)) === 0) {
+          throw new Error('Document no longer exists');
+        }
+        return { success: true };
+      } catch {
+        runInAction(() => {
+          this.templateType = previous.templateType;
+          this.templateSettings = previous.templateSettings;
+        });
+        return { success: false, error: 'Failed to update document' };
+      }
+    });
   }
 
   addSection(

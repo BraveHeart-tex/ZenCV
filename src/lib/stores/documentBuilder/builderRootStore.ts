@@ -1,6 +1,7 @@
 import { runInAction } from 'mobx';
 import {
   type BuilderDocumentModel,
+  type FieldId,
   hydrateBuilderDocument,
   type ItemId,
   type SectionId,
@@ -46,6 +47,22 @@ export class BuilderRootStore {
         this.startSession();
       },
     });
+  }
+
+  get document(): BuilderDocumentModel | null {
+    return this.session.document;
+  }
+
+  getSection(sectionId: number) {
+    return this.document?.sectionsById.get(sectionId as SectionId);
+  }
+
+  getItem(itemId: number) {
+    return this.document?.itemsById.get(itemId as ItemId);
+  }
+
+  getField(fieldId: number) {
+    return this.document?.fieldsById.get(fieldId as FieldId);
   }
 
   resetState() {

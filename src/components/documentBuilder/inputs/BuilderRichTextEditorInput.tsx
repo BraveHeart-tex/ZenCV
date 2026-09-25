@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { RichTextCharacterCounter } from '@/components/documentBuilder/RichTextCharacterCounter';
 import { RichTextEditor } from '@/components/richTextEditor/RichTextEditor';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 
 interface BuilderRichTextEditorInputProps {
@@ -13,15 +12,15 @@ interface BuilderRichTextEditorInputProps {
 
 export const BuilderRichTextEditorInput = observer(
   ({ fieldId, ariaLabelledBy }: BuilderRichTextEditorInputProps) => {
-    const field = builderRootStore.fieldStore.getFieldById(fieldId);
+    const field = builderRootStore.getField(fieldId);
     if (!field) {
       return null;
     }
 
-    const id = getFieldHtmlId(field);
+    const id = `field-${fieldId}`;
 
     const handleRichTextChange = action(async (html: string) => {
-      await builderRootStore.fieldStore.setFieldValue(fieldId, html);
+      field.setDebounced(html);
     });
 
     return (
@@ -33,7 +32,7 @@ export const BuilderRichTextEditorInput = observer(
           id={id}
           ariaLabelledBy={ariaLabelledBy}
           initialValue={field.value}
-          placeholder={field?.placeholder || ''}
+          placeholder={field.definition.placeholder || ''}
           onChange={handleRichTextChange}
           footer={null}
         />

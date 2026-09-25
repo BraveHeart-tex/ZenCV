@@ -10,12 +10,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 export const EditableDocumentTitle = observer(() => {
   const [open, setOpen] = useState(false);
-  const documentTitle = builderRootStore.documentStore.document?.title || '';
+  const document = builderRootStore.document;
+  const documentTitle = document?.title || '';
 
   const handleRename = action(async (enteredTitle: string) => {
     try {
-      const result =
-        await builderRootStore.documentStore.renameDocument(enteredTitle);
+      if (!document) {
+        return;
+      }
+      const result = await document.rename(enteredTitle);
       if (!result.success) {
         showErrorToast(result.error);
         return;

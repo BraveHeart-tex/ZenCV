@@ -32,7 +32,6 @@ import {
   getYearFromFieldValue,
   isValidDateFormat,
 } from '@/lib/helpers/dateInputHelpers';
-import { getFieldHtmlId } from '@/lib/helpers/documentBuilderHelpers';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
 import { cn } from '@/lib/utils/stringUtils';
 
@@ -40,8 +39,8 @@ const PRESENT = 'Present';
 
 export const DateFieldInput = observer(
   ({ fieldId }: { fieldId: DEX_Field['id'] }) => {
-    const field = builderRootStore.fieldStore.getFieldById(fieldId);
-    const htmlInputId = field ? getFieldHtmlId(field) : '';
+    const field = builderRootStore.getField(fieldId);
+    const htmlInputId = `field-${fieldId}`;
     const inputRef = useRef<HTMLInputElement>(null);
 
     const month = useMemo(() => {
@@ -72,17 +71,15 @@ export const DateFieldInput = observer(
 
     const handleBlur = action(async () => {
       const value = field.value;
-      await builderRootStore.fieldStore.setFieldValue(
-        field.id,
-        isValidDateFormat(value) ? value : ''
-      );
+      field.setDraft(isValidDateFormat(value) ? value : '');
+      await field.commit();
     });
 
     return (
       <div className='flex flex-col gap-2'>
         {/* Label row */}
         <div className='flex items-center gap-1'>
-          <Label htmlFor={htmlInputId}>{field.name}</Label>
+          <Label htmlFor={htmlInputId}>{field.label}</Label>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -124,11 +121,7 @@ export const DateFieldInput = observer(
             type='text'
             value={field.value || ''}
             onChange={action(async (event) => {
-              await builderRootStore.fieldStore.setFieldValue(
-                field.id,
-                event.target.value,
-                false
-              );
+              field.setDraft(event.target.value);
             })}
             data-1p-ignore='true'
             data-lpignore='true'
@@ -147,7 +140,7 @@ export const DateFieldInput = observer(
               <Button
                 size='icon'
                 variant='ghost'
-                aria-label={`Open ${field.name} date picker`}
+                aria-label={`Open ${field.label} date picker`}
                 className='absolute left-0 top-1/2 -translate-y-1/2 p-1 rounded-md bg-muted text-muted-foreground hover:text-foreground'
               >
                 <CalendarIcon className='w-4 h-4' />
@@ -161,10 +154,7 @@ export const DateFieldInput = observer(
                   <Switch
                     checked={isPresent}
                     onCheckedChange={action(async (checked) => {
-                      await builderRootStore.fieldStore.setFieldValue(
-                        field?.id,
-                        checked ? PRESENT : ''
-                      );
+                      field.setDebounced(checked ? PRESENT : '');
                     })}
                   />
                   <Label className='text-sm cursor-pointer'>
@@ -193,10 +183,7 @@ export const DateFieldInput = observer(
                     className='h-7 w-7'
                     disabled={isPresent}
                     onClick={action(async () => {
-                      await builderRootStore.fieldStore.setFieldValue(
-                        field.id,
-                        `${month} ${year - 1}`
-                      );
+                      field.setDebounced(`${month} ${year - 1}`);
                     })}
                   >
                     <ChevronLeftIcon className='w-4 h-4' />
@@ -211,10 +198,7 @@ export const DateFieldInput = observer(
                     className='h-7 w-7'
                     disabled={isPresent || year >= CURRENT_YEAR}
                     onClick={action(async () => {
-                      await builderRootStore.fieldStore.setFieldValue(
-                        field.id,
-                        `${month} ${year + 1}`
-                      );
+                      field.setDebounced(`${month} ${year + 1}`);
                     })}
                   >
                     <ChevronRightIcon className='w-4 h-4' />
@@ -238,10 +222,7 @@ export const DateFieldInput = observer(
                         )}
                         disabled={isPresent || isFuture}
                         onClick={action(async () => {
-                          await builderRootStore.fieldStore.setFieldValue(
-                            field?.id,
-                            `${monthItem} ${year}`
-                          );
+                          field.setDebounced(`${monthItem} ${year}`);
                         })}
                       >
                         {monthItem}

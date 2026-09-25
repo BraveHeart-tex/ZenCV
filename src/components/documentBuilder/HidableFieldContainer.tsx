@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import type { SemanticField } from '@/lib/builderDocument/builderDocument';
 import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 
 import { cn } from '@/lib/utils/stringUtils';
@@ -13,7 +13,7 @@ import { Button } from '../ui/button';
 const ARE_EXTRA_FIELDS_HIDDEN_KEY = 'areExtraFieldsHidden';
 
 export const HidableFieldContainer = observer(
-  ({ fields }: { fields: DEX_Field[] }) => {
+  ({ fields }: { fields: readonly SemanticField[] }) => {
     const { renderFields } = useFieldMapper();
     const [areExtraFieldsHidden, setAreExtraFieldsHidden] = useLocalStorage(
       ARE_EXTRA_FIELDS_HIDDEN_KEY,

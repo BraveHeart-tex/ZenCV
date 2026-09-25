@@ -8,17 +8,13 @@ import { PersonalDetailsLinks } from '@/components/documentBuilder/PersonalDetai
 import { SectionDescription } from '@/components/documentBuilder/SectionDescription';
 import { SectionItem } from '@/components/documentBuilder/SectionItem';
 import { SectionMetadataOptions } from '@/components/documentBuilder/SectionMetadataOptions';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderRootStore } from '@/lib/stores/documentBuilder/builderRootStore';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 
 export const DocumentSection = observer(
-  ({ sectionId }: { sectionId: DEX_Section['id'] }) => {
-    const itemIds =
-      builderRootStore.itemStore.getOrderedItemIdsBySectionId(sectionId);
-    const sectionType =
-      builderRootStore.sectionStore.getSectionById(sectionId)?.type;
+  ({ sectionId }: { sectionId: number }) => {
+    const section = builderRootStore.getSection(sectionId);
+    const itemIds = section?.itemIds ?? [];
 
     return (
       <ContainerElement sectionId={sectionId}>
@@ -27,15 +23,15 @@ export const DocumentSection = observer(
           <SectionDescription sectionId={sectionId} />
           <SectionMetadataOptions sectionId={sectionId} />
         </div>
-        <ItemsDndContext items={itemIds}>
+        <ItemsDndContext items={[...itemIds]}>
           {itemIds.map((id) => (
             <SectionItem itemId={id} key={id} />
           ))}
         </ItemsDndContext>
-        {builderRootStore.itemStore.areAllItemsCollapsible(sectionId) && (
+        {section?.definition.expectedContainerType === 'collapsible' && (
           <AddNewItemButton sectionId={sectionId} />
         )}
-        {sectionType === INTERNAL_SECTION_TYPES.PERSONAL_DETAILS ? (
+        {section?.sectionKey === 'personalDetails' ? (
           <PersonalDetailsLinks />
         ) : null}
       </ContainerElement>
@@ -44,11 +40,11 @@ export const DocumentSection = observer(
 );
 
 const ContainerElement = observer(
-  ({
-    children,
-    sectionId,
-  }: PropsWithChildren & { sectionId: DEX_Section['id'] }) => {
-    if (builderRootStore.sectionStore.isSectionFixed(sectionId)) {
+  ({ children, sectionId }: PropsWithChildren & { sectionId: number }) => {
+    if (
+      builderRootStore.getSection(sectionId)?.definition.sectionCardinality ===
+      'required-one'
+    ) {
       return (
         <section id={getSectionContainerId(sectionId)}>{children}</section>
       );

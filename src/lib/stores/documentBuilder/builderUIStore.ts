@@ -46,17 +46,15 @@ export class BuilderUIStore {
     sectionType: SectionType
   ) {
     const section = this.root.sectionStore.sections.find(
-      (s) => s.type === sectionType
+      (candidate) => candidate.type === sectionType
     );
     if (!section) {
       return;
     }
-
-    const items = this.root.itemStore.getItemsBySectionId(section.id);
-    for (const item of items) {
+    for (const item of this.root.itemStore.getItemsBySectionId(section.id)) {
       const field = this.root.fieldStore
         .getFieldsByItemId(item.id)
-        .find((f) => f.name === fieldName);
+        .find((candidate) => candidate.name === fieldName);
       if (field) {
         return this.fieldRefs.get(field.id.toString());
       }
@@ -64,16 +62,35 @@ export class BuilderUIStore {
   }
 
   focusFirstFieldInItem(itemId: BuilderItemId) {
-    const item = this.root.itemStore.getItemById(itemId);
+    const item = this.root.getItem(itemId);
 
     if (!item) {
+      const legacyItem = this.root.itemStore.getItemById(itemId);
+      const firstLegacyField = legacyItem
+        ? this.root.fieldStore.getFieldsByItemId(legacyItem.id)[0]
+        : undefined;
+      const legacyElement = firstLegacyField
+        ? this.fieldRefs.get(firstLegacyField.id.toString())
+        : undefined;
+      if (legacyElement) {
+        requestAnimationFrame(() => {
+          legacyElement.focus();
+        });
+        return;
+      }
+      if (legacyItem) {
+        console.warn(
+          firstLegacyField
+            ? 'No element found to focus'
+            : 'No field found to focus'
+        );
+        return;
+      }
       console.warn('No item found to focus first field');
       return;
     }
 
-    const fields = this.root.fieldStore.getFieldsByItemId(item.id);
-
-    const firstField = fields[0];
+    const firstField = item.editableFields[0];
     if (!firstField) {
       console.warn('No field found to focus');
       return;
