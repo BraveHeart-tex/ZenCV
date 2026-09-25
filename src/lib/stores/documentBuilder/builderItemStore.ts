@@ -19,6 +19,8 @@ import {
   MAX_PERSONAL_DETAILS_LINKS,
 } from './documentBuilder.constants';
 
+export type BuilderItemId = DEX_Item['id'];
+
 export class BuilderItemStore {
   root: BuilderRootStore;
 

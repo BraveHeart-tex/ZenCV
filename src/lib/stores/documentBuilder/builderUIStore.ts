@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
+import type { BuilderItemId } from './builderItemStore';
 import type { BuilderRootStore } from './builderRootStore';
 
 export const BUILDER_CURRENT_VIEWS = {
@@ -13,7 +14,7 @@ export const BUILDER_CURRENT_VIEWS = {
 export class BuilderUIStore {
   root: BuilderRootStore;
 
-  collapsedItemId: Nullable<number> = null;
+  collapsedItemId: Nullable<BuilderItemId> = null;
 
   itemRefs: Map<string, Nullable<HTMLElement>> = new Map();
   fieldRefs: Map<string, Nullable<HTMLElement>> = new Map();
@@ -21,7 +22,7 @@ export class BuilderUIStore {
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
 
   isMobileTemplateSelectorVisible: boolean = false;
-  private readonly isItemOpenForItem = computedFn((id: number) => {
+  private readonly isItemOpenForItem = computedFn((id: BuilderItemId) => {
     return this.collapsedItemId === id;
   });
 
@@ -36,7 +37,7 @@ export class BuilderUIStore {
     );
   }
 
-  isItemOpen(id: number) {
+  isItemOpen(id: BuilderItemId) {
     return this.isItemOpenForItem(id);
   }
 
@@ -62,7 +63,7 @@ export class BuilderUIStore {
     }
   }
 
-  focusFirstFieldInItem(itemId: number) {
+  focusFirstFieldInItem(itemId: BuilderItemId) {
     const item = this.root.itemStore.getItemById(itemId);
 
     if (!item) {
@@ -103,7 +104,7 @@ export class BuilderUIStore {
     this.fieldRefs.set(key, value);
   }
 
-  toggleItem(itemId: number) {
+  toggleItem(itemId: BuilderItemId) {
     this.collapsedItemId = itemId === this.collapsedItemId ? null : itemId;
   }
 

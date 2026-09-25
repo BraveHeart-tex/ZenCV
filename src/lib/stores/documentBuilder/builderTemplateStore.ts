@@ -13,6 +13,7 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
+import type { BuilderItemId } from './builderItemStore';
 import type { BuilderRootStore } from './builderRootStore';
 import {
   FIELD_NAMES,
@@ -169,7 +170,10 @@ export class BuilderTemplateStore {
     let score = 0;
     const suggestions: ResumeSuggestion[] = [];
 
-    const hasFilledFields = (items: { id: number }[], fieldName?: string) =>
+    const hasFilledFields = (
+      items: ReadonlyArray<{ readonly id: BuilderItemId }>,
+      fieldName?: string
+    ) =>
       items?.some((item) =>
         this.root.fieldStore
           .getFieldsByItemId(item.id)
