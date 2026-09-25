@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
@@ -161,5 +162,76 @@ describe('BuilderSession', () => {
     session.UIStore.focusFirstFieldInItem(personalDetailsItem.id);
     expect(fieldElement.focus).toHaveBeenCalledOnce();
     vi.unstubAllGlobals();
+  });
+
+  it('derives Work Experience score and ATS feedback from semantic entries', async () => {
+    vi.useFakeTimers();
+    const records = builderDocumentFixture();
+    const workExperienceSection = records.sections.find(
+      (section) => section.type === 'work-experience'
+    );
+    if (!workExperienceSection) {
+      throw new Error('Expected a Work Experience section');
+    }
+    const workExperienceItemIds = new Set(
+      records.items
+        .filter((item) => item.sectionId === workExperienceSection.id)
+        .map((item) => item.id)
+    );
+    const session = new BuilderSession({
+      loadRecords: async () => ({
+        success: true,
+        document: records.document,
+        sections: [...records.sections],
+        items: [...records.items],
+        fields: records.fields.map((field) =>
+          workExperienceItemIds.has(field.itemId)
+            ? ({ ...field, value: '' } as DEX_Field)
+            : field
+        ),
+      }),
+    });
+
+    try {
+      await session.load(records.document.id);
+      await vi.advanceTimersByTimeAsync(500);
+
+      const entry = session.document?.workExperience.entries[0];
+      if (!entry) {
+        throw new Error('Expected a Work Experience entry');
+      }
+
+      const initialScore = session.templateStore.debouncedResumeStats.score;
+      expect(
+        session.templateStore.debouncedResumeStats.suggestions
+      ).toContainEqual(
+        expect.objectContaining({ label: 'Add work experience' })
+      );
+      entry.description.setDraft('<ul><li>Increased revenue by 20%</li></ul>');
+      await vi.advanceTimersByTimeAsync(500);
+
+      expect(session.templateStore.debouncedResumeStats.score).toBeGreaterThan(
+        initialScore
+      );
+      expect(
+        session.templateStore.debouncedResumeStats.suggestions
+      ).not.toContainEqual(
+        expect.objectContaining({ label: 'Add work experience' })
+      );
+      expect(session.templateStore.debouncedATSCompatibility.checks).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'work_experience_bullets',
+            pass: true,
+          }),
+          expect.objectContaining({
+            id: 'quantified_achievements',
+            pass: true,
+          }),
+        ])
+      );
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
