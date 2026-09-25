@@ -20,7 +20,7 @@ const listSourceFiles = (directory: string): string[] =>
 const relativePath = (path: string) => path.slice(process.cwd().length + 1);
 
 const WORK_PERSISTED_LABEL_REFERENCE =
-  /FIELD_NAMES\.WORK_EXPERIENCE|persistedName:\s*'(?:Job Title|Employer|Start Date|End Date|City|Description)'/;
+  /FIELD_NAMES(?:\.WORK_EXPERIENCE|\[['"]WORK_EXPERIENCE['"]\])|(?:persistedName|(?:field\.)?name)\s*(?::|={2,3}|!={1,2})\s*['"`](?:Job Title|Employer|Start Date|End Date|City|Description)['"`]|['"`](?:Job Title|Employer|Start Date|End Date|City|Description)['"`]\s+as\s+FieldName/;
 
 const WORK_PERSISTED_LABEL_ALLOWLIST = [
   'src/lib/misc/fieldTemplates.ts',
