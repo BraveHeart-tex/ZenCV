@@ -290,6 +290,76 @@ describe('Builder Document item commands', () => {
   });
 });
 
+describe('Work Experience semantic model and lifecycle', () => {
+  it('hydrates ordered entries whose semantic fields share editable field identity', () => {
+    const document = commandDocument(2);
+    const [first, second] = document.workExperience.items;
+
+    expect(document.workExperience.entries.map((entry) => entry.id)).toEqual([
+      first.id,
+      second.id,
+    ]);
+    expect(first.entry.role).toBe(first.fields.role);
+    expect(first.entry.description).toBe(first.editableFields[5]);
+    first.entry.role.setDraft('Staff Engineer');
+    expect(first.fields.role.value).toBe('Staff Engineer');
+    expect(document.fieldsById.get(first.entry.role.id)).toBe(first.entry.role);
+  });
+
+  it('provides heading fallbacks and a trimmed date description from semantic fields', () => {
+    const entry = commandDocument().workExperience.items[0].entry;
+    entry.role.setDraft('  Engineer  ');
+    entry.employer.setDraft('  ZenCV  ');
+    entry.startDate.setDraft('  Jan 2020 ');
+    entry.endDate.setDraft(' Dec 2021  ');
+    expect(entry.heading).toBe('Engineer at ZenCV');
+    expect(entry.dateDescription).toBe('Jan 2020 - Dec 2021');
+
+    entry.role.setDraft('');
+    expect(entry.heading).toBe('ZenCV');
+    entry.employer.setDraft('');
+    expect(entry.heading).toBe('(Untitled)');
+    expect(entry.dateDescription).toBe('');
+  });
+
+  it('delegates typed entry lifecycle commands to the document persistence boundary', async () => {
+    const document = commandDocument(2);
+    const section = document.workExperience;
+    const [first, second] = section.items;
+    const definitions = Object.values(section.definition.fields);
+    vi.mocked(addItemFromTemplate).mockResolvedValueOnce({
+      item: {
+        id: 99,
+        sectionId: section.id,
+        containerType: 'collapsible',
+        displayOrder: 3,
+      },
+      fields: definitions.map((definition, index) => ({
+        id: 2000 + index,
+        itemId: 99,
+        name: definition.persistedName,
+        type: definition.expectedPersistedType,
+        value: '',
+      })) as DEX_Field[],
+    });
+
+    const added = await section.addEntry();
+    expect(added?.id).toBe(99);
+    expect(added?.entry.role).toBe(added?.fields.role);
+
+    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(2);
+    expect(
+      await section.reorderEntries([added as typeof first, second, first])
+    ).toBe(true);
+    expect(section.items).toEqual([added, second, first]);
+
+    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
+    expect(await section.removeEntry(second)).toBe(true);
+    expect(section.items).toEqual([added, first]);
+    expect(await section.removeEntry(second)).toBe(false);
+  });
+});
+
 const failure = (records: PersistedDocumentRecords) => {
   const result = hydrateBuilderDocument(records);
   expect(result.success).toBe(false);
@@ -300,6 +370,39 @@ const failure = (records: PersistedDocumentRecords) => {
 };
 
 describe('Builder Document hydration', () => {
+  it('retains strict diagnostics for malformed Work Experience field sets', () => {
+    const records = fixture();
+    const work = records.items.find((item) => item.sectionId === 12);
+    if (!work) {
+      throw new Error('Missing Work Experience item');
+    }
+    const workFields = records.fields.filter(
+      (field) => field.itemId === work.id
+    );
+    const role = workFields.find((field) => field.name === 'Job Title');
+    if (!role) {
+      throw new Error('Missing Work Experience role field');
+    }
+    const diagnostics = failure({
+      ...records,
+      fields: [
+        ...records.fields.filter((field) => field.itemId !== work.id),
+        ...workFields.filter((field) => field.name !== 'Employer'),
+        { ...role, id: 9_999 },
+        { ...role, id: 10_000, name: 'Retired' as DEX_Field['name'] },
+        { ...role, id: 10_001, type: 'textarea' },
+      ],
+    });
+    expect(diagnostics.map((diagnostic) => diagnostic.type)).toEqual(
+      expect.arrayContaining([
+        'duplicateField',
+        'missingField',
+        'unknownField',
+        'incompatibleFieldType',
+      ])
+    );
+  });
+
   it('publishes one normalized graph with typed and generic identity and definition order', () => {
     const records = fixture();
     const result = hydrateBuilderDocument({
