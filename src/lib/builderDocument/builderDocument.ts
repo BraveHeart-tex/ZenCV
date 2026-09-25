@@ -349,6 +349,24 @@ export class WorkExperienceItemModel extends BuilderItemModel<'workExperience'> 
   }
 }
 
+const createBuilderItemModel = <S extends SectionKey>(
+  record: DEX_Item,
+  sectionKey: S,
+  fieldIds: readonly FieldId[],
+  fields: Record<string, SemanticField>,
+  document: BuilderDocumentModel
+): BuilderItemModel<S> => {
+  if (sectionKey === 'workExperience') {
+    return new WorkExperienceItemModel(
+      record,
+      fieldIds,
+      fields as WorkExperienceFields,
+      document
+    ) as unknown as BuilderItemModel<S>;
+  }
+  return new BuilderItemModel(record, sectionKey, fieldIds, fields, document);
+};
+
 export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   readonly id: SectionId;
   readonly documentId: DocumentId;
@@ -1050,21 +1068,13 @@ export class BuilderDocumentModel {
         typedFields[model.fieldKey] = model;
         return model;
       });
-      const item =
-        section.sectionKey === 'workExperience'
-          ? new WorkExperienceItemModel(
-              result.item,
-              fields.map((field) => field.id),
-              typedFields as WorkExperienceFields,
-              this
-            )
-          : new BuilderItemModel(
-              result.item,
-              section.sectionKey,
-              fields.map((field) => field.id),
-              typedFields,
-              this
-            );
+      const item = createBuilderItemModel(
+        result.item,
+        section.sectionKey,
+        fields.map((field) => field.id),
+        typedFields,
+        this
+      );
       runInAction(() => {
         for (const field of fields) {
           this.fieldsById.set(field.id, field);
@@ -1527,21 +1537,13 @@ export const hydrateBuilderDocument = ({
         typedFields[fieldModel.fieldKey] = fieldModel;
         fieldIds.push(fieldModel.id);
       }
-      const itemModel =
-        definition.key === 'workExperience'
-          ? new WorkExperienceItemModel(
-              item,
-              fieldIds,
-              typedFields as WorkExperienceFields,
-              model
-            )
-          : new BuilderItemModel(
-              item,
-              definition.key as SectionKey,
-              fieldIds,
-              typedFields,
-              model
-            );
+      const itemModel = createBuilderItemModel(
+        item,
+        definition.key as SectionKey,
+        fieldIds,
+        typedFields,
+        model
+      );
       model.itemsById.set(itemModel.id, itemModel);
     }
   }
