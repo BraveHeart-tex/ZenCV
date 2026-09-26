@@ -301,6 +301,121 @@ describe('section definitions', () => {
     ).toBe(true);
   });
 
+  it('validates the public editor presentation contract', () => {
+    const personal = sectionDefinitions.personalDetails;
+    expect(personal.editorLayout).toEqual({
+      mobileColumns: 1,
+      desktopColumns: 2,
+      desktopBreakpoint: 'md',
+    });
+    expect(personal.fields.wantedJobTitle.labelRow).toBe('compact');
+
+    const base = {
+      key: 'test',
+      persistedType: 'test',
+      label: 'Test',
+      sectionCardinality: 'optional-one',
+      itemCardinality: { min: 1 },
+      expectedContainerType: 'collapsible',
+      initialFocusFieldKey: 'start',
+      fields: [
+        {
+          key: 'start',
+          persistedName: 'Start',
+          label: 'Start',
+          expectedPersistedType: 'date-month',
+          control: 'month',
+          order: 0,
+          visibility: 'primary',
+          width: 'half',
+          dateRange: { key: 'dates', role: 'start', allowPresent: false },
+        },
+        {
+          key: 'end',
+          persistedName: 'End',
+          label: 'End',
+          expectedPersistedType: 'date-month',
+          control: 'month',
+          order: 1,
+          visibility: 'primary',
+          width: 'half',
+          dateRange: { key: 'dates', role: 'end', allowPresent: true },
+        },
+      ],
+    } as const;
+    const invalidCases: readonly [
+      string,
+      (fields: Record<string, unknown>[]) => void,
+    ][] = [
+      [
+        'invalid visibility',
+        (fields) => {
+          fields[0].visibility = 'hidden';
+        },
+      ],
+      [
+        'invalid width',
+        (fields) => {
+          fields[0].width = 'wide';
+        },
+      ],
+      [
+        'must have half width',
+        (fields) => {
+          fields[0].width = 'full';
+        },
+      ],
+      [
+        'must share one visibility tier',
+        (fields) => {
+          fields[1].visibility = 'additional';
+        },
+      ],
+      [
+        'invalid date range role',
+        (fields) => {
+          (fields[0].dateRange as Record<string, unknown>).role = 'middle';
+        },
+      ],
+      [
+        'invalid Present capability',
+        (fields) => {
+          (fields[1].dateRange as Record<string, unknown>).allowPresent = 'yes';
+        },
+      ],
+      [
+        'allows Present but is not an end date',
+        (fields) => {
+          (fields[0].dateRange as Record<string, unknown>).allowPresent = true;
+        },
+      ],
+    ];
+    for (const [problem, change] of invalidCases) {
+      const fields = structuredClone(base.fields) as unknown as Record<
+        string,
+        unknown
+      >[];
+      change(fields);
+      expect(() =>
+        createSectionDefinitionRegistry([
+          { ...base, fields } as unknown as SectionDefinitionInput,
+        ])
+      ).toThrow(problem);
+    }
+    expect(() =>
+      createSectionDefinitionRegistry([
+        {
+          ...base,
+          editorLayout: {
+            mobileColumns: 2,
+            desktopColumns: 2,
+            desktopBreakpoint: 'md',
+          },
+        } as unknown as SectionDefinitionInput,
+      ])
+    ).toThrow('invalid editor layout');
+  });
+
   it('analyzes fields by explicit definition order instead of input position', () => {
     const fields = [
       { id: 4, name: 'Description', type: 'rich-text' },
