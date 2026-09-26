@@ -1,29 +1,22 @@
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
 import { SectionField } from '@/components/documentBuilder/SectionField';
-import type { SemanticField } from '@/lib/builderDocument/builderDocument';
+import type { GenericRenderUnit } from '@/lib/builderDocument/createGenericRenderPlan';
 
 export const useFieldMapper = () => {
-  const renderFields = (fields: readonly SemanticField[]) => {
-    return fields.map((field, index) => {
-      const isDateField = field.definition.control === 'month';
-      const nextFieldIsDate = fields[index + 1]?.definition.control === 'month';
-
-      if (isDateField && nextFieldIsDate) {
+  const renderFields = (units: readonly GenericRenderUnit[]) => {
+    return units.map((unit) => {
+      if (unit.kind === 'dateRange') {
         return (
-          <div key={field.id} className='w-full'>
-            <div className='lg:flex lg:items-center grid gap-4'>
-              <DateFieldInput fieldId={field.id} />
-              <DateFieldInput fieldId={fields[index + 1].id} />
-            </div>
+          <div
+            key={unit.start.id}
+            className='col-span-full grid grid-cols-1 gap-4 lg:grid-cols-2'
+          >
+            <DateFieldInput fieldId={unit.start.id} />
+            <DateFieldInput fieldId={unit.end.id} />
           </div>
         );
       }
-
-      if (isDateField) {
-        return null;
-      }
-
-      return <SectionField fieldId={field.id} key={field.id} />;
+      return <SectionField fieldId={unit.field.id} key={unit.field.id} />;
     });
   };
 

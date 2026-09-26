@@ -19,13 +19,17 @@ describe('canMarkDateAsPresent', () => {
     expect(canMarkDateAsPresent(entry.endDate)).toBe(true);
   });
 
-  it('keeps the generic date control behavior for non-Work sections', () => {
+  it('uses declared Present capability in generic sections', () => {
     expect(
       canMarkDateAsPresent({
-        sectionKey: 'education',
         definition: {
           dateRange: { allowPresent: false },
         },
+      })
+    ).toBe(false);
+    expect(
+      canMarkDateAsPresent({
+        definition: { dateRange: { allowPresent: true } },
       })
     ).toBe(true);
   });
