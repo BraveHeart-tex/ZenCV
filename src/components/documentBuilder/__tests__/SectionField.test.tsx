@@ -100,5 +100,10 @@ describe('SectionField', () => {
     expect(markup[6]).toContain('max-h-3.5');
     expect(markup[7]).toContain('max-h-3.5');
     expect(markup[7]).toContain('type="url"');
+
+    vi.mocked(builderSession.getField).mockReturnValue(fields[5]);
+    expect(
+      renderToStaticMarkup(<SectionField fieldId={fields[5].id} width='half' />)
+    ).not.toContain('col-span-full');
   });
 });

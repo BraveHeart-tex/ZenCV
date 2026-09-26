@@ -16,7 +16,13 @@ export const useFieldMapper = () => {
           </div>
         );
       }
-      return <SectionField fieldId={unit.field.id} key={unit.field.id} />;
+      return (
+        <SectionField
+          fieldId={unit.field.id}
+          width={unit.width}
+          key={unit.field.id}
+        />
+      );
     });
   };
 
