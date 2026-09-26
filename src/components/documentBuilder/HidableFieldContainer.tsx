@@ -24,23 +24,18 @@ export const HidableFieldContainer = observer(
       ARE_EXTRA_FIELDS_HIDDEN_KEY,
       true
     );
+    const gridColumns = responsiveLayout ? 'md:grid-cols-2' : 'lg:grid-cols-2';
 
     return (
       <div
-        className={cn(
-          'col-span-full grid grid-cols-1 gap-6 pt-2',
-          responsiveLayout ? 'md:grid-cols-2' : 'lg:grid-cols-2'
-        )}
+        className={cn('col-span-full grid grid-cols-1 gap-6 pt-2', gridColumns)}
       >
         {renderFields(plan.primary)}
         <div className='col-span-full'>
           <AnimatePresence>
             {areExtraFieldsHidden ? null : (
               <motion.div
-                className={cn(
-                  'grid grid-cols-1 gap-6',
-                  responsiveLayout ? 'md:grid-cols-2' : 'lg:grid-cols-2'
-                )}
+                className={cn('grid grid-cols-1 gap-6', gridColumns)}
                 initial={{ height: 0 }}
                 animate={{
                   height: 'auto',

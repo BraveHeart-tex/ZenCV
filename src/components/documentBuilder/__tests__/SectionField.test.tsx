@@ -77,6 +77,10 @@ describe('SectionField', () => {
         ...sectionDefinitions.personalDetails.fields.firstName,
         labelRow: 'compact',
       } as FieldDefinition<'personalDetails'>),
+      new SemanticField(record(8), 'websitesSocialLinks', {
+        ...sectionDefinitions.websitesSocialLinks.fields.link,
+        labelRow: 'compact',
+      } as FieldDefinition<'websitesSocialLinks'>),
     ];
     const markup = fields.map((field) => {
       vi.mocked(builderSession.getField).mockReturnValue(field);
@@ -94,5 +98,7 @@ describe('SectionField', () => {
     expect(markup[5]).toContain('data-control="richText"');
     expect(markup[5]).toContain('col-span-full');
     expect(markup[6]).toContain('max-h-3.5');
+    expect(markup[7]).toContain('max-h-3.5');
+    expect(markup[7]).toContain('type="url"');
   });
 });
