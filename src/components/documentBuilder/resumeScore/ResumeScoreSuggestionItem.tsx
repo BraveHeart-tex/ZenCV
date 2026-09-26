@@ -52,8 +52,7 @@ export const ResumeScoreSuggestionItem = observer(
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
         const document = builderSession.document;
         const section = document?.sections.find(
-          (candidate) =>
-            candidate.definition.persistedType === suggestion.sectionType
+          (candidate) => candidate.persistedType === suggestion.sectionType
         );
 
         if (!section) {

@@ -203,8 +203,8 @@ export const getTriggerContent = (
     };
   }
 
-  const sectionType = builderSession.getSection(item.sectionId)?.definition
-    .persistedType as CollapsibleSectionType;
+  const sectionType = builderSession.getSection(item.sectionId)
+    ?.persistedType as CollapsibleSectionType;
   if (!sectionType) {
     return {
       description: '',
@@ -532,7 +532,7 @@ export const getSectionTypeByItemId = (itemId: DEX_Item['id']) => {
 
   const section = builderSession.getSection(item?.sectionId);
 
-  return section?.definition.persistedType || null;
+  return section?.persistedType || null;
 };
 
 export const prepareSectionsInsertData = (

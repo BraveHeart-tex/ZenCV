@@ -91,7 +91,7 @@ describe('Builder Document item commands', () => {
     const pending = document.addItem(section.id);
     await Promise.resolve();
     expect(section.items).toEqual([oldItem]);
-    const definitions = Object.values(section.definition.fields);
+    const definitions = Object.values(sectionDefinitions.workExperience.fields);
     finish({
       item: {
         id: 99,
@@ -326,7 +326,7 @@ describe('Work Experience semantic model and lifecycle', () => {
     const document = commandDocument(2);
     const section = document.workExperience;
     const [first, second] = section.items;
-    const definitions = Object.values(section.definition.fields);
+    const definitions = Object.values(sectionDefinitions.workExperience.fields);
     vi.mocked(addItemFromTemplate).mockResolvedValueOnce({
       item: {
         id: 99,

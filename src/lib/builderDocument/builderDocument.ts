@@ -40,9 +40,11 @@ import {
   type DefinitionDiagnostic,
   type EditorLayoutDefinition,
   type FieldDefinition,
+  type FieldDefinitionInput,
   type FieldKey,
   resolveSectionDefinition,
   type SectionDefinition,
+  type SectionDefinitionInput,
   type SectionKey,
   sectionDefinitions,
   validateSectionMetadata,
@@ -88,6 +90,19 @@ type PublicFieldDefinition<S extends SectionKey, K extends string> = Omit<
     characterCounter: boolean;
   }>;
 };
+type PublicSectionDefinition<S extends SectionKey> = Readonly<
+  Omit<SectionDefinitionInput, 'persistedType' | 'fields'> & {
+    key: S;
+    readonly fields: Readonly<
+      Record<
+        string,
+        Readonly<
+          Omit<FieldDefinitionInput, 'persistedName' | 'expectedPersistedType'>
+        >
+      >
+    >;
+  }
+>;
 type FieldsFor<S extends SectionKey> = {
   readonly [K in FieldKey<S>]: SemanticField<S, Extract<K, string>>;
 };
@@ -382,7 +397,7 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   readonly id: SectionId;
   readonly documentId: DocumentId;
   readonly sectionKey: S;
-  readonly definition: SectionDefinition<S>;
+  readonly definition: PublicSectionDefinition<S>;
   readonly editorDefinition: Readonly<{
     editorLayout?: EditorLayoutDefinition;
   }>;
@@ -395,6 +410,8 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   }[];
   displayOrder: number;
   #document: BuilderDocumentModel;
+  #persistedType: SectionDefinition<S>['persistedType'];
+  #persistedFields: SectionDefinition<S>['fields'];
 
   constructor(
     record: DEX_Section,
@@ -410,10 +427,29 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     this.id = record.id as SectionId;
     this.documentId = record.documentId as DocumentId;
     this.sectionKey = definition.key as S;
-    this.definition = definition;
+    const {
+      persistedType,
+      fields: persistedFields,
+      ...presentationDefinition
+    } = definition;
+    this.#persistedType = persistedType;
+    this.#persistedFields = persistedFields;
+    const fields = Object.fromEntries(
+      Object.entries(persistedFields).map(([key, field]) => {
+        const {
+          persistedName: _persistedName,
+          expectedPersistedType: _expectedPersistedType,
+          ...presentationField
+        } = field;
+        return [key, Object.freeze(presentationField)];
+      })
+    ) as PublicSectionDefinition<S>['fields'];
+    this.definition = Object.freeze({
+      ...presentationDefinition,
+      fields: Object.freeze(fields),
+    }) as unknown as PublicSectionDefinition<S>;
     this.editorDefinition = Object.freeze({
-      editorLayout:
-        'editorLayout' in definition ? definition.editorLayout : undefined,
+      editorLayout: this.definition.editorLayout,
     });
     this.title = record.title;
     this.defaultTitle = record.defaultTitle;
@@ -432,6 +468,35 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     return Object.freeze([
       ...(sectionItemIds.get(this) as IObservableArray<ItemId>),
     ]);
+  }
+
+  get persistedType(): SectionDefinition<S>['persistedType'] {
+    return this.#persistedType;
+  }
+
+  fieldKeyForPersistedName(name: string): string | undefined {
+    return Object.values(this.#persistedFields).find(
+      (field) => field.persistedName === name
+    )?.key;
+  }
+
+  toPersistedFieldSnapshot(field: SemanticField): DEX_Field {
+    const definition = Object.values(this.#persistedFields).find(
+      (candidate) => candidate.key === field.fieldKey
+    );
+    if (!definition) {
+      throw new Error('Field definition missing during projection');
+    }
+    return {
+      id: field.id,
+      itemId: field.itemId,
+      name: definition.persistedName,
+      type: definition.expectedPersistedType,
+      value: field.value,
+      ...(definition.expectedPersistedType === 'select'
+        ? { selectType: 'basic' as const, options: definition.options ?? null }
+        : {}),
+    };
   }
 
   get items(): readonly BuilderItemModel<S>[] {
@@ -961,7 +1026,12 @@ export class BuilderDocumentModel {
       const proposed = section.metadata.map((item) =>
         item.key === key ? { ...item, value } : { ...item }
       );
-      if (validateSectionMetadata(section.definition, proposed).length > 0) {
+      if (
+        validateSectionMetadata(
+          sectionDefinitions[section.sectionKey],
+          proposed
+        ).length > 0
+      ) {
         return { success: false, error: 'Invalid section metadata' };
       }
       const previous = entry.value;
@@ -1046,7 +1116,7 @@ export class BuilderDocumentModel {
         return undefined;
       }
       const template = getItemInsertTemplate(
-        section.definition.persistedType as TemplatedSectionType
+        section.persistedType as TemplatedSectionType
       );
       if (!template) {
         return undefined;
@@ -1067,7 +1137,7 @@ export class BuilderDocumentModel {
         type: field.type,
       }));
       const analysis = analyzeItemFields(
-        { type: section.definition.persistedType } as DEX_Section,
+        { type: section.persistedType } as DEX_Section,
         fieldInputs
       );
       if (analysis.diagnostics.length > 0) {

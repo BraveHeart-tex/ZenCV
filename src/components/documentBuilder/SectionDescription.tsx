@@ -5,8 +5,7 @@ import { SECTION_DESCRIPTIONS_BY_TYPE } from '@/lib/stores/documentBuilder/docum
 
 export const SectionDescription = observer(
   ({ sectionId }: { sectionId: SectionId }) => {
-    const sectionType =
-      builderSession.getSection(sectionId)?.definition.persistedType;
+    const sectionType = builderSession.getSection(sectionId)?.persistedType;
     const description =
       SECTION_DESCRIPTIONS_BY_TYPE[
         sectionType as keyof typeof SECTION_DESCRIPTIONS_BY_TYPE

@@ -49,7 +49,7 @@ export const AddSectionWidget = observer(() => {
           const isAlreadyAdded =
             option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
             builderSession.document?.sections.some(
-              (section) => section.definition.persistedType === option.type
+              (section) => section.persistedType === option.type
             );
 
           return (

@@ -53,7 +53,7 @@ export const createGenericRenderPlan = (
     }
     const rangeKey = field.definition.dateRange?.key;
     const members = rangeKey === undefined ? undefined : ranges.get(rangeKey);
-    let unit: GenericRenderUnit;
+    let unit: GenericRenderUnit | undefined;
 
     if (rangeKey !== undefined && members !== undefined) {
       const start = members.find(
@@ -82,15 +82,10 @@ export const createGenericRenderPlan = (
           diagnostics.push(`Incomplete resolved date range: ${rangeKey}`);
           invalidRanges.add(rangeKey);
         }
-        unit = {
-          kind: 'field',
-          field,
-          visibility: field.definition.visibility,
-          width: field.definition.width,
-        };
-        visited.add(field);
       }
-    } else {
+    }
+
+    if (unit === undefined) {
       unit = {
         kind: 'field',
         field,

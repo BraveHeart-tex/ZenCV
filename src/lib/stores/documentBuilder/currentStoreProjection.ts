@@ -2,7 +2,6 @@ import type {
   BuilderDocumentModel,
   BuilderItemModel,
   BuilderSectionModel,
-  SemanticField,
 } from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field, DEX_Item } from '@/lib/client-db/clientDbSchema';
 import type {
@@ -19,7 +18,7 @@ class CurrentSectionView {
     return {
       id: this.section.id,
       documentId: this.section.documentId,
-      type: this.section.definition.persistedType,
+      type: this.section.persistedType,
       title: this.section.title,
       defaultTitle: this.section.defaultTitle,
       displayOrder: this.section.displayOrder,
@@ -42,28 +41,6 @@ class CurrentItemView {
     };
   }
 }
-
-const toFieldSnapshot = (
-  field: SemanticField,
-  section: BuilderSectionModel
-): DEX_Field => {
-  const definition = Object.values(section.definition.fields).find(
-    (candidate) => candidate.key === field.fieldKey
-  );
-  if (!definition) {
-    throw new Error('Field definition missing during projection');
-  }
-  return {
-    id: field.id,
-    itemId: field.itemId,
-    name: definition.persistedName,
-    type: definition.expectedPersistedType,
-    value: field.value,
-    ...(definition.expectedPersistedType === 'select'
-      ? { selectType: 'basic' as const, options: definition.options ?? null }
-      : {}),
-  };
-};
 
 /**
  * Internal migration boundary for legacy record-shaped consumers.
@@ -118,7 +95,9 @@ export class CurrentStoreProjection {
     }
     const section = this.document?.sectionsById.get(item.sectionId);
     return section
-      ? item.editableFields.map((field) => toFieldSnapshot(field, section))
+      ? item.editableFields.map((field) =>
+          section.toPersistedFieldSnapshot(field)
+        )
       : [];
   }
 
