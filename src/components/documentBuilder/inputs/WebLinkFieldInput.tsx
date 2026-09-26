@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
+import { cn } from '@/lib/utils/stringUtils';
 import { normalizeWebUrl } from '@/lib/utils/urlUtils';
 
 export const WebLinkFieldInput = observer(
@@ -46,7 +47,14 @@ export const WebLinkFieldInput = observer(
 
     return (
       <>
-        <Label htmlFor={htmlInputId}>{field.label}</Label>
+        <div
+          className={cn(
+            'flex items-center justify-between gap-8',
+            field.definition.labelRow === 'compact' && 'max-h-3.5'
+          )}
+        >
+          <Label htmlFor={htmlInputId}>{field.label}</Label>
+        </div>
         <Input
           id={htmlInputId}
           ref={setFieldRef}
