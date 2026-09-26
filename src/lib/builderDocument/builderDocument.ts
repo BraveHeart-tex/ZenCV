@@ -38,6 +38,7 @@ import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import {
   analyzeItemFields,
   type DefinitionDiagnostic,
+  type EditorLayoutDefinition,
   type FieldDefinition,
   type FieldKey,
   resolveSectionDefinition,
@@ -74,6 +75,7 @@ type PublicFieldDefinition<S extends SectionKey, K extends string> = Omit<
   readonly label: string;
   readonly control: FieldDefinition<S>['control'];
   readonly order: number;
+  readonly labelRow?: 'compact';
   readonly placeholder?: string;
   readonly options?: readonly string[];
   readonly dateRange?: Readonly<{
@@ -381,6 +383,9 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   readonly documentId: DocumentId;
   readonly sectionKey: S;
   readonly definition: SectionDefinition<S>;
+  readonly editorDefinition: Readonly<{
+    editorLayout?: EditorLayoutDefinition;
+  }>;
   title: string;
   readonly defaultTitle: string;
   readonly metadata: {
@@ -406,6 +411,10 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
     this.documentId = record.documentId as DocumentId;
     this.sectionKey = definition.key as S;
     this.definition = definition;
+    this.editorDefinition = Object.freeze({
+      editorLayout:
+        'editorLayout' in definition ? definition.editorLayout : undefined,
+    });
     this.title = record.title;
     this.defaultTitle = record.defaultTitle;
     this.metadata = metadata.map((entry) => ({ ...entry }));

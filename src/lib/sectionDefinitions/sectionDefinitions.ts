@@ -32,6 +32,12 @@ export interface RichTextDefinitionInput {
   characterCounter: boolean;
 }
 
+export interface EditorLayoutDefinition {
+  readonly mobileColumns: 1;
+  readonly desktopColumns: 2;
+  readonly desktopBreakpoint: 'md';
+}
+
 export interface FieldDefinitionInput {
   key: string;
   persistedName: string;
@@ -41,6 +47,7 @@ export interface FieldDefinitionInput {
   order: number;
   visibility: 'primary' | 'additional';
   width: 'half' | 'full';
+  labelRow?: 'compact';
   placeholder?: string;
   options?: readonly string[];
   dateRange?: DateRangeDefinitionInput;
@@ -54,6 +61,7 @@ export interface SectionDefinitionInput {
   sectionCardinality: 'required-one' | 'optional-one' | 'many';
   itemCardinality: { min: number; max?: number };
   expectedContainerType: 'static' | 'collapsible';
+  editorLayout?: EditorLayoutDefinition;
   metadata?: readonly MetadataDefinitionInput[];
   initialFocusFieldKey: string;
   fields: readonly FieldDefinitionInput[];
@@ -207,7 +215,16 @@ const validateRegistry = (entries: readonly SectionDefinitionInput[]) => {
     const fieldKeys = new Set<string>();
     const persistedNames = new Set<string>();
     const orders = new Set<number>();
-    const ranges = new Map<string, DateRangeDefinitionInput[]>();
+    const ranges = new Map<string, FieldDefinitionInput[]>();
+
+    if (
+      section.editorLayout !== undefined &&
+      (section.editorLayout.mobileColumns !== 1 ||
+        section.editorLayout.desktopColumns !== 2 ||
+        section.editorLayout.desktopBreakpoint !== 'md')
+    ) {
+      problems.push(`section ${sectionContext} has invalid editor layout`);
+    }
 
     for (const field of section.fields) {
       const fieldContext = `${sectionContext}.${field.key || '<empty field key>'}`;
@@ -245,6 +262,16 @@ const validateRegistry = (entries: readonly SectionDefinitionInput[]) => {
         );
       }
       orders.add(field.order);
+
+      if (field.visibility !== 'primary' && field.visibility !== 'additional') {
+        problems.push(`field ${fieldContext} has invalid visibility`);
+      }
+      if (field.width !== 'half' && field.width !== 'full') {
+        problems.push(`field ${fieldContext} has invalid width`);
+      }
+      if (field.labelRow !== undefined && field.labelRow !== 'compact') {
+        problems.push(`field ${fieldContext} has invalid label row`);
+      }
 
       if (
         controlPersistedTypes[field.control] !== field.expectedPersistedType
@@ -284,13 +311,27 @@ const validateRegistry = (entries: readonly SectionDefinitionInput[]) => {
         if (!field.dateRange.key) {
           problems.push(`date range for field ${fieldContext} must have a key`);
         }
+        if (
+          field.dateRange.role !== 'start' &&
+          field.dateRange.role !== 'end'
+        ) {
+          problems.push(`field ${fieldContext} has invalid date range role`);
+        }
+        if (typeof field.dateRange.allowPresent !== 'boolean') {
+          problems.push(`field ${fieldContext} has invalid Present capability`);
+        }
+        if (field.width !== 'half') {
+          problems.push(
+            `date range field ${fieldContext} must have half width`
+          );
+        }
         if (field.dateRange.allowPresent && field.dateRange.role !== 'end') {
           problems.push(
             `field ${fieldContext} allows Present but is not an end date`
           );
         }
         const rangeFields = ranges.get(field.dateRange.key) ?? [];
-        rangeFields.push(field.dateRange);
+        rangeFields.push(field);
         ranges.set(field.dateRange.key, rangeFields);
       } else if (field.control === 'month') {
         problems.push(`month field ${fieldContext} must define a date range`);
@@ -304,11 +345,20 @@ const validateRegistry = (entries: readonly SectionDefinitionInput[]) => {
     }
 
     for (const [rangeKey, fields] of ranges) {
-      const starts = fields.filter((field) => field.role === 'start').length;
-      const ends = fields.filter((field) => field.role === 'end').length;
+      const starts = fields.filter(
+        (field) => field.dateRange?.role === 'start'
+      ).length;
+      const ends = fields.filter(
+        (field) => field.dateRange?.role === 'end'
+      ).length;
       if (starts !== 1 || ends !== 1) {
         problems.push(
           `date range ${sectionContext}.${rangeKey} must contain exactly one start and one end`
+        );
+      }
+      if (new Set(fields.map((field) => field.visibility)).size !== 1) {
+        problems.push(
+          `date range ${sectionContext}.${rangeKey} must share one visibility tier`
         );
       }
     }
@@ -332,6 +382,9 @@ export const createSectionDefinitionRegistry = <
       {
         ...section,
         itemCardinality: { ...section.itemCardinality },
+        editorLayout: section.editorLayout
+          ? { ...section.editorLayout }
+          : undefined,
         metadata: section.metadata?.map((entry) => ({
           key: entry.key,
           allowedValues: [...entry.allowedValues],
@@ -363,10 +416,16 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
     itemCardinality: { min: 1, max: 1 },
     expectedContainerType: 'static',
     label: 'Personal Details',
+    editorLayout: {
+      mobileColumns: 1,
+      desktopColumns: 2,
+      desktopBreakpoint: 'md',
+    },
     initialFocusFieldKey: 'wantedJobTitle',
     fields: [
       {
         key: 'wantedJobTitle',
+        labelRow: 'compact',
         persistedName: 'Wanted Job Title',
         label: 'Wanted Job Title',
         expectedPersistedType: 'string',
