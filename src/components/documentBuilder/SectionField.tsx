@@ -14,9 +14,11 @@ import { cn } from '@/lib/utils/stringUtils';
 
 interface SectionFieldProps {
   fieldId: FieldId;
+  width?: 'half' | 'full';
 }
 
-export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
+export const SectionField = observer((props: SectionFieldProps) => {
+  const { fieldId, width } = props;
   const field = builderSession.getField(fieldId);
 
   const htmlInputId = `field-${fieldId}`;
@@ -134,7 +136,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     <div
       className={cn(
         'flex flex-col gap-2',
-        field.definition.width === 'full' && 'col-span-full'
+        (width ?? field.definition.width) === 'full' && 'col-span-full'
       )}
     >
       {renderInput()}
