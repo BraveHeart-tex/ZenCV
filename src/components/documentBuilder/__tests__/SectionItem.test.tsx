@@ -12,6 +12,10 @@ vi.mock('@/hooks/useFieldMapper', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useLocalStorage', () => ({
+  useLocalStorage: () => [true, vi.fn()],
+}));
+
 vi.mock('@/components/documentBuilder/WorkExperienceForm', () => ({
   WorkExperienceForm: () => <output data-work-experience-form />,
 }));
@@ -63,5 +67,21 @@ describe('SectionItem', () => {
     expect(
       renderToStaticMarkup(<SectionItem itemId={summaryItem.id} />)
     ).toContain('data-generic-field-count');
+  });
+
+  it('uses declared visibility and responsive layout for Personal Details', () => {
+    const result = hydrateBuilderDocument(builderDocumentFixture());
+    if (!result.success) {
+      throw new Error('Expected a valid document fixture');
+    }
+    const section = result.document.personalDetails;
+    const item = section.items[0];
+    vi.mocked(builderSession.getItem).mockReturnValue(item);
+    vi.mocked(builderSession.getSection).mockReturnValue(section);
+
+    const markup = renderToStaticMarkup(<SectionItem itemId={item.id} />);
+    expect(markup).toContain('grid-cols-1 md:grid-cols-2');
+    expect(markup).toContain('data-generic-field-count="6"');
+    expect(markup).toContain('Show additional details');
   });
 });

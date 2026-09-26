@@ -4,8 +4,8 @@ import {
   type ItemId,
   WorkExperienceItemModel,
 } from '@/lib/builderDocument/builderDocument';
+import { createGenericRenderPlan } from '@/lib/builderDocument/createGenericRenderPlan';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
-import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
 import { CollapsibleSectionItemContainer } from './collapsibleItemContainer/CollapsibleItemContainer';
 import { HidableFieldContainer } from './HidableFieldContainer';
@@ -39,14 +39,25 @@ const ContainerElement = ({
     );
   }
 
-  if (fields.length > MAX_VISIBLE_FIELDS) {
-    return <HidableFieldContainer fields={fields} />;
+  const plan = createGenericRenderPlan(fields);
+  if (import.meta.env.DEV) {
+    for (const diagnostic of plan.diagnostics) {
+      console.warn(diagnostic);
+    }
   }
+  const responsiveLayout =
+    section?.editorDefinition.editorLayout?.desktopBreakpoint === 'md';
+  const content =
+    plan.additional.length > 0 ? (
+      <HidableFieldContainer plan={plan} responsiveLayout={responsiveLayout} />
+    ) : (
+      renderFields(plan.primary)
+    );
 
   if (item.containerType === 'collapsible') {
     return (
       <CollapsibleSectionItemContainer itemId={item.id}>
-        {renderFields(fields)}
+        {content}
       </CollapsibleSectionItemContainer>
     );
   }
@@ -55,12 +66,10 @@ const ContainerElement = ({
     <div
       className={cn(
         'p-4 pt-0 px-0 grid grid-cols-2 gap-4',
-        section?.sectionKey === 'personalDetails' &&
-          'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6',
-        fields.length === 2 && 'grid grid-cols-2 gap-4'
+        responsiveLayout && 'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6'
       )}
     >
-      {renderFields(fields)}
+      {content}
     </div>
   );
 };

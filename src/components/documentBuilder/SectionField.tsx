@@ -56,7 +56,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
           <div
             className={cn(
               'flex items-center justify-between gap-8',
-              field.fieldKey === 'wantedJobTitle' && 'max-h-3.5'
+              field.definition.labelRow === 'compact' && 'max-h-3.5'
             )}
           >
             <Label htmlFor={htmlInputId}>{field.label}</Label>
@@ -134,9 +134,7 @@ export const SectionField = observer(({ fieldId }: SectionFieldProps) => {
     <div
       className={cn(
         'flex flex-col gap-2',
-        (field.definition.control === 'richText' ||
-          field.definition.control === 'textarea') &&
-          'col-span-2'
+        field.definition.width === 'full' && 'col-span-full'
       )}
     >
       {renderInput()}

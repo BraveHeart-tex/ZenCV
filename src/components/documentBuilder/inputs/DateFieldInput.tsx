@@ -67,13 +67,16 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
   }
 
   const allowsPresent = canMarkDateAsPresent(field);
-  const isPresent = field?.value === PRESENT;
-  const isError =
-    field.value && field.value !== PRESENT && !isValidDateFormat(field.value);
+  const isPresent = allowsPresent && field.value === PRESENT;
+  const isError = field.value && !isPresent && !isValidDateFormat(field.value);
 
   const handleBlur = action(async () => {
     const value = field.value;
-    field.setDraft(isValidDateFormat(value) ? value : '');
+    field.setDraft(
+      (allowsPresent && value === PRESENT) || isValidDateFormat(value)
+        ? value
+        : ''
+    );
     await field.commit();
   });
 

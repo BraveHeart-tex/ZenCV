@@ -4,8 +4,7 @@ import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import type { SemanticField } from '@/lib/builderDocument/builderDocument';
-import { MAX_VISIBLE_FIELDS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { GenericRenderPlan } from '@/lib/builderDocument/createGenericRenderPlan';
 
 import { cn } from '@/lib/utils/stringUtils';
 import { Button } from '../ui/button';
@@ -13,24 +12,35 @@ import { Button } from '../ui/button';
 const ARE_EXTRA_FIELDS_HIDDEN_KEY = 'areExtraFieldsHidden';
 
 export const HidableFieldContainer = observer(
-  ({ fields }: { fields: readonly SemanticField[] }) => {
+  ({
+    plan,
+    responsiveLayout,
+  }: {
+    plan: GenericRenderPlan;
+    responsiveLayout: boolean;
+  }) => {
     const { renderFields } = useFieldMapper();
     const [areExtraFieldsHidden, setAreExtraFieldsHidden] = useLocalStorage(
       ARE_EXTRA_FIELDS_HIDDEN_KEY,
       true
     );
 
-    const baseFields = fields.slice(0, MAX_VISIBLE_FIELDS);
-    const extraFields = fields.slice(MAX_VISIBLE_FIELDS);
-
     return (
-      <div className='lg:grid-cols-2 grid grid-cols-1 gap-6 pt-2'>
-        {renderFields(baseFields)}
-        <div className='lg:col-span-2'>
+      <div
+        className={cn(
+          'col-span-full grid grid-cols-1 gap-6 pt-2',
+          responsiveLayout ? 'md:grid-cols-2' : 'lg:grid-cols-2'
+        )}
+      >
+        {renderFields(plan.primary)}
+        <div className='col-span-full'>
           <AnimatePresence>
             {areExtraFieldsHidden ? null : (
               <motion.div
-                className='lg:grid-cols-2 grid grid-cols-1 gap-6'
+                className={cn(
+                  'grid grid-cols-1 gap-6',
+                  responsiveLayout ? 'md:grid-cols-2' : 'lg:grid-cols-2'
+                )}
                 initial={{ height: 0 }}
                 animate={{
                   height: 'auto',
@@ -39,7 +49,7 @@ export const HidableFieldContainer = observer(
                 }}
                 exit={{ height: 0, opacity: 0 }}
               >
-                {renderFields(extraFields)}
+                {renderFields(plan.additional)}
               </motion.div>
             )}
           </AnimatePresence>
