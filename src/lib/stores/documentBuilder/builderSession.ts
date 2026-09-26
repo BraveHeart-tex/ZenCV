@@ -73,15 +73,10 @@ export class BuilderSession {
   getItemFieldValue(itemId: ItemId, fieldName: FieldName): string {
     const item = this.getItem(itemId);
     const section = item ? this.getSection(item.sectionId) : undefined;
-    const definition = section
-      ? Object.values(section.definition.fields).find(
-          (candidate) => candidate.persistedName === fieldName
-        )
-      : undefined;
+    const fieldKey = section?.fieldKeyForPersistedName(fieldName);
     return (
-      item?.editableFields.find(
-        (candidate) => candidate.fieldKey === definition?.key
-      )?.value ?? ''
+      item?.editableFields.find((candidate) => candidate.fieldKey === fieldKey)
+        ?.value ?? ''
     );
   }
 

@@ -49,6 +49,11 @@ describe('generic render plan', () => {
       desktopBreakpoint: 'md',
     });
     expect(section.editorDefinition).not.toHaveProperty('persistedType');
+    expect(section.definition).not.toHaveProperty('persistedType');
+    for (const definition of Object.values(section.definition.fields)) {
+      expect(definition).not.toHaveProperty('persistedName');
+      expect(definition).not.toHaveProperty('expectedPersistedType');
+    }
     expect(
       createGenericRenderPlan(hydratedFields().summary.items[0].editableFields)
         .primary[0].width

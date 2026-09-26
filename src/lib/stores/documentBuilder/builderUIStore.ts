@@ -46,18 +46,16 @@ export class BuilderUIStore {
     sectionType: SectionType
   ) {
     const section = this.root.document?.sections.find(
-      (candidate) => candidate.definition.persistedType === sectionType
+      (candidate) => candidate.persistedType === sectionType
     );
     if (!section) {
       return;
     }
     for (const item of section.items) {
-      const definition = Object.values(section.definition.fields).find(
-        (candidate) => candidate.persistedName === fieldName
-      );
-      const field = definition
+      const fieldKey = section.fieldKeyForPersistedName(fieldName);
+      const field = fieldKey
         ? item.editableFields.find(
-            (candidate) => candidate.fieldKey === definition.key
+            (candidate) => candidate.fieldKey === fieldKey
           )
         : undefined;
       if (field) {
@@ -76,7 +74,9 @@ export class BuilderUIStore {
 
     const section = this.root.getSection(item.sectionId);
     const firstField = section
-      ? item.field(section.definition.initialFocusFieldKey)
+      ? item.editableFields.find(
+          (field) => field.fieldKey === section.definition.initialFocusFieldKey
+        )
       : undefined;
     if (!firstField) {
       console.warn('No field found to focus');
