@@ -49,6 +49,10 @@ import type {
 } from './documentPersistence';
 
 export type DocumentId = number & { readonly __documentId: unique symbol };
+export type SemanticSectionKey = SectionKey;
+export const persistedTypeForSectionKey = (
+  key: SemanticSectionKey
+): SectionType => sectionDefinitions[key].persistedType;
 export type SectionId = number & { readonly __sectionId: unique symbol };
 export type ItemId = number & { readonly __itemId: unique symbol };
 export type FieldId = number & { readonly __fieldId: unique symbol };

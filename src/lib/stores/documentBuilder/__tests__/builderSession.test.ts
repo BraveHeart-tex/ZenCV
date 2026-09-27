@@ -7,6 +7,133 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects Personal Details, Summary, and ordered Links from semantic fields', async () => {
+    const records = builderDocumentFixture();
+    const links = sectionDefinitions.websitesSocialLinks;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: 13,
+            documentId: records.document.id,
+            type: links.persistedType,
+            title: 'Profiles',
+            defaultTitle: links.label,
+            displayOrder: 4,
+            metadata: '',
+          },
+        ],
+        items: [
+          ...records.items,
+          {
+            id: 31,
+            sectionId: 13,
+            containerType: 'collapsible',
+            displayOrder: 2,
+          },
+          {
+            id: 30,
+            sectionId: 13,
+            containerType: 'collapsible',
+            displayOrder: 1,
+          },
+        ],
+        fields: [
+          ...records.fields,
+          {
+            id: 301,
+            itemId: 31,
+            name: 'Label',
+            type: 'string',
+            value: 'Portfolio',
+          },
+          {
+            id: 302,
+            itemId: 31,
+            name: 'Link',
+            type: 'string',
+            value: 'example.com/work',
+          },
+          { id: 303, itemId: 30, name: 'Label', type: 'string', value: '' },
+          {
+            id: 304,
+            itemId: 30,
+            name: 'Link',
+            type: 'string',
+            value: 'https://www.example.org/about',
+          },
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const snapshot = session.resumeDocumentSnapshot;
+    expect(snapshot?.sections.map(({ id, title }) => ({ id, title }))).toEqual([
+      { id: 10, title: 'Personal Details' },
+      { id: 11, title: 'Summary' },
+      { id: 12, title: 'Work Experience' },
+      { id: 13, title: 'Profiles' },
+    ]);
+    expect(snapshot?.sections[3].items.map((item) => item.id)).toEqual([
+      30, 31,
+    ]);
+    expect(session.templateStore.pdfTemplateData.personalDetails.links).toEqual(
+      [
+        {
+          entryId: '30',
+          label: 'example.org/about',
+          link: 'https://www.example.org/about',
+        },
+        { entryId: '31', label: 'Portfolio', link: 'https://example.com/work' },
+      ]
+    );
+
+    const summary = session.document?.summary.items[0].field('summary');
+    summary?.setDraft('One. Two. Three.');
+    expect(
+      session.resumeDocumentSnapshot?.sections[1].items[0].values.summary
+    ).toBe('One. Two. Three.');
+    expect(session.templateStore.pdfTemplateData.summarySection.summary).toBe(
+      'One. Two. Three.'
+    );
+    expect(
+      session.templateStore.atsCompatibility.checks.find(
+        (check) => check.id === 'summary_length'
+      )?.pass
+    ).toBe(true);
+
+    const email = session.document?.personalDetails.items[0].field('email');
+    email?.setDraft('');
+    const emailElement = { focus: vi.fn() } as unknown as HTMLElement;
+    if (email) {
+      session.UIStore.setFieldRef(email.id.toString(), emailElement);
+    }
+    expect(
+      session.UIStore.getFieldRefBySemanticKey('personalDetails', 'email')
+    ).toBeDefined();
+    expect(session.templateStore.resumeStats.suggestions).toContainEqual(
+      expect.objectContaining({
+        sectionKey: 'personalDetails',
+        fieldKey: 'email',
+      })
+    );
+    expect(
+      session.templateStore.atsCompatibility.checks.find(
+        (check) => check.id === 'has_email'
+      )?.pass
+    ).toBe(false);
+    session.document?.websitesSocialLinks?.items[0]
+      .field('link')
+      ?.setDraft('javascript:invalid');
+    expect(
+      session.templateStore.pdfTemplateData.personalDetails.links
+    ).toHaveLength(1);
+    session.discard();
+    expect(session.resumeDocumentSnapshot).toBeNull();
+  });
+
   it('reloads durable state when model construction fails after creation commits', async () => {
     const records = builderDocumentFixture();
     const persistence = new InMemoryDocumentPersistence(records);

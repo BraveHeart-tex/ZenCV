@@ -1,9 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import {
-  getLinksSectionEntries,
-  sortByDisplayOrder,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import { snapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type {
   ATSCompatibilityReport,
   PdfTemplateData,
@@ -13,9 +11,9 @@ import type {
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
+import { getCompactUrlLabel, normalizeWebUrl } from '@/lib/utils/urlUtils';
 import type { BuilderSession } from './builderSession';
 import {
-  FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   INTERNAL_TEMPLATE_TYPES,
   MAX_VISIBLE_SUGGESTIONS,
@@ -92,40 +90,51 @@ export class BuilderTemplateStore {
   }
 
   get personalDetails() {
+    const values = snapshotSection(
+      this.root.resumeDocumentSnapshot,
+      'personalDetails'
+    )?.items[0]?.values;
     return {
-      firstName: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME
-      ),
-      lastName: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.LAST_NAME
-      ),
-      jobTitle: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE
-      ),
-      address: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.ADDRESS
-      ),
-      city: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.CITY
-      ),
-      phone: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.PHONE
-      ),
-      email: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.PERSONAL_DETAILS.EMAIL
-      ),
+      firstName: values?.firstName ?? '',
+      lastName: values?.lastName ?? '',
+      jobTitle: values?.wantedJobTitle ?? '',
+      address: values?.address ?? '',
+      city: values?.city ?? '',
+      phone: values?.phone ?? '',
+      email: values?.email ?? '',
     };
   }
 
   get summarySection() {
+    const section = snapshotSection(
+      this.root.resumeDocumentSnapshot,
+      'summary'
+    );
     return {
-      sectionName: this.root.currentStoreProjection.getSectionNameByType(
-        INTERNAL_SECTION_TYPES.SUMMARY
-      ),
-      summary: this.root.currentStoreProjection.getFieldValueByName(
-        FIELD_NAMES.SUMMARY.SUMMARY
-      ),
+      sectionName: section?.title ?? '',
+      summary: section?.items[0]?.values.summary ?? '',
     };
+  }
+
+  get links() {
+    const section = snapshotSection(
+      this.root.resumeDocumentSnapshot,
+      'websitesSocialLinks'
+    );
+    return (section?.items ?? []).flatMap((item) => {
+      const link = normalizeWebUrl(item.values.link ?? '');
+      if (!link) {
+        return [];
+      }
+      const label = (item.values.label ?? '').trim();
+      return [
+        {
+          entryId: item.id.toString(),
+          label: label || getCompactUrlLabel(link),
+          link,
+        },
+      ];
+    });
   }
 
   get mappedSections() {
@@ -144,9 +153,6 @@ export class BuilderTemplateStore {
 
   get pdfTemplateData() {
     const mappedSections = this.mappedSections;
-    const linksSections = mappedSections.filter(
-      (section) => section.type === INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
-    );
     const sections = mappedSections.filter(
       (section) => section.type !== INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
     );
@@ -154,7 +160,7 @@ export class BuilderTemplateStore {
     return {
       personalDetails: {
         ...this.personalDetails,
-        links: linksSections.flatMap(getLinksSectionEntries),
+        links: this.links,
       },
       summarySection: this.summarySection,
       sections,
@@ -180,26 +186,26 @@ export class BuilderTemplateStore {
         ].some((field) => Boolean(field.value))
       ) ?? false;
 
+    const snapshot = this.root.resumeDocumentSnapshot;
     const hasFilledFields = (
-      items: ReadonlyArray<{ readonly id: number }>,
-      fieldName?: string
+      items: ReadonlyArray<{
+        readonly values: Readonly<Record<string, string>>;
+      }>,
+      fieldKey?: string
     ) =>
-      items?.some((item) =>
-        this.root.currentStoreProjection
-          .getFieldsByItemId(item.id)
-          .some(
-            (field) => (!fieldName || field.name === fieldName) && field.value
-          )
+      items.some((item) =>
+        fieldKey
+          ? Boolean(item.values[fieldKey])
+          : Object.values(item.values).some(Boolean)
       );
 
     SECTION_SUGGESTION_CONFIG.forEach(
-      ({ type, scoreValue, label, fieldName }) => {
-        const items =
-          this.root.currentStoreProjection.getSectionItemsBySectionType(type);
+      ({ sectionKey, scoreValue, label, fieldKey }) => {
+        const items = snapshotSection(snapshot, sectionKey)?.items ?? [];
         const hasContent =
-          type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE
+          sectionKey === 'workExperience'
             ? hasFilledWorkExperience
-            : hasFilledFields(items, fieldName);
+            : hasFilledFields(items, fieldKey);
 
         if (hasContent) {
           score += scoreValue;
@@ -207,24 +213,21 @@ export class BuilderTemplateStore {
           suggestions.push({
             scoreValue,
             label,
-            type: fieldName ? SUGGESTION_TYPES.FIELD : SUGGESTION_TYPES.ITEM,
-            sectionType: type,
-            actionType: fieldName
+            type: fieldKey ? SUGGESTION_TYPES.FIELD : SUGGESTION_TYPES.ITEM,
+            sectionKey,
+            actionType: fieldKey
               ? SUGGESTION_ACTION_TYPES.FOCUS_FIELD
               : SUGGESTION_ACTION_TYPES.ADD_ITEM,
-            fieldName,
+            fieldKey,
           });
         }
       }
     );
 
-    const skillsItems =
-      this.root.currentStoreProjection.getSectionItemsBySectionType(
-        INTERNAL_SECTION_TYPES.SKILLS
-      );
+    const skillsItems = snapshotSection(snapshot, 'skills')?.items ?? [];
     if (skillsItems) {
       const addedSkills = skillsItems.filter((item) =>
-        hasFilledFields([item], FIELD_NAMES.SKILLS.SKILL)
+        hasFilledFields([item], 'skill')
       );
       score += addedSkills.length * RESUME_SCORE_CONFIG.SKILL;
       if (score < 100 && addedSkills.length < SUGGESTED_SKILLS_COUNT) {
@@ -232,19 +235,16 @@ export class BuilderTemplateStore {
           scoreValue: RESUME_SCORE_CONFIG.SKILL,
           label: 'Add skill',
           type: SUGGESTION_TYPES.ITEM,
-          sectionType: INTERNAL_SECTION_TYPES.SKILLS,
+          sectionKey: 'skills',
           actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
       }
     }
 
-    const languageItems =
-      this.root.currentStoreProjection.getSectionItemsBySectionType(
-        INTERNAL_SECTION_TYPES.LANGUAGES
-      );
+    const languageItems = snapshotSection(snapshot, 'languages')?.items ?? [];
     if (languageItems) {
       const addedLanguages = languageItems.filter((item) =>
-        hasFilledFields([item], FIELD_NAMES.LANGUAGES.LANGUAGE)
+        hasFilledFields([item], 'language')
       );
       score += addedLanguages.length * RESUME_SCORE_CONFIG.LANGUAGE;
       if (!addedLanguages.length) {
@@ -252,7 +252,7 @@ export class BuilderTemplateStore {
           scoreValue: RESUME_SCORE_CONFIG.LANGUAGE,
           label: 'Add language',
           type: SUGGESTION_TYPES.ITEM,
-          sectionType: INTERNAL_SECTION_TYPES.LANGUAGES,
+          sectionKey: 'languages',
           actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
         });
       }
@@ -274,7 +274,7 @@ export class BuilderTemplateStore {
   }
 
   get atsCompatibility() {
-    const { personalDetails, summarySection } = this.pdfTemplateData;
+    const { personalDetails, summarySection } = this;
     const workExperienceDescriptions =
       this.root.document?.workExperience.entries.map(
         (entry) => entry.description.value

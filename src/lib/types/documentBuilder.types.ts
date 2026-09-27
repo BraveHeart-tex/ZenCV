@@ -1,3 +1,4 @@
+import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
 import type {
   DEX_Field,
   DEX_Item,
@@ -104,10 +105,10 @@ export type MetadataValue =
 export interface ResumeSuggestion {
   label: string;
   type: SuggestionType;
-  sectionType: SectionType;
+  sectionKey: SemanticSectionKey;
   scoreValue: number;
   actionType: SuggestionActionType;
-  fieldName?: FieldName;
+  fieldKey?: string;
 }
 
 type SuggestionActionType = ValueOf<typeof SUGGESTION_ACTION_TYPES>;

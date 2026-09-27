@@ -211,39 +211,42 @@ export const SUGGESTION_TYPES = {
 
 export const SECTION_SUGGESTION_CONFIG = [
   {
-    type: INTERNAL_SECTION_TYPES.WORK_EXPERIENCE,
+    sectionKey: 'workExperience',
     scoreValue: RESUME_SCORE_CONFIG.WORK_EXPERIENCE,
     label: 'Add work experience',
+    fieldKey: undefined,
   },
   {
-    type: INTERNAL_SECTION_TYPES.EDUCATION,
+    sectionKey: 'education',
     scoreValue: RESUME_SCORE_CONFIG.EDUCATION,
     label: 'Add education',
+    fieldKey: undefined,
   },
   {
-    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
+    sectionKey: 'internships',
     scoreValue: RESUME_SCORE_CONFIG.INTERNSHIPS,
     label: 'Add internships',
+    fieldKey: undefined,
   },
   {
-    type: INTERNAL_SECTION_TYPES.SUMMARY,
+    sectionKey: 'summary',
     scoreValue: RESUME_SCORE_CONFIG.SUMMARY,
     label: 'Add summary',
-    fieldName: FIELD_NAMES.SUMMARY.SUMMARY,
+    fieldKey: 'summary',
   },
   {
-    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    sectionKey: 'personalDetails',
     scoreValue: RESUME_SCORE_CONFIG.EMAIL,
     label: 'Add email',
-    fieldName: FIELD_NAMES.PERSONAL_DETAILS.EMAIL,
+    fieldKey: 'email',
   },
   {
-    type: INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
+    sectionKey: 'personalDetails',
     scoreValue: RESUME_SCORE_CONFIG.JOB_TITLE,
     label: 'Add job title',
-    fieldName: FIELD_NAMES.PERSONAL_DETAILS.WANTED_JOB_TITLE,
+    fieldKey: 'wantedJobTitle',
   },
-];
+] as const;
 
 export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   {

@@ -9,6 +9,7 @@ import {
   INTERNAL_SECTION_TYPES,
   MAX_PERSONAL_DETAILS_LINKS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { getSectionContainerId } from '@/lib/utils/stringUtils';
 import { ItemsDndContext } from './ItemsDndContext';
 import { SectionItem } from './SectionItem';
 
@@ -51,7 +52,10 @@ export const PersonalDetailsLinks = observer(() => {
   };
 
   return (
-    <div className='mt-6 border-t pt-6'>
+    <div
+      id={linksSection ? getSectionContainerId(linksSection.id) : undefined}
+      className='mt-6 border-t pt-6'
+    >
       <div className='mb-3 space-y-1'>
         <h3 className='font-semibold text-lg'>Links</h3>
         <p className='text-muted-foreground text-sm'>

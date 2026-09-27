@@ -1,5 +1,6 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { persistedTypeForSectionKey } from '@/lib/builderDocument/builderDocument';
 import {
   getTextColorForBackground,
   scrollItemIntoView,
@@ -27,20 +28,19 @@ export const ResumeScoreSuggestionItem = observer(
     const handleSuggestionClick = action(async () => {
       setOpen(false);
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.FOCUS_FIELD) {
-        const { fieldName, sectionType } = suggestion;
-        if (!fieldName) {
+        const { fieldKey, sectionKey } = suggestion;
+        if (!fieldKey) {
           return;
         }
 
-        const elementRef =
-          builderSession.UIStore.getFieldRefByFieldNameAndSection(
-            fieldName,
-            sectionType
-          );
+        const elementRef = builderSession.UIStore.getFieldRefBySemanticKey(
+          sectionKey,
+          fieldKey
+        );
 
         if (!elementRef) {
           console.warn(
-            `No element ref found for field ${fieldName} in section ${sectionType}`
+            `No element ref found for field ${fieldKey} in section ${sectionKey}`
           );
           return;
         }
@@ -51,13 +51,13 @@ export const ResumeScoreSuggestionItem = observer(
 
       if (suggestion.actionType === SUGGESTION_ACTION_TYPES.ADD_ITEM) {
         const document = builderSession.document;
-        const section = document?.sections.find(
-          (candidate) => candidate.persistedType === suggestion.sectionType
-        );
+        const section = document?.section(suggestion.sectionKey);
 
         if (!section) {
           const sectionOption = OTHER_SECTION_OPTIONS.find(
-            (sectionOption) => sectionOption.type === suggestion.sectionType
+            (sectionOption) =>
+              sectionOption.type ===
+              persistedTypeForSectionKey(suggestion.sectionKey)
           );
           if (!sectionOption) {
             return;

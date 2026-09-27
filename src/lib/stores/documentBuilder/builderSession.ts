@@ -7,6 +7,10 @@ import {
   type SectionId,
 } from '@/lib/builderDocument/builderDocument';
 import type { DocumentPersistence } from '@/lib/builderDocument/documentPersistence';
+import {
+  createResumeDocumentSnapshot,
+  type ResumeDocumentSnapshot,
+} from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
 import { createBuilderSessionPersistence } from './builderSessionPersistence';
 import { BuilderTemplateStore } from './builderTemplateStore';
@@ -52,6 +56,10 @@ export class BuilderSession {
 
   get document(): BuilderDocumentModel | null {
     return this.state.status === 'ready' ? this.state.document : null;
+  }
+
+  get resumeDocumentSnapshot(): ResumeDocumentSnapshot | null {
+    return this.document ? createResumeDocumentSnapshot(this.document) : null;
   }
 
   getSection(sectionId: SectionId) {

@@ -1,6 +1,9 @@
 import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
-import type { ItemId } from '@/lib/builderDocument/builderDocument';
+import type {
+  ItemId,
+  SemanticSectionKey,
+} from '@/lib/builderDocument/builderDocument';
 import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
 import type { BuilderSession } from './builderSession';
@@ -58,6 +61,18 @@ export class BuilderUIStore {
             (candidate) => candidate.fieldKey === fieldKey
           )
         : undefined;
+      if (field) {
+        return this.fieldRefs.get(field.id.toString());
+      }
+    }
+  }
+
+  getFieldRefBySemanticKey(sectionKey: SemanticSectionKey, fieldKey: string) {
+    const section = this.root.document?.section(sectionKey);
+    for (const item of section?.items ?? []) {
+      const field = item.editableFields.find(
+        (candidate) => candidate.fieldKey === fieldKey
+      );
       if (field) {
         return this.fieldRefs.get(field.id.toString());
       }
