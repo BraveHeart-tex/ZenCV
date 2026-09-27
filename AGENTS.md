@@ -33,6 +33,7 @@ Read only what the task needs:
 ### Issue tracker
 
 Issues and specs are tracked in GitHub Issues. See `docs/agents/issue-tracker.md`.
+Use the `gh` CLI with elevated network access for issue, spec, pull request, or any other GitHub-related details.
 
 ### Domain docs
 
