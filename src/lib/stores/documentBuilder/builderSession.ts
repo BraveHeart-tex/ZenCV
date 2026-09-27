@@ -95,7 +95,9 @@ export class BuilderSession {
         records.value,
         this.#persistence,
         async () => {
-          await this.load(documentId);
+          if (generation === this.#generation) {
+            await this.load(documentId);
+          }
         }
       );
       if (!hydrated.success) {

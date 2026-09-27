@@ -840,44 +840,24 @@ export class BuilderDocumentModel {
     }
   ): Promise<StoreResult<{ sectionId: SectionId; itemId: ItemId }>> {
     return this.#enqueue(async () => {
-      const definition = resolveSectionDefinition(input.type);
-      const template = getItemInsertTemplate(
-        input.type as TemplatedSectionType
-      );
+      const currentDefinition = resolveSectionDefinition(input.type);
       if (
-        !definition ||
-        !template ||
-        definition.sectionCardinality === 'required-one'
-      ) {
-        return { success: false, error: 'Section cannot be added' };
-      }
-      if (
-        definition.sectionCardinality === 'optional-one' &&
-        this.section(definition.key)
+        currentDefinition?.sectionCardinality === 'optional-one' &&
+        this.section(currentDefinition.key)
       ) {
         return { success: false, error: 'Section already exists' };
       }
       const metadata = parseMetadata(input.metadata);
-      if (validateSectionMetadata(definition, metadata).length > 0) {
-        return { success: false, error: 'Invalid section metadata' };
+      const creation = sectionCreationTemplate({
+        type: input.type,
+        title: input.title,
+        defaultTitle: input.defaultTitle,
+        metadata: metadata as BuilderSectionModel['metadata'],
+      });
+      if (!creation.success) {
+        return { success: false, error: creation.error };
       }
-      const fieldsAnalysis = analyzeItemFields(
-        { type: input.type },
-        template.fields.map((field, index) => ({
-          id: index,
-          name: field.name,
-          type: field.type,
-        }))
-      );
-      if (
-        fieldsAnalysis.diagnostics.length > 0 ||
-        template.containerType !== definition.expectedContainerType
-      ) {
-        return {
-          success: false,
-          error: 'Section template does not match its definition',
-        };
-      }
+      const { definition } = creation;
       let committed = false;
       try {
         const created = await this.persistence.addSection(this.id, {
@@ -1691,8 +1671,14 @@ export const sectionCreationTemplate = (intent: AddSectionIntent) => {
   if (
     !definition ||
     !template ||
-    definition.sectionCardinality === 'required-one' ||
-    validateSectionMetadata(definition, intent.metadata).length > 0 ||
+    definition.sectionCardinality === 'required-one'
+  ) {
+    return { success: false as const, error: 'Section cannot be added' };
+  }
+  if (validateSectionMetadata(definition, intent.metadata).length > 0) {
+    return { success: false as const, error: 'Invalid section metadata' };
+  }
+  if (
     template.containerType !== definition.expectedContainerType ||
     analyzeItemFields(
       { type: intent.type },
@@ -1703,9 +1689,12 @@ export const sectionCreationTemplate = (intent: AddSectionIntent) => {
       }))
     ).diagnostics.length > 0
   ) {
-    throw new Error('Invalid section creation template');
+    return {
+      success: false as const,
+      error: 'Section template does not match its definition',
+    };
   }
-  return { definition, template };
+  return { success: true as const, definition, template };
 };
 
 /** Reject an incomplete graph while the transaction can still roll back. */
@@ -1715,7 +1704,11 @@ export const validateCreatedSection = (
   documentId: number,
   displayOrder: number
 ): void => {
-  const { definition, template } = sectionCreationTemplate(intent);
+  const creation = sectionCreationTemplate(intent);
+  if (!creation.success) {
+    throw new Error('Invalid section creation template');
+  }
+  const { definition, template } = creation;
   const { section, item, fields } = records;
   const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
   const analysis = analyzeItemFields(

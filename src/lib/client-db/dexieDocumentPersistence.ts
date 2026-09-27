@@ -23,7 +23,11 @@ export class DexieDocumentPersistence implements DocumentPersistence {
     documentId: number,
     intent: AddSectionIntent
   ): Promise<PersistenceResult<CreatedSectionRecords>> {
-    const { definition, template } = sectionCreationTemplate(intent);
+    const creation = sectionCreationTemplate(intent);
+    if (!creation.success) {
+      throw new Error('Invalid section creation template');
+    }
+    const { definition, template } = creation;
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],

@@ -35,6 +35,55 @@ describe('BuilderSession', () => {
     );
   });
 
+  it('does not reopen an old document after a late create failure', async () => {
+    const records = builderDocumentFixture();
+    const otherDocumentId = records.document.id + 1;
+    const otherRecords = {
+      ...records,
+      document: { ...records.document, id: otherDocumentId },
+      sections: records.sections.map((section) => ({
+        ...section,
+        documentId: otherDocumentId,
+      })),
+    };
+    const persistence = new InMemoryDocumentPersistence(records);
+    const load = persistence.load.bind(persistence);
+    persistence.load = async (documentId) =>
+      documentId === otherDocumentId
+        ? { success: true, value: otherRecords }
+        : load(documentId);
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    const originalDocument = session.document;
+    const addSection = persistence.addSection.bind(persistence);
+    let release: (() => void) | undefined;
+    persistence.addSection = async (...args) => {
+      const result = await addSection(...args);
+      await new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      return result.success
+        ? { success: true, value: { ...result.value, fields: [] } }
+        : result;
+    };
+    const definition = sectionDefinitions.courses;
+    const pending = originalDocument?.addSection({
+      type: definition.persistedType,
+      title: definition.label,
+      defaultTitle: definition.label,
+    });
+    await vi.waitFor(() => expect(release).toBeDefined());
+    await session.load(otherDocumentId);
+    const currentDocument = session.document;
+    release?.();
+    expect(await pending).toEqual({
+      success: false,
+      error: 'Failed to add section',
+    });
+    expect(session.document).toBe(currentDocument);
+    expect(session.document?.id).toBe(otherDocumentId);
+  });
+
   it('uses one persistence instance for load, field save, and navigation flush', async () => {
     const records = builderDocumentFixture();
     const persistence = new InMemoryDocumentPersistence(records);

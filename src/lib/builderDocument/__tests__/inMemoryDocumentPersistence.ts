@@ -39,7 +39,11 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     if (documentId !== this.records.document.id) {
       return { success: false, reason: 'notFound' };
     }
-    const { definition, template } = sectionCreationTemplate(intent);
+    const creation = sectionCreationTemplate(intent);
+    if (!creation.success) {
+      throw new Error('Invalid section creation template');
+    }
+    const { definition, template } = creation;
     if (
       definition.sectionCardinality === 'optional-one' &&
       this.records.sections.some((section) => section.type === intent.type)
