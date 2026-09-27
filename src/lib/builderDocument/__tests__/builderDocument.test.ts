@@ -12,12 +12,11 @@ import {
   deleteItem,
 } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
+import type { ItemId, PersistedDocumentRecords } from '../builderDocument';
 import {
-  hydrateBuilderDocument,
-  type ItemId,
-  type PersistedDocumentRecords,
-} from '../builderDocument';
-import { builderDocumentFixture as fixture } from './builderDocumentFixture';
+  builderDocumentFixture as fixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from './builderDocumentFixture';
 import { InMemoryDocumentPersistence } from './inMemoryDocumentPersistence';
 
 const updateField = vi.fn(

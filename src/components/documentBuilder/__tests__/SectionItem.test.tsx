@@ -1,7 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
-import { hydrateBuilderDocument } from '@/lib/builderDocument/builderDocument';
+import {
+  builderDocumentFixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import type {
   DEX_Field,
   DEX_Item,

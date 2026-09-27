@@ -1,7 +1,9 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
-import { hydrateBuilderDocument } from '@/lib/builderDocument/builderDocument';
+import {
+  builderDocumentFixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 
 vi.mock('@/components/documentBuilder/SectionField', () => ({
   SectionField: ({ fieldId }: { fieldId: number }) => (

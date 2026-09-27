@@ -13,7 +13,6 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { DexieDocumentPersistence } from '@/lib/client-db/dexieDocumentPersistence';
 import {
   renameDocument,
   updateDocument,
@@ -1433,7 +1432,7 @@ const checkFieldStructure = (
 
 export const hydrateBuilderDocument = (
   { document, sections, items, fields }: PersistedDocumentRecords,
-  persistence: DocumentPersistence = new DexieDocumentPersistence()
+  persistence: DocumentPersistence
 ): HydrationResult => {
   const diagnostics: HydrationDiagnostic[] = [];
   const sortedSections = [...sections].sort(byId);

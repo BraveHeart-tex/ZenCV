@@ -5,13 +5,11 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
+import type { FieldId, ItemId, SectionId } from '../builderDocument';
 import {
-  type FieldId,
-  hydrateBuilderDocument,
-  type ItemId,
-  type SectionId,
-} from '../builderDocument';
-import { builderDocumentFixture } from './builderDocumentFixture';
+  builderDocumentFixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from './builderDocumentFixture';
 
 const persistence = vi.hoisted(() => {
   const sections: DEX_Section[] = [];

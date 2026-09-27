@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { hydrateBuilderDocument } from '../builderDocument';
 import { createGenericRenderPlan } from '../createGenericRenderPlan';
-import { builderDocumentFixture } from './builderDocumentFixture';
+import {
+  builderDocumentFixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from './builderDocumentFixture';
 
 const hydratedFields = () => {
   const records = builderDocumentFixture();

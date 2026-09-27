@@ -5,7 +5,17 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
-import type { PersistedDocumentRecords } from '../builderDocument';
+import {
+  hydrateBuilderDocument,
+  type PersistedDocumentRecords,
+} from '../builderDocument';
+import type { DocumentPersistence } from '../documentPersistence';
+import { InMemoryDocumentPersistence } from './inMemoryDocumentPersistence';
+
+export const hydrateTestBuilderDocument = (
+  records: PersistedDocumentRecords,
+  persistence: DocumentPersistence = new InMemoryDocumentPersistence(records)
+) => hydrateBuilderDocument(records, persistence);
 
 export const builderDocumentFixture = (): PersistedDocumentRecords => {
   const document = {

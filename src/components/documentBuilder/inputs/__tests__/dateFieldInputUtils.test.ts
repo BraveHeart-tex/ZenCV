@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
-import { hydrateBuilderDocument } from '@/lib/builderDocument/builderDocument';
+import {
+  builderDocumentFixture,
+  hydrateTestBuilderDocument as hydrateBuilderDocument,
+} from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { canMarkDateAsPresent } from '../dateFieldInputUtils';
 
 describe('canMarkDateAsPresent', () => {
