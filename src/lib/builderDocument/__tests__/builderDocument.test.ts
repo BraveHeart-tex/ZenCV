@@ -5,12 +5,7 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import {
-  addItemFromTemplate,
-  addItemFromTemplateWithSectionTypeLimit,
-  bulkUpdateItems,
-  deleteItem,
-} from '@/lib/client-db/itemService';
+import { bulkUpdateItems, deleteItem } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type { ItemId, PersistedDocumentRecords } from '../builderDocument';
 import {
@@ -23,8 +18,6 @@ const updateField = vi.fn(
   async (_fieldId: number, _value: string): Promise<number> => 1
 );
 vi.mock('@/lib/client-db/itemService', () => ({
-  addItemFromTemplate: vi.fn(),
-  addItemFromTemplateWithSectionTypeLimit: vi.fn(),
   bulkUpdateItems: vi.fn(),
   deleteItem: vi.fn(),
 }));
@@ -32,8 +25,6 @@ vi.mock('@/lib/client-db/itemService', () => ({
 afterEach(() => {
   vi.useRealTimers();
   vi.mocked(updateField).mockReset();
-  vi.mocked(addItemFromTemplate).mockReset();
-  vi.mocked(addItemFromTemplateWithSectionTypeLimit).mockReset();
   vi.mocked(bulkUpdateItems).mockReset();
   vi.mocked(deleteItem).mockReset();
 });
@@ -69,7 +60,10 @@ describe('Builder Document item commands', () => {
   it('leaves the graph untouched when insertion fails', async () => {
     const document = commandDocument();
     const original = document.workExperience.items[0];
-    vi.mocked(addItemFromTemplate).mockRejectedValueOnce(new Error('offline'));
+    const persistence = document.persistence as InMemoryDocumentPersistence;
+    persistence.addItem = async () => {
+      throw new Error('offline');
+    };
     await expect(document.addItem(document.workExperience.id)).rejects.toThrow(
       'offline'
     );
@@ -81,33 +75,37 @@ describe('Builder Document item commands', () => {
     const document = commandDocument();
     const section = document.workExperience;
     const oldItem = section.items[0];
-    let finish: (value: { item: DEX_Item; fields: DEX_Field[] }) => void =
-      () => {};
-    vi.mocked(addItemFromTemplate).mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          finish = resolve;
-        })
-    );
+    let finish: () => void = () => {};
+    const persistence = document.persistence as InMemoryDocumentPersistence;
+    persistence.addItem = async () =>
+      new Promise((resolve) => {
+        finish = () =>
+          resolve({
+            success: true,
+            value: {
+              item: {
+                id: 99,
+                sectionId: section.id,
+                containerType: 'collapsible',
+                displayOrder: 2,
+              },
+              fields: Object.values(
+                sectionDefinitions.workExperience.fields
+              ).map((definition, index) => ({
+                id: 2000 + index,
+                itemId: 99,
+                name: definition.persistedName,
+                type: definition.expectedPersistedType,
+                value: '',
+              })) as DEX_Field[],
+            },
+          });
+      });
     const pending = document.addItem(section.id);
     await Promise.resolve();
     expect(section.items).toEqual([oldItem]);
     const definitions = Object.values(sectionDefinitions.workExperience.fields);
-    finish({
-      item: {
-        id: 99,
-        sectionId: section.id,
-        containerType: 'collapsible',
-        displayOrder: 2,
-      },
-      fields: definitions.map((definition, index) => ({
-        id: 2000 + index,
-        itemId: 99,
-        name: definition.persistedName,
-        type: definition.expectedPersistedType,
-        value: '',
-      })) as DEX_Field[],
-    });
+    finish();
     expect(await pending).toBe(99);
     const item = section.items[1];
     expect(item).toBe(document.itemsById.get(99 as ItemId));
@@ -123,7 +121,6 @@ describe('Builder Document item commands', () => {
     );
     expect(await document.addItem(document.personalDetails.id)).toBeUndefined();
     expect(deleteItem).not.toHaveBeenCalled();
-    expect(addItemFromTemplate).not.toHaveBeenCalled();
 
     const records = fixture();
     const definition = sectionDefinitions.websitesSocialLinks;
@@ -164,7 +161,6 @@ describe('Builder Document item commands', () => {
           50 as typeof hydrated.document.workExperience.id
         )
       ).toBeUndefined();
-      expect(addItemFromTemplateWithSectionTypeLimit).not.toHaveBeenCalled();
     }
   });
 
@@ -328,20 +324,24 @@ describe('Work Experience semantic model and lifecycle', () => {
     const section = document.workExperience;
     const [first, second] = section.items;
     const definitions = Object.values(sectionDefinitions.workExperience.fields);
-    vi.mocked(addItemFromTemplate).mockResolvedValueOnce({
-      item: {
-        id: 99,
-        sectionId: section.id,
-        containerType: 'collapsible',
-        displayOrder: 3,
+    const persistence = document.persistence as InMemoryDocumentPersistence;
+    persistence.addItem = async () => ({
+      success: true,
+      value: {
+        item: {
+          id: 99,
+          sectionId: section.id,
+          containerType: 'collapsible',
+          displayOrder: 3,
+        },
+        fields: definitions.map((definition, index) => ({
+          id: 2000 + index,
+          itemId: 99,
+          name: definition.persistedName,
+          type: definition.expectedPersistedType,
+          value: '',
+        })) as DEX_Field[],
       },
-      fields: definitions.map((definition, index) => ({
-        id: 2000 + index,
-        itemId: 99,
-        name: definition.persistedName,
-        type: definition.expectedPersistedType,
-        value: '',
-      })) as DEX_Field[],
     });
 
     const added = await section.addEntry();

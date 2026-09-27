@@ -12,12 +12,7 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import {
-  addItemFromTemplate,
-  addItemFromTemplateWithSectionTypeLimit,
-  bulkUpdateItems,
-  deleteItem,
-} from '@/lib/client-db/itemService';
+import { bulkUpdateItems, deleteItem } from '@/lib/client-db/itemService';
 import {
   bulkUpdateSections,
   deleteSection,
@@ -1148,58 +1143,80 @@ export class BuilderDocumentModel {
       if (!template) {
         return undefined;
       }
-      const displayOrder =
-        Math.max(0, ...section.items.map((item) => item.displayOrder)) + 1;
-      const input = { ...template, sectionId, displayOrder };
-      const result =
-        max !== undefined && section.sectionKey === 'websitesSocialLinks'
-          ? await addItemFromTemplateWithSectionTypeLimit(input, max)
-          : await addItemFromTemplate(input);
-      if (!result) {
-        return undefined;
-      }
-      const fieldInputs = result.fields.map((field) => ({
-        id: field.id,
-        name: field.name,
-        type: field.type,
-      }));
-      const analysis = analyzeItemFields(
-        { type: section.persistedType } as DEX_Section,
-        fieldInputs
-      );
-      if (analysis.diagnostics.length > 0) {
-        throw new Error('Persisted item does not match its Section Definition');
-      }
-      const recordsById = new Map(
-        result.fields.map((field) => [field.id, field])
-      );
-      const typedFields: Record<string, SemanticField> = {};
-      const fields = analysis.entries.map(({ field, definition }) => {
-        const model = new SemanticField(
-          recordsById.get(Number(field.id)) as DEX_Field,
-          section.sectionKey,
-          definition,
-          this.id,
-          this.persistence
-        );
-        typedFields[model.fieldKey] = model;
-        return model;
-      });
-      const item = createBuilderItemModel(
-        result.item,
-        section.sectionKey,
-        fields.map((field) => field.id),
-        typedFields,
-        this
-      );
-      runInAction(() => {
-        for (const field of fields) {
-          this.fieldsById.set(field.id, field);
+      let committed = false;
+      try {
+        const result = await this.persistence.addItem(this.id, {
+          sectionId,
+          sectionType: section.persistedType,
+          containerType: template.containerType,
+          fields: template.fields,
+          maxItems: max,
+        });
+        if (!result.success) {
+          return undefined;
         }
-        this.itemsById.set(item.id, item);
-        mutableItemIds(section).push(item.id);
-      });
-      return item.id;
+        committed = true;
+        const { item: itemRecord, fields: fieldRecords } = result.value;
+        const analysis = analyzeItemFields(
+          { type: section.persistedType } as DEX_Section,
+          fieldRecords.map((field) => ({
+            id: field.id,
+            name: field.name,
+            type: field.type,
+          }))
+        );
+        if (
+          analysis.diagnostics.length > 0 ||
+          analysis.entries.length !== fieldRecords.length
+        ) {
+          throw new Error(
+            'Persisted item does not match its Section Definition'
+          );
+        }
+        const recordsById = new Map(
+          fieldRecords.map((field) => [field.id, field])
+        );
+        const typedFields: Record<string, SemanticField> = {};
+        const fields = analysis.entries.map(({ field, definition }) => {
+          const record = recordsById.get(Number(field.id));
+          if (!record) {
+            throw new Error('Created field is missing');
+          }
+          const model = new SemanticField(
+            record,
+            section.sectionKey,
+            definition,
+            this.id,
+            this.persistence
+          );
+          typedFields[model.fieldKey] = model;
+          return model;
+        });
+        const item = createBuilderItemModel(
+          itemRecord,
+          section.sectionKey,
+          fields.map((field) => field.id),
+          typedFields,
+          this
+        );
+        runInAction(() => {
+          for (const field of fields) {
+            this.fieldsById.set(field.id, field);
+          }
+          this.itemsById.set(item.id, item);
+          mutableItemIds(section).push(item.id);
+        });
+        return item.id;
+      } catch (error) {
+        if (committed) {
+          try {
+            await this.#reconcileAfterCreateFailure?.();
+          } catch {
+            // The session owns the failed reload state.
+          }
+        }
+        throw error;
+      }
     });
   }
 

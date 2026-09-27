@@ -13,7 +13,9 @@ import {
   validateCreatedSection,
 } from '../builderDocument';
 import type {
+  AddItemIntent,
   AddSectionIntent,
+  CreatedItemRecords,
   CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
@@ -27,6 +29,62 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
 
   constructor(records: PersistedDocumentRecords) {
     this.records = structuredClone(records);
+  }
+
+  async addItem(
+    documentId: number,
+    intent: AddItemIntent
+  ): Promise<PersistenceResult<CreatedItemRecords>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const section = this.records.sections.find(
+      (entry) => entry.id === intent.sectionId
+    );
+    if (
+      documentId !== this.records.document.id ||
+      !section ||
+      section.documentId !== documentId ||
+      section.type !== intent.sectionType
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    if (intent.maxItems !== undefined) {
+      const sectionIds = this.records.sections
+        .filter(
+          (entry) =>
+            entry.documentId === documentId && entry.type === intent.sectionType
+        )
+        .map((entry) => entry.id);
+      const count = this.records.items.filter((item) =>
+        sectionIds.includes(item.sectionId)
+      ).length;
+      if (count >= intent.maxItems) {
+        return { success: false, reason: 'limitReached' };
+      }
+    }
+    const nextId = (records: readonly { id: number }[]) =>
+      Math.max(0, ...records.map((record) => record.id)) + 1;
+    const item: DEX_Item = {
+      id: nextId(this.records.items),
+      sectionId: intent.sectionId,
+      containerType: intent.containerType,
+      displayOrder:
+        Math.max(
+          0,
+          ...this.records.items
+            .filter((entry) => entry.sectionId === intent.sectionId)
+            .map((entry) => entry.displayOrder)
+        ) + 1,
+    };
+    const fields = intent.fields.map((field, index) => ({
+      ...field,
+      id: nextId(this.records.fields) + index,
+      itemId: item.id,
+    })) as DEX_Field[];
+    this.records.items.push(item);
+    this.records.fields.push(...fields);
+    return { success: true, value: { item, fields } };
   }
 
   async addSection(

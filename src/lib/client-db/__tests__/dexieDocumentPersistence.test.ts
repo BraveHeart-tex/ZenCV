@@ -122,6 +122,118 @@ describe('DexieDocumentPersistence', () => {
     expect(await clientDb.fields.count()).toBe(0);
   });
 
+  it('creates Work Experience items from persisted sibling order with complete fields', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut(records.items);
+    await clientDb.fields.bulkPut(records.fields);
+    const definition = sectionDefinitions.workExperience;
+    const persistence = new DexieDocumentPersistence();
+    const created = await persistence.addItem(records.document.id, {
+      sectionId: 12,
+      sectionType: definition.persistedType,
+      containerType: definition.expectedContainerType,
+      fields: Object.values(definition.fields).map((field) => ({
+        name: field.persistedName,
+        type: field.expectedPersistedType,
+        value: '',
+      })),
+    });
+    expect(created.success).toBe(true);
+    if (!created.success) {
+      throw new Error('Expected a created item');
+    }
+    expect(created.value.item).toMatchObject({
+      sectionId: 12,
+      displayOrder: 2,
+    });
+    expect(created.value.item.id).toBeGreaterThan(0);
+    expect(created.value.fields).toHaveLength(
+      Object.values(definition.fields).length
+    );
+    expect(
+      created.value.fields.every(
+        (field) => field.itemId === created.value.item.id && field.id > 0
+      )
+    ).toBe(true);
+  });
+
+  it('enforces bounded section-type limits atomically for concurrent additions', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.websitesSocialLinks;
+    const section = {
+      ...records.sections[0],
+      id: 50,
+      type: definition.persistedType,
+      title: 'Links',
+      defaultTitle: 'Links',
+    };
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.put(section);
+    const persistence = new DexieDocumentPersistence();
+    const intent = {
+      sectionId: section.id,
+      sectionType: definition.persistedType,
+      containerType: definition.expectedContainerType,
+      maxItems: 1,
+      fields: Object.values(definition.fields).map((field) => ({
+        name: field.persistedName,
+        type: field.expectedPersistedType,
+        value: '',
+      })),
+    };
+    const results = await Promise.all([
+      persistence.addItem(records.document.id, intent),
+      persistence.addItem(records.document.id, intent),
+    ]);
+    expect(results.filter((result) => result.success)).toHaveLength(1);
+    expect(results.filter((result) => !result.success)).toEqual([
+      { success: false, reason: 'limitReached' },
+    ]);
+    expect(
+      await clientDb.items.where('sectionId').equals(section.id).count()
+    ).toBe(1);
+  });
+
+  it('rejects foreign sections and rolls back item fields on storage failure', async () => {
+    const records = builderDocumentFixture();
+    const foreign = { ...records.document, id: 2 };
+    await clientDb.documents.bulkPut([records.document, foreign]);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut(records.items);
+    await clientDb.fields.bulkPut(records.fields);
+    await clientDb.sections.put({ ...records.sections[2], documentId: 2 });
+    const persistence = new DexieDocumentPersistence();
+    const definition = sectionDefinitions.workExperience;
+    const intent = {
+      sectionId: 12,
+      sectionType: definition.persistedType,
+      containerType: definition.expectedContainerType,
+      fields: Object.values(definition.fields).map((field) => ({
+        name: field.persistedName,
+        type: field.expectedPersistedType,
+        value: '',
+      })),
+    };
+    expect(await persistence.addItem(records.document.id, intent)).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    await clientDb.sections.put(records.sections[2]);
+    const fail = vi
+      .spyOn(clientDb.fields, 'bulkAdd')
+      .mockRejectedValueOnce(new Error('disk failed'));
+    await expect(
+      persistence.addItem(records.document.id, intent)
+    ).rejects.toThrow('disk failed');
+    fail.mockRestore();
+    expect(await clientDb.items.where('sectionId').equals(12).count()).toBe(1);
+    expect(await clientDb.fields.where('itemId').equals(22).count()).toBe(
+      Object.values(definition.fields).length
+    );
+  });
+
   it('rolls back every created record when storage fails after section and item insertion', async () => {
     const records = builderDocumentFixture();
     await clientDb.documents.put(records.document);

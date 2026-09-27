@@ -3,7 +3,9 @@ import {
   validateCreatedSection,
 } from '@/lib/builderDocument/builderDocument';
 import type {
+  AddItemIntent,
   AddSectionIntent,
+  CreatedItemRecords,
   CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
@@ -19,6 +21,69 @@ import { clientDb } from './clientDb';
 import type { DEX_Field } from './clientDbSchema';
 
 export class DexieDocumentPersistence implements DocumentPersistence {
+  async addItem(
+    documentId: number,
+    intent: AddItemIntent
+  ): Promise<PersistenceResult<CreatedItemRecords>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        const section = await clientDb.sections.get(intent.sectionId);
+        if (!document || !section || section.documentId !== documentId) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        if (section.type !== intent.sectionType) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        if (intent.maxItems !== undefined) {
+          const sectionIds = (
+            await clientDb.sections
+              .where('documentId')
+              .equals(documentId)
+              .filter((candidate) => candidate.type === intent.sectionType)
+              .toArray()
+          ).map((candidate) => candidate.id);
+          const itemCount = sectionIds.length
+            ? await clientDb.items.where('sectionId').anyOf(sectionIds).count()
+            : 0;
+          if (itemCount >= intent.maxItems) {
+            return { success: false as const, reason: 'limitReached' as const };
+          }
+        }
+        const siblings = await clientDb.items
+          .where('sectionId')
+          .equals(intent.sectionId)
+          .toArray();
+        const itemInput = {
+          sectionId: intent.sectionId,
+          containerType: intent.containerType,
+          displayOrder:
+            Math.max(0, ...siblings.map((item) => item.displayOrder)) + 1,
+        };
+        const itemId = await clientDb.items.add(itemInput);
+        const fieldInputs = intent.fields.map((field) => ({
+          ...field,
+          itemId,
+        }));
+        const fieldIds = await clientDb.fields.bulkAdd(fieldInputs, {
+          allKeys: true,
+        });
+        return {
+          success: true as const,
+          value: {
+            item: { ...itemInput, id: itemId },
+            fields: fieldInputs.map((field, index) => ({
+              ...field,
+              id: fieldIds[index],
+            })) as DEX_Field[],
+          },
+        };
+      }
+    );
+  }
+
   async addSection(
     documentId: number,
     intent: AddSectionIntent
