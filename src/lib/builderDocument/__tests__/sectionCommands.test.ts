@@ -317,7 +317,7 @@ describe('Builder Document section commands', () => {
     const beforeOrders = model.sections.map((section) => section.displayOrder);
     vi.spyOn(model.persistence, 'reorderSections').mockResolvedValueOnce({
       success: false,
-      reason: 'conflict',
+      reason: 'membershipChanged',
     });
     expect(await model.reorderSections(reordered)).toEqual({
       success: false,

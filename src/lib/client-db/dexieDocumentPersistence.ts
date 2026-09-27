@@ -1,7 +1,10 @@
 import {
   canDeleteItemFromSection,
   canDeleteSection,
+  getSectionDefinitionForPersistence,
+  itemCreationTemplate,
   sectionCreationTemplate,
+  validateCreatedItem,
   validateCreatedSection,
 } from '@/lib/builderDocument/builderDocument';
 import type {
@@ -36,7 +39,15 @@ export class DexieDocumentPersistence implements DocumentPersistence {
         const document = await clientDb.documents.get(documentId);
         const item = await clientDb.items.get(itemId);
         const section = item && (await clientDb.sections.get(item.sectionId));
-        if (!item || !section) {
+        if (
+          !document ||
+          !item ||
+          !section ||
+          section.documentId !== documentId
+        ) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        if (!getSectionDefinitionForPersistence(section.type)) {
           return { success: false as const, reason: 'notFound' as const };
         }
         const itemCount = await clientDb.items
@@ -53,7 +64,10 @@ export class DexieDocumentPersistence implements DocumentPersistence {
             itemCount
           )
         ) {
-          return { success: false as const, reason: 'notFound' as const };
+          return {
+            success: false as const,
+            reason: 'minimumRequired' as const,
+          };
         }
         await clientDb.fields.where('itemId').equals(itemId).delete();
         await clientDb.items.delete(itemId);
@@ -73,13 +87,24 @@ export class DexieDocumentPersistence implements DocumentPersistence {
         const document = await clientDb.documents.get(documentId);
         const section = await clientDb.sections.get(sectionId);
         if (
+          !document ||
+          !section ||
+          section.documentId !== documentId ||
+          !getSectionDefinitionForPersistence(section.type)
+        ) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        if (
           !canDeleteSection({
-            documentExists: Boolean(document),
+            documentExists: true,
             documentId,
             section,
           })
         ) {
-          return { success: false as const, reason: 'notFound' as const };
+          return {
+            success: false as const,
+            reason: 'minimumRequired' as const,
+          };
         }
         const itemIds = await clientDb.items
           .where('sectionId')
@@ -103,26 +128,33 @@ export class DexieDocumentPersistence implements DocumentPersistence {
       async () => {
         const document = await clientDb.documents.get(documentId);
         const section = await clientDb.sections.get(intent.sectionId);
-        if (!document || !section || section.documentId !== documentId) {
+        const creation = itemCreationTemplate(intent.sectionType);
+        if (
+          !document ||
+          !section ||
+          section.documentId !== documentId ||
+          section.type !== intent.sectionType ||
+          !creation.success
+        ) {
           return { success: false as const, reason: 'notFound' as const };
         }
-        if (section.type !== intent.sectionType) {
-          return { success: false as const, reason: 'notFound' as const };
-        }
-        if (intent.maxItems !== undefined) {
-          const sectionIds = (
-            await clientDb.sections
-              .where('documentId')
-              .equals(documentId)
-              .filter((candidate) => candidate.type === intent.sectionType)
-              .toArray()
-          ).map((candidate) => candidate.id);
-          const itemCount = sectionIds.length
-            ? await clientDb.items.where('sectionId').anyOf(sectionIds).count()
-            : 0;
-          if (itemCount >= intent.maxItems) {
-            return { success: false as const, reason: 'limitReached' as const };
-          }
+        const { definition, template } = creation;
+        const maxItems =
+          'max' in definition.itemCardinality
+            ? definition.itemCardinality.max
+            : undefined;
+        const sectionIds = (
+          await clientDb.sections
+            .where('documentId')
+            .equals(documentId)
+            .filter((candidate) => candidate.type === intent.sectionType)
+            .toArray()
+        ).map((candidate) => candidate.id);
+        const itemCount = sectionIds.length
+          ? await clientDb.items.where('sectionId').anyOf(sectionIds).count()
+          : 0;
+        if (maxItems !== undefined && itemCount >= maxItems) {
+          return { success: false as const, reason: 'limitReached' as const };
         }
         const siblings = await clientDb.items
           .where('sectionId')
@@ -130,27 +162,29 @@ export class DexieDocumentPersistence implements DocumentPersistence {
           .toArray();
         const itemInput = {
           sectionId: intent.sectionId,
-          containerType: intent.containerType,
+          containerType: template.containerType,
           displayOrder:
             Math.max(0, ...siblings.map((item) => item.displayOrder)) + 1,
         };
         const itemId = await clientDb.items.add(itemInput);
-        const fieldInputs = intent.fields.map((field) => ({
+        const fieldInputs = template.fields.map((field) => ({
           ...field,
           itemId,
         }));
         const fieldIds = await clientDb.fields.bulkAdd(fieldInputs, {
           allKeys: true,
         });
+        const value: CreatedItemRecords = {
+          item: { ...itemInput, id: itemId },
+          fields: fieldInputs.map((field, index) => ({
+            ...field,
+            id: fieldIds[index],
+          })) as DEX_Field[],
+        };
+        validateCreatedItem(value, intent, itemInput.displayOrder);
         return {
           success: true as const,
-          value: {
-            item: { ...itemInput, id: itemId },
-            fields: fieldInputs.map((field, index) => ({
-              ...field,
-              id: fieldIds[index],
-            })) as DEX_Field[],
-          },
+          value,
         };
       }
     );
@@ -261,7 +295,10 @@ export class DexieDocumentPersistence implements DocumentPersistence {
             sectionIds
           )
         ) {
-          return { success: false as const, reason: 'conflict' as const };
+          return {
+            success: false as const,
+            reason: 'membershipChanged' as const,
+          };
         }
         for (const [index, sectionId] of sectionIds.entries()) {
           if (
@@ -301,7 +338,10 @@ export class DexieDocumentPersistence implements DocumentPersistence {
             itemIds
           )
         ) {
-          return { success: false as const, reason: 'conflict' as const };
+          return {
+            success: false as const,
+            reason: 'membershipChanged' as const,
+          };
         }
         for (const [index, itemId] of itemIds.entries()) {
           if (

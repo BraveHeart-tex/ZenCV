@@ -255,7 +255,7 @@ describe('Builder Document item commands', () => {
     const [first, second] = section.items;
     vi.spyOn(document.persistence, 'reorderItems').mockResolvedValueOnce({
       success: false,
-      reason: 'conflict',
+      reason: 'membershipChanged',
     });
 
     expect(

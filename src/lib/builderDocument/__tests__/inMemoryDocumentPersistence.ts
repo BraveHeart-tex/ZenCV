@@ -7,11 +7,17 @@ import {
   serializeTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
-import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
+import { resolveSectionDefinition } from '@/lib/sectionDefinitions/sectionDefinitions';
+import type {
+  ResumeTemplate,
+  TemplatedSectionType,
+} from '@/lib/types/documentBuilder.types';
 import {
   canDeleteItemFromSection,
   canDeleteSection,
   sectionCreationTemplate,
+  validateCreatedItem,
   validateCreatedSection,
 } from '../builderDocument';
 import type {
@@ -49,7 +55,15 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     const section =
       item &&
       this.records.sections.find((entry) => entry.id === item.sectionId);
-    if (!item || !section) {
+    if (
+      !item ||
+      !section ||
+      documentId !== this.records.document.id ||
+      section.documentId !== documentId
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    if (!resolveSectionDefinition(section.type)) {
       return { success: false, reason: 'notFound' };
     }
     const itemCount = this.records.items.filter(
@@ -58,14 +72,14 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     if (
       !canDeleteItemFromSection(
         {
-          documentExists: documentId === this.records.document.id,
+          documentExists: true,
           documentId,
           section,
         },
         itemCount
       )
     ) {
-      return { success: false, reason: 'notFound' };
+      return { success: false, reason: 'minimumRequired' };
     }
     const index = this.records.items.indexOf(item);
     this.records.items.splice(index, 1);
@@ -87,13 +101,16 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     );
     if (
       !section ||
-      !canDeleteSection({
-        documentExists: documentId === this.records.document.id,
-        documentId,
-        section,
-      })
+      documentId !== this.records.document.id ||
+      section.documentId !== documentId
     ) {
       return { success: false, reason: 'notFound' };
+    }
+    if (!resolveSectionDefinition(section.type)) {
+      return { success: false, reason: 'notFound' };
+    }
+    if (!canDeleteSection({ documentExists: true, documentId, section })) {
+      return { success: false, reason: 'minimumRequired' };
     }
     const itemIds = this.records.items
       .filter((item) => item.sectionId === sectionId)
@@ -128,50 +145,49 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     const section = this.records.sections.find(
       (entry) => entry.id === intent.sectionId
     );
+    const definition = resolveSectionDefinition(intent.sectionType);
+    const template = getItemInsertTemplate(
+      intent.sectionType as TemplatedSectionType
+    );
     if (
       documentId !== this.records.document.id ||
       !section ||
       section.documentId !== documentId ||
-      section.type !== intent.sectionType
+      section.type !== intent.sectionType ||
+      !definition ||
+      !template
     ) {
       return { success: false, reason: 'notFound' };
     }
-    if (intent.maxItems !== undefined) {
-      const sectionIds = this.records.sections
-        .filter(
-          (entry) =>
-            entry.documentId === documentId && entry.type === intent.sectionType
-        )
-        .map((entry) => entry.id);
-      const count = this.records.items.filter((item) =>
-        sectionIds.includes(item.sectionId)
-      ).length;
-      if (count >= intent.maxItems) {
-        return { success: false, reason: 'limitReached' };
-      }
+    const siblings = this.records.items.filter(
+      (entry) => entry.sectionId === intent.sectionId
+    );
+    const maxItems =
+      'max' in definition.itemCardinality
+        ? definition.itemCardinality.max
+        : undefined;
+    if (maxItems !== undefined && siblings.length >= maxItems) {
+      return { success: false, reason: 'limitReached' };
     }
     const nextId = (records: readonly { id: number }[]) =>
       Math.max(0, ...records.map((record) => record.id)) + 1;
     const item: DEX_Item = {
       id: nextId(this.records.items),
       sectionId: intent.sectionId,
-      containerType: intent.containerType,
+      containerType: template.containerType,
       displayOrder:
-        Math.max(
-          0,
-          ...this.records.items
-            .filter((entry) => entry.sectionId === intent.sectionId)
-            .map((entry) => entry.displayOrder)
-        ) + 1,
+        Math.max(0, ...siblings.map((entry) => entry.displayOrder)) + 1,
     };
-    const fields = intent.fields.map((field, index) => ({
+    const fields = template.fields.map((field, index) => ({
       ...field,
       id: nextId(this.records.fields) + index,
       itemId: item.id,
     })) as DEX_Field[];
+    const value = { item, fields };
+    validateCreatedItem(value, intent, item.displayOrder);
     this.records.items.push(item);
     this.records.fields.push(...fields);
-    return { success: true, value: { item, fields } };
+    return { success: true, value };
   }
 
   async addSection(
@@ -295,7 +311,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
         sectionIds
       )
     ) {
-      return { success: false, reason: 'conflict' };
+      return { success: false, reason: 'membershipChanged' };
     }
     sectionIds.forEach((id, index) => {
       const section = this.records.sections.find((entry) => entry.id === id);
@@ -332,7 +348,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
         itemIds
       )
     ) {
-      return { success: false, reason: 'conflict' };
+      return { success: false, reason: 'membershipChanged' };
     }
     itemIds.forEach((id, index) => {
       const item = this.records.items.find((entry) => entry.id === id);

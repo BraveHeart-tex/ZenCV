@@ -7,8 +7,8 @@ import {
   type SectionId,
 } from '@/lib/builderDocument/builderDocument';
 import type { DocumentPersistence } from '@/lib/builderDocument/documentPersistence';
-import { DexieDocumentPersistence } from '@/lib/client-db/dexieDocumentPersistence';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
+import { createBuilderSessionPersistence } from './builderSessionPersistence';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
 import { CurrentStoreProjection } from './currentStoreProjection';
@@ -24,7 +24,7 @@ export type BuilderSessionState =
   | Readonly<{ status: 'failed'; documentId: number; message: string }>;
 
 type BuilderSessionOptions = Readonly<{
-  persistence?: DocumentPersistence;
+  persistence: DocumentPersistence;
 }>;
 
 const genericFailure = 'The document could not be loaded.';
@@ -42,8 +42,8 @@ export class BuilderSession {
   #generation = 0;
   readonly #persistence: DocumentPersistence;
 
-  constructor(options: BuilderSessionOptions = {}) {
-    this.#persistence = options.persistence ?? new DexieDocumentPersistence();
+  constructor(options: BuilderSessionOptions) {
+    this.#persistence = options.persistence;
     this.UIStore = new BuilderUIStore(this);
     this.currentStoreProjection = new CurrentStoreProjection(this);
     this.templateStore = new BuilderTemplateStore(this);
@@ -237,4 +237,6 @@ export class BuilderSession {
   }
 }
 
-export const builderSession = new BuilderSession();
+export const builderSession = new BuilderSession({
+  persistence: createBuilderSessionPersistence(),
+});

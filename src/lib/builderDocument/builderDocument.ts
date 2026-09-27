@@ -34,11 +34,14 @@ import {
 } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type {
   ResumeTemplate,
+  SectionType,
   StoreResult,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import type {
+  AddItemIntent,
   AddSectionIntent,
+  CreatedItemRecords,
   CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
@@ -1143,7 +1146,13 @@ export class BuilderDocumentModel {
         );
         if (!result.success) {
           restoreOrder();
-          return { success: false, reason: result.reason };
+          return {
+            success: false,
+            reason:
+              result.reason === 'membershipChanged'
+                ? 'conflict'
+                : result.reason,
+          };
         }
         return { success: true };
       } catch {
@@ -1177,9 +1186,6 @@ export class BuilderDocumentModel {
         const result = await this.persistence.addItem(this.id, {
           sectionId,
           sectionType: section.persistedType,
-          containerType: template.containerType,
-          fields: template.fields,
-          maxItems: max,
         });
         if (!result.success) {
           return undefined;
@@ -1295,7 +1301,13 @@ export class BuilderDocumentModel {
         );
         if (!result.success) {
           restoreOrder();
-          return { success: false, reason: result.reason };
+          return {
+            success: false,
+            reason:
+              result.reason === 'membershipChanged'
+                ? 'conflict'
+                : result.reason,
+          };
         }
         return { success: true };
       } catch {
@@ -1708,6 +1720,18 @@ export const sectionCreationTemplate = (intent: AddSectionIntent) => {
   return { success: true as const, definition, template };
 };
 
+export const itemCreationTemplate = (sectionType: SectionType) => {
+  const definition = resolveSectionDefinition(sectionType);
+  const template = getItemInsertTemplate(sectionType as TemplatedSectionType);
+  if (!definition || !template) {
+    return { success: false as const };
+  }
+  return { success: true as const, definition, template };
+};
+
+export const getSectionDefinitionForPersistence = (sectionType: SectionType) =>
+  resolveSectionDefinition(sectionType);
+
 interface DeletionContext {
   documentExists: boolean;
   documentId: number;
@@ -1796,6 +1820,61 @@ export const validateCreatedSection = (
     const { id: _id, itemId: _itemId, ...content } = field;
     if (JSON.stringify(content) !== JSON.stringify(expected)) {
       throw new Error('Created section field differs from template');
+    }
+  }
+};
+
+/** Reject an incomplete item graph while the transaction can still roll back. */
+export const validateCreatedItem = (
+  records: CreatedItemRecords,
+  intent: AddItemIntent,
+  displayOrder: number
+): void => {
+  const definition = resolveSectionDefinition(intent.sectionType);
+  const template = getItemInsertTemplate(
+    intent.sectionType as TemplatedSectionType
+  );
+  if (!definition || !template) {
+    throw new Error('Invalid item creation template');
+  }
+
+  const { item, fields } = records;
+  const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
+  const analysis = analyzeItemFields(
+    { type: intent.sectionType },
+    fields.map((field) => ({
+      id: field.id,
+      name: field.name,
+      type: field.type,
+    }))
+  );
+  if (
+    !validId(item.id) ||
+    fields.some((field) => !validId(field.id)) ||
+    new Set(fields.map((field) => field.id)).size !== fields.length ||
+    item.sectionId !== intent.sectionId ||
+    item.containerType !== definition.expectedContainerType ||
+    item.displayOrder !== displayOrder ||
+    fields.length !== template.fields.length ||
+    fields.some(
+      (field) => field.itemId !== item.id || typeof field.value !== 'string'
+    ) ||
+    analysis.diagnostics.length > 0
+  ) {
+    throw new Error('Incomplete created item graph');
+  }
+
+  for (const entry of analysis.entries) {
+    const field = fields.find((candidate) => candidate.id === entry.field.id);
+    const expected = template.fields.find(
+      (candidate) => candidate.name === entry.field.name
+    );
+    if (!field || !expected) {
+      throw new Error('Created item field differs from template');
+    }
+    const { id: _id, itemId: _itemId, ...content } = field;
+    if (JSON.stringify(content) !== JSON.stringify(expected)) {
+      throw new Error('Created item field differs from template');
     }
   }
 };

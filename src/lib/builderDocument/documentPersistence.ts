@@ -6,7 +6,6 @@ import type {
 } from '@/lib/client-db/clientDbSchema';
 import type { TemplateSettings } from '@/lib/constants/accentColors';
 import type {
-  FieldInsertTemplate,
   ResumeTemplate,
   SectionType,
 } from '@/lib/types/documentBuilder.types';
@@ -19,16 +18,26 @@ export type PersistedDocumentRecords = Readonly<{
   fields: readonly DEX_Field[];
 }>;
 
+export type PersistenceFailureReason =
+  | 'notFound'
+  | 'alreadyExists'
+  | 'limitReached'
+  | 'minimumRequired'
+  | 'membershipChanged';
+
 export type PersistenceResult<T> =
   | Readonly<{ success: true; value: T }>
   | Readonly<{
       success: false;
-      reason: 'notFound' | 'alreadyExists' | 'limitReached' | 'conflict';
+      reason: PersistenceFailureReason;
     }>;
 
 export type ReorderPersistenceResult =
   | Readonly<{ success: true; value: undefined }>
-  | Readonly<{ success: false; reason: 'notFound' | 'conflict' }>;
+  | Readonly<{
+      success: false;
+      reason: 'notFound' | 'membershipChanged';
+    }>;
 
 export type CreatedSectionRecords = Readonly<{
   section: DEX_Section;
@@ -46,9 +55,6 @@ export type AddSectionIntent = Readonly<{
 export type AddItemIntent = Readonly<{
   sectionId: number;
   sectionType: SectionType;
-  containerType: DEX_Item['containerType'];
-  fields: readonly FieldInsertTemplate[];
-  maxItems?: number;
 }>;
 
 export type CreatedItemRecords = Readonly<{

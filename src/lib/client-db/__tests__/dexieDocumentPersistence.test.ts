@@ -133,12 +133,6 @@ describe('DexieDocumentPersistence', () => {
     const created = await persistence.addItem(records.document.id, {
       sectionId: 12,
       sectionType: definition.persistedType,
-      containerType: definition.expectedContainerType,
-      fields: Object.values(definition.fields).map((field) => ({
-        name: field.persistedName,
-        type: field.expectedPersistedType,
-        value: '',
-      })),
     });
     expect(created.success).toBe(true);
     if (!created.success) {
@@ -161,7 +155,7 @@ describe('DexieDocumentPersistence', () => {
 
   it('enforces bounded section-type limits atomically for concurrent additions', async () => {
     const records = builderDocumentFixture();
-    const definition = sectionDefinitions.websitesSocialLinks;
+    const definition = sectionDefinitions.hobbies;
     const section = {
       ...records.sections[0],
       id: 50,
@@ -175,13 +169,6 @@ describe('DexieDocumentPersistence', () => {
     const intent = {
       sectionId: section.id,
       sectionType: definition.persistedType,
-      containerType: definition.expectedContainerType,
-      maxItems: 1,
-      fields: Object.values(definition.fields).map((field) => ({
-        name: field.persistedName,
-        type: field.expectedPersistedType,
-        value: '',
-      })),
     };
     const results = await Promise.all([
       persistence.addItem(records.document.id, intent),
@@ -209,12 +196,6 @@ describe('DexieDocumentPersistence', () => {
     const intent = {
       sectionId: 12,
       sectionType: definition.persistedType,
-      containerType: definition.expectedContainerType,
-      fields: Object.values(definition.fields).map((field) => ({
-        name: field.persistedName,
-        type: field.expectedPersistedType,
-        value: '',
-      })),
     };
     expect(await persistence.addItem(records.document.id, intent)).toEqual({
       success: false,
@@ -264,6 +245,30 @@ describe('DexieDocumentPersistence', () => {
     expect(await clientDb.sections.count()).toBe(0);
     expect(await clientDb.items.count()).toBe(0);
     expect(await clientDb.fields.count()).toBe(0);
+  });
+
+  it('rolls back an incomplete item graph before the transaction commits', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut(records.items);
+    await clientDb.fields.bulkPut(records.fields);
+    const persistence = new DexieDocumentPersistence();
+    const incomplete = vi
+      .spyOn(clientDb.fields, 'bulkAdd')
+      .mockResolvedValueOnce([] as unknown as number);
+
+    await expect(
+      persistence.addItem(records.document.id, {
+        sectionId: 12,
+        sectionType: 'work-experience',
+      })
+    ).rejects.toThrow('Incomplete created item graph');
+    incomplete.mockRestore();
+    expect(await clientDb.items.where('sectionId').equals(12).count()).toBe(1);
+    expect(await clientDb.fields.where('itemId').equals(22).count()).toBe(
+      Object.values(sectionDefinitions.workExperience.fields).length
+    );
   });
 
   it('scopes section edits to the document and writes structured metadata as JSON', async () => {
@@ -537,7 +542,7 @@ describe('DexieDocumentPersistence', () => {
     });
     expect(await staleTab.deleteSection(records.document.id, 12)).toEqual({
       success: false,
-      reason: 'notFound',
+      reason: 'minimumRequired',
     });
     expect(await clientDb.items.get(staleItem.id)).toEqual(staleItem);
     expect(await clientDb.sections.get(12)).toEqual(records.sections[2]);
@@ -550,7 +555,7 @@ describe('DexieDocumentPersistence', () => {
     ).toEqual({ success: true, value: undefined });
     expect(
       await staleTab.deleteItem(records.document.id, sourceItem.id)
-    ).toEqual({ success: false, reason: 'notFound' });
+    ).toEqual({ success: false, reason: 'minimumRequired' });
     expect(await clientDb.items.get(sourceItem.id)).toEqual(sourceItem);
     expect(
       await clientDb.fields.where('itemId').equals(sourceItem.id).count()
@@ -703,7 +708,7 @@ describe('DexieDocumentPersistence', () => {
         sourceItem.sectionId,
         [sourceItem.id]
       )
-    ).toEqual({ success: false, reason: 'conflict' });
+    ).toEqual({ success: false, reason: 'membershipChanged' });
     expect(
       await persistence.reorderItems(
         records.document.id,
