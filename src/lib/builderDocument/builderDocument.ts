@@ -33,6 +33,7 @@ import {
   validateSectionMetadata,
 } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type {
+  FieldInsertTemplate,
   ResumeTemplate,
   SectionType,
   StoreResult,
@@ -1729,8 +1730,16 @@ export const itemCreationTemplate = (sectionType: SectionType) => {
   return { success: true as const, definition, template };
 };
 
-export const getSectionDefinitionForPersistence = (sectionType: SectionType) =>
-  resolveSectionDefinition(sectionType);
+export const itemCreationLimitReached = (
+  definition: SectionDefinition,
+  itemCount: number
+) => {
+  const maxItems =
+    'max' in definition.itemCardinality
+      ? definition.itemCardinality.max
+      : undefined;
+  return maxItems !== undefined && itemCount >= maxItems;
+};
 
 interface DeletionContext {
   documentExists: boolean;
@@ -1764,6 +1773,58 @@ export const canDeleteSection = (context: DeletionContext) => {
   );
 };
 
+const validPersistedId = (id: number) => Number.isSafeInteger(id) && id > 0;
+
+const validateCreatedItemGraph = (
+  records: CreatedItemRecords,
+  sectionType: SectionType,
+  expected: Readonly<{
+    sectionId: number;
+    containerType: DEX_Item['containerType'];
+    displayOrder: number;
+    fields: readonly FieldInsertTemplate[];
+  }>,
+  context: 'section' | 'item'
+): void => {
+  const { item, fields } = records;
+  const analysis = analyzeItemFields(
+    { type: sectionType },
+    fields.map((field) => ({
+      id: field.id,
+      name: field.name,
+      type: field.type,
+    }))
+  );
+  if (
+    !validPersistedId(item.id) ||
+    fields.some((field) => !validPersistedId(field.id)) ||
+    new Set(fields.map((field) => field.id)).size !== fields.length ||
+    item.sectionId !== expected.sectionId ||
+    item.containerType !== expected.containerType ||
+    item.displayOrder !== expected.displayOrder ||
+    fields.length !== expected.fields.length ||
+    fields.some(
+      (field) => field.itemId !== item.id || typeof field.value !== 'string'
+    ) ||
+    analysis.diagnostics.length > 0
+  ) {
+    throw new Error(`Incomplete created ${context} graph`);
+  }
+  for (const entry of analysis.entries) {
+    const field = fields.find((candidate) => candidate.id === entry.field.id);
+    const templateField = expected.fields.find(
+      (candidate) => candidate.name === entry.field.name
+    );
+    if (!field || !templateField) {
+      throw new Error(`Created ${context} field differs from template`);
+    }
+    const { id: _id, itemId: _itemId, ...content } = field;
+    if (JSON.stringify(content) !== JSON.stringify(templateField)) {
+      throw new Error(`Created ${context} field differs from template`);
+    }
+  }
+};
+
 /** Reject an incomplete graph while the transaction can still roll back. */
 export const validateCreatedSection = (
   records: CreatedSectionRecords,
@@ -1776,52 +1837,30 @@ export const validateCreatedSection = (
     throw new Error('Invalid section creation template');
   }
   const { definition, template } = creation;
-  const { section, item, fields } = records;
-  const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
-  const analysis = analyzeItemFields(
-    section,
-    fields.map((field) => ({
-      id: field.id,
-      name: field.name,
-      type: field.type,
-    }))
-  );
+  const { section } = records;
   if (
-    !validId(section.id) ||
-    !validId(item.id) ||
-    fields.some((field) => !validId(field.id)) ||
-    new Set(fields.map((field) => field.id)).size !== fields.length ||
+    !validPersistedId(section.id) ||
     section.documentId !== documentId ||
     section.type !== intent.type ||
     section.title !== intent.title ||
     section.defaultTitle !== intent.defaultTitle ||
     section.displayOrder !== displayOrder ||
     section.metadata !==
-      (intent.metadata.length ? JSON.stringify(intent.metadata) : '') ||
-    item.sectionId !== section.id ||
-    item.containerType !== definition.expectedContainerType ||
-    item.displayOrder !== template.displayOrder ||
-    fields.length !== template.fields.length ||
-    fields.some(
-      (field) => field.itemId !== item.id || typeof field.value !== 'string'
-    ) ||
-    analysis.diagnostics.length > 0
+      (intent.metadata.length ? JSON.stringify(intent.metadata) : '')
   ) {
     throw new Error('Incomplete created section graph');
   }
-  for (const entry of analysis.entries) {
-    const field = fields.find((candidate) => candidate.id === entry.field.id);
-    const expected = template.fields.find(
-      (candidate) => candidate.name === entry.field.name
-    );
-    if (!field || !expected) {
-      throw new Error('Created section field differs from template');
-    }
-    const { id: _id, itemId: _itemId, ...content } = field;
-    if (JSON.stringify(content) !== JSON.stringify(expected)) {
-      throw new Error('Created section field differs from template');
-    }
-  }
+  validateCreatedItemGraph(
+    records,
+    intent.type,
+    {
+      sectionId: section.id,
+      containerType: definition.expectedContainerType,
+      displayOrder: template.displayOrder,
+      fields: template.fields,
+    },
+    'section'
+  );
 };
 
 /** Reject an incomplete item graph while the transaction can still roll back. */
@@ -1830,51 +1869,20 @@ export const validateCreatedItem = (
   intent: AddItemIntent,
   displayOrder: number
 ): void => {
-  const definition = resolveSectionDefinition(intent.sectionType);
-  const template = getItemInsertTemplate(
-    intent.sectionType as TemplatedSectionType
-  );
-  if (!definition || !template) {
+  const creation = itemCreationTemplate(intent.sectionType);
+  if (!creation.success) {
     throw new Error('Invalid item creation template');
   }
-
-  const { item, fields } = records;
-  const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
-  const analysis = analyzeItemFields(
-    { type: intent.sectionType },
-    fields.map((field) => ({
-      id: field.id,
-      name: field.name,
-      type: field.type,
-    }))
+  const { definition, template } = creation;
+  validateCreatedItemGraph(
+    records,
+    intent.sectionType,
+    {
+      sectionId: intent.sectionId,
+      containerType: definition.expectedContainerType,
+      displayOrder,
+      fields: template.fields,
+    },
+    'item'
   );
-  if (
-    !validId(item.id) ||
-    fields.some((field) => !validId(field.id)) ||
-    new Set(fields.map((field) => field.id)).size !== fields.length ||
-    item.sectionId !== intent.sectionId ||
-    item.containerType !== definition.expectedContainerType ||
-    item.displayOrder !== displayOrder ||
-    fields.length !== template.fields.length ||
-    fields.some(
-      (field) => field.itemId !== item.id || typeof field.value !== 'string'
-    ) ||
-    analysis.diagnostics.length > 0
-  ) {
-    throw new Error('Incomplete created item graph');
-  }
-
-  for (const entry of analysis.entries) {
-    const field = fields.find((candidate) => candidate.id === entry.field.id);
-    const expected = template.fields.find(
-      (candidate) => candidate.name === entry.field.name
-    );
-    if (!field || !expected) {
-      throw new Error('Created item field differs from template');
-    }
-    const { id: _id, itemId: _itemId, ...content } = field;
-    if (JSON.stringify(content) !== JSON.stringify(expected)) {
-      throw new Error('Created item field differs from template');
-    }
-  }
 };

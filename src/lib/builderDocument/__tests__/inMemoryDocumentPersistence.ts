@@ -7,15 +7,13 @@ import {
   serializeTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
-import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { resolveSectionDefinition } from '@/lib/sectionDefinitions/sectionDefinitions';
-import type {
-  ResumeTemplate,
-  TemplatedSectionType,
-} from '@/lib/types/documentBuilder.types';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import {
   canDeleteItemFromSection,
   canDeleteSection,
+  itemCreationLimitReached,
+  itemCreationTemplate,
   sectionCreationTemplate,
   validateCreatedItem,
   validateCreatedSection,
@@ -47,7 +45,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
   async deleteItem(
     documentId: number,
     itemId: number
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>> {
     if (this.saveFailure) {
       throw this.saveFailure;
     }
@@ -92,7 +90,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
   async deleteSection(
     documentId: number,
     sectionId: number
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>> {
     if (this.saveFailure) {
       throw this.saveFailure;
     }
@@ -138,35 +136,41 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
   async addItem(
     documentId: number,
     intent: AddItemIntent
-  ): Promise<PersistenceResult<CreatedItemRecords>> {
+  ): Promise<
+    PersistenceResult<CreatedItemRecords, 'notFound' | 'limitReached'>
+  > {
     if (this.saveFailure) {
       throw this.saveFailure;
     }
     const section = this.records.sections.find(
       (entry) => entry.id === intent.sectionId
     );
-    const definition = resolveSectionDefinition(intent.sectionType);
-    const template = getItemInsertTemplate(
-      intent.sectionType as TemplatedSectionType
-    );
+    const creation = itemCreationTemplate(intent.sectionType);
     if (
       documentId !== this.records.document.id ||
       !section ||
       section.documentId !== documentId ||
       section.type !== intent.sectionType ||
-      !definition ||
-      !template
+      !creation.success
     ) {
       return { success: false, reason: 'notFound' };
     }
+    const { definition, template } = creation;
     const siblings = this.records.items.filter(
       (entry) => entry.sectionId === intent.sectionId
     );
-    const maxItems =
-      'max' in definition.itemCardinality
-        ? definition.itemCardinality.max
-        : undefined;
-    if (maxItems !== undefined && siblings.length >= maxItems) {
+    const sectionIds = new Set(
+      this.records.sections
+        .filter(
+          (entry) =>
+            entry.documentId === documentId && entry.type === intent.sectionType
+        )
+        .map((entry) => entry.id)
+    );
+    const itemCount = this.records.items.filter((entry) =>
+      sectionIds.has(entry.sectionId)
+    ).length;
+    if (itemCreationLimitReached(definition, itemCount)) {
       return { success: false, reason: 'limitReached' };
     }
     const nextId = (records: readonly { id: number }[]) =>
@@ -193,7 +197,9 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
   async addSection(
     documentId: number,
     intent: AddSectionIntent
-  ): Promise<PersistenceResult<CreatedSectionRecords>> {
+  ): Promise<
+    PersistenceResult<CreatedSectionRecords, 'notFound' | 'alreadyExists'>
+  > {
     if (this.saveFailure) {
       throw this.saveFailure;
     }

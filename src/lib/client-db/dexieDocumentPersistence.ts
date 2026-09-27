@@ -1,7 +1,7 @@
 import {
   canDeleteItemFromSection,
   canDeleteSection,
-  getSectionDefinitionForPersistence,
+  itemCreationLimitReached,
   itemCreationTemplate,
   sectionCreationTemplate,
   validateCreatedItem,
@@ -23,6 +23,7 @@ import {
   serializeTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
+import { resolveSectionDefinition } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { clientDb } from './clientDb';
 import type { DEX_Field } from './clientDbSchema';
@@ -31,7 +32,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
   async deleteItem(
     documentId: number,
     itemId: number
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>> {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
@@ -47,7 +48,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
         ) {
           return { success: false as const, reason: 'notFound' as const };
         }
-        if (!getSectionDefinitionForPersistence(section.type)) {
+        if (!resolveSectionDefinition(section.type)) {
           return { success: false as const, reason: 'notFound' as const };
         }
         const itemCount = await clientDb.items
@@ -79,7 +80,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
   async deleteSection(
     documentId: number,
     sectionId: number
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>> {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
@@ -90,7 +91,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
           !document ||
           !section ||
           section.documentId !== documentId ||
-          !getSectionDefinitionForPersistence(section.type)
+          !resolveSectionDefinition(section.type)
         ) {
           return { success: false as const, reason: 'notFound' as const };
         }
@@ -121,7 +122,9 @@ export class DexieDocumentPersistence implements DocumentPersistence {
   async addItem(
     documentId: number,
     intent: AddItemIntent
-  ): Promise<PersistenceResult<CreatedItemRecords>> {
+  ): Promise<
+    PersistenceResult<CreatedItemRecords, 'notFound' | 'limitReached'>
+  > {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
@@ -139,10 +142,6 @@ export class DexieDocumentPersistence implements DocumentPersistence {
           return { success: false as const, reason: 'notFound' as const };
         }
         const { definition, template } = creation;
-        const maxItems =
-          'max' in definition.itemCardinality
-            ? definition.itemCardinality.max
-            : undefined;
         const sectionIds = (
           await clientDb.sections
             .where('documentId')
@@ -153,7 +152,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
         const itemCount = sectionIds.length
           ? await clientDb.items.where('sectionId').anyOf(sectionIds).count()
           : 0;
-        if (maxItems !== undefined && itemCount >= maxItems) {
+        if (itemCreationLimitReached(definition, itemCount)) {
           return { success: false as const, reason: 'limitReached' as const };
         }
         const siblings = await clientDb.items
@@ -193,7 +192,9 @@ export class DexieDocumentPersistence implements DocumentPersistence {
   async addSection(
     documentId: number,
     intent: AddSectionIntent
-  ): Promise<PersistenceResult<CreatedSectionRecords>> {
+  ): Promise<
+    PersistenceResult<CreatedSectionRecords, 'notFound' | 'alreadyExists'>
+  > {
     const creation = sectionCreationTemplate(intent);
     if (!creation.success) {
       throw new Error('Invalid section creation template');

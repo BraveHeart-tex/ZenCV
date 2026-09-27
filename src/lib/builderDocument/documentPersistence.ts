@@ -25,19 +25,20 @@ export type PersistenceFailureReason =
   | 'minimumRequired'
   | 'membershipChanged';
 
-export type PersistenceResult<T> =
+export type PersistenceResult<
+  T,
+  Reason extends PersistenceFailureReason = 'notFound',
+> =
   | Readonly<{ success: true; value: T }>
   | Readonly<{
       success: false;
-      reason: PersistenceFailureReason;
+      reason: Reason;
     }>;
 
-export type ReorderPersistenceResult =
-  | Readonly<{ success: true; value: undefined }>
-  | Readonly<{
-      success: false;
-      reason: 'notFound' | 'membershipChanged';
-    }>;
+export type ReorderPersistenceResult = PersistenceResult<
+  void,
+  'notFound' | 'membershipChanged'
+>;
 
 export type CreatedSectionRecords = Readonly<{
   section: DEX_Section;
@@ -72,19 +73,23 @@ export interface DocumentPersistence {
   addItem(
     documentId: number,
     intent: AddItemIntent
-  ): Promise<PersistenceResult<CreatedItemRecords>>;
+  ): Promise<
+    PersistenceResult<CreatedItemRecords, 'notFound' | 'limitReached'>
+  >;
   addSection(
     documentId: number,
     intent: AddSectionIntent
-  ): Promise<PersistenceResult<CreatedSectionRecords>>;
+  ): Promise<
+    PersistenceResult<CreatedSectionRecords, 'notFound' | 'alreadyExists'>
+  >;
   deleteItem(
     documentId: number,
     itemId: number
-  ): Promise<PersistenceResult<void>>;
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>>;
   deleteSection(
     documentId: number,
     sectionId: number
-  ): Promise<PersistenceResult<void>>;
+  ): Promise<PersistenceResult<void, 'notFound' | 'minimumRequired'>>;
   load(
     documentId: number
   ): Promise<PersistenceResult<PersistedDocumentRecords>>;
