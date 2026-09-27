@@ -12,8 +12,10 @@ import type {
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
+  ReorderPersistenceResult,
   SectionMetadata,
 } from '@/lib/builderDocument/documentPersistence';
+import { sameIds } from '@/lib/builderDocument/sameIds';
 import {
   serializeTemplateSettings,
   type TemplateSettings,
@@ -241,7 +243,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
   async reorderSections(
     documentId: number,
     sectionIds: readonly number[]
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<ReorderPersistenceResult> {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections],
@@ -279,7 +281,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
     documentId: number,
     sectionId: number,
     itemIds: readonly number[]
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<ReorderPersistenceResult> {
     return clientDb.transaction(
       'rw',
       [clientDb.documents, clientDb.sections, clientDb.items],
@@ -425,12 +427,3 @@ export class DexieDocumentPersistence implements DocumentPersistence {
     );
   }
 }
-
-const sameIds = (
-  currentIds: readonly number[],
-  requestedIds: readonly number[]
-) =>
-  currentIds.length === requestedIds.length &&
-  new Set(currentIds).size === currentIds.length &&
-  new Set(requestedIds).size === requestedIds.length &&
-  currentIds.every((id) => new Set(requestedIds).has(id));

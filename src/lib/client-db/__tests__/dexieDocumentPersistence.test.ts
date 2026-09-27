@@ -665,6 +665,16 @@ describe('DexieDocumentPersistence', () => {
         [...records.sections].reverse().map((section) => section.id)
       )
     ).toEqual({ success: false, reason: 'notFound' });
+    const otherDocument = { ...records.document, id: 2 };
+    await clientDb.documents.put(otherDocument);
+    expect(
+      await persistence.reorderItems(otherDocument.id, sourceItem.sectionId, [
+        sourceItem.id,
+        secondItem.id,
+      ])
+    ).toEqual({ success: false, reason: 'notFound' });
+    expect(await clientDb.items.get(sourceItem.id)).toEqual(sourceItem);
+    expect(await clientDb.items.get(secondItem.id)).toEqual(secondItem);
     expect(
       await persistence.reorderSections(records.document.id, [
         records.sections[1].id,
@@ -709,6 +719,68 @@ describe('DexieDocumentPersistence', () => {
     });
   });
 
+  it('applies the last concurrent reorder when sibling membership is unchanged', async () => {
+    const records = builderDocumentFixture();
+    const sourceItem = records.items.find((item) => item.sectionId === 12);
+    if (!sourceItem) {
+      throw new Error('Expected a Work Experience item');
+    }
+    const secondItem = { ...sourceItem, id: 222, displayOrder: 2 };
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut([...records.items, secondItem]);
+    const firstTab = new DexieDocumentPersistence();
+    const secondTab = new DexieDocumentPersistence();
+    const originalSectionIds = records.sections.map((section) => section.id);
+    const reversedSectionIds = [...originalSectionIds].reverse();
+
+    expect(
+      await Promise.all([
+        firstTab.reorderSections(records.document.id, reversedSectionIds),
+        secondTab.reorderSections(records.document.id, originalSectionIds),
+      ])
+    ).toEqual([
+      { success: true, value: undefined },
+      { success: true, value: undefined },
+    ]);
+    expect(
+      (
+        await clientDb.sections
+          .where('documentId')
+          .equals(records.document.id)
+          .toArray()
+      )
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((section) => section.id)
+    ).toEqual(originalSectionIds);
+
+    expect(
+      await Promise.all([
+        firstTab.reorderItems(records.document.id, sourceItem.sectionId, [
+          secondItem.id,
+          sourceItem.id,
+        ]),
+        secondTab.reorderItems(records.document.id, sourceItem.sectionId, [
+          sourceItem.id,
+          secondItem.id,
+        ]),
+      ])
+    ).toEqual([
+      { success: true, value: undefined },
+      { success: true, value: undefined },
+    ]);
+    expect(
+      (
+        await clientDb.items
+          .where('sectionId')
+          .equals(sourceItem.sectionId)
+          .toArray()
+      )
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((item) => item.id)
+    ).toEqual([sourceItem.id, secondItem.id]);
+  });
+
   it('rolls back every reorder update when a later write fails', async () => {
     const records = builderDocumentFixture();
     const sourceItem = records.items.find((item) => item.sectionId === 12);
@@ -719,9 +791,10 @@ describe('DexieDocumentPersistence', () => {
     await clientDb.documents.put(records.document);
     await clientDb.sections.bulkPut(records.sections);
     await clientDb.items.bulkPut([...records.items, secondItem]);
+    const realUpdate = clientDb.items.update.bind(clientDb.items);
     const update = vi
       .spyOn(clientDb.items, 'update')
-      .mockResolvedValueOnce(1)
+      .mockImplementationOnce((...args) => realUpdate(...args))
       .mockRejectedValueOnce(new Error('disk failed'));
     const persistence = new DexieDocumentPersistence();
 
@@ -731,6 +804,7 @@ describe('DexieDocumentPersistence', () => {
         sourceItem.id,
       ])
     ).rejects.toThrow('disk failed');
+    expect(update).toHaveBeenCalledTimes(2);
     update.mockRestore();
     expect(await clientDb.items.get(sourceItem.id)).toEqual(sourceItem);
     expect(await clientDb.items.get(secondItem.id)).toEqual(secondItem);

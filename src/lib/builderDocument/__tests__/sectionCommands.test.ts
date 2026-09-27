@@ -314,6 +314,19 @@ describe('Builder Document section commands', () => {
     );
     expect((await model.reorderSections(reordered)).success).toBe(false);
     expect(model.sectionIds.slice()).toEqual(before);
+    const beforeOrders = model.sections.map((section) => section.displayOrder);
+    vi.spyOn(model.persistence, 'reorderSections').mockResolvedValueOnce({
+      success: false,
+      reason: 'conflict',
+    });
+    expect(await model.reorderSections(reordered)).toEqual({
+      success: false,
+      reason: 'conflict',
+    });
+    expect(model.sectionIds.slice()).toEqual(before);
+    expect(model.sections.map((section) => section.displayOrder)).toEqual(
+      beforeOrders
+    );
     expect((await model.reorderSections(reordered)).success).toBe(true);
     expect(model.sectionIds.slice()).toEqual(reordered);
   });

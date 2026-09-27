@@ -194,8 +194,8 @@ export class BuilderSession {
       return false;
     }
     return (
-      (await this.document?.reorderItems(sectionId, itemIds as ItemId[])) ??
-      false
+      (await this.document?.reorderItems(sectionId, itemIds as ItemId[]))
+        ?.success ?? false
     );
   }
 

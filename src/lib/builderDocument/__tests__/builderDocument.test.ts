@@ -213,7 +213,7 @@ describe('Builder Document item commands', () => {
       middle.id,
     ]);
     finish();
-    expect(await reorder).toBe(true);
+    expect(await reorder).toEqual({ success: true });
     expect(await remove).toBe(true);
     expect(section.items).toEqual([last, first]);
     expect(section.items[0].editableFields[0]).toBe(field);
@@ -221,15 +221,21 @@ describe('Builder Document item commands', () => {
     vi.mocked(persistence.reorderItems).mockRejectedValueOnce(
       new Error('offline')
     );
-    expect(await document.reorderItems(section.id, [first.id, last.id])).toBe(
-      false
-    );
+    expect(
+      await document.reorderItems(section.id, [first.id, last.id])
+    ).toEqual({
+      success: false,
+      reason: 'error',
+    });
     expect(section.items).toEqual([last, first]);
     expect(last.displayOrder).toBe(1);
     expect(first.displayOrder).toBe(2);
-    expect(await document.reorderItems(section.id, [first.id, first.id])).toBe(
-      false
-    );
+    expect(
+      await document.reorderItems(section.id, [first.id, first.id])
+    ).toEqual({
+      success: false,
+      reason: 'invalid',
+    });
   });
 
   it('keeps ordered item IDs controlled by document commands', () => {
@@ -252,9 +258,12 @@ describe('Builder Document item commands', () => {
       reason: 'conflict',
     });
 
-    expect(await document.reorderItems(section.id, [second.id, first.id])).toBe(
-      false
-    );
+    expect(
+      await document.reorderItems(section.id, [second.id, first.id])
+    ).toEqual({
+      success: false,
+      reason: 'conflict',
+    });
     expect(section.items).toEqual([first, second]);
     expect(section.itemIds).toEqual([first.id, second.id]);
     expect(first.displayOrder).toBe(1);
@@ -273,8 +282,10 @@ describe('Builder Document item commands', () => {
     }
     const section = hydrated.document.workExperience;
     const item = section.items[0];
-    expect(await hydrated.document.reorderItems(section.id, [item.id])).toBe(
-      true
+    expect(await hydrated.document.reorderItems(section.id, [item.id])).toEqual(
+      {
+        success: true,
+      }
     );
     expect(item.displayOrder).toBe(1);
   });
@@ -347,7 +358,7 @@ describe('Work Experience semantic model and lifecycle', () => {
 
     expect(
       await section.reorderEntries([added as typeof first, second, first])
-    ).toBe(true);
+    ).toEqual({ success: true });
     expect(section.items).toEqual([added, second, first]);
 
     expect(await section.removeEntry(second)).toBe(true);

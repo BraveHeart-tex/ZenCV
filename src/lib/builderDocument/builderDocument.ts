@@ -49,6 +49,13 @@ export type SectionId = number & { readonly __sectionId: unique symbol };
 export type ItemId = number & { readonly __itemId: unique symbol };
 export type FieldId = number & { readonly __fieldId: unique symbol };
 
+export type ReorderResult =
+  | Readonly<{ success: true }>
+  | Readonly<{
+      success: false;
+      reason: 'invalid' | 'notFound' | 'conflict' | 'error';
+    }>;
+
 const FIELD_SAVE_DEBOUNCE_MS = 400;
 
 type AnyFieldKey<S extends SectionKey> = S extends SectionKey
@@ -546,7 +553,9 @@ export class WorkExperienceSectionModel extends BuilderSectionModel<'workExperie
     return this.#document.removeItem(item.id);
   }
 
-  reorderEntries(items: readonly WorkExperienceItemModel[]): Promise<boolean> {
+  reorderEntries(
+    items: readonly WorkExperienceItemModel[]
+  ): Promise<ReorderResult> {
     return this.#document.reorderItems(
       this.id,
       items.map((item) => item.id)
@@ -1098,19 +1107,28 @@ export class BuilderDocumentModel {
     });
   }
 
-  reorderSections(sectionIds: readonly SectionId[]): Promise<StoreResult> {
+  reorderSections(sectionIds: readonly SectionId[]): Promise<ReorderResult> {
     return this.#enqueue(async () => {
       if (
         sectionIds.length !== this.sectionIds.length ||
         new Set(sectionIds).size !== sectionIds.length ||
         sectionIds.some((id) => !this.sectionsById.has(id))
       ) {
-        return { success: false, error: 'Invalid section order' };
+        return { success: false, reason: 'invalid' };
       }
       const previousIds = [...this.sectionIds];
       const previousOrders = new Map(
         this.sections.map((section) => [section.id, section.displayOrder])
       );
+      const restoreOrder = () => {
+        runInAction(() => {
+          this.sectionIds.replace(previousIds);
+          for (const [id, order] of previousOrders) {
+            (this.sectionsById.get(id) as BuilderSectionModel).displayOrder =
+              order;
+          }
+        });
+      };
       runInAction(() => {
         this.sectionIds.replace([...sectionIds]);
         sectionIds.forEach((id, index) => {
@@ -1124,18 +1142,13 @@ export class BuilderDocumentModel {
           sectionIds
         );
         if (!result.success) {
-          throw new Error('Sections changed while reordering');
+          restoreOrder();
+          return { success: false, reason: result.reason };
         }
         return { success: true };
       } catch {
-        runInAction(() => {
-          this.sectionIds.replace(previousIds);
-          for (const [id, order] of previousOrders) {
-            (this.sectionsById.get(id) as BuilderSectionModel).displayOrder =
-              order;
-          }
-        });
-        return { success: false, error: 'Failed to reorder sections' };
+        restoreOrder();
+        return { success: false, reason: 'error' };
       }
     });
   }
@@ -1245,7 +1258,7 @@ export class BuilderDocumentModel {
   reorderItems(
     sectionId: SectionId,
     itemIds: readonly ItemId[]
-  ): Promise<boolean> {
+  ): Promise<ReorderResult> {
     return this.#enqueue(async () => {
       const section = this.sectionsById.get(sectionId);
       if (
@@ -1254,12 +1267,20 @@ export class BuilderDocumentModel {
         new Set(itemIds).size !== itemIds.length ||
         itemIds.some((id) => !section.itemIds.includes(id))
       ) {
-        return false;
+        return { success: false, reason: 'invalid' };
       }
       const previousIds = [...section.itemIds];
       const previousOrders = section.items.map(
         (item) => [item.id, item.displayOrder] as const
       );
+      const restoreOrder = () => {
+        runInAction(() => {
+          mutableItemIds(section).replace(previousIds);
+          for (const [id, order] of previousOrders) {
+            (this.itemsById.get(id) as BuilderItemModel).displayOrder = order;
+          }
+        });
+      };
       runInAction(() => {
         mutableItemIds(section).replace([...itemIds]);
         itemIds.forEach((id, index) => {
@@ -1273,17 +1294,13 @@ export class BuilderDocumentModel {
           itemIds
         );
         if (!result.success) {
-          throw new Error('Items changed while reordering');
+          restoreOrder();
+          return { success: false, reason: result.reason };
         }
-        return true;
+        return { success: true };
       } catch {
-        runInAction(() => {
-          mutableItemIds(section).replace(previousIds);
-          for (const [id, order] of previousOrders) {
-            (this.itemsById.get(id) as BuilderItemModel).displayOrder = order;
-          }
-        });
-        return false;
+        restoreOrder();
+        return { success: false, reason: 'error' };
       }
     });
   }

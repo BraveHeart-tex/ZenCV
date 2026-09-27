@@ -26,6 +26,10 @@ export type PersistenceResult<T> =
       reason: 'notFound' | 'alreadyExists' | 'limitReached' | 'conflict';
     }>;
 
+export type ReorderPersistenceResult =
+  | Readonly<{ success: true; value: undefined }>
+  | Readonly<{ success: false; reason: 'notFound' | 'conflict' }>;
+
 export type CreatedSectionRecords = Readonly<{
   section: DEX_Section;
   item: DEX_Item;
@@ -105,10 +109,10 @@ export interface DocumentPersistence {
   reorderSections(
     documentId: number,
     sectionIds: readonly number[]
-  ): Promise<PersistenceResult<void>>;
+  ): Promise<ReorderPersistenceResult>;
   reorderItems(
     documentId: number,
     sectionId: number,
     itemIds: readonly number[]
-  ): Promise<PersistenceResult<void>>;
+  ): Promise<ReorderPersistenceResult>;
 }

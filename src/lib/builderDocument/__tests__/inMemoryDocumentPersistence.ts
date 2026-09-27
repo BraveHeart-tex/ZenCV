@@ -22,8 +22,10 @@ import type {
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
+  ReorderPersistenceResult,
   SectionMetadata,
 } from '../documentPersistence';
+import { sameIds } from '../sameIds';
 
 export class InMemoryDocumentPersistence implements DocumentPersistence {
   readonly records: Omit<
@@ -277,7 +279,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
   async reorderSections(
     documentId: number,
     sectionIds: readonly number[]
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<ReorderPersistenceResult> {
     if (this.saveFailure) {
       throw this.saveFailure;
     }
@@ -308,7 +310,7 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     documentId: number,
     sectionId: number,
     itemIds: readonly number[]
-  ): Promise<PersistenceResult<void>> {
+  ): Promise<ReorderPersistenceResult> {
     if (this.saveFailure) {
       throw this.saveFailure;
     }
@@ -409,12 +411,3 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     return { success: true, value: undefined };
   }
 }
-
-const sameIds = (
-  currentIds: readonly number[],
-  requestedIds: readonly number[]
-) =>
-  currentIds.length === requestedIds.length &&
-  new Set(currentIds).size === currentIds.length &&
-  new Set(requestedIds).size === requestedIds.length &&
-  currentIds.every((id) => new Set(requestedIds).has(id));
