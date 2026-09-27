@@ -174,6 +174,7 @@ export const CURRENT_STORE_PROJECTION_IMPORT_ALLOWLIST = [
 
 export const CURRENT_STORE_DTO_IMPORT_ALLOWLIST = [
   'src/lib/builderDocument/builderDocument.ts',
+  'src/lib/builderDocument/documentPersistence.ts',
   'src/lib/stores/documentBuilder/currentStoreProjection.ts',
   'src/lib/stores/documentBuilder/documentBuilder.constants.ts',
 ] as const;

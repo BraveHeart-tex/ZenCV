@@ -1,7 +1,12 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { SemanticField } from '@/lib/builderDocument/builderDocument';
+import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
+import {
+  type DocumentId,
+  SemanticField,
+} from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -43,15 +48,23 @@ const record = (id: number): DEX_Field =>
 
 describe('DateFieldInput', () => {
   it('offers Present only for declared end dates in generic sections', () => {
+    const persistence = new InMemoryDocumentPersistence(
+      builderDocumentFixture()
+    );
+    const documentId = 1 as DocumentId;
     const start = new SemanticField(
       record(1),
       'custom',
-      sectionDefinitions.custom.fields.startDate
+      sectionDefinitions.custom.fields.startDate,
+      documentId,
+      persistence
     );
     const end = new SemanticField(
       record(2),
       'custom',
-      sectionDefinitions.custom.fields.endDate
+      sectionDefinitions.custom.fields.endDate,
+      documentId,
+      persistence
     );
     vi.mocked(builderSession.getField).mockReturnValue(start);
     const startMarkup = renderToStaticMarkup(

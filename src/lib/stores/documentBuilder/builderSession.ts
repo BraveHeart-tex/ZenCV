@@ -6,10 +6,8 @@ import {
   type ItemId,
   type SectionId,
 } from '@/lib/builderDocument/builderDocument';
-import {
-  type GetFullDocumentStructureResponse,
-  getFullDocumentStructure,
-} from '@/lib/client-db/documentService';
+import type { DocumentPersistence } from '@/lib/builderDocument/documentPersistence';
+import { DexieDocumentPersistence } from '@/lib/client-db/dexieDocumentPersistence';
 import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
@@ -26,9 +24,7 @@ export type BuilderSessionState =
   | Readonly<{ status: 'failed'; documentId: number; message: string }>;
 
 type BuilderSessionOptions = Readonly<{
-  loadRecords?: (
-    documentId: number
-  ) => Promise<GetFullDocumentStructureResponse>;
+  persistence?: DocumentPersistence;
 }>;
 
 const genericFailure = 'The document could not be loaded.';
@@ -44,10 +40,10 @@ export class BuilderSession {
   readonly templateStore: BuilderTemplateStore;
   readonly currentStoreProjection: CurrentStoreProjection;
   #generation = 0;
-  readonly #loadRecords: NonNullable<BuilderSessionOptions['loadRecords']>;
+  readonly #persistence: DocumentPersistence;
 
   constructor(options: BuilderSessionOptions = {}) {
-    this.#loadRecords = options.loadRecords ?? getFullDocumentStructure;
+    this.#persistence = options.persistence ?? new DexieDocumentPersistence();
     this.UIStore = new BuilderUIStore(this);
     this.currentStoreProjection = new CurrentStoreProjection(this);
     this.templateStore = new BuilderTemplateStore(this);
@@ -87,11 +83,15 @@ export class BuilderSession {
       this.state = { status: 'loading', documentId };
     });
     try {
-      const records = await this.#loadRecords(documentId);
+      const records = await this.#persistence.load(documentId);
       if (!records.success) {
-        return this.publishFailure(generation, documentId, records.error);
+        return this.publishFailure(
+          generation,
+          documentId,
+          'Document not found.'
+        );
       }
-      const hydrated = hydrateBuilderDocument(records);
+      const hydrated = hydrateBuilderDocument(records.value, this.#persistence);
       if (!hydrated.success) {
         return this.publishFailure(
           generation,

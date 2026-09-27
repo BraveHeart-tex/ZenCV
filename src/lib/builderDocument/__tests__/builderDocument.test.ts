@@ -5,7 +5,6 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { updateField } from '@/lib/client-db/fieldService';
 import {
   addItemFromTemplate,
   addItemFromTemplateWithSectionTypeLimit,
@@ -19,8 +18,11 @@ import {
   type PersistedDocumentRecords,
 } from '../builderDocument';
 import { builderDocumentFixture as fixture } from './builderDocumentFixture';
+import { InMemoryDocumentPersistence } from './inMemoryDocumentPersistence';
 
-vi.mock('@/lib/client-db/fieldService', () => ({ updateField: vi.fn() }));
+const updateField = vi.fn(
+  async (_fieldId: number, _value: string): Promise<number> => 1
+);
 vi.mock('@/lib/client-db/itemService', () => ({
   addItemFromTemplate: vi.fn(),
   addItemFromTemplateWithSectionTypeLimit: vi.fn(),
@@ -707,7 +709,15 @@ describe('Builder Document hydration', () => {
 
 describe('Semantic Field editing', () => {
   const roleField = () => {
-    const result = hydrateBuilderDocument(fixture());
+    const records = fixture();
+    const persistence = new InMemoryDocumentPersistence(records);
+    persistence.saveFieldValue = async (_documentId, fieldId, value) => {
+      const updated = await updateField(fieldId, value);
+      return updated === 1
+        ? { success: true, value: undefined }
+        : { success: false, reason: 'notFound' };
+    };
+    const result = hydrateBuilderDocument(records, persistence);
     if (!result.success) {
       throw new Error('Fixture failed hydration');
     }

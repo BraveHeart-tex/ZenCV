@@ -17,16 +17,10 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { getFullDocumentStructure } from '@/lib/client-db/documentService';
-import { updateField } from '@/lib/client-db/fieldService';
+import { DexieDocumentPersistence } from '@/lib/client-db/dexieDocumentPersistence';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { SectionItem } from '../SectionItem';
-
-vi.mock('@/lib/client-db/documentService', () => ({
-  getFullDocumentStructure: vi.fn(),
-}));
-vi.mock('@/lib/client-db/fieldService', () => ({ updateField: vi.fn() }));
 
 let records: PersistedDocumentRecords;
 
@@ -47,17 +41,19 @@ beforeEach(async () => {
   });
   records = builderDocumentFixture();
   localStorage.clear();
-  vi.mocked(getFullDocumentStructure).mockImplementation(async () => ({
-    success: true,
-    document: records.document,
-    sections: [...records.sections],
-    items: [...records.items],
-    fields: [...records.fields],
-  }));
-  vi.mocked(updateField).mockImplementation(async (id, value) => {
+  vi.spyOn(DexieDocumentPersistence.prototype, 'load').mockImplementation(
+    async () => ({
+      success: true,
+      value: records,
+    })
+  );
+  vi.spyOn(
+    DexieDocumentPersistence.prototype,
+    'saveFieldValue'
+  ).mockImplementation(async (_documentId, id, value) => {
     const field = records.fields.find((candidate) => candidate.id === id);
     if (!field) {
-      return 0;
+      return { success: false, reason: 'notFound' };
     }
     records = {
       ...records,
@@ -68,7 +64,7 @@ beforeEach(async () => {
             : candidate
       ),
     };
-    return 1;
+    return { success: true, value: undefined };
   });
   await builderSession.load(records.document.id);
 });
@@ -77,6 +73,7 @@ afterEach(() => {
   cleanup();
   builderSession.discard();
   vi.clearAllMocks();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
 

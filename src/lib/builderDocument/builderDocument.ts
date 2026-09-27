@@ -13,11 +13,11 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
+import { DexieDocumentPersistence } from '@/lib/client-db/dexieDocumentPersistence';
 import {
   renameDocument,
   updateDocument,
 } from '@/lib/client-db/documentService';
-import { updateField } from '@/lib/client-db/fieldService';
 import {
   addItemFromTemplate,
   addItemFromTemplateWithSectionTypeLimit,
@@ -54,6 +54,10 @@ import type {
   StoreResult,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
+import type {
+  DocumentPersistence,
+  PersistedDocumentRecords,
+} from './documentPersistence';
 
 export type DocumentId = number & { readonly __documentId: unique symbol };
 export type SectionId = number & { readonly __sectionId: unique symbol };
@@ -127,14 +131,20 @@ export class SemanticField<
   #pendingCount = 0;
   #lastQueued: { version: number; promise: Promise<boolean> } | null = null;
   #disposed = false;
+  readonly #persistence: DocumentPersistence;
+  readonly #documentId: DocumentId;
 
   constructor(
     record: DEX_Field,
     sectionKey: S,
-    definition: FieldDefinition<S>
+    definition: FieldDefinition<S>,
+    documentId: DocumentId,
+    persistence: DocumentPersistence
   ) {
     this.id = record.id as FieldId;
     this.itemId = record.itemId as ItemId;
+    this.#documentId = documentId;
+    this.#persistence = persistence;
     this.sectionKey = sectionKey;
     this.fieldKey = definition.key as K;
     const {
@@ -247,8 +257,12 @@ export class SemanticField<
         return false;
       }
       try {
-        const updated = await updateField(this.id, value);
-        if (updated === 0) {
+        const result = await this.#persistence.saveFieldValue(
+          this.#documentId,
+          this.id,
+          value
+        );
+        if (!result.success) {
           throw new Error('Field no longer exists');
         }
         runInAction(() => {
@@ -586,9 +600,15 @@ export class BuilderDocumentModel {
   #commandTail: Promise<void> = Promise.resolve();
   #acceptingCommands = true;
   #commandFailed = false;
+  readonly persistence: DocumentPersistence;
 
-  constructor(record: DEX_Document, sectionIds: readonly SectionId[]) {
+  constructor(
+    record: DEX_Document,
+    sectionIds: readonly SectionId[],
+    persistence: DocumentPersistence
+  ) {
     this.id = record.id as DocumentId;
+    this.persistence = persistence;
     this.title = record.title;
     this.templateType = record.templateType;
     this.templateSettings = record.templateSettings;
@@ -899,7 +919,9 @@ export class BuilderDocumentModel {
             const model = new SemanticField(
               recordsById.get(Number(field.id)) as DEX_Field,
               definition.key as SectionKey,
-              fieldDefinition as FieldDefinition<SectionKey>
+              fieldDefinition as FieldDefinition<SectionKey>,
+              this.id,
+              this.persistence
             );
             typedFields[model.fieldKey] = model;
             return model;
@@ -1151,7 +1173,9 @@ export class BuilderDocumentModel {
         const model = new SemanticField(
           recordsById.get(Number(field.id)) as DEX_Field,
           section.sectionKey,
-          definition
+          definition,
+          this.id,
+          this.persistence
         );
         typedFields[model.fieldKey] = model;
         return model;
@@ -1295,12 +1319,7 @@ export type HydrationResult =
   | Readonly<{ success: true; document: BuilderDocumentModel }>
   | Readonly<{ success: false; diagnostics: readonly HydrationDiagnostic[] }>;
 
-export interface PersistedDocumentRecords {
-  readonly document: DEX_Document;
-  readonly sections: readonly DEX_Section[];
-  readonly items: readonly DEX_Item[];
-  readonly fields: readonly DEX_Field[];
-}
+export type { PersistedDocumentRecords } from './documentPersistence';
 
 const byId = <T extends { readonly id: number }>(left: T, right: T): number =>
   left.id - right.id;
@@ -1412,12 +1431,10 @@ const checkFieldStructure = (
   }
 };
 
-export const hydrateBuilderDocument = ({
-  document,
-  sections,
-  items,
-  fields,
-}: PersistedDocumentRecords): HydrationResult => {
+export const hydrateBuilderDocument = (
+  { document, sections, items, fields }: PersistedDocumentRecords,
+  persistence: DocumentPersistence = new DexieDocumentPersistence()
+): HydrationResult => {
   const diagnostics: HydrationDiagnostic[] = [];
   const sortedSections = [...sections].sort(byId);
   const sortedItems = [...items].sort(byId);
@@ -1587,7 +1604,8 @@ export const hydrateBuilderDocument = ({
   const orderedSections = sortedSections.sort(byOrder);
   const model = new BuilderDocumentModel(
     document,
-    orderedSections.map((section) => section.id as SectionId)
+    orderedSections.map((section) => section.id as SectionId),
+    persistence
   );
   for (const section of orderedSections) {
     const definition = resolved.get(section.id) as SectionDefinition;
@@ -1619,7 +1637,9 @@ export const hydrateBuilderDocument = ({
         const fieldModel = new SemanticField(
           record,
           definition.key as SectionKey,
-          fieldDefinition
+          fieldDefinition,
+          model.id,
+          persistence
         );
         model.fieldsById.set(fieldModel.id, fieldModel);
         typedFields[fieldModel.fieldKey] = fieldModel;

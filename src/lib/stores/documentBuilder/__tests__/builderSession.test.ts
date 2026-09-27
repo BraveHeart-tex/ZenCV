@@ -1,15 +1,58 @@
 import { describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('uses one persistence instance for load, field save, and navigation flush', async () => {
+    const records = builderDocumentFixture();
+    const persistence = new InMemoryDocumentPersistence(records);
+    const session = new BuilderSession({ persistence });
+    expect((await session.load(records.document.id)).status).toBe('ready');
+    const role = session.document?.workExperience.entries[0]?.role;
+    if (!role) {
+      throw new Error('Expected a role field');
+    }
+    role.setDraft('Staff Engineer');
+    expect(role.value).toBe('Staff Engineer');
+    expect(
+      persistence.records.fields.find((field) => field.id === role.id)?.value
+    ).toBe('value-role');
+    expect(await session.prepareNavigation()).toBe(true);
+    expect(
+      persistence.records.fields.find((field) => field.id === role.id)?.value
+    ).toBe('Staff Engineer');
+    expect(session.state).toEqual({ status: 'idle' });
+  });
+
+  it('keeps a failed flush in the active session for a corrected retry', async () => {
+    const records = builderDocumentFixture();
+    const persistence = new InMemoryDocumentPersistence(records);
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    const role = session.document?.workExperience.entries[0]?.role;
+    if (!role) {
+      throw new Error('Expected a role field');
+    }
+    persistence.saveFailure = new Error('offline');
+    role.setDraft('First attempt');
+    expect(await session.prepareNavigation()).toBe(false);
+    expect(session.document).not.toBeNull();
+    expect(role.value).toBe('value-role');
+    persistence.saveFailure = null;
+    role.setDraft('Second attempt');
+    expect(await session.prepareNavigation()).toBe(true);
+    expect(
+      persistence.records.fields.find((field) => field.id === role.id)?.value
+    ).toBe('Second attempt');
+  });
+
   it('atomically publishes one hydrated document and its projection', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [...records.sections],
         items: [...records.items],
@@ -34,8 +77,7 @@ describe('BuilderSession', () => {
   it('focuses the semantic initial field for a Work Experience entry', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [...records.sections],
         items: [...records.items],
@@ -66,8 +108,7 @@ describe('BuilderSession', () => {
   it('does not publish a document when hydration fails', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [{ ...records.sections[0], id: records.sections[1]?.id }],
         items: [...records.items],
@@ -85,8 +126,7 @@ describe('BuilderSession', () => {
   it('keeps the generic load failure for malformed Work Experience fields', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [...records.sections],
         items: [...records.items],
@@ -132,8 +172,7 @@ describe('BuilderSession', () => {
         ),
     ];
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [...records.sections],
         items,
@@ -238,8 +277,7 @@ describe('BuilderSession', () => {
         .map((item) => item.id)
     );
     const session = new BuilderSession({
-      loadRecords: async () => ({
-        success: true,
+      persistence: new InMemoryDocumentPersistence({
         document: records.document,
         sections: [...records.sections],
         items: [...records.items],

@@ -1,6 +1,11 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import { SemanticField } from '@/lib/builderDocument/builderDocument';
+import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
+import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
+import {
+  type DocumentId,
+  SemanticField,
+} from '@/lib/builderDocument/builderDocument';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import {
   type FieldDefinition,
@@ -42,45 +47,73 @@ const record = (id: number): DEX_Field =>
 
 describe('SectionField', () => {
   it('chooses controls, width, and compact label from definitions', () => {
+    const persistence = new InMemoryDocumentPersistence(
+      builderDocumentFixture()
+    );
+    const documentId = 1 as DocumentId;
     const fields = [
       new SemanticField(
         record(1),
         'personalDetails',
-        sectionDefinitions.personalDetails.fields.wantedJobTitle
+        sectionDefinitions.personalDetails.fields.wantedJobTitle,
+        documentId,
+        persistence
       ),
       new SemanticField(
         record(2),
         'websitesSocialLinks',
-        sectionDefinitions.websitesSocialLinks.fields.link
+        sectionDefinitions.websitesSocialLinks.fields.link,
+        documentId,
+        persistence
       ),
       new SemanticField(
         record(3),
         'workExperience',
-        sectionDefinitions.workExperience.fields.startDate
+        sectionDefinitions.workExperience.fields.startDate,
+        documentId,
+        persistence
       ),
       new SemanticField(
         record(4),
         'skills',
-        sectionDefinitions.skills.fields.experienceLevel
+        sectionDefinitions.skills.fields.experienceLevel,
+        documentId,
+        persistence
       ),
       new SemanticField(
         record(5),
         'hobbies',
-        sectionDefinitions.hobbies.fields.whatYouLike
+        sectionDefinitions.hobbies.fields.whatYouLike,
+        documentId,
+        persistence
       ),
       new SemanticField(
         record(6),
         'summary',
-        sectionDefinitions.summary.fields.summary
+        sectionDefinitions.summary.fields.summary,
+        documentId,
+        persistence
       ),
-      new SemanticField(record(7), 'personalDetails', {
-        ...sectionDefinitions.personalDetails.fields.firstName,
-        labelRow: 'compact',
-      } as FieldDefinition<'personalDetails'>),
-      new SemanticField(record(8), 'websitesSocialLinks', {
-        ...sectionDefinitions.websitesSocialLinks.fields.link,
-        labelRow: 'compact',
-      } as FieldDefinition<'websitesSocialLinks'>),
+      new SemanticField(
+        record(7),
+        'personalDetails',
+        {
+          ...sectionDefinitions.personalDetails.fields.firstName,
+          labelRow: 'compact',
+        } as FieldDefinition<'personalDetails'>,
+        documentId,
+        persistence
+      ),
+      new SemanticField(
+        record(8),
+        'websitesSocialLinks',
+        {
+          ...sectionDefinitions.websitesSocialLinks.fields.link,
+          labelRow: 'compact',
+        } as FieldDefinition<'websitesSocialLinks'>,
+        documentId,
+        persistence
+      ),
     ];
     const markup = fields.map((field) => {
       vi.mocked(builderSession.getField).mockReturnValue(field);
