@@ -274,6 +274,73 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     return { success: true, value: undefined };
   }
 
+  async reorderSections(
+    documentId: number,
+    sectionIds: readonly number[]
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const siblings = this.records.sections.filter(
+      (section) => section.documentId === documentId
+    );
+    if (documentId !== this.records.document.id) {
+      return { success: false, reason: 'notFound' };
+    }
+    if (
+      !sameIds(
+        siblings.map((section) => section.id),
+        sectionIds
+      )
+    ) {
+      return { success: false, reason: 'conflict' };
+    }
+    sectionIds.forEach((id, index) => {
+      const section = this.records.sections.find((entry) => entry.id === id);
+      if (section) {
+        section.displayOrder = index + 1;
+      }
+    });
+    return { success: true, value: undefined };
+  }
+
+  async reorderItems(
+    documentId: number,
+    sectionId: number,
+    itemIds: readonly number[]
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const section = this.records.sections.find(
+      (entry) => entry.id === sectionId
+    );
+    if (
+      documentId !== this.records.document.id ||
+      section?.documentId !== documentId
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    const siblings = this.records.items.filter(
+      (item) => item.sectionId === sectionId
+    );
+    if (
+      !sameIds(
+        siblings.map((item) => item.id),
+        itemIds
+      )
+    ) {
+      return { success: false, reason: 'conflict' };
+    }
+    itemIds.forEach((id, index) => {
+      const item = this.records.items.find((entry) => entry.id === id);
+      if (item) {
+        item.displayOrder = index + 1;
+      }
+    });
+    return { success: true, value: undefined };
+  }
+
   async renameDocument(
     documentId: number,
     title: string
@@ -342,3 +409,12 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     return { success: true, value: undefined };
   }
 }
+
+const sameIds = (
+  currentIds: readonly number[],
+  requestedIds: readonly number[]
+) =>
+  currentIds.length === requestedIds.length &&
+  new Set(currentIds).size === currentIds.length &&
+  new Set(requestedIds).size === requestedIds.length &&
+  currentIds.every((id) => new Set(requestedIds).has(id));

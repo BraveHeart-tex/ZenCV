@@ -309,7 +309,9 @@ describe('Builder Document section commands', () => {
     expect(model.sectionsById.get(created.data.sectionId)).toBe(section);
     const before = [...model.sectionIds];
     const reordered = [...before].reverse() as SectionId[];
-    persistence.bulkUpdateSections.mockRejectedValueOnce(new Error('offline'));
+    vi.spyOn(model.persistence, 'reorderSections').mockRejectedValueOnce(
+      new Error('offline')
+    );
     expect((await model.reorderSections(reordered)).success).toBe(false);
     expect(model.sectionIds.slice()).toEqual(before);
     expect((await model.reorderSections(reordered)).success).toBe(true);

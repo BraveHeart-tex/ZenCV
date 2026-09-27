@@ -646,4 +646,93 @@ describe('DexieDocumentPersistence', () => {
     expect(savedAfter).toEqual({ success: false, reason: 'notFound' });
     expect(await clientDb.fields.get(secondFields[0].id)).toBeUndefined();
   });
+
+  it('reorders sections and items only when persisted membership matches', async () => {
+    const records = builderDocumentFixture();
+    const sourceItem = records.items.find((item) => item.sectionId === 12);
+    if (!sourceItem) {
+      throw new Error('Expected a Work Experience item');
+    }
+    const secondItem = { ...sourceItem, id: 222, displayOrder: 2 };
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut([...records.items, secondItem]);
+    const persistence = new DexieDocumentPersistence();
+
+    expect(
+      await persistence.reorderSections(
+        2,
+        [...records.sections].reverse().map((section) => section.id)
+      )
+    ).toEqual({ success: false, reason: 'notFound' });
+    expect(
+      await persistence.reorderSections(records.document.id, [
+        records.sections[1].id,
+        records.sections[0].id,
+        records.sections[2].id,
+      ])
+    ).toEqual({ success: true, value: undefined });
+    expect(
+      (
+        await clientDb.sections
+          .where('documentId')
+          .equals(records.document.id)
+          .toArray()
+      )
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map((section) => section.id)
+    ).toEqual([
+      records.sections[1].id,
+      records.sections[0].id,
+      records.sections[2].id,
+    ]);
+
+    expect(
+      await persistence.reorderItems(
+        records.document.id,
+        sourceItem.sectionId,
+        [sourceItem.id]
+      )
+    ).toEqual({ success: false, reason: 'conflict' });
+    expect(
+      await persistence.reorderItems(
+        records.document.id,
+        sourceItem.sectionId,
+        [secondItem.id, sourceItem.id]
+      )
+    ).toEqual({ success: true, value: undefined });
+    expect(await clientDb.items.get(secondItem.id)).toMatchObject({
+      displayOrder: 1,
+    });
+    expect(await clientDb.items.get(sourceItem.id)).toMatchObject({
+      displayOrder: 2,
+    });
+  });
+
+  it('rolls back every reorder update when a later write fails', async () => {
+    const records = builderDocumentFixture();
+    const sourceItem = records.items.find((item) => item.sectionId === 12);
+    if (!sourceItem) {
+      throw new Error('Expected a Work Experience item');
+    }
+    const secondItem = { ...sourceItem, id: 222, displayOrder: 2 };
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut(records.sections);
+    await clientDb.items.bulkPut([...records.items, secondItem]);
+    const update = vi
+      .spyOn(clientDb.items, 'update')
+      .mockResolvedValueOnce(1)
+      .mockRejectedValueOnce(new Error('disk failed'));
+    const persistence = new DexieDocumentPersistence();
+
+    await expect(
+      persistence.reorderItems(records.document.id, sourceItem.sectionId, [
+        secondItem.id,
+        sourceItem.id,
+      ])
+    ).rejects.toThrow('disk failed');
+    update.mockRestore();
+    expect(await clientDb.items.get(sourceItem.id)).toEqual(sourceItem);
+    expect(await clientDb.items.get(secondItem.id)).toEqual(secondItem);
+  });
 });

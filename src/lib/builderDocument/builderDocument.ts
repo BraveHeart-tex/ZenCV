@@ -12,8 +12,6 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { bulkUpdateItems } from '@/lib/client-db/itemService';
-import { bulkUpdateSections } from '@/lib/client-db/sectionService';
 import {
   getDefaultAccentColorForTemplate,
   parseTemplateSettings,
@@ -1113,11 +1111,6 @@ export class BuilderDocumentModel {
       const previousOrders = new Map(
         this.sections.map((section) => [section.id, section.displayOrder])
       );
-      const changes = sectionIds.flatMap((id, index) =>
-        previousOrders.get(id) === index + 1
-          ? []
-          : [{ key: id, changes: { displayOrder: index + 1 } }]
-      );
       runInAction(() => {
         this.sectionIds.replace([...sectionIds]);
         sectionIds.forEach((id, index) => {
@@ -1126,11 +1119,12 @@ export class BuilderDocumentModel {
         });
       });
       try {
-        if (
-          changes.length > 0 &&
-          (await bulkUpdateSections(changes)) !== changes.length
-        ) {
-          throw new Error('Some sections no longer exist');
+        const result = await this.persistence.reorderSections(
+          this.id,
+          sectionIds
+        );
+        if (!result.success) {
+          throw new Error('Sections changed while reordering');
         }
         return { success: true };
       } catch {
@@ -1266,12 +1260,6 @@ export class BuilderDocumentModel {
       const previousOrders = section.items.map(
         (item) => [item.id, item.displayOrder] as const
       );
-      const changes = itemIds.flatMap((id, index) => {
-        const item = this.itemsById.get(id) as BuilderItemModel;
-        return item.displayOrder === index + 1
-          ? []
-          : [{ key: id, changes: { displayOrder: index + 1 } }];
-      });
       runInAction(() => {
         mutableItemIds(section).replace([...itemIds]);
         itemIds.forEach((id, index) => {
@@ -1279,11 +1267,13 @@ export class BuilderDocumentModel {
         });
       });
       try {
-        if (changes.length > 0) {
-          const updated = await bulkUpdateItems(changes);
-          if (updated !== changes.length) {
-            throw new Error('Some items no longer exist');
-          }
+        const result = await this.persistence.reorderItems(
+          this.id,
+          sectionId,
+          itemIds
+        );
+        if (!result.success) {
+          throw new Error('Items changed while reordering');
         }
         return true;
       } catch {

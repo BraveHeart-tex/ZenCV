@@ -23,7 +23,7 @@ export type PersistenceResult<T> =
   | Readonly<{ success: true; value: T }>
   | Readonly<{
       success: false;
-      reason: 'notFound' | 'alreadyExists' | 'limitReached';
+      reason: 'notFound' | 'alreadyExists' | 'limitReached' | 'conflict';
     }>;
 
 export type CreatedSectionRecords = Readonly<{
@@ -101,5 +101,14 @@ export interface DocumentPersistence {
     documentId: number,
     sectionId: number,
     metadata: SectionMetadata
+  ): Promise<PersistenceResult<void>>;
+  reorderSections(
+    documentId: number,
+    sectionIds: readonly number[]
+  ): Promise<PersistenceResult<void>>;
+  reorderItems(
+    documentId: number,
+    sectionId: number,
+    itemIds: readonly number[]
   ): Promise<PersistenceResult<void>>;
 }

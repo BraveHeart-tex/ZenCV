@@ -238,6 +238,83 @@ export class DexieDocumentPersistence implements DocumentPersistence {
     });
   }
 
+  async reorderSections(
+    documentId: number,
+    sectionIds: readonly number[]
+  ): Promise<PersistenceResult<void>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections],
+      async () => {
+        if (!(await clientDb.documents.get(documentId))) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const siblings = await clientDb.sections
+          .where('documentId')
+          .equals(documentId)
+          .toArray();
+        if (
+          !sameIds(
+            siblings.map((section) => section.id),
+            sectionIds
+          )
+        ) {
+          return { success: false as const, reason: 'conflict' as const };
+        }
+        for (const [index, sectionId] of sectionIds.entries()) {
+          if (
+            (await clientDb.sections.update(sectionId, {
+              displayOrder: index + 1,
+            })) !== 1
+          ) {
+            throw new Error('Section no longer exists');
+          }
+        }
+        return { success: true as const, value: undefined };
+      }
+    );
+  }
+
+  async reorderItems(
+    documentId: number,
+    sectionId: number,
+    itemIds: readonly number[]
+  ): Promise<PersistenceResult<void>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        const section = await clientDb.sections.get(sectionId);
+        if (!document || !section || section.documentId !== documentId) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const siblings = await clientDb.items
+          .where('sectionId')
+          .equals(sectionId)
+          .toArray();
+        if (
+          !sameIds(
+            siblings.map((item) => item.id),
+            itemIds
+          )
+        ) {
+          return { success: false as const, reason: 'conflict' as const };
+        }
+        for (const [index, itemId] of itemIds.entries()) {
+          if (
+            (await clientDb.items.update(itemId, {
+              displayOrder: index + 1,
+            })) !== 1
+          ) {
+            throw new Error('Item no longer exists');
+          }
+        }
+        return { success: true as const, value: undefined };
+      }
+    );
+  }
+
   private async saveSectionChange(
     documentId: number,
     sectionId: number,
@@ -348,3 +425,12 @@ export class DexieDocumentPersistence implements DocumentPersistence {
     );
   }
 }
+
+const sameIds = (
+  currentIds: readonly number[],
+  requestedIds: readonly number[]
+) =>
+  currentIds.length === requestedIds.length &&
+  new Set(currentIds).size === currentIds.length &&
+  new Set(requestedIds).size === requestedIds.length &&
+  currentIds.every((id) => new Set(requestedIds).has(id));

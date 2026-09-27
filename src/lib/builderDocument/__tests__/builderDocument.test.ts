@@ -5,7 +5,6 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { bulkUpdateItems } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type { ItemId, PersistedDocumentRecords } from '../builderDocument';
 import {
@@ -17,14 +16,9 @@ import { InMemoryDocumentPersistence } from './inMemoryDocumentPersistence';
 const updateField = vi.fn(
   async (_fieldId: number, _value: string): Promise<number> => 1
 );
-vi.mock('@/lib/client-db/itemService', () => ({
-  bulkUpdateItems: vi.fn(),
-}));
-
 afterEach(() => {
   vi.useRealTimers();
   vi.mocked(updateField).mockReset();
-  vi.mocked(bulkUpdateItems).mockReset();
 });
 
 const commandDocument = (workItems = 1) => {
@@ -197,11 +191,12 @@ describe('Builder Document item commands', () => {
     const section = document.workExperience;
     const [first, middle, last] = section.items;
     const field = last.editableFields[0];
+    const persistence = document.persistence as InMemoryDocumentPersistence;
     let finish: () => void = () => {};
-    vi.mocked(bulkUpdateItems).mockImplementationOnce(
-      () =>
+    vi.spyOn(persistence, 'reorderItems').mockImplementationOnce(
+      async () =>
         new Promise((resolve) => {
-          finish = () => resolve(3);
+          finish = () => resolve({ success: true, value: undefined });
         })
     );
     const reorder = document.reorderItems(section.id, [
@@ -212,10 +207,10 @@ describe('Builder Document item commands', () => {
     const remove = document.removeItem(middle.id);
     await Promise.resolve();
     expect(section.items).toEqual([last, first, middle]);
-    expect(bulkUpdateItems).toHaveBeenCalledWith([
-      { key: last.id, changes: { displayOrder: 1 } },
-      { key: first.id, changes: { displayOrder: 2 } },
-      { key: middle.id, changes: { displayOrder: 3 } },
+    expect(persistence.reorderItems).toHaveBeenCalledWith(1, section.id, [
+      last.id,
+      first.id,
+      middle.id,
     ]);
     finish();
     expect(await reorder).toBe(true);
@@ -223,7 +218,9 @@ describe('Builder Document item commands', () => {
     expect(section.items).toEqual([last, first]);
     expect(section.items[0].editableFields[0]).toBe(field);
 
-    vi.mocked(bulkUpdateItems).mockRejectedValueOnce(new Error('offline'));
+    vi.mocked(persistence.reorderItems).mockRejectedValueOnce(
+      new Error('offline')
+    );
     expect(await document.reorderItems(section.id, [first.id, last.id])).toBe(
       false
     );
@@ -250,7 +247,10 @@ describe('Builder Document item commands', () => {
     const document = commandDocument(2);
     const section = document.workExperience;
     const [first, second] = section.items;
-    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(1);
+    vi.spyOn(document.persistence, 'reorderItems').mockResolvedValueOnce({
+      success: false,
+      reason: 'conflict',
+    });
 
     expect(await document.reorderItems(section.id, [second.id, first.id])).toBe(
       false
@@ -271,16 +271,12 @@ describe('Builder Document item commands', () => {
     if (!hydrated.success) {
       return;
     }
-    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(1);
     const section = hydrated.document.workExperience;
     const item = section.items[0];
     expect(await hydrated.document.reorderItems(section.id, [item.id])).toBe(
       true
     );
     expect(item.displayOrder).toBe(1);
-    expect(bulkUpdateItems).toHaveBeenCalledWith([
-      { key: item.id, changes: { displayOrder: 1 } },
-    ]);
   });
 });
 
@@ -344,8 +340,11 @@ describe('Work Experience semantic model and lifecycle', () => {
     const added = await section.addEntry();
     expect(added?.id).toBe(99);
     expect(added?.entry.role).toBe(added?.fields.role);
+    vi.spyOn(document.persistence, 'reorderItems').mockResolvedValueOnce({
+      success: true,
+      value: undefined,
+    });
 
-    vi.mocked(bulkUpdateItems).mockResolvedValueOnce(2);
     expect(
       await section.reorderEntries([added as typeof first, second, first])
     ).toBe(true);
