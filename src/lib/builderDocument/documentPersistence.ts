@@ -5,7 +5,10 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import type { TemplateSettings } from '@/lib/constants/accentColors';
-import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import type {
+  ResumeTemplate,
+  SectionType,
+} from '@/lib/types/documentBuilder.types';
 
 /** Private record handoff to the strict Builder Document hydrator. */
 export type PersistedDocumentRecords = Readonly<{
@@ -17,7 +20,20 @@ export type PersistedDocumentRecords = Readonly<{
 
 export type PersistenceResult<T> =
   | Readonly<{ success: true; value: T }>
-  | Readonly<{ success: false; reason: 'notFound' }>;
+  | Readonly<{ success: false; reason: 'notFound' | 'alreadyExists' }>;
+
+export type CreatedSectionRecords = Readonly<{
+  section: DEX_Section;
+  item: DEX_Item;
+  fields: readonly DEX_Field[];
+}>;
+
+export type AddSectionIntent = Readonly<{
+  type: SectionType;
+  title: string;
+  defaultTitle: string;
+  metadata: SectionMetadata;
+}>;
 
 export type SectionMetadata = readonly Readonly<{
   key: string;
@@ -26,6 +42,10 @@ export type SectionMetadata = readonly Readonly<{
 }>[];
 
 export interface DocumentPersistence {
+  addSection(
+    documentId: number,
+    intent: AddSectionIntent
+  ): Promise<PersistenceResult<CreatedSectionRecords>>;
   load(
     documentId: number
   ): Promise<PersistenceResult<PersistedDocumentRecords>>;

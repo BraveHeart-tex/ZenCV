@@ -1,8 +1,9 @@
 import 'fake-indexeddb/auto';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { hydrateBuilderDocument } from '@/lib/builderDocument/builderDocument';
 import { getDefaultSkillsMetadata } from '@/lib/misc/sectionMetadataTemplates';
+import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { clientDb } from '../clientDb';
 import { DexieDocumentPersistence } from '../dexieDocumentPersistence';
 
@@ -24,6 +25,135 @@ beforeEach(clearRecords);
 afterEach(clearRecords);
 
 describe('DexieDocumentPersistence', () => {
+  const intent = (key: 'courses' | 'custom' | 'skills') => {
+    const definition = sectionDefinitions[key];
+    return {
+      type: definition.persistedType,
+      title: definition.label,
+      defaultTitle: definition.label,
+      metadata:
+        key === 'skills'
+          ? (JSON.parse(getDefaultSkillsMetadata()) as {
+              key: string;
+              label: string;
+              value: string;
+            }[])
+          : [],
+    };
+  };
+
+  it('creates complete sections with Dexie IDs and persisted sibling order', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    await clientDb.sections.bulkPut([...records.sections]);
+    await clientDb.items.bulkPut([...records.items]);
+    await clientDb.fields.bulkPut([...records.fields]);
+    const persistence = new DexieDocumentPersistence();
+    const created = await persistence.addSection(
+      records.document.id,
+      intent('skills')
+    );
+    expect(created.success).toBe(true);
+    if (!created.success) {
+      throw new Error('Expected a created section');
+    }
+    const { section, item, fields } = created.value;
+    expect(section).toMatchObject({
+      displayOrder: 4,
+      metadata: getDefaultSkillsMetadata(),
+    });
+    expect(item.sectionId).toBe(section.id);
+    expect(fields).toHaveLength(
+      Object.keys(sectionDefinitions.skills.fields).length
+    );
+    expect(fields.every((field) => field.itemId === item.id)).toBe(true);
+    expect(await clientDb.sections.get(section.id)).toEqual(section);
+    expect(await clientDb.items.get(item.id)).toEqual(item);
+    expect(
+      await clientDb.fields.where('itemId').equals(item.id).toArray()
+    ).toEqual(expect.arrayContaining([...fields]));
+    const loaded = await persistence.load(records.document.id);
+    expect(loaded.success).toBe(true);
+    if (loaded.success) {
+      const hydrated = hydrateBuilderDocument(loaded.value, persistence);
+      expect(hydrated.success).toBe(true);
+    }
+  });
+
+  it('checks optional-one uniqueness in storage and allows multiple Custom sections', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    const first = new DexieDocumentPersistence();
+    const second = new DexieDocumentPersistence();
+    expect(
+      (await first.addSection(records.document.id, intent('courses'))).success
+    ).toBe(true);
+    expect(
+      await second.addSection(records.document.id, intent('courses'))
+    ).toEqual({
+      success: false,
+      reason: 'alreadyExists',
+    });
+    const custom1 = await first.addSection(
+      records.document.id,
+      intent('custom')
+    );
+    const custom2 = await second.addSection(
+      records.document.id,
+      intent('custom')
+    );
+    expect(custom1.success && custom2.success).toBe(true);
+    expect(
+      await clientDb.sections
+        .where('documentId')
+        .equals(records.document.id)
+        .count()
+    ).toBe(3);
+  });
+
+  it('rejects creation for a missing document without inserting records', async () => {
+    const persistence = new DexieDocumentPersistence();
+    expect(await persistence.addSection(999, intent('custom'))).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    expect(await clientDb.sections.count()).toBe(0);
+    expect(await clientDb.items.count()).toBe(0);
+    expect(await clientDb.fields.count()).toBe(0);
+  });
+
+  it('rolls back every created record when storage fails after section and item insertion', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    const persistence = new DexieDocumentPersistence();
+    const fail = vi
+      .spyOn(clientDb.fields, 'bulkAdd')
+      .mockRejectedValueOnce(new Error('disk failed'));
+    await expect(
+      persistence.addSection(records.document.id, intent('courses'))
+    ).rejects.toThrow('disk failed');
+    fail.mockRestore();
+    expect(await clientDb.sections.count()).toBe(0);
+    expect(await clientDb.items.count()).toBe(0);
+    expect(await clientDb.fields.count()).toBe(0);
+  });
+
+  it('rolls back an incomplete graph before the transaction commits', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    const persistence = new DexieDocumentPersistence();
+    const incomplete = vi
+      .spyOn(clientDb.fields, 'bulkAdd')
+      .mockResolvedValueOnce([] as unknown as number);
+    await expect(
+      persistence.addSection(records.document.id, intent('courses'))
+    ).rejects.toThrow('Incomplete created section graph');
+    incomplete.mockRestore();
+    expect(await clientDb.sections.count()).toBe(0);
+    expect(await clientDb.items.count()).toBe(0);
+    expect(await clientDb.fields.count()).toBe(0);
+  });
+
   it('scopes section edits to the document and writes structured metadata as JSON', async () => {
     const records = builderDocumentFixture();
     const section = {

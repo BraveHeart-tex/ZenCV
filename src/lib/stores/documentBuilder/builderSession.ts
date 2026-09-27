@@ -91,7 +91,13 @@ export class BuilderSession {
           'Document not found.'
         );
       }
-      const hydrated = hydrateBuilderDocument(records.value, this.#persistence);
+      const hydrated = hydrateBuilderDocument(
+        records.value,
+        this.#persistence,
+        async () => {
+          await this.load(documentId);
+        }
+      );
       if (!hydrated.success) {
         return this.publishFailure(
           generation,

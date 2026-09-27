@@ -1,10 +1,20 @@
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import type {
+  DEX_Field,
+  DEX_Item,
+  DEX_Section,
+} from '@/lib/client-db/clientDbSchema';
 import {
   serializeTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
+import {
+  sectionCreationTemplate,
+  validateCreatedSection,
+} from '../builderDocument';
 import type {
+  AddSectionIntent,
+  CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
@@ -17,6 +27,62 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
 
   constructor(records: PersistedDocumentRecords) {
     this.records = structuredClone(records);
+  }
+
+  async addSection(
+    documentId: number,
+    intent: AddSectionIntent
+  ): Promise<PersistenceResult<CreatedSectionRecords>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    if (documentId !== this.records.document.id) {
+      return { success: false, reason: 'notFound' };
+    }
+    const { definition, template } = sectionCreationTemplate(intent);
+    if (
+      definition.sectionCardinality === 'optional-one' &&
+      this.records.sections.some((section) => section.type === intent.type)
+    ) {
+      return { success: false, reason: 'alreadyExists' };
+    }
+    const nextId = (records: readonly { id: number }[]) =>
+      Math.max(0, ...records.map((record) => record.id)) + 1;
+    const sectionId = nextId(this.records.sections);
+    const itemId = nextId(this.records.items);
+    const fieldId = nextId(this.records.fields);
+    const displayOrder =
+      Math.max(
+        0,
+        ...this.records.sections.map((section) => section.displayOrder)
+      ) + 1;
+    const value: CreatedSectionRecords = {
+      section: {
+        id: sectionId,
+        documentId,
+        type: intent.type,
+        title: intent.title,
+        defaultTitle: intent.defaultTitle,
+        metadata: intent.metadata.length ? JSON.stringify(intent.metadata) : '',
+        displayOrder,
+      },
+      item: {
+        id: itemId,
+        sectionId,
+        containerType: template.containerType,
+        displayOrder: template.displayOrder,
+      },
+      fields: template.fields.map((field, index) => ({
+        ...field,
+        id: fieldId + index,
+        itemId,
+      })) as DEX_Field[],
+    };
+    validateCreatedSection(value, intent, documentId, displayOrder);
+    (this.records.sections as DEX_Section[]).push(value.section);
+    (this.records.items as DEX_Item[]).push(value.item);
+    (this.records.fields as DEX_Field[]).push(...value.fields);
+    return { success: true, value };
   }
 
   async renameSection(

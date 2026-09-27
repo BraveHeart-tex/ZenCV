@@ -1,4 +1,10 @@
+import {
+  sectionCreationTemplate,
+  validateCreatedSection,
+} from '@/lib/builderDocument/builderDocument';
 import type {
+  AddSectionIntent,
+  CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
@@ -10,8 +16,71 @@ import {
 } from '@/lib/constants/accentColors';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { clientDb } from './clientDb';
+import type { DEX_Field } from './clientDbSchema';
 
 export class DexieDocumentPersistence implements DocumentPersistence {
+  async addSection(
+    documentId: number,
+    intent: AddSectionIntent
+  ): Promise<PersistenceResult<CreatedSectionRecords>> {
+    const { definition, template } = sectionCreationTemplate(intent);
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        if (!(await clientDb.documents.get(documentId))) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const siblings = await clientDb.sections
+          .where('documentId')
+          .equals(documentId)
+          .toArray();
+        if (
+          definition.sectionCardinality === 'optional-one' &&
+          siblings.some((section) => section.type === intent.type)
+        ) {
+          return { success: false as const, reason: 'alreadyExists' as const };
+        }
+        const displayOrder =
+          Math.max(0, ...siblings.map((section) => section.displayOrder)) + 1;
+        const sectionInput = {
+          documentId,
+          type: intent.type,
+          title: intent.title,
+          defaultTitle: intent.defaultTitle,
+          metadata: intent.metadata.length
+            ? JSON.stringify(intent.metadata)
+            : '',
+          displayOrder,
+        };
+        const sectionId = await clientDb.sections.add(sectionInput);
+        const itemInput = {
+          sectionId,
+          containerType: template.containerType,
+          displayOrder: template.displayOrder,
+        };
+        const itemId = await clientDb.items.add(itemInput);
+        const fieldInputs = template.fields.map((field) => ({
+          ...field,
+          itemId,
+        }));
+        const fieldIds = await clientDb.fields.bulkAdd(fieldInputs, {
+          allKeys: true,
+        });
+        const value: CreatedSectionRecords = {
+          section: { ...sectionInput, id: sectionId },
+          item: { ...itemInput, id: itemId },
+          fields: fieldInputs.map((field, index) => ({
+            ...field,
+            id: fieldIds[index],
+          })) as DEX_Field[],
+        };
+        validateCreatedSection(value, intent, documentId, displayOrder);
+        return { success: true as const, value };
+      }
+    );
+  }
+
   async renameSection(
     documentId: number,
     sectionId: number,

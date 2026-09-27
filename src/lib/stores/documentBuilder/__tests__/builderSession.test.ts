@@ -2,10 +2,39 @@ import { describe, expect, it, vi } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('reloads durable state when model construction fails after creation commits', async () => {
+    const records = builderDocumentFixture();
+    const persistence = new InMemoryDocumentPersistence(records);
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    const originalDocument = session.document;
+    const addSection = persistence.addSection.bind(persistence);
+    persistence.addSection = async (...args) => {
+      const result = await addSection(...args);
+      return result.success
+        ? { success: true, value: { ...result.value, fields: [] } }
+        : result;
+    };
+    const definition = sectionDefinitions.courses;
+    const result = await originalDocument?.addSection({
+      type: definition.persistedType,
+      title: definition.label,
+      defaultTitle: definition.label,
+    });
+    expect(result).toEqual({ success: false, error: 'Failed to add section' });
+    expect(session.state.status).toBe('ready');
+    expect(session.document).not.toBe(originalDocument);
+    expect(session.document?.courses?.items).toHaveLength(1);
+    expect(persistence.records.sections).toHaveLength(
+      records.sections.length + 1
+    );
+  });
+
   it('uses one persistence instance for load, field save, and navigation flush', async () => {
     const records = builderDocumentFixture();
     const persistence = new InMemoryDocumentPersistence(records);

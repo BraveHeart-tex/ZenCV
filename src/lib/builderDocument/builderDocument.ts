@@ -6,7 +6,6 @@ import {
   observable,
   runInAction,
 } from 'mobx';
-import { clientDb } from '@/lib/client-db/clientDb';
 import type {
   DEX_Document,
   DEX_Field,
@@ -49,6 +48,8 @@ import type {
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import type {
+  AddSectionIntent,
+  CreatedSectionRecords,
   DocumentPersistence,
   PersistedDocumentRecords,
 } from './documentPersistence';
@@ -602,14 +603,17 @@ export class BuilderDocumentModel {
   #titleRevision = 0;
   #appearanceRevision = 0;
   readonly persistence: DocumentPersistence;
+  readonly #reconcileAfterCreateFailure?: () => Promise<void>;
 
   constructor(
     record: DEX_Document,
     sectionIds: readonly SectionId[],
-    persistence: DocumentPersistence
+    persistence: DocumentPersistence,
+    reconcileAfterCreateFailure?: () => Promise<void>
   ) {
     this.id = record.id as DocumentId;
     this.persistence = persistence;
+    this.#reconcileAfterCreateFailure = reconcileAfterCreateFailure;
     this.title = record.title;
     this.templateType = record.templateType;
     this.templateSettings = parseTemplateSettings(record.templateSettings);
@@ -874,75 +878,55 @@ export class BuilderDocumentModel {
           error: 'Section template does not match its definition',
         };
       }
+      let committed = false;
       try {
-        const created = await clientDb.transaction(
-          'rw',
-          [clientDb.sections, clientDb.items, clientDb.fields],
-          async () => {
-            const persisted = await clientDb.sections
-              .where('documentId')
-              .equals(this.id)
-              .toArray();
-            if (
-              definition.sectionCardinality === 'optional-one' &&
-              persisted.some((section) => section.type === input.type)
-            ) {
-              return undefined;
-            }
-            const displayOrder =
-              Math.max(0, ...persisted.map((section) => section.displayOrder)) +
-              1;
-            const sectionInput = {
-              documentId: this.id,
-              type: input.type,
-              title: input.title,
-              defaultTitle: input.defaultTitle,
-              metadata: input.metadata ?? '',
-              displayOrder,
-            };
-            const sectionId = await clientDb.sections.add(sectionInput);
-            const itemInput = {
-              sectionId,
-              containerType: template.containerType,
-              displayOrder: template.displayOrder,
-            };
-            const itemId = await clientDb.items.add(itemInput);
-            const fieldInputs = template.fields.map((field) => ({
-              ...field,
-              itemId,
-            }));
-            const fieldIds = await clientDb.fields.bulkAdd(fieldInputs, {
-              allKeys: true,
-            });
-            return {
-              section: { ...sectionInput, id: sectionId } as DEX_Section,
-              item: { ...itemInput, id: itemId } as DEX_Item,
-              fields: fieldInputs.map((field, index) => ({
-                ...field,
-                id: fieldIds[index],
-              })) as DEX_Field[],
-            };
-          }
-        );
-        if (!created) {
-          return { success: false, error: 'Section already exists' };
+        const created = await this.persistence.addSection(this.id, {
+          type: input.type,
+          title: input.title,
+          defaultTitle: input.defaultTitle,
+          metadata: metadata as BuilderSectionModel['metadata'],
+        });
+        if (!created.success) {
+          return {
+            success: false,
+            error:
+              created.reason === 'alreadyExists'
+                ? 'Section already exists'
+                : 'Failed to add section',
+          };
         }
+        committed = true;
+        const {
+          section: sectionRecord,
+          item: itemRecord,
+          fields: fieldRecords,
+        } = created.value;
         const analysis = analyzeItemFields(
-          created.section,
-          created.fields.map((field) => ({
+          sectionRecord,
+          fieldRecords.map((field) => ({
             id: field.id,
             name: field.name,
             type: field.type,
           }))
         );
+        if (
+          analysis.diagnostics.length > 0 ||
+          analysis.entries.length !== fieldRecords.length
+        ) {
+          throw new Error('Created section graph is invalid');
+        }
         const recordsById = new Map(
-          created.fields.map((field) => [field.id, field])
+          fieldRecords.map((field) => [field.id, field])
         );
         const typedFields: Record<string, SemanticField> = {};
         const fields = analysis.entries.map(
           ({ field, definition: fieldDefinition }) => {
+            const record = recordsById.get(Number(field.id));
+            if (!record) {
+              throw new Error('Created field is missing');
+            }
             const model = new SemanticField(
-              recordsById.get(Number(field.id)) as DEX_Field,
+              record,
               definition.key as SectionKey,
               fieldDefinition as FieldDefinition<SectionKey>,
               this.id,
@@ -952,15 +936,15 @@ export class BuilderDocumentModel {
             return model;
           }
         );
-        const item = new BuilderItemModel(
-          created.item,
+        const item = createBuilderItemModel(
+          itemRecord,
           definition.key,
           fields.map((field) => field.id),
           typedFields,
           this
         );
         const section = new BuilderSectionModel(
-          created.section,
+          sectionRecord,
           definition,
           metadata as BuilderSectionModel['metadata'],
           [item.id],
@@ -979,6 +963,13 @@ export class BuilderDocumentModel {
           data: { sectionId: section.id, itemId: item.id },
         };
       } catch {
+        if (committed) {
+          try {
+            await this.#reconcileAfterCreateFailure?.();
+          } catch {
+            // The session owns the failed reload state.
+          }
+        }
         return { success: false, error: 'Failed to add section' };
       }
     });
@@ -1467,7 +1458,8 @@ const checkFieldStructure = (
 
 export const hydrateBuilderDocument = (
   { document, sections, items, fields }: PersistedDocumentRecords,
-  persistence: DocumentPersistence
+  persistence: DocumentPersistence,
+  reconcileAfterCreateFailure?: () => Promise<void>
 ): HydrationResult => {
   const diagnostics: HydrationDiagnostic[] = [];
   const sortedSections = [...sections].sort(byId);
@@ -1639,7 +1631,8 @@ export const hydrateBuilderDocument = (
   const model = new BuilderDocumentModel(
     document,
     orderedSections.map((section) => section.id as SectionId),
-    persistence
+    persistence,
+    reconcileAfterCreateFailure
   );
   for (const section of orderedSections) {
     const definition = resolved.get(section.id) as SectionDefinition;
@@ -1690,4 +1683,83 @@ export const hydrateBuilderDocument = (
     }
   }
   return { success: true, document: model };
+};
+
+export const sectionCreationTemplate = (intent: AddSectionIntent) => {
+  const definition = resolveSectionDefinition(intent.type);
+  const template = getItemInsertTemplate(intent.type as TemplatedSectionType);
+  if (
+    !definition ||
+    !template ||
+    definition.sectionCardinality === 'required-one' ||
+    validateSectionMetadata(definition, intent.metadata).length > 0 ||
+    template.containerType !== definition.expectedContainerType ||
+    analyzeItemFields(
+      { type: intent.type },
+      template.fields.map((field, id) => ({
+        id,
+        name: field.name,
+        type: field.type,
+      }))
+    ).diagnostics.length > 0
+  ) {
+    throw new Error('Invalid section creation template');
+  }
+  return { definition, template };
+};
+
+/** Reject an incomplete graph while the transaction can still roll back. */
+export const validateCreatedSection = (
+  records: CreatedSectionRecords,
+  intent: AddSectionIntent,
+  documentId: number,
+  displayOrder: number
+): void => {
+  const { definition, template } = sectionCreationTemplate(intent);
+  const { section, item, fields } = records;
+  const validId = (id: number) => Number.isSafeInteger(id) && id > 0;
+  const analysis = analyzeItemFields(
+    section,
+    fields.map((field) => ({
+      id: field.id,
+      name: field.name,
+      type: field.type,
+    }))
+  );
+  if (
+    !validId(section.id) ||
+    !validId(item.id) ||
+    fields.some((field) => !validId(field.id)) ||
+    new Set(fields.map((field) => field.id)).size !== fields.length ||
+    section.documentId !== documentId ||
+    section.type !== intent.type ||
+    section.title !== intent.title ||
+    section.defaultTitle !== intent.defaultTitle ||
+    section.displayOrder !== displayOrder ||
+    section.metadata !==
+      (intent.metadata.length ? JSON.stringify(intent.metadata) : '') ||
+    item.sectionId !== section.id ||
+    item.containerType !== definition.expectedContainerType ||
+    item.displayOrder !== template.displayOrder ||
+    fields.length !== template.fields.length ||
+    fields.some(
+      (field) => field.itemId !== item.id || typeof field.value !== 'string'
+    ) ||
+    analysis.diagnostics.length > 0
+  ) {
+    throw new Error('Incomplete created section graph');
+  }
+  for (const entry of analysis.entries) {
+    const field = fields.find((candidate) => candidate.id === entry.field.id);
+    const expected = template.fields.find(
+      (candidate) => candidate.name === entry.field.name
+    );
+    if (!field || !expected) {
+      throw new Error('Created section field differs from template');
+    }
+    const { id: _id, itemId: _itemId, ...content } = field;
+    if (JSON.stringify(content) !== JSON.stringify(expected)) {
+      throw new Error('Created section field differs from template');
+    }
+  }
 };

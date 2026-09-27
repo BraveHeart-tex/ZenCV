@@ -80,6 +80,14 @@ vi.mock('@/lib/client-db/sectionService', () => ({
 const document = () => {
   const records = builderDocumentFixture();
   const adapter = new InMemoryDocumentPersistence(records);
+  persistence.deleteSection.mockImplementation(async (id: number) => {
+    const index = adapter.records.sections.findIndex(
+      (section) => section.id === id
+    );
+    if (index >= 0) {
+      (adapter.records.sections as DEX_Section[]).splice(index, 1);
+    }
+  });
   adapter.renameSection = sectionCommands.renameSection;
   adapter.saveSectionMetadata = sectionCommands.saveSectionMetadata;
   const result = hydrateBuilderDocument(records, adapter);
@@ -123,6 +131,38 @@ const option = (
 };
 
 describe('Builder Document section commands', () => {
+  it('rejects a section added in another session and leaves the model unchanged', async () => {
+    const model = document();
+    const adapter = model.persistence as InMemoryDocumentPersistence;
+    const input = option('courses');
+    const persisted = await adapter.addSection(model.id, {
+      type: input.type,
+      title: input.title,
+      defaultTitle: input.defaultTitle,
+      metadata: [],
+    });
+    expect(persisted.success).toBe(true);
+    expect(await model.addSection(input)).toEqual({
+      success: false,
+      error: 'Section already exists',
+    });
+    expect(model.courses).toBeUndefined();
+    expect(model.sectionIds).toHaveLength(3);
+  });
+
+  it('keeps model and records unchanged on a storage failure', async () => {
+    const model = document();
+    const adapter = model.persistence as InMemoryDocumentPersistence;
+    const before = structuredClone(adapter.records);
+    adapter.saveFailure = new Error('disk failed');
+    expect(await model.addSection(option('courses'))).toEqual({
+      success: false,
+      error: 'Failed to add section',
+    });
+    expect(adapter.records).toEqual(before);
+    expect(model.sectionIds).toHaveLength(3);
+  });
+
   it('enforces required, optional-one, and many Section Cardinality', async () => {
     const model = document();
     expect(await model.removeSection(model.workExperience.id)).toBe(false);
@@ -133,18 +173,22 @@ describe('Builder Document section commands', () => {
     expect((await model.addSection(option('custom'))).success).toBe(true);
     expect((await model.addSection(option('custom'))).success).toBe(true);
     expect(model.customSections).toHaveLength(2);
-    expect(persistence.addSection).toHaveBeenCalledTimes(3);
+    expect(
+      (model.persistence as InMemoryDocumentPersistence).records.sections
+    ).toHaveLength(6);
   });
 
   it('publishes one complete graph after persistence allocates IDs', async () => {
     const model = document();
     let release: (() => void) | undefined;
-    persistence.addFields.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          release = () => resolve([300, 301, 302, 303]);
-        })
-    );
+    const adapter = model.persistence as InMemoryDocumentPersistence;
+    const addSection = adapter.addSection.bind(adapter);
+    adapter.addSection = async (...args) => {
+      await new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      return addSection(...args);
+    };
     const pending = model.addSection(option('courses'));
     await vi.waitFor(() => expect(release).toBeDefined());
     expect(model.courses).toBeUndefined();
