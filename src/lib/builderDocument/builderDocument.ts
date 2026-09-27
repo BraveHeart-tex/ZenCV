@@ -12,11 +12,8 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { bulkUpdateItems, deleteItem } from '@/lib/client-db/itemService';
-import {
-  bulkUpdateSections,
-  deleteSection,
-} from '@/lib/client-db/sectionService';
+import { bulkUpdateItems } from '@/lib/client-db/itemService';
+import { bulkUpdateSections } from '@/lib/client-db/sectionService';
 import {
   getDefaultAccentColorForTemplate,
   parseTemplateSettings,
@@ -999,7 +996,10 @@ export class BuilderDocumentModel {
         }
       });
       try {
-        await deleteSection(sectionId);
+        const result = await this.persistence.deleteSection(this.id, sectionId);
+        if (!result.success) {
+          throw new Error('Section no longer exists');
+        }
         for (const field of fields) {
           field.dispose();
         }
@@ -1227,7 +1227,10 @@ export class BuilderDocumentModel {
         }
       });
       try {
-        await deleteItem(itemId);
+        const result = await this.persistence.deleteItem(this.id, itemId);
+        if (!result.success) {
+          throw new Error('Item no longer exists');
+        }
         for (const field of fields) {
           field.dispose();
         }
@@ -1696,6 +1699,38 @@ export const sectionCreationTemplate = (intent: AddSectionIntent) => {
     };
   }
   return { success: true as const, definition, template };
+};
+
+interface DeletionContext {
+  documentExists: boolean;
+  documentId: number;
+  section: Pick<DEX_Section, 'documentId' | 'type'> | undefined;
+}
+
+const resolveOwnedSectionDefinition = ({
+  documentExists,
+  documentId,
+  section,
+}: DeletionContext) => {
+  if (!documentExists || !section || section.documentId !== documentId) {
+    return undefined;
+  }
+  return resolveSectionDefinition(section.type);
+};
+
+export const canDeleteItemFromSection = (
+  context: DeletionContext,
+  itemCount: number
+) => {
+  const definition = resolveOwnedSectionDefinition(context);
+  return Boolean(definition && itemCount > definition.itemCardinality.min);
+};
+
+export const canDeleteSection = (context: DeletionContext) => {
+  const definition = resolveOwnedSectionDefinition(context);
+  return Boolean(
+    definition && definition.sectionCardinality !== 'required-one'
+  );
 };
 
 /** Reject an incomplete graph while the transaction can still roll back. */

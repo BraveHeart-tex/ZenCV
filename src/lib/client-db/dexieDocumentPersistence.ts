@@ -1,4 +1,6 @@
 import {
+  canDeleteItemFromSection,
+  canDeleteSection,
   sectionCreationTemplate,
   validateCreatedSection,
 } from '@/lib/builderDocument/builderDocument';
@@ -21,6 +23,74 @@ import { clientDb } from './clientDb';
 import type { DEX_Field } from './clientDbSchema';
 
 export class DexieDocumentPersistence implements DocumentPersistence {
+  async deleteItem(
+    documentId: number,
+    itemId: number
+  ): Promise<PersistenceResult<void>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        const item = await clientDb.items.get(itemId);
+        const section = item && (await clientDb.sections.get(item.sectionId));
+        if (!item || !section) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const itemCount = await clientDb.items
+          .where('sectionId')
+          .equals(section.id)
+          .count();
+        if (
+          !canDeleteItemFromSection(
+            {
+              documentExists: Boolean(document),
+              documentId,
+              section,
+            },
+            itemCount
+          )
+        ) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        await clientDb.fields.where('itemId').equals(itemId).delete();
+        await clientDb.items.delete(itemId);
+        return { success: true as const, value: undefined };
+      }
+    );
+  }
+
+  async deleteSection(
+    documentId: number,
+    sectionId: number
+  ): Promise<PersistenceResult<void>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections, clientDb.items, clientDb.fields],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        const section = await clientDb.sections.get(sectionId);
+        if (
+          !canDeleteSection({
+            documentExists: Boolean(document),
+            documentId,
+            section,
+          })
+        ) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const itemIds = await clientDb.items
+          .where('sectionId')
+          .equals(sectionId)
+          .primaryKeys();
+        await clientDb.fields.where('itemId').anyOf(itemIds).delete();
+        await clientDb.items.bulkDelete(itemIds);
+        await clientDb.sections.delete(sectionId);
+        return { success: true as const, value: undefined };
+      }
+    );
+  }
+
   async addItem(
     documentId: number,
     intent: AddItemIntent

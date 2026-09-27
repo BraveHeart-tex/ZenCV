@@ -67,6 +67,14 @@ export interface DocumentPersistence {
     documentId: number,
     intent: AddSectionIntent
   ): Promise<PersistenceResult<CreatedSectionRecords>>;
+  deleteItem(
+    documentId: number,
+    itemId: number
+  ): Promise<PersistenceResult<void>>;
+  deleteSection(
+    documentId: number,
+    sectionId: number
+  ): Promise<PersistenceResult<void>>;
   load(
     documentId: number
   ): Promise<PersistenceResult<PersistedDocumentRecords>>;

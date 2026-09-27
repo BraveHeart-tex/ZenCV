@@ -43,12 +43,6 @@ const persistence = vi.hoisted(() => {
     addFields: vi.fn(async (fields: Omit<DEX_Field, 'id'>[]) =>
       fields.map(() => nextFieldId++)
     ),
-    deleteSection: vi.fn(async (id: number) => {
-      const index = sections.findIndex((section) => section.id === id);
-      if (index >= 0) {
-        sections.splice(index, 1);
-      }
-    }),
     bulkUpdateSections: vi.fn(async (changes: unknown[]) => changes.length),
     reset() {
       sections.length = 0;
@@ -73,21 +67,12 @@ vi.mock('@/lib/client-db/clientDb', () => ({
   },
 }));
 vi.mock('@/lib/client-db/sectionService', () => ({
-  deleteSection: persistence.deleteSection,
   bulkUpdateSections: persistence.bulkUpdateSections,
 }));
 
 const document = () => {
   const records = builderDocumentFixture();
   const adapter = new InMemoryDocumentPersistence(records);
-  persistence.deleteSection.mockImplementation(async (id: number) => {
-    const index = adapter.records.sections.findIndex(
-      (section) => section.id === id
-    );
-    if (index >= 0) {
-      (adapter.records.sections as DEX_Section[]).splice(index, 1);
-    }
-  });
   adapter.renameSection = sectionCommands.renameSection;
   adapter.saveSectionMetadata = sectionCommands.saveSectionMetadata;
   const result = hydrateBuilderDocument(records, adapter);
@@ -166,7 +151,6 @@ describe('Builder Document section commands', () => {
   it('enforces required, optional-one, and many Section Cardinality', async () => {
     const model = document();
     expect(await model.removeSection(model.workExperience.id)).toBe(false);
-    expect(persistence.deleteSection).not.toHaveBeenCalled();
     const first = await model.addSection(option('courses'));
     expect(first.success).toBe(true);
     expect((await model.addSection(option('courses'))).success).toBe(false);
@@ -215,12 +199,12 @@ describe('Builder Document section commands', () => {
     const field = item?.editableFields[0];
     const previousOrder = [...model.sectionIds];
     let reject: ((error: Error) => void) | undefined;
-    persistence.deleteSection.mockImplementationOnce(
-      () =>
-        new Promise((_, failure) => {
-          reject = failure;
-        })
-    );
+    const adapter = model.persistence as InMemoryDocumentPersistence;
+    const deleteSection = adapter.deleteSection.bind(adapter);
+    adapter.deleteSection = () =>
+      new Promise((_, failure) => {
+        reject = failure;
+      });
     const pending = model.removeSection(added.data.sectionId);
     await vi.waitFor(() => expect(reject).toBeDefined());
     expect(model.sectionsById.has(added.data.sectionId)).toBe(false);
@@ -230,6 +214,7 @@ describe('Builder Document section commands', () => {
     expect(model.sectionsById.get(added.data.sectionId)).toBe(section);
     expect(model.itemsById.get(item?.id as ItemId)).toBe(item);
     expect(model.fieldsById.get(field?.id as FieldId)).toBe(field);
+    adapter.deleteSection = deleteSection;
     expect(await model.removeSection(added.data.sectionId)).toBe(true);
     expect(model.customSections).toHaveLength(0);
   });
@@ -254,12 +239,11 @@ describe('Builder Document section commands', () => {
       throw new Error('Failed to create courses');
     }
     let finish: (() => void) | undefined;
-    persistence.deleteSection.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          finish = () => resolve(undefined);
-        })
-    );
+    const adapter = model.persistence as InMemoryDocumentPersistence;
+    adapter.deleteSection = () =>
+      new Promise((resolve) => {
+        finish = () => resolve({ success: true, value: undefined });
+      });
     const removal = model.removeSection(created.data.sectionId);
     const rename = model.renameSection(model.workExperience.id, 'Experience');
     await vi.waitFor(() => expect(finish).toBeDefined());

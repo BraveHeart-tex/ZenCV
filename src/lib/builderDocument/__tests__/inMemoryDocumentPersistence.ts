@@ -9,6 +9,8 @@ import {
 } from '@/lib/constants/accentColors';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import {
+  canDeleteItemFromSection,
+  canDeleteSection,
   sectionCreationTemplate,
   validateCreatedSection,
 } from '../builderDocument';
@@ -33,6 +35,76 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
     fields: DEX_Field[];
   };
   saveFailure: Error | null = null;
+
+  async deleteItem(
+    documentId: number,
+    itemId: number
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const item = this.records.items.find((entry) => entry.id === itemId);
+    const section =
+      item &&
+      this.records.sections.find((entry) => entry.id === item.sectionId);
+    if (!item || !section) {
+      return { success: false, reason: 'notFound' };
+    }
+    const itemCount = this.records.items.filter(
+      (entry) => entry.sectionId === section.id
+    ).length;
+    if (
+      !canDeleteItemFromSection(
+        {
+          documentExists: documentId === this.records.document.id,
+          documentId,
+          section,
+        },
+        itemCount
+      )
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    const index = this.records.items.indexOf(item);
+    this.records.items.splice(index, 1);
+    this.records.fields = this.records.fields.filter(
+      (field) => field.itemId !== itemId
+    );
+    return { success: true, value: undefined };
+  }
+
+  async deleteSection(
+    documentId: number,
+    sectionId: number
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const section = this.records.sections.find(
+      (entry) => entry.id === sectionId
+    );
+    if (
+      !section ||
+      !canDeleteSection({
+        documentExists: documentId === this.records.document.id,
+        documentId,
+        section,
+      })
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    const itemIds = this.records.items
+      .filter((item) => item.sectionId === sectionId)
+      .map((item) => item.id);
+    this.records.sections.splice(this.records.sections.indexOf(section), 1);
+    this.records.items = this.records.items.filter(
+      (item) => item.sectionId !== sectionId
+    );
+    this.records.fields = this.records.fields.filter(
+      (field) => !itemIds.includes(field.itemId)
+    );
+    return { success: true, value: undefined };
+  }
 
   constructor(records: PersistedDocumentRecords) {
     const cloned = structuredClone(records);

@@ -5,7 +5,7 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
-import { bulkUpdateItems, deleteItem } from '@/lib/client-db/itemService';
+import { bulkUpdateItems } from '@/lib/client-db/itemService';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type { ItemId, PersistedDocumentRecords } from '../builderDocument';
 import {
@@ -19,14 +19,12 @@ const updateField = vi.fn(
 );
 vi.mock('@/lib/client-db/itemService', () => ({
   bulkUpdateItems: vi.fn(),
-  deleteItem: vi.fn(),
 }));
 
 afterEach(() => {
   vi.useRealTimers();
   vi.mocked(updateField).mockReset();
   vi.mocked(bulkUpdateItems).mockReset();
-  vi.mocked(deleteItem).mockReset();
 });
 
 const commandDocument = (workItems = 1) => {
@@ -120,7 +118,6 @@ describe('Builder Document item commands', () => {
       false
     );
     expect(await document.addItem(document.personalDetails.id)).toBeUndefined();
-    expect(deleteItem).not.toHaveBeenCalled();
 
     const records = fixture();
     const definition = sectionDefinitions.websitesSocialLinks;
@@ -170,12 +167,11 @@ describe('Builder Document item commands', () => {
     const [first, middle, last] = section.items;
     const fields = middle.editableFields;
     let rejectDelete: (error: Error) => void = () => {};
-    vi.mocked(deleteItem).mockImplementationOnce(
-      () =>
-        new Promise((_resolve, reject) => {
-          rejectDelete = reject;
-        })
-    );
+    const persistence = document.persistence as InMemoryDocumentPersistence;
+    persistence.deleteItem = async () =>
+      new Promise((_resolve, reject) => {
+        rejectDelete = reject;
+      });
     const pending = document.removeItem(middle.id);
     await Promise.resolve();
     expect(section.items).toEqual([first, last]);
@@ -187,7 +183,10 @@ describe('Builder Document item commands', () => {
     expect(document.fieldsById.get(fields[0].id)).toBe(fields[0]);
     fields[0].setDraft('still active');
 
-    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
+    persistence.deleteItem = async () => ({
+      success: true,
+      value: undefined,
+    });
     expect(await document.removeItem(middle.id)).toBe(true);
     expect(section.items).toEqual([first, last]);
     expect(() => fields[0].setDraft('disposed')).toThrow('disposed');
@@ -213,7 +212,6 @@ describe('Builder Document item commands', () => {
     const remove = document.removeItem(middle.id);
     await Promise.resolve();
     expect(section.items).toEqual([last, first, middle]);
-    expect(deleteItem).not.toHaveBeenCalled();
     expect(bulkUpdateItems).toHaveBeenCalledWith([
       { key: last.id, changes: { displayOrder: 1 } },
       { key: first.id, changes: { displayOrder: 2 } },
@@ -221,7 +219,6 @@ describe('Builder Document item commands', () => {
     ]);
     finish();
     expect(await reorder).toBe(true);
-    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
     expect(await remove).toBe(true);
     expect(section.items).toEqual([last, first]);
     expect(section.items[0].editableFields[0]).toBe(field);
@@ -354,7 +351,6 @@ describe('Work Experience semantic model and lifecycle', () => {
     ).toBe(true);
     expect(section.items).toEqual([added, second, first]);
 
-    vi.mocked(deleteItem).mockResolvedValueOnce(undefined);
     expect(await section.removeEntry(second)).toBe(true);
     expect(section.items).toEqual([added, first]);
     expect(await section.removeEntry(second)).toBe(false);
