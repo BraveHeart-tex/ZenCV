@@ -750,25 +750,23 @@ export class BuilderDocumentModel {
       this.title = title;
     });
     return this.#enqueue(async () => {
-      try {
-        const result = await this.persistence.renameDocument(this.id, title);
-        if (!result.success) {
-          if (revision === this.#titleRevision) {
-            runInAction(() => {
-              this.title = this.#savedTitle;
-            });
-          }
-          return { success: false, error: 'Failed to rename document' };
-        }
-        this.#savedTitle = title;
-        return { success: true };
-      } catch {
+      const restoreAndFail = (): StoreResult => {
         if (revision === this.#titleRevision) {
           runInAction(() => {
             this.title = this.#savedTitle;
           });
         }
         return { success: false, error: 'Failed to rename document' };
+      };
+      try {
+        const result = await this.persistence.renameDocument(this.id, title);
+        if (!result.success) {
+          return restoreAndFail();
+        }
+        this.#savedTitle = title;
+        return { success: true };
+      } catch {
+        return restoreAndFail();
       }
     });
   }
@@ -786,6 +784,12 @@ export class BuilderDocumentModel {
       this.templateSettings = settings;
     });
     return this.#enqueue(async () => {
+      const restoreAndFail = (): StoreResult => {
+        if (revision === this.#appearanceRevision) {
+          this.restoreSavedAppearance();
+        }
+        return { success: false, error: 'Failed to update document' };
+      };
       try {
         const result = await this.persistence.saveAppearance(
           this.id,
@@ -793,18 +797,12 @@ export class BuilderDocumentModel {
           settings
         );
         if (!result.success) {
-          if (revision === this.#appearanceRevision) {
-            this.restoreSavedAppearance();
-          }
-          return { success: false, error: 'Failed to update document' };
+          return restoreAndFail();
         }
         this.#savedAppearance = { templateType, settings };
         return { success: true };
       } catch {
-        if (revision === this.#appearanceRevision) {
-          this.restoreSavedAppearance();
-        }
-        return { success: false, error: 'Failed to update document' };
+        return restoreAndFail();
       }
     });
   }
