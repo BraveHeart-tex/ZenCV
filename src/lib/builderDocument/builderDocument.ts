@@ -1745,6 +1745,10 @@ export const itemCreationLimitReached = (
   return maxItems !== undefined && itemCount >= maxItems;
 };
 
+export const isKnownPersistedSectionType = (type: string): boolean => {
+  return resolveSectionDefinition(type) !== undefined;
+};
+
 interface DeletionContext {
   documentExists: boolean;
   documentId: number;

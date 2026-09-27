@@ -1,6 +1,7 @@
 import {
   canDeleteItemFromSection,
   canDeleteSection,
+  isKnownPersistedSectionType,
   itemCreationLimitReached,
   itemCreationTemplate,
   sectionCreationTemplate,
@@ -23,7 +24,6 @@ import {
   serializeTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
-import { resolveSectionDefinition } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { clientDb } from './clientDb';
 import type { DEX_Field } from './clientDbSchema';
@@ -48,7 +48,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
         ) {
           return { success: false as const, reason: 'notFound' as const };
         }
-        if (!resolveSectionDefinition(section.type)) {
+        if (!isKnownPersistedSectionType(section.type)) {
           return { success: false as const, reason: 'notFound' as const };
         }
         const itemCount = await clientDb.items
@@ -91,7 +91,7 @@ export class DexieDocumentPersistence implements DocumentPersistence {
           !document ||
           !section ||
           section.documentId !== documentId ||
-          !resolveSectionDefinition(section.type)
+          !isKnownPersistedSectionType(section.type)
         ) {
           return { success: false as const, reason: 'notFound' as const };
         }
