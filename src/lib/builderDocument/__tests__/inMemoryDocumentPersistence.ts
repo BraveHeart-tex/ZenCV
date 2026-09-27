@@ -24,11 +24,24 @@ import type {
 } from '../documentPersistence';
 
 export class InMemoryDocumentPersistence implements DocumentPersistence {
-  readonly records: PersistedDocumentRecords;
+  readonly records: Omit<
+    PersistedDocumentRecords,
+    'sections' | 'items' | 'fields'
+  > & {
+    sections: DEX_Section[];
+    items: DEX_Item[];
+    fields: DEX_Field[];
+  };
   saveFailure: Error | null = null;
 
   constructor(records: PersistedDocumentRecords) {
-    this.records = structuredClone(records);
+    const cloned = structuredClone(records);
+    this.records = {
+      ...cloned,
+      sections: [...cloned.sections],
+      items: [...cloned.items],
+      fields: [...cloned.fields],
+    };
   }
 
   async addItem(

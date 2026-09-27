@@ -812,6 +812,66 @@ export class BuilderDocumentModel {
     });
   }
 
+  #materializeCreatedItem(
+    sectionType: DEX_Section['type'],
+    sectionKey: SectionKey,
+    itemRecord: DEX_Item,
+    fieldRecords: readonly DEX_Field[],
+    invalidGraphMessage: string
+  ): { item: BuilderItemModel; fields: SemanticField[] } {
+    const analysis = analyzeItemFields(
+      { type: sectionType },
+      fieldRecords.map((field) => ({
+        id: field.id,
+        name: field.name,
+        type: field.type,
+      }))
+    );
+    if (
+      analysis.diagnostics.length > 0 ||
+      analysis.entries.length !== fieldRecords.length
+    ) {
+      throw new Error(invalidGraphMessage);
+    }
+    const recordsById = new Map(fieldRecords.map((field) => [field.id, field]));
+    const typedFields: Record<string, SemanticField> = {};
+    const fields = analysis.entries.map(
+      ({ field, definition: fieldDefinition }) => {
+        const record = recordsById.get(Number(field.id));
+        if (!record) {
+          throw new Error('Created field is missing');
+        }
+        const model = new SemanticField(
+          record,
+          sectionKey,
+          fieldDefinition as FieldDefinition<SectionKey>,
+          this.id,
+          this.persistence
+        );
+        typedFields[model.fieldKey] = model;
+        return model;
+      }
+    );
+    const item = createBuilderItemModel(
+      itemRecord,
+      sectionKey,
+      fields.map((field) => field.id),
+      typedFields,
+      this
+    );
+    return { item, fields };
+  }
+
+  #publishCreatedItem(
+    item: BuilderItemModel,
+    fields: readonly SemanticField[]
+  ): void {
+    for (const field of fields) {
+      this.fieldsById.set(field.id, field);
+    }
+    this.itemsById.set(item.id, item);
+  }
+
   changeTemplate(templateType: ResumeTemplate): Promise<StoreResult> {
     const settings = { ...this.templateSettings };
     if (!settings[templateType]) {
@@ -876,47 +936,12 @@ export class BuilderDocumentModel {
           item: itemRecord,
           fields: fieldRecords,
         } = created.value;
-        const analysis = analyzeItemFields(
-          sectionRecord,
-          fieldRecords.map((field) => ({
-            id: field.id,
-            name: field.name,
-            type: field.type,
-          }))
-        );
-        if (
-          analysis.diagnostics.length > 0 ||
-          analysis.entries.length !== fieldRecords.length
-        ) {
-          throw new Error('Created section graph is invalid');
-        }
-        const recordsById = new Map(
-          fieldRecords.map((field) => [field.id, field])
-        );
-        const typedFields: Record<string, SemanticField> = {};
-        const fields = analysis.entries.map(
-          ({ field, definition: fieldDefinition }) => {
-            const record = recordsById.get(Number(field.id));
-            if (!record) {
-              throw new Error('Created field is missing');
-            }
-            const model = new SemanticField(
-              record,
-              definition.key as SectionKey,
-              fieldDefinition as FieldDefinition<SectionKey>,
-              this.id,
-              this.persistence
-            );
-            typedFields[model.fieldKey] = model;
-            return model;
-          }
-        );
-        const item = createBuilderItemModel(
-          itemRecord,
+        const { item, fields } = this.#materializeCreatedItem(
+          sectionRecord.type,
           definition.key,
-          fields.map((field) => field.id),
-          typedFields,
-          this
+          itemRecord,
+          fieldRecords,
+          'Created section graph is invalid'
         );
         const section = new BuilderSectionModel(
           sectionRecord,
@@ -926,10 +951,7 @@ export class BuilderDocumentModel {
           this
         );
         runInAction(() => {
-          for (const field of fields) {
-            this.fieldsById.set(field.id, field);
-          }
-          this.itemsById.set(item.id, item);
+          this.#publishCreatedItem(item, fields);
           this.sectionsById.set(section.id, section);
           this.sectionIds.push(section.id);
         });
@@ -1157,53 +1179,15 @@ export class BuilderDocumentModel {
         }
         committed = true;
         const { item: itemRecord, fields: fieldRecords } = result.value;
-        const analysis = analyzeItemFields(
-          { type: section.persistedType } as DEX_Section,
-          fieldRecords.map((field) => ({
-            id: field.id,
-            name: field.name,
-            type: field.type,
-          }))
-        );
-        if (
-          analysis.diagnostics.length > 0 ||
-          analysis.entries.length !== fieldRecords.length
-        ) {
-          throw new Error(
-            'Persisted item does not match its Section Definition'
-          );
-        }
-        const recordsById = new Map(
-          fieldRecords.map((field) => [field.id, field])
-        );
-        const typedFields: Record<string, SemanticField> = {};
-        const fields = analysis.entries.map(({ field, definition }) => {
-          const record = recordsById.get(Number(field.id));
-          if (!record) {
-            throw new Error('Created field is missing');
-          }
-          const model = new SemanticField(
-            record,
-            section.sectionKey,
-            definition,
-            this.id,
-            this.persistence
-          );
-          typedFields[model.fieldKey] = model;
-          return model;
-        });
-        const item = createBuilderItemModel(
-          itemRecord,
+        const { item, fields } = this.#materializeCreatedItem(
+          section.persistedType,
           section.sectionKey,
-          fields.map((field) => field.id),
-          typedFields,
-          this
+          itemRecord,
+          fieldRecords,
+          'Persisted item does not match its Section Definition'
         );
         runInAction(() => {
-          for (const field of fields) {
-            this.fieldsById.set(field.id, field);
-          }
-          this.itemsById.set(item.id, item);
+          this.#publishCreatedItem(item, fields);
           mutableItemIds(section).push(item.id);
         });
         return item.id;

@@ -1,11 +1,6 @@
 import type { InsertType, UpdateSpec } from 'dexie';
 import { clientDb } from './clientDb';
-import type {
-  DEX_Field,
-  DEX_InsertItemModel,
-  DEX_Item,
-  DEX_Section,
-} from './clientDbSchema';
+import type { DEX_Item, DEX_Section } from './clientDbSchema';
 
 export async function deleteItem(itemId: DEX_Item['id']) {
   return clientDb.transaction(
@@ -28,85 +23,6 @@ export async function bulkUpdateItems(
     }
     return updated;
   });
-}
-
-export async function addItemFromTemplate(
-  template: DEX_InsertItemModel & {
-    fields: Omit<DEX_Field, 'id' | 'itemId'>[];
-  }
-): Promise<{ item: DEX_Item; fields: DEX_Field[] }> {
-  return clientDb.transaction(
-    'rw',
-    [clientDb.items, clientDb.fields],
-    async () => {
-      const itemId = await clientDb.items.add({
-        sectionId: template.sectionId,
-        containerType: template.containerType,
-        displayOrder: template.displayOrder,
-      });
-
-      const fieldsPayload = template.fields.map((field) => ({
-        ...field,
-        itemId,
-      }));
-
-      const fieldIds = await clientDb.fields.bulkAdd(fieldsPayload, {
-        allKeys: true,
-      });
-
-      return {
-        item: {
-          id: itemId,
-          sectionId: template.sectionId,
-          containerType: template.containerType,
-          displayOrder: template.displayOrder,
-        },
-        fields: fieldsPayload.map((field, index) => ({
-          ...field,
-          id: fieldIds[index],
-          itemId,
-        })) as DEX_Field[],
-      };
-    }
-  );
-}
-
-export async function addItemFromTemplateWithSectionTypeLimit(
-  template: DEX_InsertItemModel & {
-    fields: Omit<DEX_Field, 'id' | 'itemId'>[];
-  },
-  maxItems: number
-): Promise<{ item: DEX_Item; fields: DEX_Field[] } | null> {
-  return clientDb.transaction(
-    'rw',
-    [clientDb.sections, clientDb.items, clientDb.fields],
-    async () => {
-      const section = await clientDb.sections.get(template.sectionId);
-      if (!section) {
-        return null;
-      }
-
-      const matchingSectionIds = (
-        await clientDb.sections
-          .where('documentId')
-          .equals(section.documentId)
-          .filter((candidate) => candidate.type === section.type)
-          .toArray()
-      ).map((candidate) => candidate.id);
-      const itemCount = matchingSectionIds.length
-        ? await clientDb.items
-            .where('sectionId')
-            .anyOf(matchingSectionIds)
-            .count()
-        : 0;
-
-      if (itemCount >= maxItems) {
-        return null;
-      }
-
-      return addItemFromTemplate(template);
-    }
-  );
 }
 
 export async function getItemsWithSectionIds(
