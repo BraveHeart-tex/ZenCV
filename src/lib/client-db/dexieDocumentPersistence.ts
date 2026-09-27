@@ -3,9 +3,38 @@ import type {
   PersistedDocumentRecords,
   PersistenceResult,
 } from '@/lib/builderDocument/documentPersistence';
+import {
+  serializeTemplateSettings,
+  type TemplateSettings,
+} from '@/lib/constants/accentColors';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { clientDb } from './clientDb';
 
 export class DexieDocumentPersistence implements DocumentPersistence {
+  async renameDocument(
+    documentId: number,
+    title: string
+  ): Promise<PersistenceResult<void>> {
+    const updated = await clientDb.documents.update(documentId, { title });
+    return updated === 1
+      ? { success: true, value: undefined }
+      : { success: false, reason: 'notFound' };
+  }
+
+  async saveAppearance(
+    documentId: number,
+    templateType: ResumeTemplate,
+    settings: TemplateSettings
+  ): Promise<PersistenceResult<void>> {
+    const updated = await clientDb.documents.update(documentId, {
+      templateType,
+      templateSettings: serializeTemplateSettings(settings),
+    });
+    return updated === 1
+      ? { success: true, value: undefined }
+      : { success: false, reason: 'notFound' };
+  }
+
   async load(
     documentId: number
   ): Promise<PersistenceResult<PersistedDocumentRecords>> {

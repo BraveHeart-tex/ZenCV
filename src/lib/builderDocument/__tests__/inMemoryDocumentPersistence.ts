@@ -1,4 +1,9 @@
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import {
+  serializeTemplateSettings,
+  type TemplateSettings,
+} from '@/lib/constants/accentColors';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import type {
   DocumentPersistence,
   PersistedDocumentRecords,
@@ -11,6 +16,37 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
 
   constructor(records: PersistedDocumentRecords) {
     this.records = structuredClone(records);
+  }
+
+  async renameDocument(
+    documentId: number,
+    title: string
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    if (documentId !== this.records.document.id) {
+      return { success: false, reason: 'notFound' };
+    }
+    this.records.document.title = title;
+    return { success: true, value: undefined };
+  }
+
+  async saveAppearance(
+    documentId: number,
+    templateType: ResumeTemplate,
+    settings: TemplateSettings
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    if (documentId !== this.records.document.id) {
+      return { success: false, reason: 'notFound' };
+    }
+    this.records.document.templateType = templateType;
+    this.records.document.templateSettings =
+      serializeTemplateSettings(settings);
+    return { success: true, value: undefined };
   }
 
   async load(

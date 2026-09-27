@@ -23,6 +23,63 @@ beforeEach(clearRecords);
 afterEach(clearRecords);
 
 describe('DexieDocumentPersistence', () => {
+  it('saves title and structured appearance with exact settings encoding', async () => {
+    const records = builderDocumentFixture();
+    await clientDb.documents.put(records.document);
+    const persistence = new DexieDocumentPersistence();
+    const settings = {
+      tokyo: { accentColor: '#123456' },
+      sydney: { accentColor: '#abcdef' },
+      dubai: { accentColor: '#fedcba' },
+    };
+    expect(
+      await persistence.renameDocument(records.document.id, 'Staff CV')
+    ).toEqual({
+      success: true,
+      value: undefined,
+    });
+    expect(
+      await persistence.saveAppearance(records.document.id, 'dubai', settings)
+    ).toEqual({ success: true, value: undefined });
+    expect(await clientDb.documents.get(records.document.id)).toMatchObject({
+      title: 'Staff CV',
+      templateType: 'dubai',
+      templateSettings: JSON.stringify(settings),
+    });
+  });
+
+  it('rejects missing documents and keeps last-write-wins updates', async () => {
+    const records = builderDocumentFixture();
+    const persistence = new DexieDocumentPersistence();
+    expect(
+      await persistence.renameDocument(records.document.id, 'Missing')
+    ).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    expect(
+      await persistence.saveAppearance(records.document.id, 'dubai', {})
+    ).toEqual({ success: false, reason: 'notFound' });
+
+    await clientDb.documents.put(records.document);
+    await persistence.renameDocument(records.document.id, 'First');
+    await persistence.renameDocument(records.document.id, 'Last');
+    await persistence.saveAppearance(records.document.id, 'dubai', {
+      tokyo: { accentColor: '#123456' },
+      dubai: { accentColor: '#111111' },
+    });
+    await persistence.saveAppearance(records.document.id, 'dubai', {
+      tokyo: { accentColor: '#123456' },
+      dubai: { accentColor: '#222222' },
+    });
+    expect(await clientDb.documents.get(records.document.id)).toMatchObject({
+      title: 'Last',
+      templateType: 'dubai',
+      templateSettings:
+        '{"tokyo":{"accentColor":"#123456"},"dubai":{"accentColor":"#222222"}}',
+    });
+  });
+
   it('loads the existing record graph and saves a scoped Semantic Field', async () => {
     const records = builderDocumentFixture();
     await clientDb.transaction(

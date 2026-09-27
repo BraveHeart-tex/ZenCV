@@ -14,10 +14,6 @@ import type {
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
 import {
-  renameDocument,
-  updateDocument,
-} from '@/lib/client-db/documentService';
-import {
   addItemFromTemplate,
   addItemFromTemplateWithSectionTypeLimit,
   bulkUpdateItems,
@@ -31,7 +27,7 @@ import {
 import {
   getDefaultAccentColorForTemplate,
   parseTemplateSettings,
-  serializeTemplateSettings,
+  type TemplateSettings,
 } from '@/lib/constants/accentColors';
 import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import {
@@ -582,7 +578,7 @@ export class BuilderDocumentModel {
   readonly id: DocumentId;
   title: string;
   templateType: DEX_Document['templateType'];
-  templateSettings: string;
+  templateSettings: TemplateSettings;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly jobPostingId: DEX_Document['jobPostingId'];
@@ -599,6 +595,13 @@ export class BuilderDocumentModel {
   #commandTail: Promise<void> = Promise.resolve();
   #acceptingCommands = true;
   #commandFailed = false;
+  #savedTitle: string;
+  #savedAppearance: {
+    templateType: ResumeTemplate;
+    settings: TemplateSettings;
+  };
+  #titleRevision = 0;
+  #appearanceRevision = 0;
   readonly persistence: DocumentPersistence;
 
   constructor(
@@ -610,7 +613,12 @@ export class BuilderDocumentModel {
     this.persistence = persistence;
     this.title = record.title;
     this.templateType = record.templateType;
-    this.templateSettings = record.templateSettings;
+    this.templateSettings = parseTemplateSettings(record.templateSettings);
+    this.#savedTitle = record.title;
+    this.#savedAppearance = {
+      templateType: record.templateType,
+      settings: this.templateSettings,
+    };
     this.createdAt = record.createdAt;
     this.updatedAt = record.updatedAt;
     this.jobPostingId = record.jobPostingId;
@@ -618,7 +626,7 @@ export class BuilderDocumentModel {
     makeObservable(this, {
       title: observable,
       templateType: observable,
-      templateSettings: observable,
+      templateSettings: observable.ref,
     });
   }
 
@@ -630,8 +638,8 @@ export class BuilderDocumentModel {
 
   get accentColor(): string {
     return (
-      parseTemplateSettings(this.templateSettings)[this.templateType]
-        ?.accentColor ?? getDefaultAccentColorForTemplate(this.templateType)
+      this.templateSettings[this.templateType]?.accentColor ??
+      getDefaultAccentColorForTemplate(this.templateType)
     );
   }
 
@@ -734,73 +742,94 @@ export class BuilderDocumentModel {
   }
 
   rename(title: string): Promise<StoreResult> {
+    if (!this.#acceptingCommands) {
+      return Promise.reject(new Error('Builder Document is closing'));
+    }
+    const revision = ++this.#titleRevision;
+    runInAction(() => {
+      this.title = title;
+    });
     return this.#enqueue(async () => {
-      const previous = this.title;
-      runInAction(() => {
-        this.title = title;
-      });
       try {
-        if ((await renameDocument(this.id, title)) === 0) {
-          throw new Error('Document no longer exists');
+        const result = await this.persistence.renameDocument(this.id, title);
+        if (!result.success) {
+          if (revision === this.#titleRevision) {
+            runInAction(() => {
+              this.title = this.#savedTitle;
+            });
+          }
+          return { success: false, error: 'Failed to rename document' };
         }
+        this.#savedTitle = title;
         return { success: true };
       } catch {
-        runInAction(() => {
-          this.title = previous;
-        });
+        if (revision === this.#titleRevision) {
+          runInAction(() => {
+            this.title = this.#savedTitle;
+          });
+        }
         return { success: false, error: 'Failed to rename document' };
       }
     });
   }
 
-  updateDocument(
-    changes: Pick<DEX_Document, 'templateType' | 'templateSettings'>
+  private saveAppearance(
+    templateType: ResumeTemplate,
+    settings: TemplateSettings
   ): Promise<StoreResult> {
+    if (!this.#acceptingCommands) {
+      return Promise.reject(new Error('Builder Document is closing'));
+    }
+    const revision = ++this.#appearanceRevision;
+    runInAction(() => {
+      this.templateType = templateType;
+      this.templateSettings = settings;
+    });
     return this.#enqueue(async () => {
-      const previous = {
-        templateType: this.templateType,
-        templateSettings: this.templateSettings,
-      };
-      runInAction(() => {
-        this.templateType = changes.templateType;
-        this.templateSettings = changes.templateSettings;
-      });
       try {
-        if ((await updateDocument(this.id, changes)) === 0) {
-          throw new Error('Document no longer exists');
+        const result = await this.persistence.saveAppearance(
+          this.id,
+          templateType,
+          settings
+        );
+        if (!result.success) {
+          if (revision === this.#appearanceRevision) {
+            this.restoreSavedAppearance();
+          }
+          return { success: false, error: 'Failed to update document' };
         }
+        this.#savedAppearance = { templateType, settings };
         return { success: true };
       } catch {
-        runInAction(() => {
-          this.templateType = previous.templateType;
-          this.templateSettings = previous.templateSettings;
-        });
+        if (revision === this.#appearanceRevision) {
+          this.restoreSavedAppearance();
+        }
         return { success: false, error: 'Failed to update document' };
       }
     });
   }
 
+  private restoreSavedAppearance(): void {
+    runInAction(() => {
+      this.templateType = this.#savedAppearance.templateType;
+      this.templateSettings = this.#savedAppearance.settings;
+    });
+  }
+
   changeTemplate(templateType: ResumeTemplate): Promise<StoreResult> {
-    const settings = parseTemplateSettings(this.templateSettings);
+    const settings = { ...this.templateSettings };
     if (!settings[templateType]) {
       settings[templateType] = {
         accentColor: getDefaultAccentColorForTemplate(templateType),
       };
     }
-    return this.updateDocument({
-      templateType,
-      templateSettings: serializeTemplateSettings(settings),
-    });
+    return this.saveAppearance(templateType, settings);
   }
 
   changeAccent(color: string): Promise<StoreResult> {
-    const settings = parseTemplateSettings(this.templateSettings);
-    return this.updateDocument({
-      templateType: this.templateType,
-      templateSettings: serializeTemplateSettings({
-        ...settings,
-        [this.templateType]: { accentColor: color },
-      }),
+    return this.saveAppearance(this.templateType, {
+      ...this.templateSettings,
+      [this.templateType]: { accentColor: color },
     });
   }
 

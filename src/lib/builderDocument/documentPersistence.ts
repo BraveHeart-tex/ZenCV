@@ -4,6 +4,8 @@ import type {
   DEX_Item,
   DEX_Section,
 } from '@/lib/client-db/clientDbSchema';
+import type { TemplateSettings } from '@/lib/constants/accentColors';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 
 /** Private record handoff to the strict Builder Document hydrator. */
 export type PersistedDocumentRecords = Readonly<{
@@ -25,5 +27,14 @@ export interface DocumentPersistence {
     documentId: number,
     fieldId: number,
     value: string
+  ): Promise<PersistenceResult<void>>;
+  renameDocument(
+    documentId: number,
+    title: string
+  ): Promise<PersistenceResult<void>>;
+  saveAppearance(
+    documentId: number,
+    templateType: ResumeTemplate,
+    settings: TemplateSettings
   ): Promise<PersistenceResult<void>>;
 }

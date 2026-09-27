@@ -12,6 +12,7 @@ describe('active Builder Document persistence boundary', () => {
     expect(session).not.toContain('client-db/documentService');
     expect(session).not.toContain('getFullDocumentStructure');
     expect(document).not.toContain('client-db/fieldService');
+    expect(document).not.toContain('client-db/documentService');
     expect(document).not.toContain('updateField(');
   });
 
@@ -19,6 +20,8 @@ describe('active Builder Document persistence boundary', () => {
     const port = read('builderDocument/documentPersistence.ts');
     expect(port).toMatch(/load\(\s*documentId: number\s*\)/);
     expect(port).toContain('saveFieldValue(');
+    expect(port).toContain('renameDocument(');
+    expect(port).toContain('saveAppearance(');
     expect(port).not.toMatch(
       /\b(transaction|table|updateField|insert|deleteField)\b/
     );
