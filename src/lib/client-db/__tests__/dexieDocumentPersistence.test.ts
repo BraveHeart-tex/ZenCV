@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { hydrateBuilderDocument } from '@/lib/builderDocument/builderDocument';
+import { getDefaultSkillsMetadata } from '@/lib/misc/sectionMetadataTemplates';
 import { clientDb } from '../clientDb';
 import { DexieDocumentPersistence } from '../dexieDocumentPersistence';
 
@@ -23,6 +24,59 @@ beforeEach(clearRecords);
 afterEach(clearRecords);
 
 describe('DexieDocumentPersistence', () => {
+  it('scopes section edits to the document and writes structured metadata as JSON', async () => {
+    const records = builderDocumentFixture();
+    const section = {
+      ...records.sections[0],
+      type: 'skills' as const,
+      metadata: getDefaultSkillsMetadata(),
+    };
+    const foreignDocument = { ...records.document, id: 2 };
+    await clientDb.documents.bulkPut([records.document, foreignDocument]);
+    await clientDb.sections.put(section);
+    const persistence = new DexieDocumentPersistence();
+    const metadata = [
+      {
+        key: 'showExperienceLevel',
+        label: 'Show experience level',
+        value: '1',
+      },
+      { key: 'isCommaSeparated', label: 'Separate skills', value: '0' },
+    ];
+
+    expect(await persistence.renameSection(2, section.id, 'Foreign')).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    expect(
+      await persistence.saveSectionMetadata(2, section.id, metadata)
+    ).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    expect(await persistence.renameSection(1, 999999, 'Missing')).toEqual({
+      success: false,
+      reason: 'notFound',
+    });
+    expect(await clientDb.sections.get(section.id)).toEqual(section);
+
+    expect(await persistence.renameSection(1, section.id, 'Updated')).toEqual({
+      success: true,
+      value: undefined,
+    });
+    expect(
+      await persistence.saveSectionMetadata(1, section.id, metadata)
+    ).toEqual({
+      success: true,
+      value: undefined,
+    });
+    expect(await clientDb.sections.get(section.id)).toMatchObject({
+      title: 'Updated',
+      metadata:
+        '[{"key":"showExperienceLevel","label":"Show experience level","value":"1"},{"key":"isCommaSeparated","label":"Separate skills","value":"0"}]',
+    });
+  });
+
   it('saves title and structured appearance with exact settings encoding', async () => {
     const records = builderDocumentFixture();
     await clientDb.documents.put(records.document);

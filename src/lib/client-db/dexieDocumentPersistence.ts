@@ -2,6 +2,7 @@ import type {
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
+  SectionMetadata,
 } from '@/lib/builderDocument/documentPersistence';
 import {
   serializeTemplateSettings,
@@ -11,6 +12,47 @@ import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { clientDb } from './clientDb';
 
 export class DexieDocumentPersistence implements DocumentPersistence {
+  async renameSection(
+    documentId: number,
+    sectionId: number,
+    title: string
+  ): Promise<PersistenceResult<void>> {
+    return this.saveSectionChange(documentId, sectionId, { title });
+  }
+
+  async saveSectionMetadata(
+    documentId: number,
+    sectionId: number,
+    metadata: SectionMetadata
+  ): Promise<PersistenceResult<void>> {
+    return this.saveSectionChange(documentId, sectionId, {
+      metadata: JSON.stringify(metadata),
+    });
+  }
+
+  private async saveSectionChange(
+    documentId: number,
+    sectionId: number,
+    change: { title: string } | { metadata: string }
+  ): Promise<PersistenceResult<void>> {
+    return clientDb.transaction(
+      'rw',
+      [clientDb.documents, clientDb.sections],
+      async () => {
+        const document = await clientDb.documents.get(documentId);
+        const section = await clientDb.sections.get(sectionId);
+        if (!document || !section || section.documentId !== documentId) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        const updated = await clientDb.sections.update(sectionId, change);
+        if (updated !== 1) {
+          return { success: false as const, reason: 'notFound' as const };
+        }
+        return { success: true as const, value: undefined };
+      }
+    );
+  }
+
   async renameDocument(
     documentId: number,
     title: string

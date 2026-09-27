@@ -22,7 +22,6 @@ import {
 import {
   bulkUpdateSections,
   deleteSection,
-  updateSection,
 } from '@/lib/client-db/sectionService';
 import {
   getDefaultAccentColorForTemplate,
@@ -1039,12 +1038,20 @@ export class BuilderDocumentModel {
       if (!section) {
         return { success: false, error: 'Section not found' };
       }
+      if (!title.replaceAll(' ', '').trim()) {
+        return { success: false, error: 'Invalid section title' };
+      }
       const previous = section.title;
       runInAction(() => {
         section.title = title;
       });
       try {
-        if ((await updateSection(sectionId, { title })) === 0) {
+        const result = await this.persistence.renameSection(
+          this.id,
+          sectionId,
+          title
+        );
+        if (!result.success) {
           throw new Error('Section no longer exists');
         }
         return { success: true };
@@ -1087,11 +1094,12 @@ export class BuilderDocumentModel {
         entry.value = value;
       });
       try {
-        if (
-          (await updateSection(sectionId, {
-            metadata: JSON.stringify(proposed),
-          })) === 0
-        ) {
+        const result = await this.persistence.saveSectionMetadata(
+          this.id,
+          sectionId,
+          proposed
+        );
+        if (!result.success) {
           throw new Error('Section no longer exists');
         }
         return { success: true };

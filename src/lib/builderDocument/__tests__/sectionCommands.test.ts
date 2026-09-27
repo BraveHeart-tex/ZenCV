@@ -10,6 +10,18 @@ import {
   builderDocumentFixture,
   hydrateTestBuilderDocument as hydrateBuilderDocument,
 } from './builderDocumentFixture';
+import { InMemoryDocumentPersistence } from './inMemoryDocumentPersistence';
+
+const sectionCommands = {
+  renameSection: vi.fn(async () => ({
+    success: true as const,
+    value: undefined,
+  })),
+  saveSectionMetadata: vi.fn(async () => ({
+    success: true as const,
+    value: undefined,
+  })),
+};
 
 const persistence = vi.hoisted(() => {
   const sections: DEX_Section[] = [];
@@ -37,7 +49,6 @@ const persistence = vi.hoisted(() => {
         sections.splice(index, 1);
       }
     }),
-    updateSection: vi.fn(async (_id: number, _data: unknown) => 1),
     bulkUpdateSections: vi.fn(async (changes: unknown[]) => changes.length),
     reset() {
       sections.length = 0;
@@ -63,12 +74,15 @@ vi.mock('@/lib/client-db/clientDb', () => ({
 }));
 vi.mock('@/lib/client-db/sectionService', () => ({
   deleteSection: persistence.deleteSection,
-  updateSection: persistence.updateSection,
   bulkUpdateSections: persistence.bulkUpdateSections,
 }));
 
 const document = () => {
-  const result = hydrateBuilderDocument(builderDocumentFixture());
+  const records = builderDocumentFixture();
+  const adapter = new InMemoryDocumentPersistence(records);
+  adapter.renameSection = sectionCommands.renameSection;
+  adapter.saveSectionMetadata = sectionCommands.saveSectionMetadata;
+  const result = hydrateBuilderDocument(records, adapter);
   if (!result.success) {
     throw new Error('Invalid fixture');
   }
@@ -205,7 +219,7 @@ describe('Builder Document section commands', () => {
     const removal = model.removeSection(created.data.sectionId);
     const rename = model.renameSection(model.workExperience.id, 'Experience');
     await vi.waitFor(() => expect(finish).toBeDefined());
-    expect(persistence.updateSection).not.toHaveBeenCalled();
+    expect(sectionCommands.renameSection).not.toHaveBeenCalled();
     finish?.();
     expect(await removal).toBe(true);
     expect((await rename).success).toBe(true);
@@ -219,6 +233,12 @@ describe('Builder Document section commands', () => {
       throw new Error('Failed to create skills');
     }
     const section = model.sectionsById.get(created.data.sectionId);
+    const originalMetadata = section?.metadata[0];
+    expect(await model.renameSection(created.data.sectionId, '   ')).toEqual({
+      success: false,
+      error: 'Invalid section title',
+    });
+    expect(sectionCommands.renameSection).not.toHaveBeenCalled();
     expect(
       await model.updateSectionMetadata(
         created.data.sectionId,
@@ -226,13 +246,15 @@ describe('Builder Document section commands', () => {
         'bad'
       )
     ).toMatchObject({ success: false });
-    expect(persistence.updateSection).not.toHaveBeenCalled();
-    persistence.updateSection.mockRejectedValueOnce(new Error('offline'));
+    expect(sectionCommands.saveSectionMetadata).not.toHaveBeenCalled();
+    sectionCommands.renameSection.mockRejectedValueOnce(new Error('offline'));
     expect(
       (await model.renameSection(created.data.sectionId, 'New')).success
     ).toBe(false);
     expect(section?.title).toBe('Skills');
-    persistence.updateSection.mockRejectedValueOnce(new Error('offline'));
+    sectionCommands.saveSectionMetadata.mockRejectedValueOnce(
+      new Error('offline')
+    );
     expect(
       (
         await model.updateSectionMetadata(
@@ -243,6 +265,20 @@ describe('Builder Document section commands', () => {
       ).success
     ).toBe(false);
     expect(section?.metadata[0].value).toBe('0');
+    expect(section?.metadata[0]).toBe(originalMetadata);
+    expect(sectionCommands.saveSectionMetadata).toHaveBeenCalledWith(
+      model.id,
+      created.data.sectionId,
+      [
+        {
+          key: 'showExperienceLevel',
+          label: 'Show experience level',
+          value: '1',
+        },
+        { key: 'isCommaSeparated', label: 'Separate skills', value: '0' },
+      ]
+    );
+    expect(model.sectionsById.get(created.data.sectionId)).toBe(section);
     const before = [...model.sectionIds];
     const reordered = [...before].reverse() as SectionId[];
     persistence.bulkUpdateSections.mockRejectedValueOnce(new Error('offline'));

@@ -14,6 +14,7 @@ describe('active Builder Document persistence boundary', () => {
     expect(document).not.toContain('client-db/fieldService');
     expect(document).not.toContain('client-db/documentService');
     expect(document).not.toContain('updateField(');
+    expect(document).not.toContain('updateSection(');
   });
 
   it('keeps the port document-scoped and free of table CRUD', () => {
@@ -22,6 +23,8 @@ describe('active Builder Document persistence boundary', () => {
     expect(port).toContain('saveFieldValue(');
     expect(port).toContain('renameDocument(');
     expect(port).toContain('saveAppearance(');
+    expect(port).toContain('renameSection(');
+    expect(port).toContain('saveSectionMetadata(');
     expect(port).not.toMatch(
       /\b(transaction|table|updateField|insert|deleteField)\b/
     );

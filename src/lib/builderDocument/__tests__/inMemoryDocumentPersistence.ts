@@ -8,6 +8,7 @@ import type {
   DocumentPersistence,
   PersistedDocumentRecords,
   PersistenceResult,
+  SectionMetadata,
 } from '../documentPersistence';
 
 export class InMemoryDocumentPersistence implements DocumentPersistence {
@@ -16,6 +17,48 @@ export class InMemoryDocumentPersistence implements DocumentPersistence {
 
   constructor(records: PersistedDocumentRecords) {
     this.records = structuredClone(records);
+  }
+
+  async renameSection(
+    documentId: number,
+    sectionId: number,
+    title: string
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const section = this.records.sections.find(
+      (entry) => entry.id === sectionId
+    );
+    if (
+      documentId !== this.records.document.id ||
+      section?.documentId !== documentId
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    section.title = title;
+    return { success: true, value: undefined };
+  }
+
+  async saveSectionMetadata(
+    documentId: number,
+    sectionId: number,
+    metadata: SectionMetadata
+  ): Promise<PersistenceResult<void>> {
+    if (this.saveFailure) {
+      throw this.saveFailure;
+    }
+    const section = this.records.sections.find(
+      (entry) => entry.id === sectionId
+    );
+    if (
+      documentId !== this.records.document.id ||
+      section?.documentId !== documentId
+    ) {
+      return { success: false, reason: 'notFound' };
+    }
+    section.metadata = JSON.stringify(metadata);
+    return { success: true, value: undefined };
   }
 
   async renameDocument(

@@ -19,6 +19,12 @@ export type PersistenceResult<T> =
   | Readonly<{ success: true; value: T }>
   | Readonly<{ success: false; reason: 'notFound' }>;
 
+export type SectionMetadata = readonly Readonly<{
+  key: string;
+  label: string;
+  value: string;
+}>[];
+
 export interface DocumentPersistence {
   load(
     documentId: number
@@ -36,5 +42,15 @@ export interface DocumentPersistence {
     documentId: number,
     templateType: ResumeTemplate,
     settings: TemplateSettings
+  ): Promise<PersistenceResult<void>>;
+  renameSection(
+    documentId: number,
+    sectionId: number,
+    title: string
+  ): Promise<PersistenceResult<void>>;
+  saveSectionMetadata(
+    documentId: number,
+    sectionId: number,
+    metadata: SectionMetadata
   ): Promise<PersistenceResult<void>>;
 }
