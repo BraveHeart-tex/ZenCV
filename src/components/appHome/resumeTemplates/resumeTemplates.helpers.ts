@@ -8,7 +8,6 @@ import type {
   TemplateDataSection,
   WithEntryId,
 } from '@/lib/types/documentBuilder.types';
-import { getCompactUrlLabel, normalizeWebUrl } from '@/lib/utils/urlUtils';
 
 export const sortByDisplayOrder = (
   a: DocumentRecordWithDisplayOrder,
@@ -97,32 +96,6 @@ export const getEducationSectionEntries = (section: TemplateDataSection) => {
       };
     })
   );
-};
-
-export const getLinksSectionEntries = (section: TemplateDataSection) => {
-  return section.items.flatMap((item) => {
-    const fields = item.fields;
-    const link = normalizeWebUrl(
-      findValueInItemFields(fields, FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK)
-    );
-
-    if (!link) {
-      return [];
-    }
-
-    const label = findValueInItemFields(
-      fields,
-      FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL
-    ).trim();
-
-    return [
-      {
-        entryId: item.id.toString(),
-        label: label || getCompactUrlLabel(link),
-        link,
-      },
-    ];
-  });
 };
 
 export const getSkillsSectionEntries = (section: TemplateDataSection) => {

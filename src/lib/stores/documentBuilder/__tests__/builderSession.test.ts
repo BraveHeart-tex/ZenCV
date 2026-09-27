@@ -90,6 +90,16 @@ describe('BuilderSession', () => {
       ]
     );
 
+    expect(await session.reorderItems([31, 30])).toBe(true);
+    expect(
+      session.resumeDocumentSnapshot?.sections[3].items.map((item) => item.id)
+    ).toEqual([31, 30]);
+    expect(
+      session.templateStore.pdfTemplateData.personalDetails.links.map(
+        (link) => link.entryId
+      )
+    ).toEqual(['31', '30']);
+
     const summary = session.document?.summary.items[0].field('summary');
     summary?.setDraft('One. Two. Three.');
     expect(
@@ -130,6 +140,10 @@ describe('BuilderSession', () => {
     expect(
       session.templateStore.pdfTemplateData.personalDetails.links
     ).toHaveLength(1);
+    session.document?.websitesSocialLinks?.items[1].field('link')?.setDraft('');
+    expect(session.templateStore.pdfTemplateData.personalDetails.links).toEqual(
+      []
+    );
     session.discard();
     expect(session.resumeDocumentSnapshot).toBeNull();
   });
