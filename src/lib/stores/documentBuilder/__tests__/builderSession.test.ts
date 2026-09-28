@@ -192,6 +192,93 @@ describe('BuilderSession', () => {
     ).toBe(true);
   });
 
+  it.each([
+    { label: 'default', metadata: '[]', expected: false },
+    {
+      label: 'enabled',
+      metadata: JSON.stringify([
+        { key: 'hideReferences', label: 'Hide references', value: '1' },
+      ]),
+      expected: true,
+    },
+  ])('projects the References hide option with its $label value', async ({
+    metadata,
+    expected,
+  }) => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.references;
+    const sectionId = 15;
+    const itemId = 45;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: definition.label,
+            defaultTitle: definition.label,
+            displayOrder: 6,
+            metadata,
+          },
+        ],
+        items: [
+          ...records.items,
+          {
+            id: itemId,
+            sectionId,
+            containerType: 'collapsible',
+            displayOrder: 1,
+          },
+        ],
+        fields: [
+          ...records.fields,
+          ...Object.values(definition.fields).map(
+            (field, index) =>
+              ({
+                id: 900 + index,
+                itemId,
+                name: field.persistedName,
+                type: field.expectedPersistedType,
+                value:
+                  field.key === 'referentFullName'
+                    ? 'Ada Lovelace'
+                    : field.key === 'company'
+                      ? 'Analytical Engines'
+                      : '',
+              }) as DEX_Field
+          ),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const references = session.resumeDocumentSnapshot?.sections.find(
+      (section) => section.sectionKey === 'references'
+    );
+    expect(references).toMatchObject({
+      sectionKey: 'references',
+      hideReferences: expected,
+      items: [
+        {
+          id: itemId,
+          values: {
+            referentFullName: 'Ada Lovelace',
+            company: 'Analytical Engines',
+          },
+        },
+      ],
+    });
+    expect(
+      session.templateStore.pdfTemplateData.sections.find(
+        (section) =>
+          'sectionKey' in section && section.sectionKey === 'references'
+      )
+    ).toMatchObject({ hideReferences: expected });
+  });
+
   it('keeps empty Skills and default options empty in the snapshot and PDF entries', async () => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.skills;
