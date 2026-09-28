@@ -13,16 +13,28 @@ const mocks = vi.hoisted(() => ({
     title: 'Education',
     items: [{ id: 21, sectionId: 20, containerType: 'collapsible' }],
   },
-  snapshotItem: {
+  internshipSection: {
+    id: 30,
+    title: 'Internships',
+    items: [{ id: 31, sectionId: 30, containerType: 'collapsible' }],
+  },
+  educationSnapshotItem: {
     id: 21,
     displayOrder: 1,
     values: { school: 'First University', degree: 'BSc' },
+  },
+  internshipSnapshotItem: {
+    id: 31,
+    displayOrder: 1,
+    values: { role: 'Research Intern', employer: 'Example Lab' },
   },
 }));
 
 vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
   builderSession: {
-    document: { sections: [mocks.educationSection] },
+    document: {
+      sections: [mocks.educationSection, mocks.internshipSection],
+    },
     getItem: mocks.getItem,
     resumeDocumentSnapshot: {
       id: 1,
@@ -32,7 +44,14 @@ vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
           sectionKey: 'education',
           title: 'Education',
           displayOrder: 1,
-          items: [mocks.snapshotItem],
+          items: [mocks.educationSnapshotItem],
+        },
+        {
+          id: 30,
+          sectionKey: 'internships',
+          title: 'Internships',
+          displayOrder: 2,
+          items: [mocks.internshipSnapshotItem],
         },
       ],
     },
@@ -57,7 +76,8 @@ vi.mock('motion/react-m', () => ({
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
-  mocks.snapshotItem.values.school = 'First University';
+  mocks.educationSnapshotItem.values.school = 'First University';
+  mocks.internshipSnapshotItem.values.role = 'Research Intern';
 });
 
 describe('Education overview', () => {
@@ -66,7 +86,7 @@ describe('Education overview', () => {
       ...mocks.educationSection.items[0],
       sectionKey: 'education',
     });
-    mocks.snapshotItem.values.school = 'Edited University';
+    mocks.educationSnapshotItem.values.school = 'Edited University';
 
     render(
       <ResumeOverViewContent
@@ -79,5 +99,27 @@ describe('Education overview', () => {
       screen.getByRole('button', { name: 'BSc at Edited University' })
     );
     expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(21);
+  });
+});
+
+describe('Internship overview', () => {
+  it('shows the edited semantic heading and navigates to its stable item ID', () => {
+    mocks.getItem.mockReturnValue({
+      ...mocks.internshipSection.items[0],
+      sectionKey: 'internships',
+    });
+    mocks.internshipSnapshotItem.values.role = 'Analyst Intern';
+
+    render(
+      <ResumeOverViewContent
+        visible
+        focusState={{ sectionId: null, itemId: null }}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Analyst Intern at Example Lab' })
+    );
+    expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(31);
   });
 });

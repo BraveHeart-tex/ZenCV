@@ -60,6 +60,7 @@ vi.mock('../AnimatedSuggestionButton', () => ({
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  mocks.resumeDocumentSnapshot.sections = [];
 });
 
 describe('semantic score suggestion actions', () => {
@@ -155,6 +156,40 @@ describe('semantic score suggestion actions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add education' }));
 
     expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(51);
+    expect(mocks.addItem).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the intended empty Internship item by semantic display order', () => {
+    mocks.resumeDocumentSnapshot.sections = [
+      {
+        sectionKey: 'internships',
+        items: [
+          { id: 62, displayOrder: 2, values: { role: '' } },
+          { id: 61, displayOrder: 1, values: { role: '', employer: '' } },
+        ],
+      },
+    ];
+    mocks.section.mockReturnValue({
+      id: 20,
+      items: [
+        { id: 62, displayOrder: 2 },
+        { id: 61, displayOrder: 1 },
+      ],
+    });
+    const suggestion: ResumeSuggestion = {
+      label: 'Add internship',
+      type: SUGGESTION_TYPES.ITEM,
+      sectionKey: 'internships',
+      scoreValue: 10,
+      actionType: SUGGESTION_ACTION_TYPES.ADD_ITEM,
+    };
+
+    render(
+      <ResumeScoreSuggestionItem suggestion={suggestion} setOpen={vi.fn()} />
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Add internship' }));
+
+    expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(61);
     expect(mocks.addItem).not.toHaveBeenCalled();
   });
 });
