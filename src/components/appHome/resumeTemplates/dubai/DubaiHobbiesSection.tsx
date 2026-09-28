@@ -1,8 +1,14 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { HobbiesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
 import type { DubaiSectionProps } from './dubai.types';
 
-export const DubaiHobbiesSection = ({ section, styles }: DubaiSectionProps) => {
+export const DubaiHobbiesSection = ({
+  section,
+  styles,
+}: Omit<DubaiSectionProps, 'section'> & {
+  section: HobbiesSectionSnapshot;
+}) => {
   const hobbies = getHobbiesSectionValue(section);
   if (!hobbies.length) {
     return null;

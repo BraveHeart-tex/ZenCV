@@ -1,5 +1,5 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { HobbiesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { MANHATTAN_FONT_SIZE } from '../manhattan/manhattan.styles';
 import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
 import { londonTemplateStyles } from './london.styles';
@@ -7,7 +7,7 @@ import { londonTemplateStyles } from './london.styles';
 export const LondonHobbiesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: HobbiesSectionSnapshot;
 }) => {
   const hobbies = getHobbiesSectionValue(section);
   if (!hobbies.length) {

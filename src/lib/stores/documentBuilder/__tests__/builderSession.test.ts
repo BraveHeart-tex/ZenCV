@@ -12,6 +12,77 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects edited and empty Hobbies values through the semantic snapshot', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.hobbies;
+    const sectionId = 15;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: 'Hobbies',
+            defaultTitle: 'Hobbies',
+            displayOrder: 6,
+            metadata: '[]',
+          },
+        ],
+        items: [
+          ...records.items,
+          { id: 35, sectionId, containerType: 'static', displayOrder: 1 },
+        ],
+        fields: [
+          ...records.fields,
+          {
+            id: 901,
+            itemId: 35,
+            name: definition.fields.whatYouLike.persistedName,
+            type: definition.fields.whatYouLike.expectedPersistedType,
+            value: 'Photography',
+          } as DEX_Field,
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const hobbiesField =
+      session.document?.hobbies?.items[0]?.field('whatYouLike');
+    if (!hobbiesField) {
+      throw new Error('Expected the Hobbies Semantic Field');
+    }
+    hobbiesField.setDraft('Photography, Hiking');
+
+    const hobbiesSnapshot = session.resumeDocumentSnapshot?.sections.find(
+      (section) => section.sectionKey === 'hobbies'
+    );
+    expect(hobbiesSnapshot).toMatchObject({
+      id: sectionId,
+      sectionKey: 'hobbies',
+      title: 'Hobbies',
+      displayOrder: 6,
+      items: [{ id: 35, values: { whatYouLike: 'Photography, Hiking' } }],
+    });
+    expect(
+      session.templateStore.pdfTemplateData.sections.find(
+        (section) => section.id === sectionId
+      )
+    ).toMatchObject({
+      sectionKey: 'hobbies',
+      items: [{ values: { whatYouLike: 'Photography, Hiking' } }],
+    });
+
+    hobbiesField.setDraft('');
+    expect(
+      session.templateStore.pdfTemplateData.sections.find(
+        (section) => section.id === sectionId
+      )
+    ).toMatchObject({ items: [{ values: { whatYouLike: '' } }] });
+  });
+
   it('projects Languages values, order, score, and suggestions through the snapshot', async () => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.languages;

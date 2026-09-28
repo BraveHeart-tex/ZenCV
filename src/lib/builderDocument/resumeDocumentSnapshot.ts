@@ -26,6 +26,10 @@ export interface SkillsSectionSnapshot extends ResumeSnapshotSection {
   readonly isCommaSeparated: boolean;
 }
 
+export interface HobbiesSectionSnapshot extends ResumeSnapshotSection {
+  readonly sectionKey: 'hobbies';
+}
+
 export interface InternshipSectionSnapshot extends ResumeSnapshotSection {
   readonly sectionKey: 'internships';
 }
@@ -89,6 +93,10 @@ export const createResumeDocumentSnapshot = (
 export const isSkillsSectionSnapshot = (
   section: ResumeSnapshotSection
 ): section is SkillsSectionSnapshot => section.sectionKey === 'skills';
+
+export const isHobbiesSectionSnapshot = (
+  section: ResumeSnapshotSection
+): section is HobbiesSectionSnapshot => section.sectionKey === 'hobbies';
 
 export const snapshotSection = (
   snapshot: ResumeDocumentSnapshot | null,

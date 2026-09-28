@@ -1,6 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getHobbiesSectionValue } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { HobbiesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
@@ -9,7 +9,7 @@ import {
 export const ManhattanHobbiesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: HobbiesSectionSnapshot;
 }) => {
   const hobbies = getHobbiesSectionValue(section);
 

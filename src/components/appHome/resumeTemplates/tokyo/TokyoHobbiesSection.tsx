@@ -1,8 +1,14 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { HobbiesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getHobbiesSectionValue } from '../resumeTemplates.helpers';
 import type { TokyoSectionProps } from './tokyo.types';
 
-export const TokyoHobbiesSection = ({ section, styles }: TokyoSectionProps) => {
+export const TokyoHobbiesSection = ({
+  section,
+  styles,
+}: Omit<TokyoSectionProps, 'section'> & {
+  section: HobbiesSectionSnapshot;
+}) => {
   const hobbies = getHobbiesSectionValue(section);
   if (!hobbies.length) {
     return null;
