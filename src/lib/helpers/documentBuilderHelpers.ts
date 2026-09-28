@@ -243,7 +243,6 @@ export const getTriggerContent = (
     [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
       getWebsitesSocialLinksTitle(itemId),
     [INTERNAL_SECTION_TYPES.SKILLS]: getSkillsSectionTitle(itemId),
-    [INTERNAL_SECTION_TYPES.COURSES]: getCoursesSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.LANGUAGES]: getLanguagesSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.CUSTOM]: getCustomSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.REFERENCES]: getReferencesSectionTitle(itemId),
@@ -352,35 +351,6 @@ const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
   return {
     title: language || '(Untitled)',
     description: level || '',
-  };
-};
-
-const getCoursesSectionTitle = (itemId: DEX_Item['id']) => {
-  const getCourseFieldValue = (fieldName: FieldValuesForKey<'COURSES'>) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const course = getCourseFieldValue(FIELD_NAMES.COURSES.COURSE);
-  const institution = getCourseFieldValue(FIELD_NAMES.COURSES.INSTITUTION);
-  const startDate = getCourseFieldValue(FIELD_NAMES.COURSES.START_DATE);
-  const endDate = getCourseFieldValue(FIELD_NAMES.COURSES.END_DATE);
-
-  const triggerTitle = course
-    ? institution
-      ? `${course} at ${institution}`
-      : course
-    : institution || '(Not Specified)';
-  const triggerDescription = startDate
-    ? endDate
-      ? `${startDate} - ${endDate}`
-      : startDate
-    : endDate
-      ? endDate
-      : '';
-
-  return {
-    title: triggerTitle,
-    description: triggerDescription,
   };
 };
 

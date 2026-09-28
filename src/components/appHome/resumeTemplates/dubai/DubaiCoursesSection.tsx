@@ -1,9 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
 import { DubaiSectionEntry } from './DubaiSectionEntry';
-import type { DubaiSectionProps } from './dubai.types';
+import type { DubaiStyles } from './dubai.types';
 
-export const DubaiCoursesSection = ({ section, styles }: DubaiSectionProps) => {
+export const DubaiCoursesSection = ({
+  section,
+  styles,
+}: {
+  section: ResumeSnapshotSection;
+  styles: DubaiStyles;
+}) => {
   const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

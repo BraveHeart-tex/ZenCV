@@ -1,6 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getCoursesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
@@ -9,7 +9,7 @@ import {
 export const ManhattanCoursesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
 }) => {
   const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) {

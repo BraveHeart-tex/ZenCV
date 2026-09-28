@@ -1,5 +1,5 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
 import { LondonSectionEntry } from './LondonSectionEntry';
 import { londonTemplateStyles } from './london.styles';
@@ -7,7 +7,7 @@ import { londonTemplateStyles } from './london.styles';
 export const LondonCoursesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
 }) => {
   const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) {

@@ -1,9 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getCoursesSectionEntries } from '../resumeTemplates.helpers';
 import { TokyoSectionEntry } from './TokyoSectionEntry';
-import type { TokyoSectionProps } from './tokyo.types';
+import type { TokyoStyles } from './tokyo.types';
 
-export const TokyoCoursesSection = ({ section, styles }: TokyoSectionProps) => {
+export const TokyoCoursesSection = ({
+  section,
+  styles,
+}: {
+  section: ResumeSnapshotSection;
+  styles: TokyoStyles;
+}) => {
   const sectionEntries = getCoursesSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
