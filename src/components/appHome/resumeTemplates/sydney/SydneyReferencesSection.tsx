@@ -1,23 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  getReferencesSectionEntries,
-  getSectionMetadata,
-} from '../resumeTemplates.helpers';
+import type { ReferencesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getReferencesSectionEntries } from '../resumeTemplates.helpers';
 import { SYDNEY_FONT_SIZE } from './sydney.styles';
 import type { SydneySectionProps } from './sydney.types';
 
 export const SydneyReferencesSection = ({
   section,
   styles,
-}: SydneySectionProps) => {
+}: Omit<SydneySectionProps, 'section'> & {
+  section: ReferencesSectionSnapshot;
+}) => {
   const sectionEntries = getReferencesSectionEntries(section);
-  const hideReferences =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
-    ) === CHECKED_METADATA_VALUE;
+  const hideReferences = section.hideReferences;
 
   if (!sectionEntries.length) {
     return null;

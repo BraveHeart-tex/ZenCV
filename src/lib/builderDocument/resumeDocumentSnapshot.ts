@@ -17,6 +17,7 @@ export interface ResumeSnapshotSection {
   readonly title: string;
   readonly displayOrder: number;
   readonly items: readonly ResumeSnapshotItem[];
+  readonly hideReferences?: boolean;
 }
 
 export interface SkillsSectionSnapshot extends ResumeSnapshotSection {
@@ -27,6 +28,11 @@ export interface SkillsSectionSnapshot extends ResumeSnapshotSection {
 
 export interface InternshipSectionSnapshot extends ResumeSnapshotSection {
   readonly sectionKey: 'internships';
+}
+
+export interface ReferencesSectionSnapshot extends ResumeSnapshotSection {
+  readonly sectionKey: 'references';
+  readonly hideReferences: boolean;
 }
 
 export interface ResumeDocumentSnapshot {
@@ -56,6 +62,15 @@ export const createResumeDocumentSnapshot = (
             section.metadata.find(
               (option) =>
                 option.key === SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED
+            )?.value === CHECKED_METADATA_VALUE,
+        }
+      : {}),
+    ...(section.sectionKey === 'references'
+      ? {
+          hideReferences:
+            section.metadata.find(
+              (option) =>
+                option.key === SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
             )?.value === CHECKED_METADATA_VALUE,
         }
       : {}),

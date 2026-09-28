@@ -384,16 +384,11 @@ const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getReferencesSectionTitle = (itemId: DEX_Item['id']) => {
-  const getReferenceFieldValue = (
-    fieldName: FieldValuesForKey<'REFERENCES'>
-  ) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const referentFullName =
-    getReferenceFieldValue(FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME) ||
-    '(Not Specified)';
-  const company = getReferenceFieldValue(FIELD_NAMES.REFERENCES.COMPANY);
+  const values = builderSession.resumeDocumentSnapshot?.sections
+    .find((section) => section.sectionKey === 'references')
+    ?.items.find((item) => item.id === itemId)?.values;
+  const referentFullName = values?.referentFullName || '(Not Specified)';
+  const company = values?.company ?? '';
 
   return {
     title: referentFullName,

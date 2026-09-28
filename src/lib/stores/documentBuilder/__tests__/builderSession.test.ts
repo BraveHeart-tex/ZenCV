@@ -321,7 +321,9 @@ describe('BuilderSession', () => {
     );
     expect(
       session.templateStore.pdfTemplateData.sections.some(
-        (section) => section.type === definition.persistedType
+        (section) =>
+          !('sectionKey' in section) &&
+          section.type === definition.persistedType
       )
     ).toBe(false);
     expect(

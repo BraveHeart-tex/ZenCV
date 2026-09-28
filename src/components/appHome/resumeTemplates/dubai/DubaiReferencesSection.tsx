@@ -1,23 +1,17 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  getReferencesSectionEntries,
-  getSectionMetadata,
-} from '../resumeTemplates.helpers';
+import type { ReferencesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getReferencesSectionEntries } from '../resumeTemplates.helpers';
 import { DUBAI_FONT_SIZE } from './dubai.styles';
 import type { DubaiSectionProps } from './dubai.types';
 
 export const DubaiReferencesSection = ({
   section,
   styles,
-}: DubaiSectionProps) => {
+}: Omit<DubaiSectionProps, 'section'> & {
+  section: ReferencesSectionSnapshot;
+}) => {
   const sectionEntries = getReferencesSectionEntries(section);
-  const hideReferences =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
-    ) === CHECKED_METADATA_VALUE;
+  const hideReferences = section.hideReferences;
 
   if (!sectionEntries.length) {
     return null;

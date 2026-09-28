@@ -1,11 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
-import {
-  getReferencesSectionEntries,
-  getSectionMetadata,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getReferencesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { ReferencesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
@@ -14,15 +9,11 @@ import {
 export const ManhattanReferencesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ReferencesSectionSnapshot;
 }) => {
   const sectionEntries = getReferencesSectionEntries(section);
 
-  const hideReferences =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
-    ) === CHECKED_METADATA_VALUE;
+  const hideReferences = section.hideReferences;
 
   if (!sectionEntries.length) {
     return null;

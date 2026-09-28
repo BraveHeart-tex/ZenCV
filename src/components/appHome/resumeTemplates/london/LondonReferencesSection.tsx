@@ -1,25 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
-import {
-  getReferencesSectionEntries,
-  getSectionMetadata,
-} from '../resumeTemplates.helpers';
+import type { ReferencesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getReferencesSectionEntries } from '../resumeTemplates.helpers';
 import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
 
 export const LondonReferencesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ReferencesSectionSnapshot;
 }) => {
   const sectionEntries = getReferencesSectionEntries(section);
 
-  const hideReferences =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.REFERENCES.HIDE_REFERENCES
-    ) === CHECKED_METADATA_VALUE;
+  const hideReferences = section.hideReferences;
 
   if (!sectionEntries.length) {
     return null;
