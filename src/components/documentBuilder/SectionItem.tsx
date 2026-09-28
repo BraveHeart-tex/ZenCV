@@ -32,9 +32,16 @@ const ContainerElement = ({
   const section = builderSession.getSection(item.sectionId);
 
   if (item instanceof WorkExperienceItemModel) {
+    const legacyFields = fields.filter((field) => field.isLegacy);
     return (
       <CollapsibleSectionItemContainer itemId={item.id}>
         <WorkExperienceForm entry={item.entry} />
+        {legacyFields.length > 0 ? (
+          <HidableFieldContainer
+            plan={createGenericRenderPlan(legacyFields)}
+            responsiveLayout={false}
+          />
+        ) : null}
       </CollapsibleSectionItemContainer>
     );
   }

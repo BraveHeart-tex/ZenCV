@@ -206,4 +206,49 @@ describe('document editor integration', () => {
       'Staff Engineer'
     );
   });
+
+  it('edits and reloads a supported extra Work Experience field', async () => {
+    const item = builderSession.document?.workExperience.items[0];
+    if (!item) {
+      throw new Error('Expected Work Experience');
+    }
+    const extra = {
+      id: 9001,
+      itemId: item.id,
+      name: 'Legacy note',
+      type: 'string',
+      value: 'Original note',
+    } as unknown as DEX_Field;
+    records = { ...records, fields: [...records.fields, extra] };
+    await builderSession.load(records.document.id);
+
+    const editor = renderItem(item.id);
+    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    expect(screen.getByLabelText('Job Title')).toBeTruthy();
+    expect(screen.queryByLabelText('Legacy note')).toBeNull();
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Show additional details' })
+    );
+    fireEvent.change(screen.getByLabelText('Legacy note'), {
+      target: { value: 'Updated note' },
+    });
+    expect(await builderSession.prepareNavigation()).toBe(true);
+    expect(records.fields.find((field) => field.id === extra.id)?.value).toBe(
+      'Updated note'
+    );
+
+    editor.unmount();
+    await builderSession.load(records.document.id);
+    renderItem(item.id);
+    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    expect(screen.getByLabelText('Legacy note')).toHaveProperty(
+      'value',
+      'Updated note'
+    );
+    expect(
+      builderSession.document?.workExperience.items[0]?.editableFields.find(
+        (field) => field.id === extra.id
+      )?.fieldKey
+    ).toBe('legacy:9001');
+  });
 });
