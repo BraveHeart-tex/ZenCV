@@ -3,6 +3,7 @@ import { getSkillsSectionEntries } from '@/components/appHome/resumeTemplates/re
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
+import { getDefaultSkillsMetadata } from '@/lib/misc/sectionMetadataTemplates';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
@@ -85,7 +86,76 @@ describe('BuilderSession', () => {
       { entryId: '24', name: 'TypeScript', level: 'Expert' },
       { entryId: '23', name: 'Research', level: 'Proficient' },
     ]);
-    expect(session.templateStore.resumeStats.score).toBeGreaterThan(0);
+    const scoreWithSkills = session.templateStore.resumeStats.score;
+    session.document?.skills?.items.forEach((item) => {
+      item.field('skill')?.setDraft('');
+    });
+    expect(session.templateStore.resumeStats.score).toBe(scoreWithSkills - 8);
+    expect(
+      session.templateStore.pdfTemplateData.skillsSection?.items.every(
+        (item) => item.values.skill === ''
+      )
+    ).toBe(true);
+  });
+
+  it('keeps empty Skills and default options empty in the snapshot and PDF entries', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.skills;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: 13,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: definition.label,
+            defaultTitle: definition.label,
+            displayOrder: 4,
+            metadata: getDefaultSkillsMetadata(),
+          },
+        ],
+        items: [
+          ...records.items,
+          {
+            id: 23,
+            sectionId: 13,
+            containerType: 'collapsible',
+            displayOrder: 1,
+          },
+        ],
+        fields: [
+          ...records.fields,
+          ...Object.values(definition.fields).map(
+            (field, index) =>
+              ({
+                id: 700 + index,
+                itemId: 23,
+                name: field.persistedName,
+                type: field.expectedPersistedType,
+                value: '',
+                ...(field.control === 'select'
+                  ? { selectType: 'basic', options: [...field.options] }
+                  : {}),
+              }) as DEX_Field
+          ),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const skills = session.templateStore.pdfTemplateData.skillsSection;
+    expect(skills).toMatchObject({
+      sectionKey: 'skills',
+      showExperienceLevel: false,
+      isCommaSeparated: false,
+      items: [{ id: 23, values: { skill: '', experienceLevel: '' } }],
+    });
+    if (!skills) {
+      throw new Error('Expected the Skills snapshot');
+    }
+    expect(getSkillsSectionEntries(skills)).toEqual([]);
   });
 
   it('projects Internship values semantically into templates and score', async () => {

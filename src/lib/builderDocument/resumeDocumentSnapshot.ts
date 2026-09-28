@@ -1,3 +1,5 @@
+import { CHECKED_METADATA_VALUE } from '@/lib/constants';
+import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type {
   BuilderDocumentModel,
   SemanticSectionKey,
@@ -46,11 +48,15 @@ export const createResumeDocumentSnapshot = (
       ? {
           showExperienceLevel:
             section.metadata.find(
-              (option) => option.key === 'showExperienceLevel'
-            )?.value === '1',
+              (option) =>
+                option.key ===
+                SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
+            )?.value === CHECKED_METADATA_VALUE,
           isCommaSeparated:
-            section.metadata.find((option) => option.key === 'isCommaSeparated')
-              ?.value === '1',
+            section.metadata.find(
+              (option) =>
+                option.key === SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED
+            )?.value === CHECKED_METADATA_VALUE,
         }
       : {}),
     items: section.items.map((item) => ({

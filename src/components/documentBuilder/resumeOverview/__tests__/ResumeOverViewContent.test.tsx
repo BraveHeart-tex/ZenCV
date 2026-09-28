@@ -28,6 +28,16 @@ const mocks = vi.hoisted(() => ({
       { id: 41, sectionId: 40, containerType: 'collapsible' },
     ],
   },
+  skillsSection: {
+    id: 50,
+    title: 'Skills',
+    items: [{ id: 51, sectionId: 50, containerType: 'collapsible' }],
+  },
+  skillsSnapshotItem: {
+    id: 51,
+    displayOrder: 1,
+    values: { skill: 'TypeScript', experienceLevel: 'Expert' },
+  },
   educationSnapshotItem: {
     id: 21,
     displayOrder: 1,
@@ -69,6 +79,7 @@ vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
         mocks.educationSection,
         mocks.internshipSection,
         mocks.coursesSection,
+        mocks.skillsSection,
       ],
     },
     getItem: mocks.getItem,
@@ -96,6 +107,15 @@ vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
           displayOrder: 3,
           items: mocks.coursesSnapshotItems,
         },
+        {
+          id: 50,
+          sectionKey: 'skills',
+          title: 'Skills',
+          displayOrder: 4,
+          showExperienceLevel: true,
+          isCommaSeparated: false,
+          items: [mocks.skillsSnapshotItem],
+        },
       ],
     },
   },
@@ -122,6 +142,39 @@ afterEach(() => {
   mocks.educationSnapshotItem.values.school = 'First University';
   mocks.internshipSnapshotItem.values.role = 'Research Intern';
   mocks.coursesSnapshotItems[1].values.course = 'First Course';
+  mocks.skillsSnapshotItem.values.skill = 'TypeScript';
+});
+
+describe('Skills editor and overview', () => {
+  it('shows semantic Skills heading and selected level in the editor', () => {
+    mocks.getItem.mockReturnValue({
+      ...mocks.skillsSection.items[0],
+      sectionKey: 'skills',
+    });
+    mocks.skillsSnapshotItem.values.skill = 'Edited Skill';
+
+    render(<CollapsibleItemHeader itemId={51 as ItemId} />);
+
+    expect(screen.getByText('Edited Skill')).toBeTruthy();
+    expect(screen.getByText('Expert')).toBeTruthy();
+  });
+
+  it('navigates from the semantic Skills heading to its stable item ID', () => {
+    mocks.getItem.mockReturnValue({
+      ...mocks.skillsSection.items[0],
+      sectionKey: 'skills',
+    });
+
+    render(
+      <ResumeOverViewContent
+        visible
+        focusState={{ sectionId: null, itemId: null }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'TypeScript' }));
+    expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(51);
+  });
 });
 
 describe('Education overview', () => {
