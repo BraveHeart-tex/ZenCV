@@ -394,10 +394,21 @@ describe('Builder Document hydration', () => {
       ...records,
       fields: [
         ...records.fields.filter((field) => field.itemId !== work.id),
-        ...workFields.filter((field) => field.name !== 'Employer'),
+        ...workFields.filter(
+          (field) => field.name !== 'Employer' && field.name !== 'Description'
+        ),
         { ...role, id: 9_999 },
-        { ...role, id: 10_000, name: 'Retired' as DEX_Field['name'] },
-        { ...role, id: 10_001, type: 'textarea' },
+        {
+          ...role,
+          id: 10_000,
+          name: 'Retired' as DEX_Field['name'],
+          type: 'unsupported',
+        } as unknown as DEX_Field,
+        {
+          ...workFields.find((field) => field.name === 'Description'),
+          id: 10_001,
+          type: 'unsupported',
+        } as unknown as DEX_Field,
       ],
     });
     expect(diagnostics.map((diagnostic) => diagnostic.type)).toEqual(
@@ -471,6 +482,64 @@ describe('Builder Document hydration', () => {
     expect(Object.isFrozen(records.fields[0])).toBe(false);
   });
 
+  it('keeps supported extra fields editable with isolated identity and diagnostics', async () => {
+    const records = fixture();
+    const details = records.items.find((item) => item.sectionId === 10);
+    if (!details) {
+      throw new Error('Missing Personal Details item');
+    }
+    const extra = {
+      id: 9001,
+      itemId: details.id,
+      name: 'Legacy note',
+      type: 'textarea',
+      value: 'old value',
+    } as unknown as DEX_Field;
+    const persistence = new InMemoryDocumentPersistence({
+      ...records,
+      fields: [...records.fields, extra],
+    });
+    const result = hydrateBuilderDocument(persistence.records, persistence);
+    expect(result.success).toBe(true);
+    if (!result.success) {
+      return;
+    }
+    const field =
+      result.document.personalDetails.items[0]?.editableFields.at(-1);
+    expect(field).toMatchObject({
+      id: 9001,
+      fieldKey: 'legacy:9001',
+      label: 'Legacy note',
+      value: 'old value',
+      isLegacy: true,
+    });
+    expect(result.document.hydrationDiagnostics).toEqual([
+      expect.objectContaining({
+        type: 'unknownField',
+        persistedFieldName: 'Legacy note',
+      }),
+    ]);
+    expect(result.document.personalDetails.items[0]?.fields.email.value).toBe(
+      'value-email'
+    );
+    field?.setDraft('edited');
+    expect(await field?.flush()).toBe(true);
+    expect(
+      persistence.records.fields.find((entry) => entry.id === 9001)?.value
+    ).toBe('edited');
+    const reloaded = hydrateBuilderDocument(persistence.records, persistence);
+    expect(reloaded.success).toBe(true);
+    if (reloaded.success) {
+      expect(
+        reloaded.document.personalDetails.items[0]?.editableFields.at(-1)
+      ).toMatchObject({
+        id: 9001,
+        fieldKey: 'legacy:9001',
+        value: 'edited',
+      });
+    }
+  });
+
   it('keeps Custom repeatable and generic', () => {
     const records = fixture();
     const custom = sectionDefinitions.custom;
@@ -532,6 +601,7 @@ describe('Builder Document hydration', () => {
     items[2].containerType = 'static';
     fields[0].type = 'textarea';
     fields[1].name = 'Retired' as DEX_Field['name'];
+    fields[1] = { ...fields[1], type: 'unsupported' } as unknown as DEX_Field;
     const diagnostics = failure({
       ...records,
       sections: [

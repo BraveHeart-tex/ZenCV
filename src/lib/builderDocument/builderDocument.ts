@@ -173,6 +173,10 @@ export class SemanticField<
     return this.definition.label;
   }
 
+  get isLegacy(): boolean {
+    return this.fieldKey.startsWith('legacy:');
+  }
+
   get isDirty(): boolean {
     return this.value !== this.persistedValue;
   }
@@ -610,16 +614,19 @@ export class BuilderDocumentModel {
   #titleRevision = 0;
   #appearanceRevision = 0;
   readonly persistence: DocumentPersistence;
+  readonly hydrationDiagnostics: readonly HydrationDiagnostic[];
   readonly #reconcileAfterCreateFailure?: () => Promise<void>;
 
   constructor(
     record: DEX_Document,
     sectionIds: readonly SectionId[],
     persistence: DocumentPersistence,
-    reconcileAfterCreateFailure?: () => Promise<void>
+    reconcileAfterCreateFailure?: () => Promise<void>,
+    hydrationDiagnostics: readonly HydrationDiagnostic[] = []
   ) {
     this.id = record.id as DocumentId;
     this.persistence = persistence;
+    this.hydrationDiagnostics = Object.freeze([...hydrationDiagnostics]);
     this.#reconcileAfterCreateFailure = reconcileAfterCreateFailure;
     this.title = record.title;
     this.templateType = record.templateType;
@@ -1470,6 +1477,7 @@ export const hydrateBuilderDocument = (
   reconcileAfterCreateFailure?: () => Promise<void>
 ): HydrationResult => {
   const diagnostics: HydrationDiagnostic[] = [];
+  const nonfatalDiagnostics: HydrationDiagnostic[] = [];
   const sortedSections = [...sections].sort(byId);
   const sortedItems = [...items].sort(byId);
   const sortedFields = [...fields].sort(byId);
@@ -1589,17 +1597,31 @@ export const hydrateBuilderDocument = (
         id: field.id,
         name: field.name,
         type: field.type,
+        options: 'options' in field ? field.options : undefined,
       }));
       const recordsByInput = new Map<object, DEX_Field>(
         fieldInputs.map((input, index) => [input, itemFields[index]] as const)
       );
       const analysis = analyzeItemFields(section, fieldInputs);
+      const supportedLegacyNames = new Set(
+        analysis.entries
+          .filter((entry) => entry.legacy)
+          .map((entry) => entry.field.name)
+      );
       for (const diagnostic of analysis.diagnostics) {
-        diagnostics.push({
+        const enriched = {
           ...diagnostic,
           sectionId: section.id,
           itemId: item.id,
-        });
+        } as HydrationDiagnostic;
+        if (
+          diagnostic.type === 'unknownField' &&
+          supportedLegacyNames.has(diagnostic.persistedFieldName)
+        ) {
+          nonfatalDiagnostics.push(enriched);
+        } else {
+          diagnostics.push(enriched);
+        }
       }
       const resolvedFields = analysis.entries.map((entry) => ({
         record: recordsByInput.get(entry.field) as DEX_Field,
@@ -1640,7 +1662,8 @@ export const hydrateBuilderDocument = (
     document,
     orderedSections.map((section) => section.id as SectionId),
     persistence,
-    reconcileAfterCreateFailure
+    reconcileAfterCreateFailure,
+    nonfatalDiagnostics
   );
   for (const section of orderedSections) {
     const definition = resolved.get(section.id) as SectionDefinition;

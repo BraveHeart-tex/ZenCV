@@ -36,7 +36,9 @@ export const createResumeDocumentSnapshot = (
       id: item.id,
       displayOrder: item.displayOrder,
       values: Object.fromEntries(
-        item.editableFields.map((field) => [field.fieldKey, field.value])
+        item.editableFields
+          .filter((field) => !field.isLegacy)
+          .map((field) => [field.fieldKey, field.value])
       ),
     })),
   })),

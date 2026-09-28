@@ -95,9 +95,9 @@ export class CurrentStoreProjection {
     }
     const section = this.document?.sectionsById.get(item.sectionId);
     return section
-      ? item.editableFields.map((field) =>
-          section.toPersistedFieldSnapshot(field)
-        )
+      ? item.editableFields
+          .filter((field) => !field.isLegacy)
+          .map((field) => section.toPersistedFieldSnapshot(field))
       : [];
   }
 

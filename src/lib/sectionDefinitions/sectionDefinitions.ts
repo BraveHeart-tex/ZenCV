@@ -1096,6 +1096,7 @@ export interface PersistedFieldInput {
   readonly id: string | number;
   readonly name: string;
   readonly type: string;
+  readonly options?: readonly string[] | null;
 }
 
 export const getSectionDefinition = <Section extends SectionKey>(
@@ -1216,6 +1217,7 @@ export type DefinitionDiagnostic =
 export interface ResolvedFieldEntry {
   readonly field: PersistedFieldInput;
   readonly definition: FieldDefinition;
+  readonly legacy?: boolean;
 }
 
 export interface ItemFieldAnalysis {
@@ -1248,12 +1250,43 @@ export const analyzeItemFields = (
     matchingFields.push(field);
     fieldsByPersistedName.set(field.name, matchingFields);
   }
-  const resolved = fields.flatMap((field, inputOrder) => {
+  const resolved: {
+    field: PersistedFieldInput;
+    definition: FieldDefinition;
+    inputOrder: number;
+    legacy?: boolean;
+  }[] = fields.flatMap((field, inputOrder) => {
     const fieldDefinition = resolveFieldDefinition(sectionKey, field.name);
     const matches = fieldsByPersistedName.get(field.name) ?? [];
-    return fieldDefinition && matches.length === 1
-      ? [{ field, definition: fieldDefinition, inputOrder }]
-      : [];
+    if (fieldDefinition && matches.length === 1) {
+      return [{ field, definition: fieldDefinition, inputOrder }];
+    }
+    const controlByType: Partial<Record<PersistedFieldType, FieldControl>> = {
+      string: 'text',
+      'rich-text': 'richText',
+      'date-month': 'month',
+      select: 'select',
+      textarea: 'textarea',
+    };
+    const control = controlByType[field.type as PersistedFieldType];
+    if (!fieldDefinition && matches.length === 1 && control) {
+      const fallback = {
+        key: `legacy:${field.id}`,
+        persistedName: field.name,
+        label: field.name,
+        expectedPersistedType: field.type,
+        control,
+        order: 10_000 + inputOrder,
+        visibility: 'additional',
+        width: 'full',
+        ...(control === 'select' ? { options: field.options ?? [] } : {}),
+        ...(control === 'richText'
+          ? { richText: { characterCounter: false } }
+          : {}),
+      } as unknown as FieldDefinition;
+      return [{ field, definition: fallback, inputOrder, legacy: true }];
+    }
+    return [];
   });
 
   const inputDiagnostics: {
@@ -1324,9 +1357,10 @@ export const analyzeItemFields = (
           left.definition.order - right.definition.order ||
           left.inputOrder - right.inputOrder
       )
-      .map(({ field, definition: fieldDefinition }) => ({
+      .map(({ field, definition: fieldDefinition, legacy }) => ({
         field,
         definition: fieldDefinition,
+        ...(legacy ? { legacy: true } : {}),
       })),
     diagnostics: [
       ...missingDiagnostics,

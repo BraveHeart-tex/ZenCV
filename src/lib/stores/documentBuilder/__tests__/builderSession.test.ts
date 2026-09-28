@@ -7,6 +7,54 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('loads, saves, and reloads a supported legacy field without semantic aliasing', async () => {
+    const records = builderDocumentFixture();
+    const item = records.items.find((entry) => entry.sectionId === 10);
+    if (!item) {
+      throw new Error('Missing Personal Details item');
+    }
+    const extra = {
+      id: 9001,
+      itemId: item.id,
+      name: 'Legacy note',
+      type: 'string',
+      value: 'legacy value',
+    } as unknown as DEX_Field;
+    const persistence = new InMemoryDocumentPersistence({
+      ...records,
+      fields: [...records.fields, extra],
+    });
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    const legacyField =
+      session.document?.personalDetails.items[0]?.editableFields.at(-1);
+    expect(legacyField).toMatchObject({
+      id: 9001,
+      fieldKey: 'legacy:9001',
+      value: 'legacy value',
+    });
+    expect(session.document?.hydrationDiagnostics).toHaveLength(1);
+    expect(
+      session.resumeDocumentSnapshot?.sections[0]?.items[0]?.values
+    ).not.toHaveProperty('legacy:9001');
+    expect(
+      session.currentStoreProjection.getFieldsByItemId(item.id)
+    ).not.toContainEqual(expect.objectContaining({ name: 'Legacy note' }));
+    legacyField?.setDraft('saved legacy value');
+    expect(await legacyField?.flush()).toBe(true);
+    await session.load(records.document.id);
+    expect(
+      session.document?.personalDetails.items[0]?.editableFields.at(-1)
+    ).toMatchObject({
+      id: 9001,
+      fieldKey: 'legacy:9001',
+      value: 'saved legacy value',
+    });
+    expect(
+      session.document?.personalDetails.items[0]?.fields.email.fieldKey
+    ).toBe('email');
+  });
+
   it('projects Personal Details, Summary, and ordered Links from semantic fields', async () => {
     const records = builderDocumentFixture();
     const links = sectionDefinitions.websitesSocialLinks;
