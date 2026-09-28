@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  getCustomSectionEntries,
   getLanguagesSectionEntries,
   getSkillsSectionEntries,
+  isCustomSection,
 } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
@@ -12,6 +14,101 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects filled and empty Custom sections through generic snapshot values', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.custom;
+    const sectionId = 16;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: 'Volunteering',
+            defaultTitle: 'Custom Section',
+            displayOrder: 7,
+            metadata: '[]',
+          },
+        ],
+        items: [
+          ...records.items,
+          { id: 36, sectionId, containerType: 'collapsible', displayOrder: 1 },
+          { id: 37, sectionId, containerType: 'collapsible', displayOrder: 2 },
+        ],
+        fields: [
+          ...records.fields,
+          ...Object.values(definition.fields).flatMap((field, index) => [
+            {
+              id: 910 + index,
+              itemId: 36,
+              name: field.persistedName,
+              type: field.expectedPersistedType,
+              value:
+                field.key === 'activityName'
+                  ? 'Mentor'
+                  : field.key === 'city'
+                    ? 'London'
+                    : '',
+            } as DEX_Field,
+            {
+              id: 920 + index,
+              itemId: 37,
+              name: field.persistedName,
+              type: field.expectedPersistedType,
+              value: '',
+            } as DEX_Field,
+          ]),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const customSection = session.document?.customSections[0];
+    const customField = customSection?.items[0]?.field('activityName');
+    if (!customSection || !customField) {
+      throw new Error('Expected the Custom section and generic field');
+    }
+    const getFieldsByItemId = vi.spyOn(
+      session.currentStoreProjection,
+      'getFieldsByItemId'
+    );
+    customField.setDraft('Community mentor');
+
+    const projectedSection =
+      session.templateStore.pdfTemplateData.sections.find(
+        (section) => section.id === sectionId
+      );
+    expect(projectedSection).toMatchObject({
+      sectionKey: 'custom',
+      title: 'Volunteering',
+      items: [
+        {
+          id: 36,
+          values: { activityName: 'Community mentor', city: 'London' },
+        },
+        { id: 37, values: { activityName: '' } },
+      ],
+    });
+    if (!projectedSection || !isCustomSection(projectedSection)) {
+      throw new Error('Expected the Custom snapshot section');
+    }
+    expect(getCustomSectionEntries(projectedSection)).toEqual([
+      {
+        entryId: '36',
+        name: 'Community mentor',
+        city: 'London',
+        startDate: '',
+        endDate: '',
+        description: '',
+      },
+    ]);
+    expect(getFieldsByItemId).not.toHaveBeenCalledWith(36);
+    expect(getFieldsByItemId).not.toHaveBeenCalledWith(37);
+  });
+
   it('projects edited and empty Hobbies values through the semantic snapshot', async () => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.hobbies;

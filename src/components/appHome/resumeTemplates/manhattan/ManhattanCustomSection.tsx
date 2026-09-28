@@ -2,7 +2,7 @@ import { Text, View } from '@react-pdf/renderer';
 import Html from 'react-pdf-html';
 import { getCustomSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { pdfHtmlRenderers } from '@/components/appHome/resumeTemplates/resumeTemplates.pdf';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { CustomSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
@@ -11,7 +11,7 @@ import {
 export const ManhattanCustomSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: CustomSectionSnapshot;
 }) => {
   const sectionEntries = getCustomSectionEntries(section);
 

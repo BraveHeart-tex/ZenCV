@@ -39,6 +39,10 @@ export interface ReferencesSectionSnapshot extends ResumeSnapshotSection {
   readonly hideReferences: boolean;
 }
 
+export interface CustomSectionSnapshot extends ResumeSnapshotSection {
+  readonly sectionKey: 'custom';
+}
+
 export interface ResumeDocumentSnapshot {
   readonly id: number;
   readonly sections: readonly ResumeSnapshotSection[];

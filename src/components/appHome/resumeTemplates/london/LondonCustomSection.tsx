@@ -1,5 +1,5 @@
 import { Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { CustomSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getCustomSectionEntries } from '../resumeTemplates.helpers';
 import { LondonSectionEntry } from './LondonSectionEntry';
 import { londonTemplateStyles } from './london.styles';
@@ -7,7 +7,7 @@ import { londonTemplateStyles } from './london.styles';
 export const LondonCustomSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: CustomSectionSnapshot;
 }) => {
   const sectionEntries = getCustomSectionEntries(section);
 

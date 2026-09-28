@@ -1,9 +1,9 @@
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { CustomSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { createDubaiStyles } from './dubai.styles';
 
 export type DubaiStyles = ReturnType<typeof createDubaiStyles>;
 
 export interface DubaiSectionProps {
-  section: TemplateDataSection;
+  section: CustomSectionSnapshot;
   styles: DubaiStyles;
 }

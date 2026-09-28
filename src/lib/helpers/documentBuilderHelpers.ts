@@ -355,14 +355,17 @@ const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
-  const getCustomFieldValue = (fieldName: FieldValuesForKey<'CUSTOM'>) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const name = getCustomFieldValue(FIELD_NAMES.CUSTOM.ACTIVITY_NAME);
-  const city = getCustomFieldValue(FIELD_NAMES.CUSTOM.CITY);
-  const startDate = getCustomFieldValue(FIELD_NAMES.CUSTOM.START_DATE);
-  const endDate = getCustomFieldValue(FIELD_NAMES.CUSTOM.END_DATE);
+  const values = builderSession.resumeDocumentSnapshot?.sections
+    .find(
+      (section) =>
+        section.sectionKey === 'custom' &&
+        section.items.some((item) => item.id === itemId)
+    )
+    ?.items.find((item) => item.id === itemId)?.values;
+  const name = values?.activityName ?? '';
+  const city = values?.city ?? '';
+  const startDate = values?.startDate ?? '';
+  const endDate = values?.endDate ?? '';
 
   const triggerTitle = name
     ? city

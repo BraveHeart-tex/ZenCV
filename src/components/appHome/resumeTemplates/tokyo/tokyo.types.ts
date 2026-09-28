@@ -1,7 +1,9 @@
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { CustomSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { createTokyoStyles } from './tokyo.styles';
 
 export interface TokyoSectionProps {
-  section: TemplateDataSection;
-  styles: ReturnType<typeof createTokyoStyles>;
+  section: CustomSectionSnapshot;
+  styles: TokyoStyles;
 }
+
+export type TokyoStyles = ReturnType<typeof createTokyoStyles>;

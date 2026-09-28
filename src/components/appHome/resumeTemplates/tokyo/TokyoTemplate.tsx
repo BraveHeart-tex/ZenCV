@@ -132,6 +132,9 @@ export const TokyoTemplate = ({
         />
       );
     }
+    if (!isTemplateDataSection(section)) {
+      return null;
+    }
     return null;
   };
 
