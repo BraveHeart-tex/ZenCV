@@ -1,13 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getInternshipsSectionEntries } from '../resumeTemplates.helpers';
+import type { InternshipSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getSemanticInternshipSectionEntries } from '../resumeTemplates.helpers';
 import { SydneySectionEntry } from './SydneySectionEntry';
 import type { SydneySectionProps } from './sydney.types';
 
 export const SydneyInternshipsSection = ({
   section,
   styles,
-}: SydneySectionProps) => {
-  const sectionEntries = getInternshipsSectionEntries(section);
+}: Omit<SydneySectionProps, 'section'> & {
+  section: InternshipSectionSnapshot;
+}) => {
+  const sectionEntries = getSemanticInternshipSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }

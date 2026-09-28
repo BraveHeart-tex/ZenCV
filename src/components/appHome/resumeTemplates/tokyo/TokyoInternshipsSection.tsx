@@ -1,13 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getInternshipsSectionEntries } from '../resumeTemplates.helpers';
+import type { InternshipSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getSemanticInternshipSectionEntries } from '../resumeTemplates.helpers';
 import { TokyoSectionEntry } from './TokyoSectionEntry';
 import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoInternshipsSection = ({
   section,
   styles,
-}: TokyoSectionProps) => {
-  const sectionEntries = getInternshipsSectionEntries(section);
+}: Omit<TokyoSectionProps, 'section'> & {
+  section: InternshipSectionSnapshot;
+}) => {
+  const sectionEntries = getSemanticInternshipSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }

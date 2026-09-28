@@ -207,6 +207,27 @@ export const getTriggerContent = (
     return getEducationSectionTitle(itemId);
   }
 
+  if (item.sectionKey === 'internships') {
+    const values = builderSession.resumeDocumentSnapshot?.sections
+      .find((section) => section.sectionKey === 'internships')
+      ?.items.find((entry) => entry.id === itemId)?.values;
+    const jobTitle = values?.role ?? '';
+    const employer = values?.employer ?? '';
+    const startDate = values?.startDate ?? '';
+    const endDate = values?.endDate ?? '';
+    const hasTitle = Boolean(jobTitle || employer);
+    return {
+      title: jobTitle
+        ? employer
+          ? `${jobTitle} at ${employer}`
+          : jobTitle
+        : employer || '(Untitled)',
+      description: hasTitle
+        ? `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`
+        : '',
+    };
+  }
+
   const sectionType = builderSession.getSection(item.sectionId)
     ?.persistedType as CollapsibleSectionType;
   if (!sectionType) {
@@ -224,7 +245,6 @@ export const getTriggerContent = (
     [INTERNAL_SECTION_TYPES.SKILLS]: getSkillsSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.COURSES]: getCoursesSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.LANGUAGES]: getLanguagesSectionTitle(itemId),
-    [INTERNAL_SECTION_TYPES.INTERNSHIPS]: getInternshipsSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.CUSTOM]: getCustomSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.REFERENCES]: getReferencesSectionTitle(itemId),
   };
@@ -243,31 +263,6 @@ const getItemFieldValue = (
   itemId: DEX_Item['id'],
   fieldName: FieldName
 ): string => builderSession.getItemFieldValue(itemId as ItemId, fieldName);
-
-const getInternshipsSectionTitle = (itemId: DEX_Item['id']) => {
-  const getInternshipFieldValue = (
-    fieldName: FieldValuesForKey<'INTERNSHIPS'>
-  ) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const jobTitle = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.JOB_TITLE);
-  const startDate = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.START_DATE);
-  const endDate = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.END_DATE);
-  const employer = getInternshipFieldValue(FIELD_NAMES.INTERNSHIPS.EMPLOYER);
-  const hasTitle = Boolean(jobTitle || employer);
-
-  return {
-    title: jobTitle
-      ? employer
-        ? `${jobTitle} at ${employer}`
-        : jobTitle
-      : employer || '(Untitled)',
-    description: hasTitle
-      ? `${startDate} ${startDate && endDate ? '-' : ''} ${endDate}`
-      : '',
-  };
-};
 
 const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
   const values = builderSession.resumeDocumentSnapshot?.sections

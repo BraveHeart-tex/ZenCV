@@ -22,12 +22,14 @@ const mocks = vi.hoisted(() => ({
   addItem: vi.fn(),
   scrollToCenterAndFocus: vi.fn(),
   scrollItemIntoView: vi.fn(),
+  resumeDocumentSnapshot: { sections: [] as unknown[] },
 }));
 
 vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
   builderSession: {
     UIStore: { getFieldRefBySemanticKey: mocks.getFieldRefBySemanticKey },
     document: { section: mocks.section, addSection: mocks.addSection },
+    resumeDocumentSnapshot: mocks.resumeDocumentSnapshot,
     addItem: mocks.addItem,
   },
 }));
@@ -112,6 +114,15 @@ describe('semantic score suggestion actions', () => {
   });
 
   it('navigates to the first semantically empty Education item, even when it has a legacy value', () => {
+    mocks.resumeDocumentSnapshot.sections = [
+      {
+        sectionKey: 'education',
+        items: [
+          { id: 52, displayOrder: 2, values: { school: '' } },
+          { id: 51, displayOrder: 1, values: { school: '' } },
+        ],
+      },
+    ];
     mocks.section.mockReturnValue({
       id: 10,
       items: [

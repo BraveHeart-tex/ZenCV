@@ -1,13 +1,16 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getInternshipsSectionEntries } from '../resumeTemplates.helpers';
+import type { InternshipSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getSemanticInternshipSectionEntries } from '../resumeTemplates.helpers';
 import { DubaiSectionEntry } from './DubaiSectionEntry';
 import type { DubaiSectionProps } from './dubai.types';
 
 export const DubaiInternshipsSection = ({
   section,
   styles,
-}: DubaiSectionProps) => {
-  const sectionEntries = getInternshipsSectionEntries(section);
+}: Omit<DubaiSectionProps, 'section'> & {
+  section: InternshipSectionSnapshot;
+}) => {
+  const sectionEntries = getSemanticInternshipSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }

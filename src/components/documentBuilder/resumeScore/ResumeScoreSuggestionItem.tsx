@@ -1,6 +1,7 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { persistedTypeForSectionKey } from '@/lib/builderDocument/builderDocument';
+import { snapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   getTextColorForBackground,
   scrollItemIntoView,
@@ -72,21 +73,18 @@ export const ResumeScoreSuggestionItem = observer(
           return;
         }
 
-        const firstEmptySectionItem = section.items.reduce(
-          (best, item) => {
-            if (
-              item.editableFields.every(
-                (field) => field.isLegacy || !field.value
-              )
-            ) {
-              return !best || item.displayOrder < best?.displayOrder
-                ? item
-                : best;
-            }
-            return best;
-          },
-          null as (typeof section.items)[number] | null
-        );
+        const semanticItems = snapshotSection(
+          builderSession.resumeDocumentSnapshot,
+          suggestion.sectionKey
+        )?.items;
+        const firstEmptyItemId = semanticItems
+          ?.filter((item) =>
+            Object.values(item.values).every((value) => !value)
+          )
+          .toSorted((a, b) => a.displayOrder - b.displayOrder)[0]?.id;
+        const firstEmptySectionItem = firstEmptyItemId
+          ? section.items.find((item) => item.id === firstEmptyItemId)
+          : undefined;
 
         if (firstEmptySectionItem) {
           scrollItemIntoView(firstEmptySectionItem.id);

@@ -7,6 +7,95 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects Internship values semantically into templates and score', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.internships;
+    const sectionId = 13;
+    const itemId = 23;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: definition.label,
+            defaultTitle: definition.label,
+            displayOrder: 4,
+            metadata: '',
+          },
+        ],
+        items: [
+          ...records.items,
+          {
+            id: itemId,
+            sectionId,
+            containerType: 'collapsible',
+            displayOrder: 1,
+          },
+        ],
+        fields: [
+          ...records.fields,
+          ...Object.values(definition.fields).map(
+            (field, index) =>
+              ({
+                id: 500 + index,
+                itemId,
+                name: field.persistedName,
+                type: field.expectedPersistedType,
+                value:
+                  field.key === 'role'
+                    ? 'Research Intern'
+                    : field.key === 'employer'
+                      ? 'Example Lab'
+                      : field.key === 'startDate'
+                        ? '2024-01'
+                        : '',
+              }) as DEX_Field
+          ),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const snapshot = session.resumeDocumentSnapshot?.sections.find(
+      (section) => section.sectionKey === 'internships'
+    );
+    expect(snapshot?.items[0]).toMatchObject({
+      id: itemId,
+      values: {
+        role: 'Research Intern',
+        employer: 'Example Lab',
+        startDate: '2024-01',
+      },
+    });
+    expect(session.templateStore.pdfTemplateData.internshipsSection).toEqual(
+      snapshot
+    );
+    expect(
+      session.templateStore.pdfTemplateData.sections.some(
+        (section) => section.type === definition.persistedType
+      )
+    ).toBe(false);
+    expect(
+      session.templateStore.resumeStats.suggestions.some(
+        (suggestion) =>
+          suggestion.sectionKey === 'internships' &&
+          suggestion.actionType === 'ADD_ITEM'
+      )
+    ).toBe(false);
+
+    session.document?.internships?.items[0]
+      ?.field('role')
+      ?.setDraft('Analyst Intern');
+    expect(
+      session.templateStore.pdfTemplateData.internshipsSection?.items[0]?.values
+        .role
+    ).toBe('Analyst Intern');
+  });
+
   it('loads, saves, and reloads a supported legacy field without semantic aliasing', async () => {
     const records = builderDocumentFixture();
     const item = records.items.find((entry) => entry.sectionId === 10);

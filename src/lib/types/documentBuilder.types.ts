@@ -1,16 +1,14 @@
 import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
-import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type {
-  DEX_Field,
-  DEX_Item,
-  DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
+  InternshipSectionSnapshot,
+  ResumeSnapshotSection,
+  SkillsSectionSnapshot,
+} from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type {
   CHECKED_METADATA_VALUE,
   UNCHECKED_METADATA_VALUE,
 } from '@/lib/constants';
 import type {
-  FIELD_NAMES,
   FIXED_SECTIONS,
   INTERNAL_SECTION_TYPES,
   INTERNAL_TEMPLATE_TYPES,
@@ -20,15 +18,7 @@ import type {
   SUGGESTION_ACTION_TYPES,
   SUGGESTION_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type {
-  NestedValueOf,
-  ValueOf,
-  ValueOfNestedObject,
-} from '@/lib/types/utils.types';
-
-export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
-
-export type TopLevelFieldName = keyof typeof FIELD_NAMES;
+import type { NestedValueOf, ValueOf } from '@/lib/types/utils.types';
 
 export type SectionType = ValueOf<typeof INTERNAL_SECTION_TYPES>;
 
@@ -39,14 +29,9 @@ export type TemplatedSectionType = Exclude<
 
 export type SelectType = ValueOf<typeof SELECT_TYPES>;
 
-export type FieldName = NestedValueOf<typeof FIELD_NAMES>;
-
 export type FixedSection = (typeof FIXED_SECTIONS)[number];
 
 export type CollapsibleSectionType = Exclude<SectionType, FixedSection>;
-
-export type FieldValuesForKey<K extends keyof typeof FIELD_NAMES> =
-  ValueOfNestedObject<typeof FIELD_NAMES, K>;
 
 export type SectionMetadataKey = NestedValueOf<typeof SECTION_METADATA_KEYS>;
 
@@ -54,11 +39,6 @@ export interface ParsedSectionMetadata {
   label: string;
   value: MetadataValue;
   key: SectionMetadataKey;
-}
-
-export interface SectionWithParsedMetadata
-  extends Omit<DEX_Section, 'metadata'> {
-  metadata: ParsedSectionMetadata[];
 }
 
 export interface PdfTemplateData {
@@ -82,19 +62,43 @@ export interface PdfTemplateData {
   };
   readonly workExperienceSection: WorkExperienceSectionSnapshot | null;
   readonly educationSection: ResumeSnapshotSection | null;
-  sections: TemplateDataSection[];
+  readonly coursesSection: ResumeSnapshotSection | null;
+  readonly internshipsSection: InternshipSectionSnapshot | null;
+  readonly skillsSection?: SkillsSectionSnapshot | null;
+  readonly languagesSection?: ResumeSnapshotSection | null;
+  sections: readonly ResumeSnapshotSection[];
   accentColor: string;
   templateType: ResumeTemplate;
 }
 
-export interface TemplateDataSection extends SectionWithParsedMetadata {
-  items: (DEX_Item & { fields: DEX_Field[] })[];
+/** Read-only PDF projection of the semantic Work Experience section. */
+export interface WorkExperienceSectionSnapshot {
+  readonly id: number;
+  readonly title: string;
+  readonly displayOrder: number;
+  readonly entries: readonly WorkExperiencePdfEntry[];
 }
 
-export type DocumentRecordWithDisplayOrder =
-  | DEX_Section
-  | DEX_Item
-  | SectionWithParsedMetadata;
+export interface InternshipPdfEntry extends Readonly<Record<string, string>> {
+  readonly entryId: string;
+  readonly jobTitle: string;
+  readonly employer: string;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly city: string;
+  readonly description: string;
+}
+
+export interface WorkExperiencePdfEntry
+  extends Readonly<Record<string, string>> {
+  readonly entryId: string;
+  readonly role: string;
+  readonly employer: string;
+  readonly startDate: string;
+  readonly endDate: string;
+  readonly city: string;
+  readonly description: string;
+}
 
 export type WithEntryId<T extends Record<string, unknown>> = T & {
   entryId: string;

@@ -17,6 +17,10 @@ export interface ResumeSnapshotSection {
   readonly items: readonly ResumeSnapshotItem[];
 }
 
+export interface InternshipSectionSnapshot extends ResumeSnapshotSection {
+  readonly sectionKey: 'internships';
+}
+
 export interface ResumeDocumentSnapshot {
   readonly id: number;
   readonly sections: readonly ResumeSnapshotSection[];

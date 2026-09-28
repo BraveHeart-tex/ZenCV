@@ -1,15 +1,15 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getInternshipsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getSemanticInternshipSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { InternshipSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { ManhattanSectionEntry } from './ManhattanSectionEntry';
 import { manhattanTemplateStyles } from './manhattan.styles';
 
 export const ManhattanInternshipsSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: InternshipSectionSnapshot;
 }) => {
-  const sectionEntries = getInternshipsSectionEntries(section);
+  const sectionEntries = getSemanticInternshipSectionEntries(section);
 
   if (!sectionEntries.length) {
     return null;
