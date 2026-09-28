@@ -355,13 +355,16 @@ const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getCustomSectionTitle = (itemId: DEX_Item['id']) => {
-  const values = builderSession.resumeDocumentSnapshot?.sections
-    .find(
-      (section) =>
-        section.sectionKey === 'custom' &&
-        section.items.some((item) => item.id === itemId)
-    )
-    ?.items.find((item) => item.id === itemId)?.values;
+  let values: Readonly<Record<string, string>> | undefined;
+  for (const section of builderSession.resumeDocumentSnapshot?.sections ?? []) {
+    if (section.sectionKey !== 'custom') {
+      continue;
+    }
+    values = section.items.find((item) => item.id === itemId)?.values;
+    if (values) {
+      break;
+    }
+  }
   const name = values?.activityName ?? '';
   const city = values?.city ?? '';
   const startDate = values?.startDate ?? '';

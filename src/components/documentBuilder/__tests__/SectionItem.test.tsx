@@ -111,7 +111,10 @@ describe('SectionItem', () => {
     expect(expandedMarkup).toContain('Hide additional details');
   });
 
-  it('renders Custom date ranges as a paired full row despite shuffled records', () => {
+  it.each([
+    ['empty', ''],
+    ['filled', 'Mentor'],
+  ])('renders %s Custom fields and paired dates despite shuffled records', (_state, activityName) => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.custom;
     const section = {
@@ -136,7 +139,7 @@ describe('SectionItem', () => {
           itemId: item.id,
           name: field.persistedName,
           type: field.expectedPersistedType,
-          value: '',
+          value: field.key === 'activityName' ? activityName : '',
         }) as DEX_Field
     );
     const result = hydrateBuilderDocument({
@@ -150,6 +153,7 @@ describe('SectionItem', () => {
     }
     const customSection = result.document.customSections[0];
     const customItem = customSection.items[0];
+    expect(customItem.field('activityName')?.value).toBe(activityName);
     vi.mocked(builderSession.getItem).mockReturnValue(customItem);
     vi.mocked(builderSession.getSection).mockReturnValue(customSection);
 
@@ -164,6 +168,9 @@ describe('SectionItem', () => {
     );
     expect(markup).toContain(
       `data-field-id="${customItem.field('description')?.id}" data-width="full"`
+    );
+    expect(markup).toContain(
+      `data-field-id="${customItem.field('activityName')?.id}"`
     );
     expect(markup).not.toContain('additional details');
     expect(markup).not.toContain('data-work-experience-form');

@@ -46,6 +46,30 @@ const record = (id: number): DEX_Field =>
   }) as DEX_Field;
 
 describe('SectionField', () => {
+  it.each([
+    '',
+    'Mentor',
+  ])('renders a Custom activity field with value %j', (value) => {
+    const definition = sectionDefinitions.custom.fields.activityName;
+    const field = new SemanticField(
+      {
+        ...record(9),
+        name: definition.persistedName,
+        type: 'string',
+        value,
+      },
+      'custom',
+      definition,
+      1 as DocumentId,
+      new InMemoryDocumentPersistence(builderDocumentFixture())
+    );
+    vi.mocked(builderSession.getField).mockReturnValue(field);
+
+    const markup = renderToStaticMarkup(<SectionField fieldId={field.id} />);
+    expect(markup).toContain(definition.label);
+    expect(markup).toContain(`value="${value}"`);
+  });
+
   it('chooses controls, width, and compact label from definitions', () => {
     const persistence = new InMemoryDocumentPersistence(
       builderDocumentFixture()
