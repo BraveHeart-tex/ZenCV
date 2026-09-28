@@ -111,12 +111,23 @@ describe('semantic score suggestion actions', () => {
     );
   });
 
-  it('reuses the first empty item in an existing section', () => {
+  it('navigates to the first semantically empty Education item, even when it has a legacy value', () => {
     mocks.section.mockReturnValue({
       id: 10,
       items: [
-        { id: 52, displayOrder: 2, editableFields: [{ value: '' }] },
-        { id: 51, displayOrder: 1, editableFields: [{ value: '' }] },
+        {
+          id: 52,
+          displayOrder: 2,
+          editableFields: [{ value: '', isLegacy: false }],
+        },
+        {
+          id: 51,
+          displayOrder: 1,
+          editableFields: [
+            { value: '', isLegacy: false },
+            { value: 'Retired field value', isLegacy: true },
+          ],
+        },
       ],
     });
     const suggestion: ResumeSuggestion = {

@@ -74,7 +74,11 @@ export const ResumeScoreSuggestionItem = observer(
 
         const firstEmptySectionItem = section.items.reduce(
           (best, item) => {
-            if (item.editableFields.every((field) => !field.value)) {
+            if (
+              item.editableFields.every(
+                (field) => field.isLegacy || !field.value
+              )
+            ) {
               return !best || item.displayOrder < best?.displayOrder
                 ? item
                 : best;
