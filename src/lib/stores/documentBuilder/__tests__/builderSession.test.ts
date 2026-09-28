@@ -66,6 +66,10 @@ describe('BuilderSession', () => {
       displayOrder: 6,
       items: [{ id: 35, values: { whatYouLike: 'Photography, Hiking' } }],
     });
+    const getFieldsByItemId = vi.spyOn(
+      session.currentStoreProjection,
+      'getFieldsByItemId'
+    );
     expect(
       session.templateStore.pdfTemplateData.sections.find(
         (section) => section.id === sectionId
@@ -74,6 +78,7 @@ describe('BuilderSession', () => {
       sectionKey: 'hobbies',
       items: [{ values: { whatYouLike: 'Photography, Hiking' } }],
     });
+    expect(getFieldsByItemId).not.toHaveBeenCalledWith(35);
 
     hobbiesField.setDraft('');
     expect(

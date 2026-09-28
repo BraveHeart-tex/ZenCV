@@ -89,6 +89,63 @@ const renderItem = (itemId: number) =>
   );
 
 describe('document editor integration', () => {
+  it('edits, clears, and reloads Hobbies through the editor', async () => {
+    const definition = sectionDefinitions.hobbies;
+    const section = {
+      id: 50,
+      documentId: records.document.id,
+      title: definition.label,
+      defaultTitle: definition.label,
+      type: definition.persistedType,
+      displayOrder: 5,
+      metadata: '[]',
+    } as DEX_Section;
+    const item = {
+      id: 51,
+      sectionId: section.id,
+      containerType: definition.expectedContainerType,
+      displayOrder: 1,
+    } as DEX_Item;
+    const field = {
+      id: 52,
+      itemId: item.id,
+      name: definition.fields.whatYouLike.persistedName,
+      type: definition.fields.whatYouLike.expectedPersistedType,
+      value: 'Photography',
+    } as DEX_Field;
+    records = {
+      ...records,
+      sections: [...records.sections, section],
+      items: [...records.items, item],
+      fields: [...records.fields, field],
+    };
+    await builderSession.load(records.document.id);
+
+    const editor = renderItem(item.id);
+    const input = screen.getByLabelText('What do you like?');
+    expect(input).toHaveProperty('value', 'Photography');
+    fireEvent.change(input, { target: { value: 'Photography, Hiking' } });
+    expect(input).toHaveProperty('value', 'Photography, Hiking');
+    expect(await builderSession.prepareNavigation()).toBe(true);
+    editor.unmount();
+
+    await builderSession.load(records.document.id);
+    const reloadedEditor = renderItem(item.id);
+    const reloadedInput = screen.getByLabelText('What do you like?');
+    expect(reloadedInput).toHaveProperty('value', 'Photography, Hiking');
+    fireEvent.change(reloadedInput, { target: { value: '' } });
+    expect(reloadedInput).toHaveProperty('value', '');
+    expect(await builderSession.prepareNavigation()).toBe(true);
+    reloadedEditor.unmount();
+
+    await builderSession.load(records.document.id);
+    renderItem(item.id);
+    expect(screen.getByLabelText('What do you like?')).toHaveProperty(
+      'value',
+      ''
+    );
+  });
+
   it('reveals additional Personal Details and remembers the disclosure choice', () => {
     const item = builderSession.document?.personalDetails.items[0];
     if (!item) {
