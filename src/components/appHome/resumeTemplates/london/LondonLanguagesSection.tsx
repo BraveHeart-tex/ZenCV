@@ -1,11 +1,11 @@
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { ResumeLanguagesSection } from '../shared/ResumeLanguagesSection';
 import { LONDON_FONT_SIZE, londonTemplateStyles } from './london.styles';
 
 export const LondonLanguagesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
 }) => {
   return (
     <ResumeLanguagesSection

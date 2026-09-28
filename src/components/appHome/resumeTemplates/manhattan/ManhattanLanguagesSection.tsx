@@ -1,5 +1,5 @@
 import { getLanguagesSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { ResumeLanguagesSection } from '../shared/ResumeLanguagesSection';
 import {
   MANHATTAN_FONT_SIZE,
@@ -9,7 +9,7 @@ import {
 export const ManhattanLanguagesSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
 }) => {
   const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) {

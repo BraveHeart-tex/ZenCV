@@ -33,6 +33,22 @@ const mocks = vi.hoisted(() => ({
     title: 'Skills',
     items: [{ id: 51, sectionId: 50, containerType: 'collapsible' }],
   },
+  languagesSection: {
+    id: 60,
+    title: 'Languages',
+    items: [
+      { id: 62, sectionId: 60, containerType: 'collapsible' },
+      { id: 61, sectionId: 60, containerType: 'collapsible' },
+    ],
+  },
+  languagesSnapshotItems: [
+    { id: 62, displayOrder: 2, values: { language: 'German', level: 'B2' } },
+    {
+      id: 61,
+      displayOrder: 1,
+      values: { language: 'English', level: 'Native Speaker' },
+    },
+  ],
   skillsSnapshotItem: {
     id: 51,
     displayOrder: 1,
@@ -80,6 +96,7 @@ vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
         mocks.internshipSection,
         mocks.coursesSection,
         mocks.skillsSection,
+        mocks.languagesSection,
       ],
     },
     getItem: mocks.getItem,
@@ -116,6 +133,13 @@ vi.mock('@/lib/stores/documentBuilder/builderSession', () => ({
           isCommaSeparated: false,
           items: [mocks.skillsSnapshotItem],
         },
+        {
+          id: 60,
+          sectionKey: 'languages',
+          title: 'Languages',
+          displayOrder: 5,
+          items: mocks.languagesSnapshotItems,
+        },
       ],
     },
   },
@@ -143,6 +167,42 @@ afterEach(() => {
   mocks.internshipSnapshotItem.values.role = 'Research Intern';
   mocks.coursesSnapshotItems[1].values.course = 'First Course';
   mocks.skillsSnapshotItem.values.skill = 'TypeScript';
+  mocks.languagesSnapshotItems[1].values.language = 'English';
+});
+
+describe('Languages editor and overview', () => {
+  it('shows the edited semantic Language heading and level in the editor', () => {
+    mocks.getItem.mockReturnValue({
+      ...mocks.languagesSection.items[1],
+      sectionKey: 'languages',
+    });
+    mocks.languagesSnapshotItems[1].values.language = 'Edited Language';
+
+    render(<CollapsibleItemHeader itemId={61 as ItemId} />);
+
+    expect(screen.getByText('Edited Language')).toBeTruthy();
+    expect(screen.getByText('Native Speaker')).toBeTruthy();
+  });
+
+  it('navigates from reordered semantic Language headings to stable item IDs', () => {
+    mocks.getItem.mockImplementation((itemId: number) => ({
+      ...mocks.languagesSection.items.find((item) => item.id === itemId),
+      sectionKey: 'languages',
+    }));
+    mocks.languagesSnapshotItems[1].values.language = 'Edited Language';
+
+    render(
+      <ResumeOverViewContent
+        visible
+        focusState={{ sectionId: null, itemId: null }}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edited Language' }));
+    expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(61);
+    fireEvent.click(screen.getByRole('button', { name: 'German' }));
+    expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(62);
+  });
 });
 
 describe('Skills editor and overview', () => {

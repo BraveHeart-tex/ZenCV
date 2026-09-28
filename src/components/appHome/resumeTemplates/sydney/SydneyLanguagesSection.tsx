@@ -1,11 +1,14 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
 import type { SydneySectionProps } from './sydney.types';
 
 export const SydneyLanguagesSection = ({
   section,
   styles,
-}: SydneySectionProps) => {
+}: Omit<SydneySectionProps, 'section'> & {
+  section: ResumeSnapshotSection;
+}) => {
   const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getSkillsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import {
+  getLanguagesSectionEntries,
+  getSkillsSectionEntries,
+} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
@@ -9,6 +12,97 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects Languages values, order, score, and suggestions through the snapshot', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.languages;
+    const sectionId = 14;
+    const values: Record<number, Record<string, string>> = {
+      33: { language: 'German', level: 'B2' },
+      34: { language: 'English', level: 'Native Speaker' },
+      35: { language: '', level: '' },
+    };
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: definition.label,
+            defaultTitle: definition.label,
+            displayOrder: 5,
+            metadata: '[]',
+          },
+        ],
+        items: [
+          ...records.items,
+          { id: 33, sectionId, containerType: 'collapsible', displayOrder: 2 },
+          { id: 34, sectionId, containerType: 'collapsible', displayOrder: 1 },
+          { id: 35, sectionId, containerType: 'collapsible', displayOrder: 3 },
+        ],
+        fields: [
+          ...records.fields,
+          ...[33, 34, 35].flatMap((itemId, itemIndex) =>
+            Object.values(definition.fields).map(
+              (field, fieldIndex) =>
+                ({
+                  id: 800 + itemIndex * 10 + fieldIndex,
+                  itemId,
+                  name: field.persistedName,
+                  type: field.expectedPersistedType,
+                  value: values[itemId][field.key],
+                  ...(field.control === 'select'
+                    ? { selectType: 'basic', options: [...field.options] }
+                    : {}),
+                }) as DEX_Field
+            )
+          ),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const languages = session.templateStore.pdfTemplateData.languagesSection;
+    expect(
+      session.templateStore.pdfTemplateData.sections.some(
+        (section) => section.id === sectionId
+      )
+    ).toBe(false);
+    if (!languages) {
+      throw new Error('Expected the Languages snapshot');
+    }
+    expect(languages).toMatchObject({ sectionKey: 'languages', id: sectionId });
+    expect(getLanguagesSectionEntries(languages)).toEqual([
+      { entryId: '34', language: 'English', level: 'Native Speaker' },
+      { entryId: '33', language: 'German', level: 'B2' },
+    ]);
+
+    const hasLanguageSuggestion = () =>
+      session.templateStore.resumeStats.suggestions.some(
+        (suggestion) => suggestion.label === 'Add language'
+      );
+    const scoreWithLanguages = session.templateStore.resumeStats.score;
+    expect(hasLanguageSuggestion()).toBe(false);
+
+    session.document?.languages?.items.forEach((item) => {
+      item.field('language')?.setDraft('');
+    });
+    expect(session.templateStore.resumeStats.score).toBe(
+      scoreWithLanguages - 6
+    );
+    expect(hasLanguageSuggestion()).toBe(true);
+    expect(
+      getLanguagesSectionEntries(
+        session.templateStore.pdfTemplateData.languagesSection ?? languages
+      )
+    ).toEqual([
+      { entryId: '34', language: '', level: 'Native Speaker' },
+      { entryId: '33', language: '', level: 'B2' },
+    ]);
+  });
+
   it('projects Skills values, order, and render options through the snapshot', async () => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.skills;

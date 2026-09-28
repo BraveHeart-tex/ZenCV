@@ -1,11 +1,14 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
 import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoLanguagesSection = ({
   section,
   styles,
-}: TokyoSectionProps) => {
+}: Omit<TokyoSectionProps, 'section'> & {
+  section: ResumeSnapshotSection;
+}) => {
   const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

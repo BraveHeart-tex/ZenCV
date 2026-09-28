@@ -1,11 +1,14 @@
 import { Text, View } from '@react-pdf/renderer';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
 import type { DubaiSectionProps } from './dubai.types';
 
 export const DubaiLanguagesSection = ({
   section,
   styles,
-}: DubaiSectionProps) => {
+}: Omit<DubaiSectionProps, 'section'> & {
+  section: ResumeSnapshotSection;
+}) => {
   const sectionEntries = getLanguagesSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

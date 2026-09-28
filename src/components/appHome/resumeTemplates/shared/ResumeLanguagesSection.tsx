@@ -1,5 +1,5 @@
 import { type Styles, Text, View } from '@react-pdf/renderer';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { ValueOf } from '@/lib/types/utils.types';
 import { getLanguagesSectionEntries } from '../resumeTemplates.helpers';
 
@@ -9,7 +9,7 @@ interface ResumeLanguagesSectionStyles {
 }
 
 interface ResumeLanguagesSectionProps {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
   styles: ResumeLanguagesSectionStyles;
   fontSize: number;
 }

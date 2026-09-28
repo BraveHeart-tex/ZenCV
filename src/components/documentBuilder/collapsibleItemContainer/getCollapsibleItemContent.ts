@@ -63,5 +63,15 @@ export const getCollapsibleItemContent = (itemId: ItemId) => {
     };
   }
 
+  if (item?.sectionKey === 'languages') {
+    const values = builderSession.resumeDocumentSnapshot?.sections
+      .find((section) => section.sectionKey === 'languages')
+      ?.items.find((entry) => entry.id === itemId)?.values;
+    return {
+      title: values?.language || '(Untitled)',
+      description: values?.level || '',
+    };
+  }
+
   return getTriggerContent(itemId);
 };
