@@ -133,9 +133,6 @@ export const DubaiTemplate = ({
         />
       );
     }
-    if (!isTemplateDataSection(section)) {
-      return null;
-    }
     return null;
   };
 

@@ -11,11 +11,10 @@ import {
   createResumeDocumentSnapshot,
   type ResumeDocumentSnapshot,
 } from '@/lib/builderDocument/resumeDocumentSnapshot';
-import type { FieldName, StoreResult } from '@/lib/types/documentBuilder.types';
+import type { StoreResult } from '@/lib/types/documentBuilder.types';
 import { createBuilderSessionPersistence } from './builderSessionPersistence';
 import { BuilderTemplateStore } from './builderTemplateStore';
 import { BuilderUIStore } from './builderUIStore';
-import { CurrentStoreProjection } from './currentStoreProjection';
 
 export type BuilderSessionState =
   | Readonly<{ status: 'idle' }>
@@ -42,14 +41,12 @@ export class BuilderSession {
   state: BuilderSessionState = { status: 'idle' };
   readonly UIStore: BuilderUIStore;
   readonly templateStore: BuilderTemplateStore;
-  readonly currentStoreProjection: CurrentStoreProjection;
   #generation = 0;
   readonly #persistence: DocumentPersistence;
 
   constructor(options: BuilderSessionOptions) {
     this.#persistence = options.persistence;
     this.UIStore = new BuilderUIStore(this);
-    this.currentStoreProjection = new CurrentStoreProjection(this);
     this.templateStore = new BuilderTemplateStore(this);
     makeAutoObservable(this, {}, { autoBind: true });
   }
@@ -72,16 +69,6 @@ export class BuilderSession {
 
   getField(fieldId: FieldId) {
     return this.document?.fieldsById.get(fieldId);
-  }
-
-  getItemFieldValue(itemId: ItemId, fieldName: FieldName): string {
-    const item = this.getItem(itemId);
-    const section = item ? this.getSection(item.sectionId) : undefined;
-    const fieldKey = section?.fieldKeyForPersistedName(fieldName);
-    return (
-      item?.editableFields.find((candidate) => candidate.fieldKey === fieldKey)
-        ?.value ?? ''
-    );
   }
 
   async load(documentId: number): Promise<BuilderSessionState> {
@@ -119,7 +106,6 @@ export class BuilderSession {
         hydrated.document.discard();
         return this.state;
       }
-      this.currentStoreProjection.publish(hydrated.document);
       this.templateStore.start();
       runInAction(() => {
         this.state = {
@@ -177,17 +163,11 @@ export class BuilderSession {
 
   async removeItem(itemId: number): Promise<boolean> {
     const removed = await this.document?.removeItem(itemId as ItemId);
-    if (removed) {
-      this.currentStoreProjection.disposeProjectedItem(itemId);
-    }
     return removed ?? false;
   }
 
   async removeSection(sectionId: number): Promise<boolean> {
     const removed = await this.document?.removeSection(sectionId as SectionId);
-    if (removed) {
-      this.currentStoreProjection.disposeProjectedSection(sectionId);
-    }
     return removed ?? false;
   }
 
@@ -237,7 +217,6 @@ export class BuilderSession {
 
   private clearDocument(): void {
     this.templateStore.stop();
-    this.currentStoreProjection.clear();
     if (this.state.status === 'ready') {
       this.state.document.discard();
     }

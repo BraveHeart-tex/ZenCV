@@ -2,11 +2,6 @@ import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { Button } from '@/components/ui/button';
-import {
-  CONTAINER_TYPES,
-  type DEX_Item,
-  type DEX_Section,
-} from '@/lib/client-db/clientDbSchema';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
@@ -27,7 +22,7 @@ export const ResumeOverViewContent = observer(
   ({ visible, focusState }: ResumeOverViewContentProps) => {
     const sectionsWithItems = builderSession.document?.sections ?? [];
 
-    const handleScrollToSection = (sectionId: DEX_Section['id']) => {
+    const handleScrollToSection = (sectionId: number) => {
       const container = document.getElementById(
         getSectionContainerId(sectionId)
       );
@@ -51,7 +46,7 @@ export const ResumeOverViewContent = observer(
       requestAnimationFrame(checkScrollCompletion);
     };
 
-    const handleScrollToItem = (itemId: DEX_Item['id']) => {
+    const handleScrollToItem = (itemId: number) => {
       scrollItemIntoView(itemId);
     };
 
@@ -76,7 +71,7 @@ export const ResumeOverViewContent = observer(
                 const isSectionFocused =
                   focusState.sectionId === getSectionContainerId(section.id);
                 const collapsibleItems = section.items.filter(
-                  (item) => item.containerType === CONTAINER_TYPES.COLLAPSIBLE
+                  (item) => item.containerType === 'collapsible'
                 );
 
                 return (

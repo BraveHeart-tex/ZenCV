@@ -3,6 +3,7 @@ import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
+import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
 import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
@@ -19,8 +20,10 @@ export interface OtherSectionOption
     'id' | 'documentId' | 'displayOrder' | 'defaultName'
   > {
   type: TemplatedSectionType;
+  sectionKey: SemanticSectionKey;
   icon: LucideIcon;
   containerType: DEX_Item['containerType'];
+  itemCountPerContainer?: number;
 }
 
 export const AddSectionWidget = observer(() => {

@@ -24,7 +24,6 @@ import {
   websitesAndLinkFields,
 } from '@/lib/misc/fieldTemplates';
 import {
-  FIELD_NAMES,
   highlightedElementClassName,
   INTERNAL_SECTION_TYPES,
   SECTION_METADATA_KEYS,
@@ -32,8 +31,6 @@ import {
 import type {
   CollapsibleSectionType,
   FieldInsertTemplate,
-  FieldName,
-  FieldValuesForKey,
   TemplatedSectionType,
 } from '@/lib/types/documentBuilder.types';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
@@ -260,8 +257,12 @@ export const getTriggerContent = (
 
 const getItemFieldValue = (
   itemId: DEX_Item['id'],
-  fieldName: FieldName
-): string => builderSession.getItemFieldValue(itemId as ItemId, fieldName);
+  sectionKey: 'websitesSocialLinks' | 'skills' | 'languages',
+  fieldKey: string
+): string =>
+  builderSession.resumeDocumentSnapshot?.sections
+    .find((section) => section.sectionKey === sectionKey)
+    ?.items.find((item) => item.id === itemId)?.values[fieldKey] ?? '';
 
 const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
   const values = builderSession.resumeDocumentSnapshot?.sections
@@ -291,18 +292,8 @@ const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
-  const getWebsiteFieldValue = (
-    fieldName: FieldValuesForKey<'WEBSITES_SOCIAL_LINKS'>
-  ) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const labelValue = getWebsiteFieldValue(
-    FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LABEL
-  );
-  const linkValue = getWebsiteFieldValue(
-    FIELD_NAMES.WEBSITES_SOCIAL_LINKS.LINK
-  );
+  const labelValue = getItemFieldValue(itemId, 'websitesSocialLinks', 'label');
+  const linkValue = getItemFieldValue(itemId, 'websitesSocialLinks', 'link');
 
   const triggerTitle = labelValue || '(Untitled)';
   const description = linkValue || '';
@@ -314,12 +305,8 @@ const getWebsitesSocialLinksTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
-  const getSkillFieldValue = (fieldName: FieldValuesForKey<'SKILLS'>) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const skillValue = getSkillFieldValue(FIELD_NAMES.SKILLS.SKILL);
-  const levelValue = getSkillFieldValue(FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL);
+  const skillValue = getItemFieldValue(itemId, 'skills', 'skill');
+  const levelValue = getItemFieldValue(itemId, 'skills', 'experienceLevel');
 
   const item = builderSession.getItem(itemId as ItemId);
   const metadata = builderSession.document?.sections.find(
@@ -341,12 +328,8 @@ const getSkillsSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getLanguagesSectionTitle = (itemId: DEX_Item['id']) => {
-  const getLanguageFieldValue = (fieldName: FieldValuesForKey<'LANGUAGES'>) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const language = getLanguageFieldValue(FIELD_NAMES.LANGUAGES.LANGUAGE);
-  const level = getLanguageFieldValue(FIELD_NAMES.LANGUAGES.LEVEL);
+  const language = getItemFieldValue(itemId, 'languages', 'language');
+  const level = getItemFieldValue(itemId, 'languages', 'level');
 
   return {
     title: language || '(Untitled)',

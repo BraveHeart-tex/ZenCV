@@ -248,21 +248,24 @@ export const SECTION_SUGGESTION_CONFIG = [
   },
 ] as const;
 
-export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
+const sectionOptions: Omit<OtherSectionOption, 'defaultTitle'>[] = [
   {
     icon: GraduationCapIcon,
+    sectionKey: 'education',
     title: 'Education',
     type: INTERNAL_SECTION_TYPES.EDUCATION,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: LinkIcon,
+    sectionKey: 'websitesSocialLinks' as const,
     title: 'Links',
     type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: SparklesIcon,
+    sectionKey: 'skills' as const,
     title: 'Skills',
     type: INTERNAL_SECTION_TYPES.SKILLS,
     metadata: getDefaultSkillsMetadata(),
@@ -270,18 +273,21 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   },
   {
     icon: SlidersHorizontalIcon,
+    sectionKey: 'custom' as const,
     title: 'Custom Section',
     type: INTERNAL_SECTION_TYPES.CUSTOM,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: GuitarIcon,
+    sectionKey: 'hobbies' as const,
     title: 'Hobbies',
     type: INTERNAL_SECTION_TYPES.HOBBIES,
     containerType: CONTAINER_TYPES.STATIC,
   },
   {
     icon: ContactIcon,
+    sectionKey: 'references' as const,
     title: 'References',
     type: INTERNAL_SECTION_TYPES.REFERENCES,
     metadata: getDefaultReferencesMetadata(),
@@ -289,6 +295,7 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   },
   {
     icon: BookOpenTextIcon,
+    sectionKey: 'courses' as const,
     title: 'Courses',
     type: INTERNAL_SECTION_TYPES.COURSES,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
@@ -296,20 +303,26 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = [
   },
   {
     icon: BriefcaseBusinessIcon,
+    sectionKey: 'internships' as const,
     title: 'Internships',
     type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: LanguagesIcon,
+    sectionKey: 'languages' as const,
     title: 'Languages',
     type: INTERNAL_SECTION_TYPES.LANGUAGES,
     containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
-].map((item) => ({
-  ...item,
-  defaultTitle: item.title,
-}));
+];
+
+export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = sectionOptions.map(
+  (item) => ({
+    ...item,
+    defaultTitle: item.title,
+  })
+);
 
 export const SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER = new Map<
   SectionType,

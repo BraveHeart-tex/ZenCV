@@ -50,9 +50,6 @@ import type {
 
 export type DocumentId = number & { readonly __documentId: unique symbol };
 export type SemanticSectionKey = SectionKey;
-export const persistedTypeForSectionKey = (
-  key: SemanticSectionKey
-): SectionType => sectionDefinitions[key].persistedType;
 export type SectionId = number & { readonly __sectionId: unique symbol };
 export type ItemId = number & { readonly __itemId: unique symbol };
 export type FieldId = number & { readonly __fieldId: unique symbol };
@@ -429,7 +426,6 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
   displayOrder: number;
   #document: BuilderDocumentModel;
   #persistedType: SectionDefinition<S>['persistedType'];
-  #persistedFields: SectionDefinition<S>['fields'];
 
   constructor(
     record: DEX_Section,
@@ -451,7 +447,6 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
       ...presentationDefinition
     } = definition;
     this.#persistedType = persistedType;
-    this.#persistedFields = persistedFields;
     const fields = Object.fromEntries(
       Object.entries(persistedFields).map(([key, field]) => {
         const {
@@ -490,31 +485,6 @@ export class BuilderSectionModel<S extends SectionKey = SectionKey> {
 
   get persistedType(): SectionDefinition<S>['persistedType'] {
     return this.#persistedType;
-  }
-
-  fieldKeyForPersistedName(name: string): string | undefined {
-    return Object.values(this.#persistedFields).find(
-      (field) => field.persistedName === name
-    )?.key;
-  }
-
-  toPersistedFieldSnapshot(field: SemanticField): DEX_Field {
-    const definition = Object.values(this.#persistedFields).find(
-      (candidate) => candidate.key === field.fieldKey
-    );
-    if (!definition) {
-      throw new Error('Field definition missing during projection');
-    }
-    return {
-      id: field.id,
-      itemId: field.itemId,
-      name: definition.persistedName,
-      type: definition.expectedPersistedType,
-      value: field.value,
-      ...(definition.expectedPersistedType === 'select'
-        ? { selectType: 'basic' as const, options: definition.options ?? null }
-        : {}),
-    };
   }
 
   get items(): readonly BuilderItemModel<S>[] {

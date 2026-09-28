@@ -1,6 +1,5 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { persistedTypeForSectionKey } from '@/lib/builderDocument/builderDocument';
 import { snapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   getTextColorForBackground,
@@ -57,8 +56,7 @@ export const ResumeScoreSuggestionItem = observer(
         if (!section) {
           const sectionOption = OTHER_SECTION_OPTIONS.find(
             (sectionOption) =>
-              sectionOption.type ===
-              persistedTypeForSectionKey(suggestion.sectionKey)
+              sectionOption.sectionKey === suggestion.sectionKey
           );
           if (!sectionOption) {
             return;

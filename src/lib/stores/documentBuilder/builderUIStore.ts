@@ -4,7 +4,6 @@ import type {
   ItemId,
   SemanticSectionKey,
 } from '@/lib/builderDocument/builderDocument';
-import type { FieldName, SectionType } from '@/lib/types/documentBuilder.types';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
 import type { BuilderSession } from './builderSession';
 
@@ -42,29 +41,6 @@ export class BuilderUIStore {
 
   isItemOpen(id: ItemId) {
     return this.isItemOpenForItem(id);
-  }
-
-  getFieldRefByFieldNameAndSection(
-    fieldName: FieldName,
-    sectionType: SectionType
-  ) {
-    const section = this.root.document?.sections.find(
-      (candidate) => candidate.persistedType === sectionType
-    );
-    if (!section) {
-      return;
-    }
-    for (const item of section.items) {
-      const fieldKey = section.fieldKeyForPersistedName(fieldName);
-      const field = fieldKey
-        ? item.editableFields.find(
-            (candidate) => candidate.fieldKey === fieldKey
-          )
-        : undefined;
-      if (field) {
-        return this.fieldRefs.get(field.id.toString());
-      }
-    }
   }
 
   getFieldRefBySemanticKey(sectionKey: SemanticSectionKey, fieldKey: string) {

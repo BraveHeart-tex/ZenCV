@@ -11,7 +11,6 @@ import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
 import { getDefaultSkillsMetadata } from '@/lib/misc/sectionMetadataTemplates';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { BuilderSession } from '../builderSession';
-import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
   it('projects filled and empty Custom sections through generic snapshot values', async () => {
@@ -71,10 +70,6 @@ describe('BuilderSession', () => {
     if (!customSection || !customField) {
       throw new Error('Expected the Custom section and generic field');
     }
-    const getFieldsByItemId = vi.spyOn(
-      session.currentStoreProjection,
-      'getFieldsByItemId'
-    );
     customField.setDraft('Community mentor');
 
     const projectedSection =
@@ -105,8 +100,6 @@ describe('BuilderSession', () => {
         description: '',
       },
     ]);
-    expect(getFieldsByItemId).not.toHaveBeenCalledWith(36);
-    expect(getFieldsByItemId).not.toHaveBeenCalledWith(37);
   });
 
   it('projects edited and empty Hobbies values through the semantic snapshot', async () => {
@@ -163,10 +156,6 @@ describe('BuilderSession', () => {
       displayOrder: 6,
       items: [{ id: 35, values: { whatYouLike: 'Photography, Hiking' } }],
     });
-    const getFieldsByItemId = vi.spyOn(
-      session.currentStoreProjection,
-      'getFieldsByItemId'
-    );
     expect(
       session.templateStore.pdfTemplateData.sections.find(
         (section) => section.id === sectionId
@@ -175,7 +164,6 @@ describe('BuilderSession', () => {
       sectionKey: 'hobbies',
       items: [{ values: { whatYouLike: 'Photography, Hiking' } }],
     });
-    expect(getFieldsByItemId).not.toHaveBeenCalledWith(35);
 
     hobbiesField.setDraft('');
     expect(
@@ -366,7 +354,13 @@ describe('BuilderSession', () => {
   });
 
   it.each([
-    { label: 'default', metadata: '[]', expected: false },
+    {
+      label: 'default',
+      metadata: JSON.stringify([
+        { key: 'hideReferences', label: 'Hide references', value: '0' },
+      ]),
+      expected: false,
+    },
     {
       label: 'enabled',
       metadata: JSON.stringify([
@@ -427,7 +421,6 @@ describe('BuilderSession', () => {
       }),
     });
     await session.load(records.document.id);
-
     const references = session.resumeDocumentSnapshot?.sections.find(
       (section) => section.sectionKey === 'references'
     );
@@ -581,9 +574,7 @@ describe('BuilderSession', () => {
     );
     expect(
       session.templateStore.pdfTemplateData.sections.some(
-        (section) =>
-          !('sectionKey' in section) &&
-          section.type === definition.persistedType
+        (section) => section.sectionKey === 'internships'
       )
     ).toBe(false);
     expect(
@@ -634,8 +625,8 @@ describe('BuilderSession', () => {
       session.resumeDocumentSnapshot?.sections[0]?.items[0]?.values
     ).not.toHaveProperty('legacy:9001');
     expect(
-      session.currentStoreProjection.getFieldsByItemId(item.id)
-    ).not.toContainEqual(expect.objectContaining({ name: 'Legacy note' }));
+      session.resumeDocumentSnapshot?.sections[0]?.items[0]?.values
+    ).not.toHaveProperty('legacy:9001');
     legacyField?.setDraft('saved legacy value');
     expect(await legacyField?.flush()).toBe(true);
     await session.load(records.document.id);
@@ -912,7 +903,7 @@ describe('BuilderSession', () => {
     ).toBe('Second attempt');
   });
 
-  it('atomically publishes one hydrated document and its projection', async () => {
+  it('atomically publishes one hydrated document and its semantic snapshot', async () => {
     const records = builderDocumentFixture();
     const session = new BuilderSession({
       persistence: new InMemoryDocumentPersistence({
@@ -928,13 +919,11 @@ describe('BuilderSession', () => {
       documentId: records.document.id,
     });
     expect(session.document?.id).toBe(records.document.id);
-    expect(session.currentStoreProjection.sections).toHaveLength(
-      records.sections.length
-    );
+    expect(session.resumeDocumentSnapshot?.id).toBe(records.document.id);
 
     session.discard();
     expect(session.state).toEqual({ status: 'idle' });
-    expect(session.currentStoreProjection.sections).toEqual([]);
+    expect(session.resumeDocumentSnapshot).toBeNull();
   });
 
   it('focuses the semantic initial field for a Work Experience entry', async () => {
@@ -983,7 +972,7 @@ describe('BuilderSession', () => {
       status: 'failed',
     });
     expect(session.document).toBeNull();
-    expect(session.currentStoreProjection.sections).toEqual([]);
+    expect(session.resumeDocumentSnapshot).toBeNull();
   });
 
   it('keeps the generic load failure for malformed Work Experience fields', async () => {
@@ -1050,10 +1039,7 @@ describe('BuilderSession', () => {
       throw new Error('Expected a Personal Details item');
     }
     expect(
-      session.getItemFieldValue(
-        personalDetailsItem.id,
-        FIELD_NAMES.PERSONAL_DETAILS.FIRST_NAME
-      )
+      session.resumeDocumentSnapshot?.sections[0]?.items[0]?.values.firstName
     ).toBe('value-firstName');
     expect(session.templateStore.pdfTemplateData.personalDetails).toMatchObject(
       {
@@ -1092,7 +1078,7 @@ describe('BuilderSession', () => {
     );
     expect(session.templateStore.pdfTemplateData.sections).not.toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ type: 'work-experience' }),
+        expect.objectContaining({ sectionKey: 'workExperience' }),
       ])
     );
     expect(session.templateStore.resumeStats.score).toBeGreaterThan(0);
@@ -1104,9 +1090,7 @@ describe('BuilderSession', () => {
     }
     firstNameField.setDraft('Grace');
     expect(
-      session.currentStoreProjection
-        .getFieldsByItemId(personalDetailsItem.id)
-        .find((field) => field.id === firstNameField.id)?.value
+      session.resumeDocumentSnapshot?.sections[0]?.items[0]?.values.firstName
     ).toBe('Grace');
 
     const firstEditableField = personalDetailsItem.editableFields[0];
