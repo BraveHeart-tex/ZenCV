@@ -2,6 +2,7 @@ import {
   type ItemId,
   WorkExperienceItemModel,
 } from '@/lib/builderDocument/builderDocument';
+import { isSkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { getTriggerContent } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
@@ -44,6 +45,21 @@ export const getCollapsibleItemContent = (itemId: ItemId) => {
           ? `${startDate} - ${endDate}`
           : startDate
         : endDate,
+    };
+  }
+
+  if (item?.sectionKey === 'skills') {
+    const section = builderSession.resumeDocumentSnapshot?.sections.find(
+      (entry) => entry.sectionKey === 'skills'
+    );
+    const values = section?.items.find((entry) => entry.id === itemId)?.values;
+    const skillSection =
+      section && isSkillsSectionSnapshot(section) ? section : null;
+    return {
+      title: values?.skill || '(Untitled)',
+      description: skillSection?.showExperienceLevel
+        ? (values?.experienceLevel ?? '')
+        : '',
     };
   }
 

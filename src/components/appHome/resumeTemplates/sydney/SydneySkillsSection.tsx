@@ -1,32 +1,20 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  getSectionMetadata,
-  getSkillsSectionEntries,
-} from '../resumeTemplates.helpers';
+import type { SkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getSkillsSectionEntries } from '../resumeTemplates.helpers';
 import type { SydneySectionProps } from './sydney.types';
 
 export const SydneySkillsSection = ({
   section,
   styles,
-}: SydneySectionProps) => {
+}: Omit<SydneySectionProps, 'section'> & {
+  section: SkillsSectionSnapshot;
+}) => {
   const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }
 
-  const showExperienceLevel =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
-    ) === CHECKED_METADATA_VALUE;
-
-  const isCommaSeparated =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED
-    ) === CHECKED_METADATA_VALUE;
+  const { showExperienceLevel, isCommaSeparated } = section;
 
   return (
     <View style={styles.section}>

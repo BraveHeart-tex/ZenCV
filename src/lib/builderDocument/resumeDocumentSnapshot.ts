@@ -17,6 +17,12 @@ export interface ResumeSnapshotSection {
   readonly items: readonly ResumeSnapshotItem[];
 }
 
+export interface SkillsSectionSnapshot extends ResumeSnapshotSection {
+  readonly sectionKey: 'skills';
+  readonly showExperienceLevel: boolean;
+  readonly isCommaSeparated: boolean;
+}
+
 export interface InternshipSectionSnapshot extends ResumeSnapshotSection {
   readonly sectionKey: 'internships';
 }
@@ -36,6 +42,17 @@ export const createResumeDocumentSnapshot = (
     sectionKey: section.sectionKey,
     title: section.title,
     displayOrder: section.displayOrder,
+    ...(section.sectionKey === 'skills'
+      ? {
+          showExperienceLevel:
+            section.metadata.find(
+              (option) => option.key === 'showExperienceLevel'
+            )?.value === '1',
+          isCommaSeparated:
+            section.metadata.find((option) => option.key === 'isCommaSeparated')
+              ?.value === '1',
+        }
+      : {}),
     items: section.items.map((item) => ({
       id: item.id,
       displayOrder: item.displayOrder,
@@ -47,6 +64,10 @@ export const createResumeDocumentSnapshot = (
     })),
   })),
 });
+
+export const isSkillsSectionSnapshot = (
+  section: ResumeSnapshotSection
+): section is SkillsSectionSnapshot => section.sectionKey === 'skills';
 
 export const snapshotSection = (
   snapshot: ResumeDocumentSnapshot | null,

@@ -1,24 +1,19 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { SkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 
-import {
-  getSectionMetadata,
-  getSkillsSectionEntries,
-} from '../resumeTemplates.helpers';
+import { getSkillsSectionEntries } from '../resumeTemplates.helpers';
 import type { DubaiSectionProps } from './dubai.types';
 
-export const DubaiSkillsSection = ({ section, styles }: DubaiSectionProps) => {
+export const DubaiSkillsSection = ({
+  section,
+  styles,
+}: Omit<DubaiSectionProps, 'section'> & { section: SkillsSectionSnapshot }) => {
   const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }
 
-  const showExperienceLevel =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
-    ) === CHECKED_METADATA_VALUE;
+  const { showExperienceLevel } = section;
 
   return (
     <View style={styles.sidebarSection}>

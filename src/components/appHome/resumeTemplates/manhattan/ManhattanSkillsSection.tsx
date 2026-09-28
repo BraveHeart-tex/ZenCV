@@ -1,11 +1,6 @@
 import { Text, View } from '@react-pdf/renderer';
-import {
-  getSectionMetadata,
-  getSkillsSectionEntries,
-} from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import { getSkillsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { SkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import {
   MANHATTAN_FONT_SIZE,
   manhattanTemplateStyles,
@@ -14,24 +9,14 @@ import {
 export const ManhattanSkillsSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: SkillsSectionSnapshot;
 }) => {
   const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }
 
-  const showExperienceLevel =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
-    ) === CHECKED_METADATA_VALUE;
-
-  const isCommaSeparated =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.IS_COMMA_SEPARATED
-    ) === CHECKED_METADATA_VALUE;
+  const { showExperienceLevel, isCommaSeparated } = section;
 
   const renderSkills = () => {
     if (isCommaSeparated) {

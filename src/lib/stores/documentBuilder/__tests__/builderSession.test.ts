@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { getSkillsSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
 import { builderDocumentFixture } from '@/lib/builderDocument/__tests__/builderDocumentFixture';
 import { InMemoryDocumentPersistence } from '@/lib/builderDocument/__tests__/inMemoryDocumentPersistence';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
@@ -7,6 +8,86 @@ import { BuilderSession } from '../builderSession';
 import { FIELD_NAMES } from '../documentBuilder.constants';
 
 describe('BuilderSession', () => {
+  it('projects Skills values, order, and render options through the snapshot', async () => {
+    const records = builderDocumentFixture();
+    const definition = sectionDefinitions.skills;
+    const sectionId = 13;
+    const session = new BuilderSession({
+      persistence: new InMemoryDocumentPersistence({
+        ...records,
+        sections: [
+          ...records.sections,
+          {
+            id: sectionId,
+            documentId: records.document.id,
+            type: definition.persistedType,
+            title: definition.label,
+            defaultTitle: definition.label,
+            displayOrder: 4,
+            metadata: JSON.stringify([
+              { key: 'showExperienceLevel', label: 'Show level', value: '1' },
+              { key: 'isCommaSeparated', label: 'Comma separated', value: '1' },
+            ]),
+          },
+        ],
+        items: [
+          ...records.items,
+          { id: 23, sectionId, containerType: 'collapsible', displayOrder: 2 },
+          { id: 24, sectionId, containerType: 'collapsible', displayOrder: 1 },
+        ],
+        fields: [
+          ...records.fields,
+          ...[24, 23].flatMap((itemId, itemIndex) =>
+            Object.values(definition.fields).map(
+              (field, fieldIndex) =>
+                ({
+                  id: 600 + itemIndex * 10 + fieldIndex,
+                  itemId,
+                  name: field.persistedName,
+                  type: field.expectedPersistedType,
+                  value:
+                    field.key === 'skill'
+                      ? itemId === 24
+                        ? 'TypeScript'
+                        : 'Research'
+                      : itemId === 24
+                        ? 'Expert'
+                        : 'Proficient',
+                  ...(field.control === 'select'
+                    ? { selectType: 'basic', options: [...field.options] }
+                    : {}),
+                }) as DEX_Field
+            )
+          ),
+        ],
+      }),
+    });
+    await session.load(records.document.id);
+
+    const skills = session.templateStore.pdfTemplateData.skillsSection;
+    expect(skills).toMatchObject({
+      sectionKey: 'skills',
+      showExperienceLevel: true,
+      isCommaSeparated: true,
+      items: [
+        { id: 24, values: { skill: 'TypeScript', experienceLevel: 'Expert' } },
+        {
+          id: 23,
+          values: { skill: 'Research', experienceLevel: 'Proficient' },
+        },
+      ],
+    });
+    expect(skills).toBeDefined();
+    if (!skills) {
+      throw new Error('Expected the Skills snapshot');
+    }
+    expect(getSkillsSectionEntries(skills)).toEqual([
+      { entryId: '24', name: 'TypeScript', level: 'Expert' },
+      { entryId: '23', name: 'Research', level: 'Proficient' },
+    ]);
+    expect(session.templateStore.resumeStats.score).toBeGreaterThan(0);
+  });
+
   it('projects Internship values semantically into templates and score', async () => {
     const records = builderDocumentFixture();
     const definition = sectionDefinitions.internships;

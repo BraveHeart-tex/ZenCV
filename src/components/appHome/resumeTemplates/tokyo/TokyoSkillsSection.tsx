@@ -1,24 +1,19 @@
 import { Text, View } from '@react-pdf/renderer';
-import { CHECKED_METADATA_VALUE } from '@/lib/constants';
-import { SECTION_METADATA_KEYS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import {
-  getSectionMetadata,
-  getSkillsSectionEntries,
-} from '../resumeTemplates.helpers';
+import type { SkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
+import { getSkillsSectionEntries } from '../resumeTemplates.helpers';
 
 import type { TokyoSectionProps } from './tokyo.types';
 
-export const TokyoSkillsSection = ({ section, styles }: TokyoSectionProps) => {
+export const TokyoSkillsSection = ({
+  section,
+  styles,
+}: Omit<TokyoSectionProps, 'section'> & { section: SkillsSectionSnapshot }) => {
   const sectionEntries = getSkillsSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
   }
 
-  const showExperienceLevel =
-    getSectionMetadata(
-      section,
-      SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
-    ) === CHECKED_METADATA_VALUE;
+  const { showExperienceLevel } = section;
 
   return (
     <View style={styles.sidebarSection}>
