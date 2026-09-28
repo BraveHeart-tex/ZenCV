@@ -1,6 +1,14 @@
 import { Document, Page, View } from '@react-pdf/renderer';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isCustomSection,
+  isHobbiesSection,
+  isLanguagesSection,
+  isSidebarPdfSection,
+  isSkillsSection,
+  mergePdfSections,
+  renderSemanticPdfSection,
+} from '../resumeTemplates.helpers';
 import { DubaiCoursesSection } from './DubaiCoursesSection';
 import { DubaiCustomSection } from './DubaiCustomSection';
 import { DubaiEducationSection } from './DubaiEducationSection';
@@ -14,29 +22,31 @@ import { DubaiSummarySection } from './DubaiSummarySection';
 import { DubaiWorkExperienceSection } from './DubaiWorkExperienceSection';
 import { createDubaiStyles } from './dubai.styles';
 
-const SIDEBAR_SECTION_TYPES = new Set([
-  INTERNAL_SECTION_TYPES.SKILLS,
-  INTERNAL_SECTION_TYPES.LANGUAGES,
-  INTERNAL_SECTION_TYPES.HOBBIES,
-]);
-
 export const DubaiTemplate = ({
   templateData,
 }: {
   templateData: PdfTemplateData;
 }) => {
   const styles = createDubaiStyles(templateData.accentColor);
-  const { personalDetails, summarySection, sections } = templateData;
+  const { personalDetails, summarySection } = templateData;
+  const sections = mergePdfSections(templateData);
 
-  const sidebarSections = sections.filter((s) =>
-    SIDEBAR_SECTION_TYPES.has(s.type as never)
-  );
+  const sidebarSections = sections.filter(isSidebarPdfSection);
   const mainSections = sections.filter(
-    (s) => !SIDEBAR_SECTION_TYPES.has(s.type as never)
+    (section) => !isSidebarPdfSection(section)
   );
 
-  const renderSidebarSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
+  const renderSidebarSection = (section: (typeof sidebarSections)[number]) => {
+    if (isHobbiesSection(section)) {
+      return (
+        <DubaiHobbiesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (isSkillsSection(section)) {
       return (
         <DubaiSkillsSection
           section={section}
@@ -46,18 +56,9 @@ export const DubaiTemplate = ({
       );
     }
 
-    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
+    if (isLanguagesSection(section)) {
       return (
         <DubaiLanguagesSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-      return (
-        <DubaiHobbiesSection
           section={section}
           key={section.id}
           styles={styles}
@@ -68,54 +69,64 @@ export const DubaiTemplate = ({
   };
 
   const renderMainSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-      return (
+    const semanticSection = renderSemanticPdfSection(section, {
+      hobbies: () => null,
+      workExperience: (semanticSection) => (
         <DubaiWorkExperienceSection
-          section={section}
-          key={section.id}
+          workExperienceSection={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-      return (
+      ),
+      education: (semanticSection) => (
         <DubaiEducationSection
-          section={section}
-          key={section.id}
+          section={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-      return (
-        <DubaiInternshipsSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-      return (
+      ),
+      courses: (semanticSection) => (
         <DubaiCoursesSection
-          section={section}
-          key={section.id}
+          section={semanticSection}
+          styles={styles}
+          key={semanticSection.id}
+        />
+      ),
+      internships: (semanticSection) => (
+        <DubaiInternshipsSection
+          section={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
+      ),
+      skills: (semanticSection) => (
+        <DubaiSkillsSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      languages: (semanticSection) => (
+        <DubaiLanguagesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      references: (semanticSection) => (
+        <DubaiReferencesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+    });
+    if (semanticSection) {
+      return semanticSection;
     }
-    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+    if (isCustomSection(section)) {
       return (
         <DubaiCustomSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-      return (
-        <DubaiReferencesSection
           section={section}
           key={section.id}
           styles={styles}

@@ -1,13 +1,13 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { ManhattanSectionEntry } from './ManhattanSectionEntry';
 import { manhattanTemplateStyles } from './manhattan.styles';
 
 export const ManhattanEducationSection = ({
   section,
 }: {
-  section: TemplateDataSection;
+  section: ResumeSnapshotSection;
 }) => {
   const sectionEntries = getEducationSectionEntries(section);
   if (!sectionEntries.length) {

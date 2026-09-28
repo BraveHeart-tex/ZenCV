@@ -203,6 +203,10 @@ export const getTriggerContent = (
     };
   }
 
+  if (item.sectionKey === 'education') {
+    return getEducationSectionTitle(itemId);
+  }
+
   const sectionType = builderSession.getSection(item.sectionId)
     ?.persistedType as CollapsibleSectionType;
   if (!sectionType) {
@@ -215,7 +219,6 @@ export const getTriggerContent = (
   const sectionTypeToTitle: Partial<
     Record<CollapsibleSectionType, { title: string; description: string }>
   > = {
-    [INTERNAL_SECTION_TYPES.EDUCATION]: getEducationSectionTitle(itemId),
     [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
       getWebsitesSocialLinksTitle(itemId),
     [INTERNAL_SECTION_TYPES.SKILLS]: getSkillsSectionTitle(itemId),
@@ -267,16 +270,13 @@ const getInternshipsSectionTitle = (itemId: DEX_Item['id']) => {
 };
 
 const getEducationSectionTitle = (itemId: DEX_Item['id']) => {
-  const getEducationFieldValue = (
-    fieldName: FieldValuesForKey<'EDUCATION'>
-  ) => {
-    return getItemFieldValue(itemId, fieldName);
-  };
-
-  const schoolTitle = getEducationFieldValue(FIELD_NAMES.EDUCATION.SCHOOL);
-  const degree = getEducationFieldValue(FIELD_NAMES.EDUCATION.DEGREE);
-  const startDate = getEducationFieldValue(FIELD_NAMES.EDUCATION.START_DATE);
-  const endDate = getEducationFieldValue(FIELD_NAMES.EDUCATION.END_DATE);
+  const values = builderSession.resumeDocumentSnapshot?.sections
+    .find((section) => section.sectionKey === 'education')
+    ?.items.find((item) => item.id === itemId)?.values;
+  const schoolTitle = values?.school ?? '';
+  const degree = values?.degree ?? '';
+  const startDate = values?.startDate ?? '';
+  const endDate = values?.endDate ?? '';
 
   let triggerTitle =
     degree && schoolTitle

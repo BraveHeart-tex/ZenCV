@@ -1,4 +1,5 @@
 import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type {
   DEX_Field,
   DEX_Item,
@@ -80,6 +81,7 @@ export interface PdfTemplateData {
     summary: string;
   };
   readonly workExperienceSection: WorkExperienceSectionSnapshot | null;
+  readonly educationSection: ResumeSnapshotSection | null;
   sections: TemplateDataSection[];
   accentColor: string;
   templateType: ResumeTemplate;

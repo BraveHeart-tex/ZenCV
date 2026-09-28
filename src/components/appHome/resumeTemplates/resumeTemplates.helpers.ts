@@ -1,26 +1,38 @@
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type {
-  DocumentRecordWithDisplayOrder,
-  FieldName,
-  SectionMetadataKey,
-  SectionWithParsedMetadata,
-  TemplateDataSection,
+  CustomSectionSnapshot,
+  HobbiesSectionSnapshot,
+  InternshipSectionSnapshot,
+  ReferencesSectionSnapshot,
+  ResumeSnapshotSection,
+  SkillsSectionSnapshot,
+} from '@/lib/builderDocument/resumeDocumentSnapshot';
+import type {
+  InternshipPdfEntry,
+  PdfTemplateData,
   WithEntryId,
+  WorkExperienceSectionSnapshot,
 } from '@/lib/types/documentBuilder.types';
 
+export type PdfTemplateSection =
+  | ResumeSnapshotSection
+  | WorkExperienceSectionSnapshot;
+
+interface SemanticPdfSectionRenderers<Result> {
+  readonly hobbies: (section: HobbiesSectionSnapshot) => Result;
+  readonly workExperience: (section: WorkExperienceSectionSnapshot) => Result;
+  readonly education: (section: ResumeSnapshotSection) => Result;
+  readonly courses: (section: ResumeSnapshotSection) => Result;
+  readonly internships: (section: InternshipSectionSnapshot) => Result;
+  readonly skills: (section: SkillsSectionSnapshot) => Result;
+  readonly languages: (section: ResumeSnapshotSection) => Result;
+  readonly references: (section: ReferencesSectionSnapshot) => Result;
+}
+
 export const sortByDisplayOrder = (
-  a: DocumentRecordWithDisplayOrder,
-  b: DocumentRecordWithDisplayOrder
+  a: { displayOrder: number },
+  b: { displayOrder: number }
 ) => {
   return a.displayOrder - b.displayOrder;
-};
-
-export const findValueInItemFields = (
-  fields: DEX_Field[],
-  fieldName: FieldName
-): string => {
-  return fields.find((field) => field.name === fieldName)?.value || '';
 };
 
 const getRenderableEntries = <T extends Record<string, unknown>>(
@@ -34,200 +46,239 @@ const getRenderableEntries = <T extends Record<string, unknown>>(
   });
 };
 
-export const getSectionMetadata = (
-  section: SectionWithParsedMetadata,
-  key: SectionMetadataKey
+export const mergePdfSections = (
+  templateData: Pick<
+    PdfTemplateData,
+    | 'sections'
+    | 'workExperienceSection'
+    | 'educationSection'
+    | 'coursesSection'
+    | 'internshipsSection'
+    | 'skillsSection'
+    | 'languagesSection'
+  >
 ) => {
-  return section.metadata.find((data) => data.key === key)?.value || null;
+  return [
+    ...templateData.sections,
+    ...(templateData.educationSection ? [templateData.educationSection] : []),
+    ...(templateData.coursesSection ? [templateData.coursesSection] : []),
+    ...(templateData.workExperienceSection
+      ? [templateData.workExperienceSection]
+      : []),
+    ...(templateData.internshipsSection
+      ? [templateData.internshipsSection]
+      : []),
+    ...(templateData.skillsSection ? [templateData.skillsSection] : []),
+    ...(templateData.languagesSection ? [templateData.languagesSection] : []),
+  ].toSorted((a, b) => a.displayOrder - b.displayOrder);
 };
 
-export const getWorkExperienceSectionEntries = (
-  section: TemplateDataSection
+export const isWorkExperienceSection = (
+  section: PdfTemplateSection
+): section is WorkExperienceSectionSnapshot => {
+  return 'entries' in section;
+};
+
+export const isEducationSection = (
+  section: PdfTemplateSection
+): section is ResumeSnapshotSection =>
+  'sectionKey' in section && section.sectionKey === 'education';
+
+export const isInternshipSection = (
+  section: PdfTemplateSection
+): section is InternshipSectionSnapshot =>
+  'sectionKey' in section && section.sectionKey === 'internships';
+
+export const isCoursesSection = (
+  section: PdfTemplateSection
+): section is ResumeSnapshotSection =>
+  'sectionKey' in section && section.sectionKey === 'courses';
+
+export const isSkillsSection = (
+  section: PdfTemplateSection
+): section is SkillsSectionSnapshot =>
+  'sectionKey' in section && section.sectionKey === 'skills';
+
+export const isLanguagesSection = (
+  section: PdfTemplateSection
+): section is ResumeSnapshotSection =>
+  'sectionKey' in section && section.sectionKey === 'languages';
+
+export const isReferencesSection = (
+  section: PdfTemplateSection
+): section is ReferencesSectionSnapshot =>
+  'sectionKey' in section && section.sectionKey === 'references';
+
+export const isHobbiesSection = (
+  section: PdfTemplateSection
+): section is HobbiesSectionSnapshot =>
+  'sectionKey' in section && section.sectionKey === 'hobbies';
+
+export const isSemanticPdfSection = (
+  section: PdfTemplateSection
+): section is
+  | WorkExperienceSectionSnapshot
+  | HobbiesSectionSnapshot
+  | ResumeSnapshotSection
+  | InternshipSectionSnapshot =>
+  isWorkExperienceSection(section) ||
+  isHobbiesSection(section) ||
+  isEducationSection(section) ||
+  isCoursesSection(section) ||
+  isSkillsSection(section) ||
+  isLanguagesSection(section) ||
+  isReferencesSection(section) ||
+  isInternshipSection(section);
+
+export const isCustomSection = (
+  section: PdfTemplateSection
+): section is CustomSectionSnapshot =>
+  'sectionKey' in section && section.sectionKey === 'custom';
+
+export const isSidebarPdfSection = (
+  section: PdfTemplateSection
+): section is
+  | HobbiesSectionSnapshot
+  | SkillsSectionSnapshot
+  | ResumeSnapshotSection =>
+  isSkillsSection(section) ||
+  isLanguagesSection(section) ||
+  isHobbiesSection(section);
+
+export const renderSemanticPdfSection = <Result>(
+  section: PdfTemplateSection,
+  renderers: SemanticPdfSectionRenderers<Result>
+): Result | null => {
+  if (isHobbiesSection(section)) {
+    return renderers.hobbies(section);
+  }
+  if (isWorkExperienceSection(section)) {
+    return renderers.workExperience(section);
+  }
+  if (isEducationSection(section)) {
+    return renderers.education(section);
+  }
+  if (isCoursesSection(section)) {
+    return renderers.courses(section);
+  }
+  if (isSkillsSection(section)) {
+    return renderers.skills(section);
+  }
+  if (isLanguagesSection(section)) {
+    return renderers.languages(section);
+  }
+  if (isReferencesSection(section)) {
+    return renderers.references(section);
+  }
+  if (isInternshipSection(section)) {
+    return renderers.internships(section);
+  }
+  return null;
+};
+
+export const getEducationSectionEntries = (section: ResumeSnapshotSection) => {
+  return getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => {
+        return {
+          entryId: item.id.toString(),
+          school: item.values.school ?? '',
+          degree: item.values.degree ?? '',
+          startDate: item.values.startDate ?? '',
+          endDate: item.values.endDate ?? '',
+          city: item.values.city ?? '',
+          description: item.values.description ?? '',
+        };
+      })
+  );
+};
+
+export const getCoursesSectionEntries = (section: ResumeSnapshotSection) =>
+  getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => ({
+        entryId: item.id.toString(),
+        course: item.values.course ?? '',
+        institution: item.values.institution ?? '',
+        startDate: item.values.startDate ?? '',
+        endDate: item.values.endDate ?? '',
+      }))
+  );
+
+export const getSkillsSectionEntries = (section: SkillsSectionSnapshot) => {
+  return getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => ({
+        entryId: item.id.toString(),
+        name: item.values.skill ?? '',
+        level: item.values.experienceLevel ?? '',
+      }))
+  );
+};
+
+export const getSemanticInternshipSectionEntries = (
+  section: InternshipSectionSnapshot
+): InternshipPdfEntry[] =>
+  getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => ({
+        entryId: item.id.toString(),
+        jobTitle: item.values.role ?? '',
+        employer: item.values.employer ?? '',
+        startDate: item.values.startDate ?? '',
+        endDate: item.values.endDate ?? '',
+        city: item.values.city ?? '',
+        description: item.values.description ?? '',
+      }))
+  );
+
+export const getLanguagesSectionEntries = (section: ResumeSnapshotSection) =>
+  getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => ({
+        entryId: item.id.toString(),
+        language: item.values.language ?? '',
+        level: item.values.level ?? '',
+      }))
+  );
+
+export const getCustomSectionEntries = (section: CustomSectionSnapshot) => {
+  return getRenderableEntries(
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => ({
+        entryId: item.id.toString(),
+        name: item.values.activityName ?? '',
+        city: item.values.city ?? '',
+        startDate: item.values.startDate ?? '',
+        endDate: item.values.endDate ?? '',
+        description: item.values.description ?? '',
+      }))
+  );
+};
+
+export const getReferencesSectionEntries = (
+  section: ReferencesSectionSnapshot
 ) => {
   return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.JOB_TITLE
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.EMPLOYER
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.START_DATE
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.END_DATE
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.WORK_EXPERIENCE.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.WORK_EXPERIENCE.DESCRIPTION
-        ),
-      };
-    })
+    section.items
+      .toSorted((a, b) => a.displayOrder - b.displayOrder)
+      .map((item) => {
+        return {
+          entryId: item.id.toString(),
+          referentPhone: item.values.phone ?? '',
+          referentCompany: item.values.company ?? '',
+          referentEmail: item.values.referentEmail ?? '',
+          referentFullName: item.values.referentFullName ?? '',
+        };
+      })
   );
 };
 
-export const getEducationSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        school: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.SCHOOL),
-        degree: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.DEGREE),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.EDUCATION.START_DATE
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.END_DATE),
-        city: findValueInItemFields(fields, FIELD_NAMES.EDUCATION.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.EDUCATION.DESCRIPTION
-        ),
-      };
-    })
-  );
-};
-
-export const getSkillsSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        name: findValueInItemFields(fields, FIELD_NAMES.SKILLS.SKILL),
-        level: findValueInItemFields(
-          fields,
-          FIELD_NAMES.SKILLS.EXPERIENCE_LEVEL
-        ),
-      };
-    })
-  );
-};
-
-export const getInternshipsSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        jobTitle: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.JOB_TITLE
-        ),
-        employer: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.EMPLOYER
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.START_DATE
-        ),
-        endDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.END_DATE
-        ),
-        city: findValueInItemFields(fields, FIELD_NAMES.INTERNSHIPS.CITY),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.INTERNSHIPS.DESCRIPTION
-        ),
-      };
-    })
-  );
-};
-
-export const getLanguagesSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        language: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LANGUAGE),
-        level: findValueInItemFields(fields, FIELD_NAMES.LANGUAGES.LEVEL),
-      };
-    })
-  );
-};
-
-export const getCoursesSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        course: findValueInItemFields(fields, FIELD_NAMES.COURSES.COURSE),
-        institution: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.INSTITUTION
-        ),
-        startDate: findValueInItemFields(
-          fields,
-          FIELD_NAMES.COURSES.START_DATE
-        ),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.COURSES.END_DATE),
-      };
-    })
-  );
-};
-
-export const getCustomSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        name: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.ACTIVITY_NAME),
-        city: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.CITY),
-        startDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.START_DATE),
-        endDate: findValueInItemFields(fields, FIELD_NAMES.CUSTOM.END_DATE),
-        description: findValueInItemFields(
-          fields,
-          FIELD_NAMES.CUSTOM.DESCRIPTION
-        ),
-      };
-    })
-  );
-};
-
-export const getReferencesSectionEntries = (section: TemplateDataSection) => {
-  return getRenderableEntries(
-    section.items.map((item) => {
-      const fields = item.fields;
-      return {
-        entryId: crypto.randomUUID(),
-        referentPhone: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.PHONE
-        ),
-        referentCompany: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.COMPANY
-        ),
-        referentEmail: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_EMAIL
-        ),
-        referentFullName: findValueInItemFields(
-          fields,
-          FIELD_NAMES.REFERENCES.REFERENT_FULL_NAME
-        ),
-      };
-    })
-  );
-};
-
-export const getHobbiesSectionValue = (section: TemplateDataSection) => {
-  return section.items
-    .map((item) => item.fields.map((field) => field.value))
-    .join('');
-};
+export const getHobbiesSectionValue = (section: HobbiesSectionSnapshot) =>
+  section.items.map((item) => item.values.whatYouLike ?? '').join('');

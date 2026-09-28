@@ -1,12 +1,13 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { TokyoSectionEntry } from './TokyoSectionEntry';
 import type { TokyoSectionProps } from './tokyo.types';
 
 export const TokyoEducationSection = ({
   section,
   styles,
-}: TokyoSectionProps) => {
+}: Omit<TokyoSectionProps, 'section'> & { section: ResumeSnapshotSection }) => {
   const sectionEntries = getEducationSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

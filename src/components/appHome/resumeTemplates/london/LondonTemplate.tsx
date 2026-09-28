@@ -1,6 +1,10 @@
 import { Document, Page } from '@react-pdf/renderer';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isCustomSection,
+  mergePdfSections,
+  renderSemanticPdfSection,
+} from '../resumeTemplates.helpers';
 import { LondonCoursesSection } from './LondonCoursesSection';
 import { LondonCustomSection } from './LondonCustomSection';
 import { LondonEducationSection } from './LondonEducationSection';
@@ -22,45 +26,63 @@ export const LondonTemplate = ({
   const { personalDetails, summarySection } = templateData;
 
   const renderSections = () => {
-    return templateData.sections.map((section) => {
-      if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-        return (
-          <LondonWorkExperienceSection section={section} key={section.id} />
-        );
+    return mergePdfSections(templateData).map((section) => {
+      const semanticSection = renderSemanticPdfSection(section, {
+        hobbies: (semanticSection) => (
+          <LondonHobbiesSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        workExperience: (semanticSection) => (
+          <LondonWorkExperienceSection
+            workExperienceSection={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        education: (semanticSection) => (
+          <LondonEducationSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        courses: (semanticSection) => (
+          <LondonCoursesSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        internships: (semanticSection) => (
+          <LondonInternshipsSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        skills: (semanticSection) => (
+          <LondonSkillsSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        languages: (semanticSection) => (
+          <LondonLanguagesSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+        references: (semanticSection) => (
+          <LondonReferencesSection
+            section={semanticSection}
+            key={semanticSection.id}
+          />
+        ),
+      });
+      if (semanticSection) {
+        return semanticSection;
       }
-
-      if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-        return <LondonEducationSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
-        return <LondonLanguagesSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-        return <LondonInternshipsSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-        return <LondonCoursesSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-        return <LondonHobbiesSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+      if (isCustomSection(section)) {
         return <LondonCustomSection section={section} key={section.id} />;
       }
-
-      if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
-        return <LondonSkillsSection section={section} key={section.id} />;
-      }
-
-      if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-        return <LondonReferencesSection section={section} key={section.id} />;
-      }
-
       return null;
     });
   };

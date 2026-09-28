@@ -29,6 +29,7 @@ const templateData: PdfTemplateData = {
   },
   summarySection: { sectionName: 'Profile', summary: '' },
   workExperienceSection: null,
+  educationSection: null,
   sections: [],
   accentColor: '#000000',
   templateType: 'manhattan',

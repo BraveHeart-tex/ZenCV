@@ -1,12 +1,13 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { DubaiSectionEntry } from './DubaiSectionEntry';
 import type { DubaiSectionProps } from './dubai.types';
 
 export const DubaiEducationSection = ({
   section,
   styles,
-}: DubaiSectionProps) => {
+}: Omit<DubaiSectionProps, 'section'> & { section: ResumeSnapshotSection }) => {
   const sectionEntries = getEducationSectionEntries(section);
   if (!sectionEntries.length) {
     return null;

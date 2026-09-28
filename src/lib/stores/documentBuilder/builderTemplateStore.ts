@@ -1,20 +1,20 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
-import { computedFn } from 'mobx-utils';
-import { sortByDisplayOrder } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type {
+  InternshipSectionSnapshot,
+  SkillsSectionSnapshot,
+} from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { snapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type {
   ATSCompatibilityReport,
   PdfTemplateData,
   ResumeStats,
   ResumeSuggestion,
-  SectionType,
 } from '@/lib/types/documentBuilder.types';
 import { debounce } from '@/lib/utils/debounce';
 import { removeHTMLTags } from '@/lib/utils/stringUtils';
 import { getCompactUrlLabel, normalizeWebUrl } from '@/lib/utils/urlUtils';
 import type { BuilderSession } from './builderSession';
 import {
-  INTERNAL_SECTION_TYPES,
   INTERNAL_TEMPLATE_TYPES,
   MAX_VISIBLE_SUGGESTIONS,
   RESUME_SCORE_CONFIG,
@@ -24,11 +24,6 @@ import {
   SUGGESTION_TYPES,
   TEMPLATE_DATA_DEBOUNCE_MS,
 } from './documentBuilder.constants';
-
-const STATIC_SECTIONS = new Set<SectionType>([
-  INTERNAL_SECTION_TYPES.PERSONAL_DETAILS,
-  INTERNAL_SECTION_TYPES.SUMMARY,
-]);
 
 const sentenceRegex = /[^.!?]+[.!?]+/g;
 const quantifiedAchievementRegex =
@@ -61,32 +56,9 @@ export class BuilderTemplateStore {
 
   private disposers: (() => void)[] = [];
   private isActive = false;
-  private readonly getSortedSectionItemsForSection = computedFn(
-    (sectionId: number) => {
-      return this.root.currentStoreProjection
-        .getItemsBySectionId(sectionId)
-        .toSorted(sortByDisplayOrder);
-    }
-  );
-  private readonly getSortedVisibleSections = computedFn(() => {
-    return this.root.currentStoreProjection.sections
-      .filter((section) => !STATIC_SECTIONS.has(section.type))
-      .toSorted(sortByDisplayOrder);
-  });
-
   constructor(root: BuilderSession) {
     this.root = root;
-    makeAutoObservable<
-      this,
-      'getSortedSectionItemsForSection' | 'getSortedVisibleSections'
-    >(
-      this,
-      {
-        getSortedSectionItemsForSection: false,
-        getSortedVisibleSections: false,
-      },
-      { autoBind: true }
-    );
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
   get personalDetails() {
@@ -137,37 +109,56 @@ export class BuilderTemplateStore {
     });
   }
 
-  get mappedSections() {
-    return this.getSortedSections().map((section) => {
-      const metadata = section.metadata.map((m) => ({ ...m }));
-      return {
-        ...section,
-        metadata,
-        items: this.getSortedSectionItems(section.id).map((item) => ({
-          ...item,
-          fields: this.root.currentStoreProjection.getFieldsByItemId(item.id),
-        })),
-      };
-    });
-  }
-
   get pdfTemplateData() {
-    const mappedSections = this.mappedSections;
-    const sections = mappedSections.filter(
-      (section) => section.type !== INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS
+    const resumeSnapshot = this.root.resumeDocumentSnapshot;
+    const workExperienceSection = this.root.document?.workExperience;
+    const dedicatedSections = {
+      personalDetails: { ...this.personalDetails, links: this.links },
+      summary: this.summarySection,
+      websitesSocialLinks: this.links,
+      workExperience: workExperienceSection
+        ? {
+            id: workExperienceSection.id,
+            title: workExperienceSection.title,
+            displayOrder: workExperienceSection.displayOrder,
+            entries: workExperienceSection.entries.map((entry) => ({
+              entryId: entry.id.toString(),
+              role: entry.role.value,
+              employer: entry.employer.value,
+              startDate: entry.startDate.value,
+              endDate: entry.endDate.value,
+              city: entry.city.value,
+              description: entry.description.value,
+            })),
+          }
+        : null,
+      education: snapshotSection(resumeSnapshot, 'education') ?? null,
+      courses: snapshotSection(resumeSnapshot, 'courses') ?? null,
+      internships:
+        (snapshotSection(resumeSnapshot, 'internships') as
+          | InternshipSectionSnapshot
+          | undefined) ?? null,
+      skills: snapshotSection(resumeSnapshot, 'skills') as
+        | SkillsSectionSnapshot
+        | undefined,
+      languages: snapshotSection(resumeSnapshot, 'languages') ?? null,
+    };
+    const sections = (resumeSnapshot?.sections ?? []).filter(
+      (section) => !(section.sectionKey in dedicatedSections)
     );
-
     return {
-      personalDetails: {
-        ...this.personalDetails,
-        links: this.links,
-      },
-      summarySection: this.summarySection,
+      personalDetails: dedicatedSections.personalDetails,
+      summarySection: dedicatedSections.summary,
+      workExperienceSection: dedicatedSections.workExperience,
+      educationSection: dedicatedSections.education,
+      coursesSection: dedicatedSections.courses,
+      internshipsSection: dedicatedSections.internships,
+      skillsSection: dedicatedSections.skills,
+      languagesSection: dedicatedSections.languages,
       sections,
-      accentColor: this.root.currentStoreProjection.accentColor,
+      accentColor: this.root.document?.accentColor ?? '',
       templateType:
-        this.root.currentStoreProjection.templateType ??
-        INTERNAL_TEMPLATE_TYPES.MANHATTAN,
+        this.root.document?.templateType ?? INTERNAL_TEMPLATE_TYPES.MANHATTAN,
     };
   }
 
@@ -332,14 +323,6 @@ export class BuilderTemplateStore {
       passedCount: 0,
       totalCount: 0,
     };
-  }
-
-  private getSortedSectionItems(sectionId: number) {
-    return this.getSortedSectionItemsForSection(sectionId);
-  }
-
-  private getSortedSections() {
-    return this.getSortedVisibleSections();
   }
 
   private setupReactions() {

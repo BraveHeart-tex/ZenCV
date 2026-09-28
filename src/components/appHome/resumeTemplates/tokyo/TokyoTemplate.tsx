@@ -1,6 +1,14 @@
 import { Document, Page, View } from '@react-pdf/renderer';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isCustomSection,
+  isHobbiesSection,
+  isLanguagesSection,
+  isSidebarPdfSection,
+  isSkillsSection,
+  mergePdfSections,
+  renderSemanticPdfSection,
+} from '../resumeTemplates.helpers';
 import { TokyoCoursesSection } from './TokyoCoursesSection';
 import { TokyoCustomSection } from './TokyoCustomSection';
 import { TokyoEducationSection } from './TokyoEducationSection';
@@ -14,30 +22,31 @@ import { TokyoSummarySection } from './TokyoSummarySection';
 import { TokyoWorkExperienceSection } from './TokyoWorkExperienceSection';
 import { createTokyoStyles } from './tokyo.styles';
 
-const SIDEBAR_SECTION_TYPES = new Set([
-  INTERNAL_SECTION_TYPES.SKILLS,
-  INTERNAL_SECTION_TYPES.LANGUAGES,
-  INTERNAL_SECTION_TYPES.HOBBIES,
-]);
-
 export const TokyoTemplate = ({
   templateData,
 }: {
   templateData: PdfTemplateData;
 }) => {
   const styles = createTokyoStyles(templateData.accentColor);
-  const { personalDetails, summarySection, sections } = templateData;
+  const { personalDetails, summarySection } = templateData;
+  const sections = mergePdfSections(templateData);
 
-  const sidebarSections = sections.filter((s) =>
-    SIDEBAR_SECTION_TYPES.has(s.type as never)
-  );
-
+  const sidebarSections = sections.filter(isSidebarPdfSection);
   const mainSections = sections.filter(
-    (s) => !SIDEBAR_SECTION_TYPES.has(s.type as never)
+    (section) => !isSidebarPdfSection(section)
   );
 
-  const renderSidebarSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
+  const renderSidebarSection = (section: (typeof sidebarSections)[number]) => {
+    if (isHobbiesSection(section)) {
+      return (
+        <TokyoHobbiesSection
+          section={section}
+          key={section.id}
+          styles={styles}
+        />
+      );
+    }
+    if (isSkillsSection(section)) {
       return (
         <TokyoSkillsSection
           section={section}
@@ -46,18 +55,9 @@ export const TokyoTemplate = ({
         />
       );
     }
-    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
+    if (isLanguagesSection(section)) {
       return (
         <TokyoLanguagesSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-      return (
-        <TokyoHobbiesSection
           section={section}
           key={section.id}
           styles={styles}
@@ -68,54 +68,64 @@ export const TokyoTemplate = ({
   };
 
   const renderMainSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-      return (
+    const semanticSection = renderSemanticPdfSection(section, {
+      hobbies: () => null,
+      workExperience: (semanticSection) => (
         <TokyoWorkExperienceSection
-          section={section}
-          key={section.id}
+          workExperienceSection={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-      return (
+      ),
+      education: (semanticSection) => (
         <TokyoEducationSection
-          section={section}
-          key={section.id}
+          section={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-      return (
-        <TokyoInternshipsSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-      return (
+      ),
+      courses: (semanticSection) => (
         <TokyoCoursesSection
-          section={section}
-          key={section.id}
+          section={semanticSection}
+          styles={styles}
+          key={semanticSection.id}
+        />
+      ),
+      internships: (semanticSection) => (
+        <TokyoInternshipsSection
+          section={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
+      ),
+      skills: (semanticSection) => (
+        <TokyoSkillsSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      languages: (semanticSection) => (
+        <TokyoLanguagesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      references: (semanticSection) => (
+        <TokyoReferencesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+    });
+    if (semanticSection) {
+      return semanticSection;
     }
-    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+    if (isCustomSection(section)) {
       return (
         <TokyoCustomSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-      return (
-        <TokyoReferencesSection
           section={section}
           key={section.id}
           styles={styles}

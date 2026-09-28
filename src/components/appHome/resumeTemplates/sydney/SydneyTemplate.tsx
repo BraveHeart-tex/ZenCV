@@ -1,6 +1,10 @@
 import { Document, Page } from '@react-pdf/renderer';
-import { INTERNAL_SECTION_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import {
+  isCustomSection,
+  mergePdfSections,
+  renderSemanticPdfSection,
+} from '../resumeTemplates.helpers';
 import { SydneyCoursesSection } from './SydneyCoursesSection';
 import { SydneyCustomSection } from './SydneyCustomSection';
 import { SydneyEducationSection } from './SydneyEducationSection';
@@ -20,84 +24,74 @@ export const SydneyTemplate = ({
   templateData: PdfTemplateData;
 }) => {
   const styles = createSydneyStyles(templateData.accentColor);
-  const { personalDetails, summarySection, sections } = templateData;
+  const { personalDetails, summarySection } = templateData;
+  const sections = mergePdfSections(templateData);
 
   const renderSection = (section: (typeof sections)[number]) => {
-    if (section.type === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE) {
-      return (
-        <SydneyWorkExperienceSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.EDUCATION) {
-      return (
-        <SydneyEducationSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.INTERNSHIPS) {
-      return (
-        <SydneyInternshipsSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.COURSES) {
-      return (
-        <SydneyCoursesSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.SKILLS) {
-      return (
-        <SydneySkillsSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.LANGUAGES) {
-      return (
-        <SydneyLanguagesSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.HOBBIES) {
-      return (
+    const semanticSection = renderSemanticPdfSection(section, {
+      hobbies: (semanticSection) => (
         <SydneyHobbiesSection
-          section={section}
-          key={section.id}
+          section={semanticSection}
+          key={semanticSection.id}
           styles={styles}
         />
-      );
+      ),
+      workExperience: (semanticSection) => (
+        <SydneyWorkExperienceSection
+          workExperienceSection={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      education: (semanticSection) => (
+        <SydneyEducationSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      courses: (semanticSection) => (
+        <SydneyCoursesSection
+          section={semanticSection}
+          styles={styles}
+          key={semanticSection.id}
+        />
+      ),
+      internships: (semanticSection) => (
+        <SydneyInternshipsSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      skills: (semanticSection) => (
+        <SydneySkillsSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      languages: (semanticSection) => (
+        <SydneyLanguagesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+      references: (semanticSection) => (
+        <SydneyReferencesSection
+          section={semanticSection}
+          key={semanticSection.id}
+          styles={styles}
+        />
+      ),
+    });
+    if (semanticSection) {
+      return semanticSection;
     }
-    if (section.type === INTERNAL_SECTION_TYPES.CUSTOM) {
+    if (isCustomSection(section)) {
       return (
         <SydneyCustomSection
-          section={section}
-          key={section.id}
-          styles={styles}
-        />
-      );
-    }
-    if (section.type === INTERNAL_SECTION_TYPES.REFERENCES) {
-      return (
-        <SydneyReferencesSection
           section={section}
           key={section.id}
           styles={styles}

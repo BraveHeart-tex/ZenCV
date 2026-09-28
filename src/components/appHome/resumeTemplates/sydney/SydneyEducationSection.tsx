@@ -1,12 +1,15 @@
 import { Text, View } from '@react-pdf/renderer';
 import { getEducationSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
+import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import { SydneySectionEntry } from './SydneySectionEntry';
 import type { SydneySectionProps } from './sydney.types';
 
 export const SydneyEducationSection = ({
   section,
   styles,
-}: SydneySectionProps) => {
+}: Omit<SydneySectionProps, 'section'> & {
+  section: ResumeSnapshotSection;
+}) => {
   const sectionEntries = getEducationSectionEntries(section);
   if (!sectionEntries.length) {
     return null;
