@@ -36,7 +36,8 @@ describe('WorkExperienceForm', () => {
     expect(markup).toContain(
       '<legend class="mb-2 text-sm font-medium">Employment dates</legend>'
     );
-    expect(markup).toContain('grid-cols-1 gap-4 lg:grid-cols-2');
+    expect(markup).toContain('lg:col-span-2 lg:grid-cols-2');
+    expect(markup).toContain('col-span-1 grid grid-cols-1');
     expect(markup.indexOf(`data-field-id="${entry.role.id}"`)).toBeLessThan(
       markup.indexOf(`data-field-id="${entry.employer.id}"`)
     );

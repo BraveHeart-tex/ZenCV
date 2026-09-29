@@ -10,10 +10,10 @@ interface WorkExperienceFormProps {
 export const WorkExperienceForm = observer(
   ({ entry }: WorkExperienceFormProps) => {
     return (
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+      <div className='grid grid-cols-1 gap-4 lg:col-span-2 lg:grid-cols-2'>
         <SectionField fieldId={entry.role.id} />
         <SectionField fieldId={entry.employer.id} />
-        <fieldset className='col-span-2 grid grid-cols-1 gap-4 border-0 p-0 lg:grid-cols-2'>
+        <fieldset className='col-span-1 grid grid-cols-1 gap-4 border-0 p-0 lg:col-span-2 lg:grid-cols-2'>
           <legend className='mb-2 text-sm font-medium'>Employment dates</legend>
           <DateFieldInput fieldId={entry.startDate.id} />
           <DateFieldInput fieldId={entry.endDate.id} />
