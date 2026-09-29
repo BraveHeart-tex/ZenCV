@@ -1,10 +1,7 @@
 import { showErrorToast } from '@/components/ui/sonner';
 import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
-import {
-  highlightedElementClassName,
-  SECTION_METADATA_KEYS,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { getLuminance, hexToRgb } from '@/lib/utils/colorUtils';
 import { getItemContainerId } from '@/lib/utils/stringUtils';
 
@@ -48,15 +45,6 @@ export const getTriggerContent = (
   }
 
   switch (item.sectionKey) {
-    case 'websitesSocialLinks': {
-      return getWebsitesSocialLinksTitle(itemId);
-    }
-    case 'skills': {
-      return getSkillsSectionTitle(itemId);
-    }
-    case 'languages': {
-      return getLanguagesSectionTitle(itemId);
-    }
     case 'custom': {
       return getCustomSectionTitle(itemId);
     }
@@ -68,15 +56,6 @@ export const getTriggerContent = (
     }
   }
 };
-
-const getItemFieldValue = (
-  itemId: number,
-  sectionKey: 'websitesSocialLinks' | 'skills' | 'languages',
-  fieldKey: string
-): string =>
-  builderSession.resumeDocumentSnapshot?.sections
-    .find((section) => section.sectionKey === sectionKey)
-    ?.items.find((item) => item.id === itemId)?.values[fieldKey] ?? '';
 
 const getEducationSectionTitle = (itemId: number) => {
   const values = builderSession.resumeDocumentSnapshot?.sections
@@ -102,52 +81,6 @@ const getEducationSectionTitle = (itemId: number) => {
   return {
     title: triggerTitle,
     description,
-  };
-};
-
-const getWebsitesSocialLinksTitle = (itemId: number) => {
-  const labelValue = getItemFieldValue(itemId, 'websitesSocialLinks', 'label');
-  const linkValue = getItemFieldValue(itemId, 'websitesSocialLinks', 'link');
-
-  const triggerTitle = labelValue || '(Untitled)';
-  const description = linkValue || '';
-
-  return {
-    title: triggerTitle,
-    description,
-  };
-};
-
-const getSkillsSectionTitle = (itemId: number) => {
-  const skillValue = getItemFieldValue(itemId, 'skills', 'skill');
-  const levelValue = getItemFieldValue(itemId, 'skills', 'experienceLevel');
-
-  const item = builderSession.getItem(itemId as ItemId);
-  const metadata = builderSession.document?.sections.find(
-    (section) => section.id === item?.sectionId
-  )?.metadata;
-  const shouldShowSkillLevel =
-    metadata?.find(
-      (metadata) =>
-        metadata.key === SECTION_METADATA_KEYS.SKILLS.SHOW_EXPERIENCE_LEVEL
-    )?.value === '1';
-
-  const triggerTitle = skillValue || '(Untitled)';
-  const description = shouldShowSkillLevel ? levelValue : '';
-
-  return {
-    title: triggerTitle,
-    description,
-  };
-};
-
-const getLanguagesSectionTitle = (itemId: number) => {
-  const language = getItemFieldValue(itemId, 'languages', 'language');
-  const level = getItemFieldValue(itemId, 'languages', 'level');
-
-  return {
-    title: language || '(Untitled)',
-    description: level || '',
   };
 };
 

@@ -2,12 +2,6 @@ import type { InsertType } from 'dexie';
 import { clientDb } from './clientDb';
 import type { DEX_Field, DEX_Item } from './clientDbSchema';
 
-export async function updateField(fieldId: DEX_Field['id'], value: string) {
-  return clientDb.fields.update(fieldId, {
-    value,
-  });
-}
-
 export async function getFieldsWithItemIds(
   itemIds: DEX_Item['id'][]
 ): Promise<DEX_Field[]> {
