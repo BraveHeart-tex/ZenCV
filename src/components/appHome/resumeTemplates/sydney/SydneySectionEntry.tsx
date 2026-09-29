@@ -5,14 +5,14 @@ import type { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { SYDNEY_FONT_SIZE } from './sydney.styles';
 import type { SydneyStyles } from './sydney.types';
 
-type SydneySectionEntryProps<T extends Record<string, string>> = {
+type SydneySectionEntryProps<T extends Readonly<Record<string, string>>> = {
   entry: WithEntryId<T>;
   titleKey: keyof T;
   subtitleKey: keyof T;
   styles: SydneyStyles;
 };
 
-export const SydneySectionEntry = <T extends Record<string, string>>({
+export const SydneySectionEntry = <T extends Readonly<Record<string, string>>>({
   entry,
   titleKey,
   subtitleKey,

@@ -1,29 +1,30 @@
 import { Text, View } from '@react-pdf/renderer';
-import { getWorkExperienceSectionEntries } from '@/components/appHome/resumeTemplates/resumeTemplates.helpers';
-import type { TemplateDataSection } from '@/lib/types/documentBuilder.types';
+import type { WorkExperienceSectionSnapshot } from '@/lib/types/documentBuilder.types';
 import { LondonSectionEntry } from './LondonSectionEntry';
 import { londonTemplateStyles } from './london.styles';
 
 export const LondonWorkExperienceSection = ({
-  section,
+  workExperienceSection,
 }: {
-  section: TemplateDataSection;
+  workExperienceSection: WorkExperienceSectionSnapshot;
 }) => {
-  const sectionEntries = getWorkExperienceSectionEntries(section);
+  const { entries: sectionEntries } = workExperienceSection;
   if (!sectionEntries.length) {
     return null;
   }
 
   return (
     <View style={londonTemplateStyles.section}>
-      <Text style={londonTemplateStyles.sectionLabel}>{section.title}</Text>
+      <Text style={londonTemplateStyles.sectionLabel}>
+        {workExperienceSection.title}
+      </Text>
       <View style={{ gap: 15 }}>
         {sectionEntries.map((entry) => (
           <LondonSectionEntry
             entry={entry}
             key={entry.entryId}
             titleKey='employer'
-            subtitleKey='jobTitle'
+            subtitleKey='role'
           />
         ))}
       </View>

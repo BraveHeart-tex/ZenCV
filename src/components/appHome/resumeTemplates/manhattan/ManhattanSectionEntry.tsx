@@ -4,13 +4,17 @@ import type { WithEntryId } from '@/lib/types/documentBuilder.types';
 import { pdfHtmlRenderers } from '../resumeTemplates.pdf';
 import { MANHATTAN_FONT_SIZE } from './manhattan.styles';
 
-interface ManhattanSectionEntryProps<T extends Record<string, string>> {
+interface ManhattanSectionEntryProps<
+  T extends Readonly<Record<string, string>>,
+> {
   entry: WithEntryId<T>;
   titleKey: keyof T;
   subtitleKey: keyof T;
 }
 
-export const ManhattanSectionEntry = <T extends Record<string, string>>({
+export const ManhattanSectionEntry = <
+  T extends Readonly<Record<string, string>>,
+>({
   entry,
   titleKey,
   subtitleKey,
