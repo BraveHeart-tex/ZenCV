@@ -1097,6 +1097,7 @@ export interface PersistedFieldInput {
   readonly name: string;
   readonly type: string;
   readonly options?: readonly string[] | null;
+  readonly placeholder?: string;
 }
 
 export const getSectionDefinition = <Section extends SectionKey>(
@@ -1279,9 +1280,15 @@ export const analyzeItemFields = (
         order: 10_000 + inputOrder,
         visibility: 'additional',
         width: 'full',
+        ...(field.placeholder ? { placeholder: field.placeholder } : {}),
         ...(control === 'select' ? { options: field.options ?? [] } : {}),
         ...(control === 'richText'
-          ? { richText: { characterCounter: false } }
+          ? {
+              richText: {
+                characterCounter: false,
+                ...(field.placeholder ? { guidance: field.placeholder } : {}),
+              },
+            }
           : {}),
       } as unknown as FieldDefinition;
       return [{ field, definition: fallback, inputOrder, legacy: true }];

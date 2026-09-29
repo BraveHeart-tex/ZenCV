@@ -1584,6 +1584,7 @@ export const hydrateBuilderDocument = (
         name: field.name,
         type: field.type,
         options: 'options' in field ? field.options : undefined,
+        placeholder: field.placeholder,
       }));
       const recordsByInput = new Map<object, DEX_Field>(
         fieldInputs.map((input, index) => [input, itemFields[index]] as const)

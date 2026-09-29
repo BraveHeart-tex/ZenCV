@@ -563,6 +563,51 @@ describe('Builder Document hydration', () => {
     }
   });
 
+  it('hydrates supported extra fields with placeholder and guidance metadata', () => {
+    const records = fixture();
+    const details = records.items.find((item) => item.sectionId === 10);
+    if (!details) {
+      throw new Error('Missing Personal Details item');
+    }
+    const legacyFields = [
+      {
+        id: 9002,
+        itemId: details.id,
+        name: 'Legacy note',
+        type: 'textarea',
+        value: '',
+        placeholder: 'Enter a note',
+      },
+      {
+        id: 9003,
+        itemId: details.id,
+        name: 'Legacy summary',
+        type: 'rich-text',
+        value: '',
+        placeholder: 'Add a short summary',
+      },
+    ] as unknown as DEX_Field[];
+    const persistence = new InMemoryDocumentPersistence({
+      ...records,
+      fields: [...records.fields, ...legacyFields],
+    });
+
+    const result = hydrateBuilderDocument(persistence.records, persistence);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      const legacy =
+        result.document.personalDetails.items[0]?.editableFields.slice(-2);
+      expect(legacy).toHaveLength(2);
+      expect(legacy?.[0]?.definition).toMatchObject({
+        placeholder: 'Enter a note',
+      });
+      expect(legacy?.[1]?.definition).toMatchObject({
+        richText: { guidance: 'Add a short summary' },
+      });
+    }
+  });
+
   it('keeps Custom repeatable and generic', () => {
     const records = fixture();
     const custom = sectionDefinitions.custom;
