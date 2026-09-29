@@ -14,6 +14,17 @@ import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUISto
 
 const DESKTOP_PREVIEW_MEDIA_QUERY = '(min-width: 1280px)';
 
+export const createDiscardAndLeaveAction = (
+  discard: () => void,
+  leave: () => void
+) => ({
+  label: 'Discard and leave',
+  onClick: () => {
+    discard();
+    leave();
+  },
+});
+
 const DocumentBuilderPreview = lazy(() =>
   import('@/components/documentBuilder/DocumentBuilderPreview').then(
     (module) => ({ default: module.DocumentBuilderPreview })
@@ -76,10 +87,20 @@ export const BuilderPage = observer(() => {
         blocker.proceed();
         return;
       }
-      showErrorToast('Finish saving your changes before leaving.');
+      const destination = blocker.location;
+      showErrorToast('Finish saving your changes before leaving.', {
+        action: createDiscardAndLeaveAction(
+          () => session.discard(),
+          () => {
+            navigate(
+              `${destination.pathname}${destination.search}${destination.hash}`
+            );
+          }
+        ),
+      });
       blocker.reset();
     })();
-  }, [blocker, session]);
+  }, [blocker, navigate, session]);
 
   const returnToDocuments = () => {
     navigate('/documents');

@@ -217,6 +217,7 @@ export class BuilderSession {
 
   private clearDocument(): void {
     this.templateStore.stop();
+    this.templateStore.resetState();
     if (this.state.status === 'ready') {
       this.state.document.discard();
     }

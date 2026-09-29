@@ -49,6 +49,29 @@ const commandDocument = (workItems = 1) => {
 };
 
 describe('Builder Document item commands', () => {
+  it('does not execute structural commands queued before discard', async () => {
+    const document = commandDocument();
+    const persistence = document.persistence as InMemoryDocumentPersistence;
+    const addItem = persistence.addItem.bind(persistence);
+    let release: (() => void) | undefined;
+    persistence.addItem = async (...args) => {
+      await new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      return addItem(...args);
+    };
+
+    const active = document.addItem(document.workExperience.id);
+    await vi.waitFor(() => expect(release).toBeDefined());
+    const queued = document.addItem(document.workExperience.id);
+    document.discard();
+    release?.();
+
+    await active;
+    await expect(queued).rejects.toThrow('Builder Document was discarded');
+    expect(persistence.records.items).toHaveLength(4);
+  });
+
   it('leaves the graph untouched when insertion fails', async () => {
     const document = commandDocument();
     const original = document.workExperience.items[0];

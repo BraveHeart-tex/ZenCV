@@ -881,6 +881,76 @@ describe('BuilderSession', () => {
     expect(session.state).toEqual({ status: 'idle' });
   });
 
+  it('flushes edits made while navigation is waiting on an earlier save', async () => {
+    const records = builderDocumentFixture();
+    const persistence = new InMemoryDocumentPersistence(records);
+    const saveFieldValue = persistence.saveFieldValue.bind(persistence);
+    let release: (() => void) | undefined;
+    let firstSave = true;
+    persistence.saveFieldValue = async (...args) => {
+      if (firstSave) {
+        firstSave = false;
+        await new Promise<void>((resolve) => {
+          release = resolve;
+        });
+      }
+      return saveFieldValue(...args);
+    };
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    const role = session.document?.workExperience.entries[0]?.role;
+    if (!role) {
+      throw new Error('Expected a role field');
+    }
+    role.setDraft('First edit');
+    const navigation = session.prepareNavigation();
+    await vi.waitFor(() => expect(release).toBeDefined());
+    role.setDraft('Edit during flush');
+    release?.();
+
+    expect(await navigation).toBe(true);
+    expect(
+      persistence.records.fields.find((field) => field.id === role.id)?.value
+    ).toBe('Edit during flush');
+  });
+
+  it('clears derived template output immediately when switching documents', async () => {
+    const records = builderDocumentFixture();
+    const otherId = records.document.id + 1;
+    const otherRecords = {
+      ...records,
+      document: { ...records.document, id: otherId },
+      sections: records.sections.map((section) => ({
+        ...section,
+        documentId: otherId,
+      })),
+    };
+    const persistence = new InMemoryDocumentPersistence(records);
+    const load = persistence.load.bind(persistence);
+    persistence.load = async (documentId) =>
+      documentId === otherId
+        ? { success: true, value: otherRecords }
+        : load(documentId);
+    const session = new BuilderSession({ persistence });
+    await session.load(records.document.id);
+    await vi.waitFor(() =>
+      expect(session.templateStore.debouncedTemplateData).not.toBeNull()
+    );
+
+    await session.load(otherId);
+
+    expect(session.templateStore.debouncedTemplateData).toBeNull();
+    expect(session.templateStore.debouncedResumeStats).toEqual({
+      score: 0,
+      suggestions: [],
+    });
+    expect(session.templateStore.debouncedATSCompatibility).toEqual({
+      checks: [],
+      passedCount: 0,
+      totalCount: 0,
+    });
+  });
+
   it('keeps a failed flush in the active session for a corrected retry', async () => {
     const records = builderDocumentFixture();
     const persistence = new InMemoryDocumentPersistence(records);

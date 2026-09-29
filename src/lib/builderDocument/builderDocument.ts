@@ -579,6 +579,7 @@ export class BuilderDocumentModel {
   readonly sectionIds: IObservableArray<SectionId>;
   #commandTail: Promise<void> = Promise.resolve();
   #acceptingCommands = true;
+  #discarded = false;
   #commandFailed = false;
   #savedTitle: string;
   #savedAppearance: {
@@ -687,7 +688,12 @@ export class BuilderDocumentModel {
     if (!this.#acceptingCommands) {
       return Promise.reject(new Error('Builder Document is closing'));
     }
-    const result = this.#commandTail.then(command);
+    const result = this.#commandTail.then(() => {
+      if (this.#discarded) {
+        throw new Error('Builder Document was discarded');
+      }
+      return command();
+    });
     this.#commandTail = result.then(
       (value) => {
         if (
@@ -715,18 +721,22 @@ export class BuilderDocumentModel {
       this.#acceptingCommands = true;
       return false;
     }
-    const results = await Promise.all(
-      [...this.fieldsById.values()].map((field) => field.flush())
-    );
-    if (!results.every(Boolean)) {
-      this.#acceptingCommands = true;
-      return false;
+    while (true) {
+      const fields = [...this.fieldsById.values()];
+      const results = await Promise.all(fields.map((field) => field.flush()));
+      if (!results.every(Boolean)) {
+        this.#acceptingCommands = true;
+        return false;
+      }
+      if (fields.every((field) => !field.isDirty)) {
+        return true;
+      }
     }
-    return true;
   }
 
   discard(): void {
     this.#acceptingCommands = false;
+    this.#discarded = true;
     for (const field of this.fieldsById.values()) {
       field.dispose();
     }
