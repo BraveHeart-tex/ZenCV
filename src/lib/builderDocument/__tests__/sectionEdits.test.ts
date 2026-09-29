@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { getItemInsertTemplate } from '@/lib/builderDocument/persistedDocumentTemplates';
 import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import { getDefaultSkillsMetadata } from '@/lib/misc/sectionMetadataTemplates';
 import { sectionDefinitions } from '@/lib/sectionDefinitions/sectionDefinitions';
 import { hydrateBuilderDocument } from '../builderDocument';

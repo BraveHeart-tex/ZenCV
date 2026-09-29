@@ -6,18 +6,19 @@ import {
   observable,
   runInAction,
 } from 'mobx';
+import { getItemInsertTemplate } from '@/lib/builderDocument/persistedDocumentTemplates';
 import type {
   DEX_Document,
   DEX_Field,
   DEX_Item,
   DEX_Section,
+  FieldInsertTemplate,
 } from '@/lib/client-db/clientDbSchema';
 import {
   getDefaultAccentColorForTemplate,
   parseTemplateSettings,
   type TemplateSettings,
 } from '@/lib/constants/accentColors';
-import { getItemInsertTemplate } from '@/lib/helpers/documentBuilderHelpers';
 import {
   analyzeItemFields,
   type DefinitionDiagnostic,
@@ -33,7 +34,6 @@ import {
   validateSectionMetadata,
 } from '@/lib/sectionDefinitions/sectionDefinitions';
 import type {
-  FieldInsertTemplate,
   ResumeTemplate,
   SectionType,
   StoreResult,
@@ -331,6 +331,10 @@ export class BuilderItemModel<S extends SectionKey = SectionKey> {
     return this.editableFields.find((field) => field.fieldKey === key);
   }
 }
+
+export const isCollapsibleItem = (
+  item: Pick<BuilderItemModel, 'containerType'>
+): boolean => item.containerType === 'collapsible';
 
 /** A read-only semantic view of one ordered Work Experience Item. */
 export class WorkExperienceEntry {
@@ -878,13 +882,15 @@ export class BuilderDocumentModel {
     });
   }
 
-  addSection(
-    input: Pick<DEX_Section, 'type' | 'title' | 'defaultTitle'> & {
-      metadata?: DEX_Section['metadata'];
-    }
-  ): Promise<StoreResult<{ sectionId: SectionId; itemId: ItemId }>> {
+  addSection(input: {
+    sectionKey: SemanticSectionKey;
+    title: string;
+    defaultTitle: string;
+    metadata?: string;
+  }): Promise<StoreResult<{ sectionId: SectionId; itemId: ItemId }>> {
     return this.#enqueue(async () => {
-      const currentDefinition = resolveSectionDefinition(input.type);
+      const currentDefinition = sectionDefinitions[input.sectionKey];
+      const persistedType = currentDefinition.persistedType;
       if (
         currentDefinition?.sectionCardinality === 'optional-one' &&
         this.section(currentDefinition.key)
@@ -893,7 +899,7 @@ export class BuilderDocumentModel {
       }
       const metadata = parseMetadata(input.metadata);
       const creation = sectionCreationTemplate({
-        type: input.type,
+        type: persistedType,
         title: input.title,
         defaultTitle: input.defaultTitle,
         metadata: metadata as BuilderSectionModel['metadata'],
@@ -905,7 +911,7 @@ export class BuilderDocumentModel {
       let committed = false;
       try {
         const created = await this.persistence.addSection(this.id, {
-          type: input.type,
+          type: persistedType,
           title: input.title,
           defaultTitle: input.defaultTitle,
           metadata: metadata as BuilderSectionModel['metadata'],

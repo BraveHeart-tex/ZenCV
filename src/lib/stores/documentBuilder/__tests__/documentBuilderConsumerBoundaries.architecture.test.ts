@@ -14,11 +14,11 @@ const listSourceFiles = (directory: string): string[] =>
   });
 
 describe('Document Builder consumer boundaries', () => {
-  it('keeps PDF and derived consumers on semantic section snapshots', () => {
+  it('keeps builder UI, PDF, and derived consumers on semantic sections', () => {
     const consumerRoots = [
       join(sourceRoot, 'components/appHome/resumeTemplates'),
-      join(sourceRoot, 'components/documentBuilder/resumeOverview'),
-      join(sourceRoot, 'components/documentBuilder/resumeScore'),
+      join(sourceRoot, 'components/documentBuilder'),
+      join(sourceRoot, 'lib/helpers/documentBuilderHelpers.ts'),
       join(sourceRoot, 'lib/stores/documentBuilder/builderTemplateStore.ts'),
     ];
     const consumerFiles = consumerRoots.flatMap((root) =>

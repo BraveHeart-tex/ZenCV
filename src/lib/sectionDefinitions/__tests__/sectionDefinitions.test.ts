@@ -511,6 +511,15 @@ describe('section definitions', () => {
         field: { id: 1, name: 'Job Title', type: 'textarea' },
         definition: getSectionDefinition('workExperience').fields.role,
       },
+      {
+        field: { id: 4, name: 'Retired field', type: 'string' },
+        definition: expect.objectContaining({
+          key: 'legacy:4',
+          label: 'Retired field',
+          visibility: 'additional',
+        }),
+        legacy: true,
+      },
     ]);
   });
 

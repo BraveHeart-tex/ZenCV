@@ -1,14 +1,17 @@
+import type { FIELD_NAMES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type {
-  FieldInsertTemplate,
-  FieldName,
   ResumeTemplate,
   SectionType,
   SelectType,
 } from '@/lib/types/documentBuilder.types';
+import type { NestedValueOf } from '@/lib/types/utils.types';
 import type { Nullable } from '../types/utils.types';
 import type { JobPostingSchema } from '../validation/jobPosting.schema';
 
 type IdType = number;
+
+export type TopLevelFieldName = keyof typeof FIELD_NAMES;
+export type FieldName = NestedValueOf<typeof FIELD_NAMES>;
 
 export interface DEX_Document {
   id: IdType;
@@ -90,6 +93,8 @@ export type DEX_Field =
   | SelectField
   | RichTextField
   | TextareaField;
+
+export type FieldInsertTemplate = Omit<DEX_Field, 'id' | 'itemId'>;
 
 interface ItemWithFields extends Omit<DEX_Item, 'id' | 'sectionId'> {
   fields: FieldInsertTemplate[];

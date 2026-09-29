@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
+import { isCollapsibleItem } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   cn,
@@ -34,9 +35,7 @@ export const ResumeOverviewTrigger = observer(
                   )}
                 >
                   <div className='bg-muted-foreground w-6 h-[3.5px] rounded-sm' />
-                  {section.items.filter(
-                    (item) => item.containerType === 'collapsible'
-                  ).length > 0 && (
+                  {section.items.filter(isCollapsibleItem).length > 0 && (
                     <div className='flex flex-col gap-2 pl-2'>
                       {section.items.map((item) => (
                         <motion.div

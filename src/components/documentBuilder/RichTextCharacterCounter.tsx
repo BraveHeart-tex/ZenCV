@@ -1,18 +1,15 @@
 import { observer } from 'mobx-react-lite';
 import type { ComponentProps } from 'react';
 import { SmoothEmotionIcon } from '@/components/misc/SmoothEmotionIcon';
-import type { DEX_Field } from '@/lib/client-db/clientDbSchema';
-import { getSectionTypeByItemId } from '@/lib/helpers/documentBuilderHelpers';
-import {
-  INTERNAL_SECTION_TYPES,
-  SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import type { ItemId } from '@/lib/builderDocument/builderDocument';
+import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
+import { SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn, removeHTMLTags } from '@/lib/utils/stringUtils';
 
 interface RichTextCharacterCounterProps {
   enabled: boolean;
-  fieldValue: DEX_Field['value'];
-  itemId: DEX_Field['itemId'];
+  fieldValue: string;
+  itemId: ItemId;
 }
 
 type EmotionIconExpression = ComponentProps<
@@ -51,12 +48,12 @@ const getExpression = (
 
 export const RichTextCharacterCounter = observer(
   ({ enabled, fieldValue, itemId }: RichTextCharacterCounterProps) => {
-    const sectionType = getSectionTypeByItemId(itemId);
+    const sectionKey = builderSession.getItem(itemId)?.sectionKey;
 
     if (
       !enabled ||
-      !sectionType ||
-      !SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER.has(sectionType)
+      !sectionKey ||
+      !SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER.has(sectionKey)
     ) {
       return null;
     }
@@ -64,7 +61,7 @@ export const RichTextCharacterCounter = observer(
     const trimmedValue = removeHTMLTags(fieldValue);
 
     const renderCounter = () => {
-      if (sectionType === INTERNAL_SECTION_TYPES.SUMMARY) {
+      if (sectionKey === 'summary') {
         return (
           <div className='flex items-center justify-between w-full gap-8 pt-1 text-sm'>
             <p className='text-muted-foreground lg:inline hidden'>
@@ -96,10 +93,7 @@ export const RichTextCharacterCounter = observer(
         );
       }
 
-      if (
-        sectionType === INTERNAL_SECTION_TYPES.WORK_EXPERIENCE ||
-        sectionType === INTERNAL_SECTION_TYPES.INTERNSHIPS
-      ) {
+      if (sectionKey === 'workExperience' || sectionKey === 'internships') {
         return (
           <div className='flex items-center justify-between w-full gap-8 pt-1 text-sm'>
             <p className='text-muted-foreground lg:inline hidden'>

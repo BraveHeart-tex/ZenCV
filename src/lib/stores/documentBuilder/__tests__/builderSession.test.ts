@@ -798,7 +798,7 @@ describe('BuilderSession', () => {
     };
     const definition = sectionDefinitions.courses;
     const result = await originalDocument?.addSection({
-      type: definition.persistedType,
+      sectionKey: 'courses',
       title: definition.label,
       defaultTitle: definition.label,
     });
@@ -844,7 +844,7 @@ describe('BuilderSession', () => {
     };
     const definition = sectionDefinitions.courses;
     const pending = originalDocument?.addSection({
-      type: definition.persistedType,
+      sectionKey: 'courses',
       title: definition.label,
       defaultTitle: definition.label,
     });

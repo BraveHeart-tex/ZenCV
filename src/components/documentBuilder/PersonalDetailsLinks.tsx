@@ -5,10 +5,7 @@ import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
-import {
-  INTERNAL_SECTION_TYPES,
-  MAX_PERSONAL_DETAILS_LINKS,
-} from '@/lib/stores/documentBuilder/documentBuilder.constants';
+import { MAX_PERSONAL_DETAILS_LINKS } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { getSectionContainerId } from '@/lib/utils/stringUtils';
 import { ItemsDndContext } from './ItemsDndContext';
 import { SectionItem } from './SectionItem';
@@ -36,7 +33,7 @@ export const PersonalDetailsLinks = observer(() => {
         const result = await document?.addSection({
           title: 'Links',
           defaultTitle: 'Links',
-          type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
+          sectionKey: 'websitesSocialLinks',
         });
         itemId = result?.success ? result.data?.itemId : undefined;
       }

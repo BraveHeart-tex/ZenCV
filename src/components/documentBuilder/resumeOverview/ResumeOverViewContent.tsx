@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';
 import { Button } from '@/components/ui/button';
+import { isCollapsibleItem } from '@/lib/builderDocument/builderDocument';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { highlightedElementClassName } from '@/lib/stores/documentBuilder/documentBuilder.constants';
@@ -70,9 +71,8 @@ export const ResumeOverViewContent = observer(
               {sectionsWithItems.map((section) => {
                 const isSectionFocused =
                   focusState.sectionId === getSectionContainerId(section.id);
-                const collapsibleItems = section.items.filter(
-                  (item) => item.containerType === 'collapsible'
-                );
+                const collapsibleItems =
+                  section.items.filter(isCollapsibleItem);
 
                 return (
                   <motion.div

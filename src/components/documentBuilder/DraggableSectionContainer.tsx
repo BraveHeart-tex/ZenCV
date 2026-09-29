@@ -2,12 +2,12 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type React from 'react';
 import { memo } from 'react';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn, getSectionContainerId } from '@/lib/utils/stringUtils';
 
 interface DraggableSectionContainerProps {
-  sectionId: DEX_Section['id'];
+  sectionId: SectionId;
   children?: React.ReactNode;
   className?: string;
 }

@@ -4,26 +4,19 @@ import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
 import { showErrorToast } from '@/components/ui/sonner';
 import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
-import type { DEX_Item, DEX_Section } from '@/lib/client-db/clientDbSchema';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   builderSectionTitleClassNames,
-  INTERNAL_SECTION_TYPES,
   OTHER_SECTION_OPTIONS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type { TemplatedSectionType } from '@/lib/types/documentBuilder.types';
 import { cn } from '@/lib/utils/stringUtils';
 
-export interface OtherSectionOption
-  extends Omit<
-    DEX_Section,
-    'id' | 'documentId' | 'displayOrder' | 'defaultName'
-  > {
-  type: TemplatedSectionType;
+export interface OtherSectionOption {
   sectionKey: SemanticSectionKey;
+  title: string;
+  defaultTitle: string;
+  metadata?: string;
   icon: LucideIcon;
-  containerType: DEX_Item['containerType'];
-  itemCountPerContainer?: number;
 }
 
 export const AddSectionWidget = observer(() => {
@@ -50,9 +43,9 @@ export const AddSectionWidget = observer(() => {
       <div className='grid gap-2 md:grid-cols-2'>
         {OTHER_SECTION_OPTIONS.map((option) => {
           const isAlreadyAdded =
-            option.type !== INTERNAL_SECTION_TYPES.CUSTOM &&
+            option.sectionKey !== 'custom' &&
             builderSession.document?.sections.some(
-              (section) => section.persistedType === option.type
+              (section) => section.sectionKey === option.sectionKey
             );
 
           return (
@@ -61,7 +54,7 @@ export const AddSectionWidget = observer(() => {
               disabled={isAlreadyAdded}
               title={isAlreadyAdded ? `${option.title} is already added` : ''}
               onClick={() => handleAddSection(option)}
-              key={option.type}
+              key={option.sectionKey}
               className='min-h-11 justify-between gap-3 px-3 text-base'
             >
               <span className='flex min-w-0 items-center gap-2 text-left'>

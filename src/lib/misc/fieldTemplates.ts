@@ -1,14 +1,15 @@
-import { type DEX_Field, FIELD_TYPES } from '@/lib/client-db/clientDbSchema';
+import {
+  type DEX_Field,
+  FIELD_TYPES,
+  type FieldInsertTemplate,
+  type TopLevelFieldName,
+} from '@/lib/client-db/clientDbSchema';
 import {
   FIELD_NAMES,
   INTERNAL_SECTION_TYPES,
   RICH_TEXT_PLACEHOLDERS_BY_TYPE,
   SELECT_TYPES,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import type {
-  FieldInsertTemplate,
-  TopLevelFieldName,
-} from '@/lib/types/documentBuilder.types';
 import { getKeyByValue } from '../utils/objectUtils';
 
 export const personalDetailsSectionFields: FieldInsertTemplate[] = [

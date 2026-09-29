@@ -110,7 +110,7 @@ describe('semantic score suggestion actions', () => {
       expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(42)
     );
     expect(mocks.addSection).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'education' })
+      expect.objectContaining({ sectionKey: 'education' })
     );
   });
 

@@ -1,5 +1,10 @@
 import type { UpdateSpec } from 'dexie';
 import {
+  getInitialDocumentInsertBoilerplate,
+  isSelectField,
+  prepareSectionsInsertData,
+} from '@/lib/builderDocument/persistedDocumentTemplates';
+import {
   bulkAddFields,
   bulkDeleteFields,
   getFieldIdsByItemIds,
@@ -17,11 +22,6 @@ import {
   getSectionIdsByDocumentId,
   getSectionsByDocumentId,
 } from '@/lib/client-db/sectionService';
-import {
-  getInitialDocumentInsertBoilerplate,
-  isSelectField,
-  prepareSectionsInsertData,
-} from '@/lib/helpers/documentBuilderHelpers';
 import { serializeTemplateSettings } from '../constants/accentColors';
 import {
   getTemplateByStyle,

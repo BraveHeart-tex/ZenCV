@@ -10,7 +10,7 @@ import {
   SparklesIcon,
 } from 'lucide-react';
 import type { OtherSectionOption } from '@/components/documentBuilder/AddSectionWidget';
-import { CONTAINER_TYPES } from '@/lib/client-db/clientDbSchema';
+import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
 import {
   getDefaultReferencesMetadata,
   getDefaultSkillsMetadata,
@@ -59,17 +59,16 @@ export const DELETABLE_INTERNAL_SECTION_TYPES = new Map<SectionType, boolean>([
   [INTERNAL_SECTION_TYPES.SKILLS, true],
 ]);
 
-export const SECTION_DESCRIPTIONS_BY_TYPE = {
-  [INTERNAL_SECTION_TYPES.SUMMARY]:
+export const SECTION_DESCRIPTIONS_BY_KEY = {
+  summary:
     'Write a brief overview of your professional profile and key achievements.',
-  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE]:
+  workExperience:
     'Highlight your achievements with measurable results. Use action verbs and specific numbers.',
-  [INTERNAL_SECTION_TYPES.EDUCATION]:
+  education:
     'List your relevant education and qualifications that showcase your expertise.',
-  [INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS]:
+  websitesSocialLinks:
     'Add links to your portfolio, LinkedIn, or other professional profiles.',
-  [INTERNAL_SECTION_TYPES.SKILLS]:
-    'List your most relevant skills that match the job requirements.',
+  skills: 'List your most relevant skills that match the job requirements.',
 } as const;
 
 export const RICH_TEXT_PLACEHOLDERS_BY_TYPE = {
@@ -253,67 +252,48 @@ const sectionOptions: Omit<OtherSectionOption, 'defaultTitle'>[] = [
     icon: GraduationCapIcon,
     sectionKey: 'education',
     title: 'Education',
-    type: INTERNAL_SECTION_TYPES.EDUCATION,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: LinkIcon,
     sectionKey: 'websitesSocialLinks' as const,
     title: 'Links',
-    type: INTERNAL_SECTION_TYPES.WEBSITES_SOCIAL_LINKS,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: SparklesIcon,
     sectionKey: 'skills' as const,
     title: 'Skills',
-    type: INTERNAL_SECTION_TYPES.SKILLS,
     metadata: getDefaultSkillsMetadata(),
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: SlidersHorizontalIcon,
     sectionKey: 'custom' as const,
     title: 'Custom Section',
-    type: INTERNAL_SECTION_TYPES.CUSTOM,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: GuitarIcon,
     sectionKey: 'hobbies' as const,
     title: 'Hobbies',
-    type: INTERNAL_SECTION_TYPES.HOBBIES,
-    containerType: CONTAINER_TYPES.STATIC,
   },
   {
     icon: ContactIcon,
     sectionKey: 'references' as const,
     title: 'References',
-    type: INTERNAL_SECTION_TYPES.REFERENCES,
     metadata: getDefaultReferencesMetadata(),
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: BookOpenTextIcon,
     sectionKey: 'courses' as const,
     title: 'Courses',
-    type: INTERNAL_SECTION_TYPES.COURSES,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
-    itemCountPerContainer: 4,
   },
   {
     icon: BriefcaseBusinessIcon,
     sectionKey: 'internships' as const,
     title: 'Internships',
-    type: INTERNAL_SECTION_TYPES.INTERNSHIPS,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
   {
     icon: LanguagesIcon,
     sectionKey: 'languages' as const,
     title: 'Languages',
-    type: INTERNAL_SECTION_TYPES.LANGUAGES,
-    containerType: CONTAINER_TYPES.COLLAPSIBLE,
   },
 ];
 
@@ -324,11 +304,5 @@ export const OTHER_SECTION_OPTIONS: OtherSectionOption[] = sectionOptions.map(
   })
 );
 
-export const SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER = new Map<
-  SectionType,
-  boolean
->([
-  [INTERNAL_SECTION_TYPES.SUMMARY, true],
-  [INTERNAL_SECTION_TYPES.WORK_EXPERIENCE, true],
-  [INTERNAL_SECTION_TYPES.INTERNSHIPS, true],
-]);
+export const SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER =
+  new Set<SemanticSectionKey>(['summary', 'workExperience', 'internships']);

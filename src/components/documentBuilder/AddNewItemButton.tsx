@@ -2,12 +2,12 @@ import { PlusIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { Button } from '@/components/ui/button';
-import type { DEX_Section } from '@/lib/client-db/clientDbSchema';
+import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface AddNewItemButtonProps {
-  sectionId: DEX_Section['id'];
+  sectionId: SectionId;
 }
 
 export const AddNewItemButton = observer(

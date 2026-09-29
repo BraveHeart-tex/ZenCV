@@ -96,10 +96,9 @@ const option = (
 ) => {
   const definition = sectionDefinitions[key];
   return {
-    type: definition.persistedType,
+    sectionKey: key,
     title: definition.label,
     defaultTitle: definition.label,
-    containerType: definition.expectedContainerType,
     ...(key === 'skills'
       ? {
           metadata: JSON.stringify([
@@ -121,7 +120,7 @@ describe('Builder Document section commands', () => {
     const adapter = model.persistence as InMemoryDocumentPersistence;
     const input = option('courses');
     const persisted = await adapter.addSection(model.id, {
-      type: input.type,
+      type: sectionDefinitions[input.sectionKey].persistedType,
       title: input.title,
       defaultTitle: input.defaultTitle,
       metadata: [],

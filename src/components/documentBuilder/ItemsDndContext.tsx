@@ -16,12 +16,12 @@ import {
 } from '@dnd-kit/sortable';
 import { action } from 'mobx';
 import type React from 'react';
-import type { DEX_Item } from '@/lib/client-db/clientDbSchema';
+import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 
 interface ItemsDndContextProps {
   children: React.ReactNode;
-  items: DEX_Item['id'][];
+  items: number[];
 }
 
 export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
@@ -33,15 +33,15 @@ export const ItemsDndContext = ({ children, items }: ItemsDndContextProps) => {
       return;
     }
 
-    const activeIndex = items.indexOf(activeId as DEX_Item['id']);
-    const overIndex = items.indexOf(overId as DEX_Item['id']);
+    const activeIndex = items.indexOf(Number(activeId));
+    const overIndex = items.indexOf(Number(overId));
 
     if (activeIndex === -1 || overIndex === -1) {
       return;
     }
 
     const newItems = arrayMove(items, activeIndex, overIndex);
-    await builderSession.reorderItems(newItems);
+    await builderSession.reorderItems(newItems as ItemId[]);
   });
 
   const sensors = useSensors(

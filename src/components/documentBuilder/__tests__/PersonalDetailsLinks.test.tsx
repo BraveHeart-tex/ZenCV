@@ -82,7 +82,7 @@ describe('Personal Details Links navigation', () => {
       expect(mocks.scrollItemIntoView).toHaveBeenCalledWith(41)
     );
     expect(mocks.addSection).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'websites-social-links' })
+      expect.objectContaining({ sectionKey: 'websitesSocialLinks' })
     );
   });
 });
