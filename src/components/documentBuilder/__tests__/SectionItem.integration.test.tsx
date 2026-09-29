@@ -264,6 +264,55 @@ describe('document editor integration', () => {
     );
   });
 
+  it('spans the desktop Work Experience container and keeps dates in its grid', () => {
+    const item = builderSession.document?.workExperience.items[0];
+    if (!item) {
+      throw new Error('Expected Work Experience');
+    }
+
+    const { container } = renderItem(item.id);
+    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+
+    const outerGrid = container.querySelector('.grid.grid-cols-2.gap-4.p-4');
+    const form = outerGrid?.firstElementChild;
+    const dates = screen.getByRole('group', { name: 'Employment dates' });
+    expect(form?.classList.contains('lg:col-span-2')).toBe(true);
+    expect(form?.classList.contains('lg:grid-cols-2')).toBe(true);
+    expect(dates.parentElement).toBe(form);
+    expect(dates.classList.contains('col-span-1')).toBe(true);
+    expect(dates.classList.contains('lg:col-span-2')).toBe(true);
+  });
+
+  it('places the Work Experience form in a single-column mobile drawer', async () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === '(max-width: 1024px)',
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    const item = builderSession.document?.workExperience.items[0];
+    if (!item) {
+      throw new Error('Expected Work Experience');
+    }
+
+    renderItem(item.id);
+    fireEvent.click(
+      screen.getByRole('button', { name: /value-role at value-employer/ })
+    );
+
+    const dates = await screen.findByRole('group', {
+      name: 'Employment dates',
+    });
+    const form = dates.parentElement;
+    expect(form?.classList.contains('grid-cols-1')).toBe(true);
+    expect(dates.classList.contains('col-span-1')).toBe(true);
+    expect(screen.getByRole('dialog').contains(form)).toBe(true);
+  });
+
   it('edits and reloads a supported extra Work Experience field', async () => {
     const item = builderSession.document?.workExperience.items[0];
     if (!item) {
