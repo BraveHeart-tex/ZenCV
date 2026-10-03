@@ -4,6 +4,13 @@ import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { showErrorToast } from '@/components/ui/sonner';
 import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -67,19 +74,25 @@ export const AddSectionWidget = observer(() => {
       <div className='space-y-2'>
         <Label htmlFor='additional-resume-section'>Choose a section</Label>
         <div className='flex flex-wrap gap-2'>
-          <select
-            id='additional-resume-section'
+          <Select
             value={selectedOption?.sectionKey ?? ''}
             disabled={adding}
-            onChange={(event) => setSelectedKey(event.target.value)}
-            className='border-input bg-background h-11 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2'
+            onValueChange={setSelectedKey}
           >
-            {availableOptions.map((option) => (
-              <option key={option.sectionKey} value={option.sectionKey}>
-                {option.title}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger
+              id='additional-resume-section'
+              className='h-11 min-w-0 flex-1'
+            >
+              <SelectValue placeholder='Choose a section' />
+            </SelectTrigger>
+            <SelectContent>
+              {availableOptions.map((option) => (
+                <SelectItem key={option.sectionKey} value={option.sectionKey}>
+                  {option.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant='outline'
             className='h-11'

@@ -47,7 +47,9 @@ const ContainerElement = observer(
       'required-one'
     ) {
       return (
-        <section id={getSectionContainerId(sectionId)}>{children}</section>
+        <section id={getSectionContainerId(sectionId)} className='grid gap-2'>
+          {children}
+        </section>
       );
     }
 
