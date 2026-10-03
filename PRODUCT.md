@@ -8,57 +8,62 @@ web
 
 ## Users
 
-ZenCV is primarily for individual job seekers who need to create, customize, and tailor a professional CV for job applications.
+ZenCV primarily serves individual job seekers creating and maintaining resumes for job applications.
 
-The document builder is used primarily on desktop, where users can sustain longer editing sessions and work with the form and live resume preview side by side. Mobile support is a secondary continuity experience for reviewing, making light edits, and exporting while away from a desktop.
+Desktop is the full resume creation and editing experience. Mobile focuses on review, light edits, content corrections, and PDF export rather than reproducing the entire desktop builder.
 
 ## Product Purpose
 
-ZenCV helps people build polished resumes quickly, adapt them to specific job postings, and export them as PDFs. Success means a user can create and maintain application-ready CVs without a subscription, mandatory account, or surrendering control of their resume data.
+Free, open-source, local-first resume builder. No account required. Create, edit, and export your resume to PDF without sending your resume content to a server.
+
+Success means users can maintain application-ready resumes while retaining ownership of their data, without an account, subscription, or dependence on a remote service for core workflows.
 
 ## Positioning
 
-ZenCV is a free, open-source, local-first resume builder. Core document creation and export require no account, while optional account-gated AI assistance helps users tailor content when they explicitly choose to use it.
+Privacy and user control are core product commitments. Resume creation, editing, persistence, and PDF export belong to the local-only core. Core workflows should remain usable offline.
 
 ## Operating Context
 
-Users create one or more resume documents, choose a template or sample-data starting point, edit structured CV sections with a live PDF preview, tailor content to a job posting, and export the result as a PDF. They can back up or transfer their locally stored data through JSON export and import.
+Users create and manage resume documents, choose templates, edit structured content with a live preview, and export PDFs. Desktop supports sustained editing; mobile supports continuity away from the desktop.
+
+Document portability includes explicit backup, restore, and transfer through JSON export and import. Users control when and where their documents leave the browser.
 
 ## Capabilities and Constraints
 
-- Create, rename, copy, search, and delete multiple resume documents.
-- Build resumes from structured personal details, summaries, employment, education, skills, languages, courses, internships, hobbies, references, links, and custom sections.
-- Choose among London, Manhattan, Tokyo, Dubai, and Sydney templates; supported templates also allow accent-color customization.
-- Export resumes to PDF without watermarks or download limits.
-- Store resume documents and settings locally in the browser through IndexedDB.
-- Export and restore local product data as JSON.
-- Use optional, authenticated AI features to analyze job postings, generate or improve summaries, suggest keywords, and generate bullet points.
-- Resume data stays local unless the user explicitly invokes an AI feature. Content selected for an AI operation is processed through the ZenCV Worker and Groq.
-- Core resume building does not require an account. An account is required for AI features.
-- The product is a web application with a desktop-primary builder and responsive mobile continuity for review, light editing, and export.
+- Preserve account-free resume creation, editing, and PDF export.
+- Keep resume content local during core workflows and persist documents in the browser.
+- Preserve offline-capable core workflows, document portability, and user ownership of data.
+- Support multiple resume documents, structured resume sections, template selection, and supported template customization.
+- Preserve the Document Builder's one authoritative document graph. Persisted records are a storage boundary; derived consumers use the Resume Document Snapshot.
+- Persistence must reliably preserve edits without data-loss races during updates, navigation, or document changes.
+- Desktop provides full creation and editing. Mobile prioritizes review, light edits, content corrections, and PDF export.
+- Any future remote functionality must be optional and must not weaken or become a dependency of the local-only core.
+- These are confirmed product requirements, not proof that every implementation path already satisfies them. Implementation verification remains separate from the product record.
 
 ## Brand Commitments
 
 - Product name: ZenCV.
-- The product is free and open source.
-- Product language should be direct, reassuring, and respectful of the stress involved in job hunting.
-- Privacy claims must clearly distinguish local document storage from explicit, opt-in AI processing.
+- Free and open source.
+- Simple, calm, trustworthy, and privacy-focused language.
+- Describe concrete capabilities and privacy boundaries accurately.
+- Avoid aggressive career-optimization messaging, hiring guarantees, and unsupported claims about resume effectiveness.
 
 ## Evidence on Hand
 
-- Five working resume templates and their preview assets are available under `public/templates/`.
-- Product screenshots of the landing page and editor are available under `docs/images/`.
-- The repository and running product demonstrate local document storage, PDF export, JSON backup and restore, template customization, and optional AI-assisted workflows.
-- No testimonials, customer logos, usage metrics, hiring outcomes, or independent ATS-validation evidence are currently established; future work must not fabricate them.
+- Resume template previews are available under `public/templates/`.
+- Product screenshots are available under `docs/images/`; they show existing surfaces and do not independently prove current behavior.
+- `CONTEXT.md` defines the authoritative document domain vocabulary; `docs/adr/` records its architectural decisions.
+- Repository code provides evidence to verify browser persistence, PDF export, and JSON portability.
+- No established testimonials, customer logos, usage metrics, hiring outcomes, or independent ATS-validation evidence. Future work must not fabricate them.
 
 ## Product Principles
 
-1. Keep core resume creation accessible without an account, subscription, or artificial usage limits.
-2. Preserve user control by storing documents locally and making backup and transfer explicit.
-3. Make privacy boundaries understandable, especially when a user chooses an AI-assisted action.
-4. Help users move from blank page to application-ready CV with structured guidance, practical templates, and immediate preview.
-5. Keep exported resumes professional, readable, and suitable for real job applications.
+1. Keep the local-only core free, account-free, and usable offline.
+2. Preserve user ownership through reliable persistence and explicit document portability.
+3. Keep one authoritative document model and prevent data-loss races.
+4. Match workflows to the device: full desktop editing and focused mobile continuity.
+5. Earn trust through accessible interaction, calm language, and accurate privacy claims.
 
 ## Accessibility & Inclusion
 
-ZenCV should support keyboard use, readable contrast, responsive layouts, and reduced-motion preferences. No specific conformance standard or product-specific accommodation requirement has been established.
+Preserve accessibility across desktop and mobile workflows, including keyboard operation, readable contrast, usable responsive layouts, and reduced-motion support. No specific conformance standard or additional accommodation requirement has been established.
