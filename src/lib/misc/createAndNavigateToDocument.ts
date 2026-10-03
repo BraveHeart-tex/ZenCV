@@ -10,7 +10,7 @@ interface CreateAndNavigateToDocumentParams {
   title: string;
   templateType: ResumeTemplate;
   onSuccess?: (documentId: DEX_Document['id']) => void;
-  onError?: () => void;
+  onError?: (message: string) => void;
   selectedPrefillStyle?: PrefilledResumeStyle | null;
 }
 
@@ -21,8 +21,9 @@ export const createAndNavigateToDocument = async ({
   onError,
   selectedPrefillStyle = null,
 }: CreateAndNavigateToDocumentParams) => {
+  let documentId: DEX_Document['id'] | undefined;
   try {
-    const documentId = await createDocument({
+    documentId = await createDocument({
       title,
       templateType,
       selectedPrefillStyle,
@@ -30,26 +31,31 @@ export const createAndNavigateToDocument = async ({
     });
 
     if (!documentId) {
-      showErrorToast(
-        'An error occurred while creating the document. Please try again.'
-      );
+      const message =
+        'Could not create your resume. Your entries are still here. Select Create resume to try again.';
       if (onError) {
-        onError();
+        onError(message);
+      } else {
+        showErrorToast(message);
       }
       return;
     }
 
     await builderSession.initializeStore(documentId);
-    showSuccessToast('Document created successfully.');
+    showSuccessToast('Resume created.');
 
     if (onSuccess) {
       onSuccess(documentId);
     }
   } catch (error) {
-    showErrorToast('An error occurred while creating the document.');
     console.error(error);
+    const message = documentId
+      ? 'Your resume was saved, but could not be opened. Open it from the resume library.'
+      : 'Could not create your resume. Your entries are still here. Select Create resume to try again.';
     if (onError) {
-      onError();
+      onError(message);
+    } else {
+      showErrorToast(message);
     }
   }
 };

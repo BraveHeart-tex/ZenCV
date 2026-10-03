@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
@@ -27,7 +26,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { showErrorToast } from '@/components/ui/sonner';
 import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocument';
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
@@ -37,13 +35,6 @@ import {
   type CreateDocumentFormData,
   createNewDocumentSchema,
 } from '@/lib/validation/createDocument.schema';
-
-const resumeTemplateSelectOptions = Object.keys(INTERNAL_TEMPLATE_TYPES).map(
-  (key) => ({
-    label: key.charAt(0).toUpperCase() + key.slice(1).toLowerCase(),
-    value: INTERNAL_TEMPLATE_TYPES[key as keyof typeof INTERNAL_TEMPLATE_TYPES],
-  })
-);
 
 function TemplatePreviewPopover({
   templateValue,
@@ -98,9 +89,15 @@ function TemplatePreviewPopover({
 
 interface CreateDocumentFormProps {
   setOpen: UseState<boolean>;
+  formId: string;
+  onSubmittingChange: (isSubmitting: boolean) => void;
 }
 
-export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
+export const CreateDocumentForm = ({
+  setOpen,
+  formId,
+  onSubmittingChange,
+}: CreateDocumentFormProps) => {
   const navigate = useNavigate();
   const form = useForm<CreateDocumentFormData>({
     resolver: zodResolver(createNewDocumentSchema),
@@ -110,7 +107,6 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       shouldUseSampleData: false,
     },
   });
-  const isSubmitting = form.formState.isSubmitting;
 
   const onSubmit = async (data: CreateDocumentFormData) => {
     const {
@@ -119,29 +115,40 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
       shouldUseSampleData,
       selectedPrefillStyle,
     } = data;
-    await createAndNavigateToDocument({
-      title: name,
-      templateType: template,
-      selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
-      onSuccess(documentId) {
-        navigate(`/builder/${documentId}`);
-        setOpen(false);
-        form.reset();
-      },
-      onError() {
-        showErrorToast(
-          'Something went wrong while creating the document. Please try again later.'
-        );
-      },
-    });
+    form.clearErrors('root');
+    onSubmittingChange(true);
+    try {
+      await createAndNavigateToDocument({
+        title: name,
+        templateType: template,
+        selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
+        onSuccess(documentId) {
+          navigate(`/builder/${documentId}`);
+          setOpen(false);
+          form.reset();
+        },
+        onError(message) {
+          form.setError('root', { message });
+        },
+      });
+    } finally {
+      onSubmittingChange(false);
+    }
   };
 
   const showSampleData = form.watch('shouldUseSampleData');
   const selectedTemplate = form.watch('template');
+  const template = templateOptionsWithImages.find(
+    (option) => option.value === selectedTemplate
+  );
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+      <form
+        id={formId}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='space-y-5'
+      >
         <FormField
           control={form.control}
           name='title'
@@ -151,9 +158,10 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
               <FormControl>
                 <Input
                   type='text'
+                  className='h-11 md:h-9'
                   maxLength={100}
                   {...field}
-                  placeholder='e.g. ABC Company — Software Engineer'
+                  placeholder='e.g. ABC Company - Software Engineer'
                 />
               </FormControl>
               <FormMessage />
@@ -174,13 +182,32 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Choose a template' />
+                    <SelectTrigger className='h-11 w-full md:h-9'>
+                      <SelectValue placeholder='Choose a template'>
+                        {template?.name}
+                      </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      {resumeTemplateSelectOptions.map((option) => (
+                      {templateOptionsWithImages.map((option) => (
                         <SelectItem value={option.value} key={option.value}>
-                          {option.label}
+                          <span className='flex items-center gap-3'>
+                            <TemplateImage
+                              template={option}
+                              imgProps={{
+                                width: 32,
+                                height: 45,
+                                alt: '',
+                                className:
+                                  'h-[45px] w-8 shrink-0 object-contain',
+                              }}
+                            />
+                            <span className='flex flex-col text-left'>
+                              <span>{option.name}</span>
+                              <span className='text-xs text-muted-foreground'>
+                                {option.layoutDescription}
+                              </span>
+                            </span>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -192,7 +219,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                     type='button'
                     variant='outline'
                     size='sm'
-                    className='shrink-0 h-9 px-2.5 text-xs text-muted-foreground gap-1.5'
+                    className='shrink-0 h-11 md:h-9 px-2.5 text-xs text-muted-foreground gap-1.5'
                   >
                     <img
                       src={
@@ -213,6 +240,29 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
             </FormItem>
           )}
         />
+
+        {template ? (
+          <div className='flex items-center gap-4'>
+            <TemplateImage
+              template={template}
+              imgProps={{
+                width: 72,
+                height: 102,
+                alt: `${template.name} template layout`,
+                className:
+                  'h-[102px] w-[72px] shrink-0 rounded-sm border border-border object-contain',
+              }}
+            />
+            <div className='space-y-1 text-sm'>
+              <p className='font-medium'>
+                {template.name} - {template.layoutDescription}
+              </p>
+              <p className='text-muted-foreground'>
+                You can change the template while editing your resume.
+              </p>
+            </div>
+          </div>
+        ) : null}
 
         <FormField
           control={form.control}
@@ -256,7 +306,7 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
-                    <SelectTrigger className='w-full'>
+                    <SelectTrigger className='h-11 w-full md:h-9'>
                       <SelectValue placeholder='Select sample data type' />
                     </SelectTrigger>
                     <SelectContent>
@@ -274,20 +324,11 @@ export const CreateDocumentForm = ({ setOpen }: CreateDocumentFormProps) => {
           />
         ) : null}
 
-        <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end'>
-          <Button
-            type='button'
-            variant='ghost'
-            onClick={() => setOpen(false)}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type='submit' className='gap-2' disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create resume'}
-            <ArrowRight className='w-4 h-4' />
-          </Button>
-        </div>
+        {form.formState.errors.root?.message ? (
+          <p role='alert' className='text-sm text-destructive'>
+            {form.formState.errors.root.message}
+          </p>
+        ) : null}
       </form>
     </Form>
   );

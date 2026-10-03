@@ -11,6 +11,7 @@ export type TemplateOptionWithVariants = {
   name: string;
   images: TemplateImages;
   description: string;
+  layoutDescription: string;
   tags: string[];
   value: ResumeTemplate;
 };
@@ -18,6 +19,7 @@ export type TemplateOptionWithVariants = {
 export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   {
     name: 'London',
+    layoutDescription: 'Structured sections',
     images: {
       card: '/templates/london-400.webp',
       hover: '/templates/london-700.webp',
@@ -30,6 +32,7 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   },
   {
     name: 'Manhattan',
+    layoutDescription: 'Focused layout',
     images: {
       card: '/templates/manhattan-400.webp',
       hover: '/templates/manhattan-700.webp',
@@ -42,6 +45,7 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   },
   {
     name: 'Tokyo',
+    layoutDescription: 'Dark sidebar',
     images: {
       card: '/templates/tokyo-400.webp',
       hover: '/templates/tokyo-700.webp',
@@ -54,6 +58,7 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   },
   {
     name: 'Dubai',
+    layoutDescription: 'Light sidebar',
     images: {
       card: '/templates/dubai-400.webp',
       hover: '/templates/dubai-700.webp',
@@ -66,6 +71,7 @@ export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   },
   {
     name: 'Sydney',
+    layoutDescription: 'Generous whitespace',
     images: {
       card: '/templates/sydney-400.webp',
       hover: '/templates/sydney-700.webp',

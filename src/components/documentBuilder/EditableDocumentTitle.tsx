@@ -2,7 +2,7 @@ import { PencilIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
+import { showSuccessToast } from '@/components/ui/sonner';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { RenameDocumentDialog } from '../appHome/documents/RenameDocumentDialog';
 import { Button } from '../ui/button';
@@ -16,20 +16,18 @@ export const EditableDocumentTitle = observer(() => {
   const handleRename = action(async (enteredTitle: string) => {
     try {
       if (!document) {
-        return;
+        return false;
       }
       const result = await document.rename(enteredTitle);
       if (!result.success) {
-        showErrorToast(result.error);
-        return;
+        return false;
       }
-      showSuccessToast('Document renamed successfully.');
+      showSuccessToast('Resume renamed.');
       setOpen(false);
+      return true;
     } catch (error) {
       console.error(error);
-      showErrorToast(
-        'An error occurred while renaming the document. Please try again.'
-      );
+      return false;
     }
   });
 
@@ -47,7 +45,7 @@ export const EditableDocumentTitle = observer(() => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                aria-label='Rename document'
+                aria-label='Rename resume'
                 className='size-9 shrink-0'
                 size='icon'
                 variant='ghost'
@@ -58,7 +56,7 @@ export const EditableDocumentTitle = observer(() => {
                 <PencilIcon aria-hidden='true' />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Rename document</TooltipContent>
+            <TooltipContent>Rename resume</TooltipContent>
           </Tooltip>
         }
       />

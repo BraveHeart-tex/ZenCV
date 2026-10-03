@@ -43,18 +43,21 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     event.stopImmediatePropagation();
     confirmDialogStore.showDialog({
       title: 'Delete Resume',
-      message: 'Are you sure you want to delete this resume?',
+      message: `Delete "${document.title}"? This permanently removes it from this browser. You can only restore it from a backup exported before deletion.`,
+      confirmText: 'Delete resume',
       onConfirm: action(async () => {
         try {
           await deleteDocument(document.id);
-          showSuccessToast('Resume deleted successfully.');
+          showSuccessToast('Resume deleted.');
           if (builderSession.document?.id === document.id) {
             builderSession.resetState();
             builderSession.dispose();
           }
         } catch (error) {
           console.error(error);
-          showErrorToast('An error occurred while deleting the resume.');
+          showErrorToast(
+            'Could not delete this resume. Try Delete again from its actions menu.'
+          );
         }
         confirmDialogStore.hideDialog();
       }),
@@ -65,24 +68,26 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     try {
       const result = await renameDocument(document.id, enteredTitle);
       if (!result) {
-        showErrorToast('An error occurred while renaming the resume.');
-        return;
+        return false;
       }
-      showSuccessToast('Resume renamed successfully.');
+      showSuccessToast('Resume renamed.');
       setIsRenameDialogOpen(false);
+      return true;
     } catch (error) {
-      showErrorToast('An error occurred while renaming the resume.');
       console.error(error);
+      return false;
     }
   };
 
   const handleCopyDocument = async () => {
     try {
       await copyDocument(document.id);
-      showSuccessToast('Resume duplicated successfully.');
+      showSuccessToast('Resume duplicated.');
     } catch (error) {
       console.error(error);
-      showErrorToast((error as Error).message);
+      showErrorToast(
+        'Could not duplicate this resume. Try Duplicate again from its actions menu.'
+      );
     }
   };
 
@@ -123,9 +128,6 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
                 <FileText className='h-3 w-3' />
                 {templateName}
               </span>
-              <span className='inline-flex items-center rounded-md border border-border/70 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
-                Local resume
-              </span>
             </div>
           </div>
 
@@ -134,13 +136,13 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
               <Button
                 variant='ghost'
                 className={cn(
-                  'h-11 w-11 shrink-0 p-0 text-muted-foreground/50 lg:h-7 lg:w-7',
-                  'max-md:opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-150',
+                  'h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7',
+                  'opacity-100',
                   'hover:text-foreground hover:bg-muted/60',
                   isOpen && 'opacity-100'
                 )}
               >
-                <span className='sr-only'>Open menu</span>
+                <span className='sr-only'>Actions for {document.title}</span>
                 <MoreHorizontal className='w-4 h-4' />
               </Button>
             </DropdownMenuTrigger>
@@ -149,7 +151,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
                 onSelect={() => navigate(`/builder/${document.id}`)}
               >
                 <FileSymlink className='w-4 h-4 mr-1' />
-                Open in Builder
+                Edit resume
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setIsRenameDialogOpen(true)}>
                 <Pencil className='w-4 h-4 mr-1' />

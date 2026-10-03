@@ -26,6 +26,7 @@ interface ResponsiveDialogProps {
   description?: string;
   trigger?: React.ReactNode;
   footer?: React.ReactNode;
+  autoFocus?: boolean;
 }
 
 export const ResponsiveDialog = ({
@@ -36,6 +37,7 @@ export const ResponsiveDialog = ({
   description,
   footer,
   children,
+  autoFocus = false,
 }: ResponsiveDialogProps) => {
   const isDesktop = useMediaQuery('(min-width: 768px)', false);
 
@@ -60,18 +62,20 @@ export const ResponsiveDialog = ({
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} autoFocus={autoFocus}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent className='max-h-[98%] overflow-hidden px-0 w-full'>
+      <DrawerContent className='max-h-[98%] overflow-clip px-0 w-full'>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        <div className='flex-1 w-full h-full px-4 py-2 overflow-y-auto'>
+        <div className='min-h-0 flex-1 w-full px-4 py-2 overflow-y-auto'>
           {children}
         </div>
         {footer ? (
-          <DrawerFooter className='lg:gap-0 gap-1 px-4'>{footer}</DrawerFooter>
+          <DrawerFooter className='shrink-0 lg:gap-0 gap-1 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]'>
+            {footer}
+          </DrawerFooter>
         ) : null}
       </DrawerContent>
     </Drawer>

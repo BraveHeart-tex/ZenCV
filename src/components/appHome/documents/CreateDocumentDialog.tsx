@@ -1,5 +1,5 @@
-import { FilePlusIcon, PlusIcon } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, FilePlusIcon, PlusIcon } from 'lucide-react';
+import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
@@ -13,6 +13,8 @@ export const CreateDocumentDialog = ({
   triggerVariant = 'default',
 }: CreateDocumentDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const formId = useId();
 
   const renderTrigger = () => {
     if (triggerVariant === 'default') {
@@ -43,7 +45,7 @@ export const CreateDocumentDialog = ({
     if (triggerVariant === 'sidebar') {
       return (
         <SidebarMenuButton variant='outline'>
-          <FilePlusIcon /> Create Resume
+          <FilePlusIcon /> New Resume
         </SidebarMenuButton>
       );
     }
@@ -68,9 +70,40 @@ export const CreateDocumentDialog = ({
       description='Give your resume a title, pick a template, and optionally start with sample data.'
       trigger={renderTrigger()}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(nextOpen) => {
+        if (!isCreating) {
+          setOpen(nextOpen);
+        }
+      }}
+      autoFocus
+      footer={
+        <div className='flex w-full items-center justify-end gap-2'>
+          <Button
+            type='button'
+            variant='outline'
+            className='h-11 md:h-9'
+            onClick={() => setOpen(false)}
+            disabled={isCreating}
+          >
+            Cancel
+          </Button>
+          <Button
+            type='submit'
+            form={formId}
+            className='h-11 gap-2 md:h-9'
+            disabled={isCreating}
+          >
+            {isCreating ? 'Creating...' : 'Create resume'}
+            <ArrowRight className='h-4 w-4' />
+          </Button>
+        </div>
+      }
     >
-      <CreateDocumentForm setOpen={setOpen} />
+      <CreateDocumentForm
+        setOpen={setOpen}
+        formId={formId}
+        onSubmittingChange={setIsCreating}
+      />
     </ResponsiveDialog>
   );
 };

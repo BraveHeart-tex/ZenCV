@@ -1,6 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { FileText, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { clientDb } from '@/lib/client-db/clientDb';
 import { CreateDocumentDialog } from './CreateDocumentDialog';
@@ -12,7 +14,7 @@ export const DocumentsPageClient = () => {
 
   const documents = useLiveQuery(
     async () => {
-      return clientDb.documents.toArray();
+      return clientDb.documents.orderBy('updatedAt').reverse().toArray();
     },
     [],
     null
@@ -54,6 +56,13 @@ export const DocumentsPageClient = () => {
             </p>
           </div>
           <CreateDocumentDialog />
+          <p className='text-sm text-muted-foreground'>
+            Resumes are saved in this browser. Export a backup in Settings to
+            keep a copy or move your work to another browser.
+          </p>
+          <Button asChild variant='link' className='h-11'>
+            <Link to='/settings#data'>Import backup</Link>
+          </Button>
         </div>
       </div>
     );
@@ -94,6 +103,13 @@ export const DocumentsPageClient = () => {
               Try searching with a different term.
             </p>
           </div>
+          <Button
+            variant='outline'
+            className='h-11 lg:h-9'
+            onClick={() => setSearchQuery('')}
+          >
+            Clear search
+          </Button>
         </div>
       ) : (
         <div className='flex min-w-0 flex-col gap-4'>
@@ -106,6 +122,9 @@ export const DocumentsPageClient = () => {
                 {documentCountLabel} stored locally in this browser.
               </p>
             </div>
+            <Button asChild variant='link' className='h-11 shrink-0 lg:h-9'>
+              <Link to='/settings#data'>Back up or import</Link>
+            </Button>
           </div>
 
           <div className='grid grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] gap-4'>

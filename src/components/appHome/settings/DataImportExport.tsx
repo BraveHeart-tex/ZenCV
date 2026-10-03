@@ -105,7 +105,7 @@ export const DataImportExport = observer(() => {
   };
 
   return (
-    <div className='space-y-6'>
+    <div id='data' tabIndex={-1} className='scroll-mt-6 space-y-6'>
       <SettingsSectionHeader
         title='Data'
         description='Export your data as a backup or import it on another device.'

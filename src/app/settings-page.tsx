@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { DataImportExport } from '@/components/appHome/settings/DataImportExport';
 import { EditorPreferences } from '@/components/appHome/settings/EditorPreferences';
 import { GeneralSettings } from '@/components/appHome/settings/GeneralSettings';
@@ -6,6 +8,14 @@ import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
 export function SettingsPage() {
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (hash === '#data') {
+      const section = document.getElementById('data');
+      section?.scrollIntoView({ block: 'start' });
+      section?.focus({ preventScroll: true });
+    }
+  }, [hash]);
   return (
     <SidebarInset>
       <header className='shrink-0 flex items-center h-16 gap-2 border-b px-4'>
