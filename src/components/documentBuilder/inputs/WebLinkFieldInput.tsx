@@ -64,8 +64,15 @@ export const WebLinkFieldInput = observer(
           onChange={handleChange}
           onBlur={handleBlur}
           placeholder='https://example.com'
-          aria-invalid={hasError}
-          aria-describedby={hasError ? errorId : undefined}
+          aria-invalid={hasError || !!field.saveError}
+          aria-describedby={
+            [
+              hasError ? errorId : '',
+              field.saveError ? `${htmlInputId}-save-error` : '',
+            ]
+              .filter(Boolean)
+              .join(' ') || undefined
+          }
           data-1p-ignore='true'
           data-lpignore='true'
           data-protonpass-ignore='true'

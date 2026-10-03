@@ -872,11 +872,15 @@ describe('Semantic Field editing', () => {
     vi.useFakeTimers();
     const { field, item, document } = roleField();
     const values: string[] = [];
-    const stop = autorun(() => values.push(item.editableFields[0].value));
+    const stop = autorun(() =>
+      values.push(
+        `${item.editableFields[0].value}:${field.saveError ? 'failed' : 'ok'}`
+      )
+    );
     field.setDraft('Draft');
     await vi.runAllTimersAsync();
     stop();
-    expect(values).toEqual(['value-role', 'Draft']);
+    expect(values).toEqual(['value-role:ok', 'Draft:ok']);
     expect(document.fieldsById.get(field.id)).toBe(field);
     expect(item.field('role')).toBe(field);
     expect(updateField).not.toHaveBeenCalled();
@@ -900,31 +904,45 @@ describe('Semantic Field editing', () => {
     expect(updateField).toHaveBeenCalledTimes(1);
   });
 
-  it('commits immediately and rolls back to the latest durable value on failure', async () => {
+  it('preserves a failed edit and saves it on explicit retry', async () => {
     vi.mocked(updateField)
       .mockResolvedValueOnce(1)
       .mockRejectedValueOnce(new Error('offline'));
-    const { field } = roleField();
+    const { field, document } = roleField();
     field.setDraft('Saved');
     expect(await field.commit()).toBe(true);
+    expect(document.saveState).toBe('saved');
     field.setDraft('Failed');
+    expect(document.saveState).toBe('saving');
     expect(await field.commit()).toBe(false);
-    expect(field.value).toBe('Saved');
+    expect(field.value).toBe('Failed');
+    expect(field.isDirty).toBe(true);
+    expect(field.saveError).not.toBeNull();
+    expect(document.saveState).toBe('failed');
+    vi.mocked(updateField).mockResolvedValueOnce(1);
+    expect(await field.flush()).toBe(true);
+    expect(field.value).toBe('Failed');
+    expect(field.saveError).toBeNull();
     expect(field.isDirty).toBe(false);
+    expect(document.saveState).toBe('saved');
   });
 
-  it('notifies MobX reactions when a debounced save fails and rolls back', async () => {
+  it('notifies MobX reactions when a debounced save fails without losing the draft', async () => {
     vi.useFakeTimers();
     vi.mocked(updateField).mockRejectedValue(new Error('offline'));
     const { field, item } = roleField();
     const values: string[] = [];
-    const stop = autorun(() => values.push(item.editableFields[0].value));
+    const stop = autorun(() =>
+      values.push(
+        `${item.editableFields[0].value}:${field.saveError ? 'failed' : 'ok'}`
+      )
+    );
 
     field.setDebounced('Unsaved');
     await vi.advanceTimersByTimeAsync(400);
 
-    expect(values).toEqual(['value-role', 'Unsaved', 'value-role']);
-    expect(field.isDirty).toBe(false);
+    expect(values).toEqual(['value-role:ok', 'Unsaved:ok', 'Unsaved:failed']);
+    expect(field.isDirty).toBe(true);
     expect(updateField).toHaveBeenCalledWith(field.id, 'Unsaved');
     stop();
   });
@@ -934,7 +952,8 @@ describe('Semantic Field editing', () => {
     const { field } = roleField();
     field.setDraft('Lost');
     expect(await field.commit()).toBe(false);
-    expect(field.value).toBe('value-role');
+    expect(field.value).toBe('Lost');
+    expect(field.isDirty).toBe(true);
   });
 
   it('preserves newer edits when an older save fails and reports flush failure', async () => {
@@ -956,10 +975,10 @@ describe('Semantic Field editing', () => {
     expect(await older).toBe(false);
     expect(field.value).toBe('Newer');
     expect(await field.flush()).toBe(false);
-    expect(field.value).toBe('value-role');
+    expect(field.value).toBe('Newer');
   });
 
-  it('rolls a failed newer edit back to an older save that completed meanwhile', async () => {
+  it('preserves a failed newer edit when an older save completed meanwhile', async () => {
     let resolveSave: (value: number) => void = () => {};
     vi.mocked(updateField)
       .mockImplementationOnce(
@@ -978,8 +997,8 @@ describe('Semantic Field editing', () => {
     resolveSave(1);
     expect(await older).toBe(true);
     expect(await newer).toBe(false);
-    expect(field.value).toBe('Durable');
-    expect(field.isDirty).toBe(false);
+    expect(field.value).toBe('Failed');
+    expect(field.isDirty).toBe(true);
   });
 
   it('cancels queued writes on disposal while allowing an active write to settle', async () => {
@@ -1003,7 +1022,7 @@ describe('Semantic Field editing', () => {
     expect(updateField).toHaveBeenCalledTimes(1);
   });
 
-  it('rolls back an active failed write after disposal and notifies MobX reactions', async () => {
+  it('does not overwrite draft text when an active write fails after disposal', async () => {
     let rejectSave: (error: Error) => void = () => {};
     vi.mocked(updateField).mockImplementationOnce(
       () =>
@@ -1024,8 +1043,8 @@ describe('Semantic Field editing', () => {
     rejectSave(new Error('offline'));
 
     expect(await active).toBe(false);
-    expect(values).toEqual(['value-role', 'Unsaved', 'value-role']);
-    expect(field.isDirty).toBe(false);
+    expect(values).toEqual(['value-role', 'Unsaved']);
+    expect(field.isDirty).toBe(true);
     stop();
   });
 

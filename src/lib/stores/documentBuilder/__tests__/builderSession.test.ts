@@ -964,7 +964,8 @@ describe('BuilderSession', () => {
     role.setDraft('First attempt');
     expect(await session.prepareNavigation()).toBe(false);
     expect(session.document).not.toBeNull();
-    expect(role.value).toBe('value-role');
+    expect(role.value).toBe('First attempt');
+    expect(session.document?.saveState).toBe('failed');
     persistence.saveFailure = null;
     role.setDraft('Second attempt');
     expect(await session.prepareNavigation()).toBe(true);

@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import type {
   ItemId,
+  SectionId,
   SemanticSectionKey,
 } from '@/lib/builderDocument/builderDocument';
 import type { Nullable, ValueOf } from '@/lib/types/utils.types';
@@ -22,6 +23,16 @@ export class BuilderUIStore {
   fieldRefs: Map<string, Nullable<HTMLElement>> = new Map();
 
   currentView: ValueOf<typeof BUILDER_CURRENT_VIEWS> = 'builder';
+  activeSectionId: SectionId | null = null;
+  editorScrollY = 0;
+
+  setActiveSection(id: SectionId | null) {
+    this.activeSectionId = id;
+  }
+
+  rememberEditorScroll(scrollY: number) {
+    this.editorScrollY = scrollY;
+  }
 
   isMobileTemplateSelectorVisible: boolean = false;
   private readonly isItemOpenForItem = computedFn((id: ItemId) => {
@@ -109,5 +120,7 @@ export class BuilderUIStore {
     this.fieldRefs = new Map();
     this.isMobileTemplateSelectorVisible = false;
     this.currentView = 'builder';
+    this.activeSectionId = null;
+    this.editorScrollY = 0;
   }
 }

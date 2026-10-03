@@ -11,6 +11,8 @@ interface RichTextEditorProps {
   ref?: Ref<HTMLDivElement>;
   id?: string;
   ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
+  ariaInvalid?: boolean;
   footer: React.ReactNode;
 }
 
@@ -28,6 +30,8 @@ export const RichTextEditor = ({
   ref,
   id,
   ariaLabelledBy,
+  ariaDescribedBy,
+  ariaInvalid,
   footer,
 }: RichTextEditorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +54,9 @@ export const RichTextEditor = ({
       attributes: {
         ...(id ? { id } : {}),
         ...(ariaLabelledBy ? { 'aria-labelledby': ariaLabelledBy } : {}),
+        ...(ariaDescribedBy ? { 'aria-describedby': ariaDescribedBy } : {}),
+        'aria-invalid': String(ariaInvalid ?? false),
+        role: 'textbox',
         'aria-multiline': 'true',
       },
     },

@@ -2,7 +2,6 @@ import { ChevronDownIcon, LightbulbIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
 import { ResumeScoreBadge } from '@/components/documentBuilder/resumeScore/ResumeScoreBadge';
-import { ResumeScoreProgressBar } from '@/components/documentBuilder/resumeScore/ResumeScoreProgressBar';
 import { ResumeScoreSuggestionContent } from '@/components/documentBuilder/resumeScore/ResumeScoreSuggestionContent';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +26,7 @@ export const ImproveResumeWidget = observer(() => {
           className='hover:bg-muted/60 h-11 w-full justify-start px-3'
         >
           <LightbulbIcon aria-hidden='true' className='text-muted-foreground' />
-          <span className='font-medium'>Resume guidance</span>
+          <span className='font-medium'>Resume checks</span>
           <span className='ml-auto'>
             <ResumeScoreBadge showLabel={false} />
           </span>
@@ -43,12 +42,11 @@ export const ImproveResumeWidget = observer(() => {
 
       <CollapsibleContent>
         <div className='space-y-4 px-3 pb-4 pt-1'>
-          <div className='space-y-2'>
-            <div className='flex items-center justify-between gap-3'>
-              <ResumeScoreBadge />
-            </div>
-            <ResumeScoreProgressBar />
-          </div>
+          <p className='text-muted-foreground text-sm leading-6'>
+            Optional checks for this document. They do not measure resume
+            quality or predict hiring outcomes. Include only what fits your
+            experience.
+          </p>
           <ResumeScoreSuggestionContent setOpen={setOpen} />
         </div>
       </CollapsibleContent>

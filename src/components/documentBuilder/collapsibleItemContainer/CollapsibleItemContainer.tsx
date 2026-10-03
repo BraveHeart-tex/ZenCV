@@ -36,6 +36,7 @@ import { userSettingsStore } from '@/lib/stores/userSettingsStore';
 import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import { CollapsibleItemHeader } from './CollapsibleItemHeader';
 import { CollapsibleItemMobileContent } from './CollapsibleItemMobileContent';
+import { getCollapsibleItemContent } from './getCollapsibleItemContent';
 
 const itemContentTransition = {
   opacity: { duration: 0.14, ease: [0.23, 1, 0.32, 1] },
@@ -51,6 +52,13 @@ export const CollapsibleSectionItemContainer = observer(
   ({ children, itemId }: CollapsibleSectionItemContainerProps) => {
     const isMobileOrTablet = useMedia('(max-width: 1024px)', false);
     const open = builderSession.UIStore.isItemOpen(itemId);
+    const entryTitle = getCollapsibleItemContent(itemId).title;
+    const entryItem = builderSession.getItem(itemId);
+    const entrySection = entryItem
+      ? builderSession.getSection(entryItem.sectionId)
+      : undefined;
+    const entryNumber = (entrySection?.itemIds.indexOf(itemId) ?? 0) + 1;
+    const entryLabel = `${entryTitle}, ${entrySection?.title ?? 'entry'} ${entryNumber}`;
 
     const {
       attributes,
@@ -135,8 +143,8 @@ export const CollapsibleSectionItemContainer = observer(
               <Button
                 variant='ghost'
                 size='icon'
-                aria-label='Drag entry'
-                className='cursor-grab touch-none w-8 h-8'
+                aria-label={`Drag ${entryLabel}`}
+                className='cursor-grab touch-none size-11'
                 {...attributes}
                 {...listeners}
               >
@@ -150,8 +158,8 @@ export const CollapsibleSectionItemContainer = observer(
                   <Button
                     variant='ghost'
                     size='icon'
-                    aria-label='Drag entry'
-                    className='absolute -left-7 top-4.75 z-10 h-8 w-8 cursor-grab text-muted-foreground/70 transition-[background-color,color,opacity] duration-150 ease-out hover:text-foreground lg:-left-8 lg:opacity-60 lg:hover:opacity-100'
+                    aria-label={`Drag ${entryLabel}`}
+                    className='absolute -left-7 top-4 z-10 h-9 w-9 cursor-grab text-muted-foreground/70 transition-[background-color,color,opacity] duration-150 ease-out hover:text-foreground lg:-left-8 lg:opacity-60 lg:hover:opacity-100'
                     {...attributes}
                     {...listeners}
                   >
@@ -172,7 +180,11 @@ export const CollapsibleSectionItemContainer = observer(
               <div className='group flex items-center justify-between w-full h-full'>
                 <Button
                   variant='ghost'
-                  className='hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent'
+                  className={cn(
+                    'hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent',
+                    isMobileOrTablet && 'pl-12'
+                  )}
+                  aria-expanded={open}
                   onClick={() => {
                     if (isDragging || isSorting || isOver) {
                       return;
@@ -184,7 +196,10 @@ export const CollapsibleSectionItemContainer = observer(
                 </Button>
                 {isMobileOrTablet ? (
                   <Popover>
-                    <PopoverTrigger aria-label='Open entry actions'>
+                    <PopoverTrigger
+                      aria-label={`Open actions for ${entryLabel}`}
+                      className='flex size-11 shrink-0 items-center justify-center'
+                    >
                       <EllipsisIcon className='group text-muted-foreground mr-2 transition-all' />
                     </PopoverTrigger>
                     <PopoverContent className='p-0'>
@@ -217,7 +232,9 @@ export const CollapsibleSectionItemContainer = observer(
                   <Button
                     variant='ghost'
                     size='icon'
-                    aria-label={open ? 'Collapse entry' : 'Expand entry'}
+                    aria-label={`${open ? 'Collapse' : 'Expand'} entry: ${entryLabel}`}
+                    aria-expanded={open}
+                    tabIndex={-1}
                     onClick={() => builderSession.UIStore.toggleItem(itemId)}
                     className={cn(
                       'mr-2 group-hover:text-primary text-muted-foreground transition-all',
@@ -262,7 +279,7 @@ export const CollapsibleSectionItemContainer = observer(
                     onClick={handleDeleteItemClick}
                     size='icon'
                     variant='ghost'
-                    aria-label='Delete entry'
+                    aria-label={`Delete ${entryLabel}`}
                   >
                     <TrashIcon />
                   </Button>

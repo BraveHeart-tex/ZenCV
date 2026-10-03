@@ -24,6 +24,7 @@ class PdfViewerStore implements PdfViewerState {
   previousRenderValue: string | null = null;
   pdfDimensions: { width: number; height: number } | null = null;
   rendering: boolean = false;
+  zoom = 1;
 
   constructor() {
     makeAutoObservable(this);
@@ -31,6 +32,10 @@ class PdfViewerStore implements PdfViewerState {
 
   setCurrentPage = (currentPage: number) => {
     this.currentPage = currentPage;
+  };
+
+  setZoom = (zoom: number) => {
+    this.zoom = Math.min(3, Math.max(1, zoom));
   };
 
   setNumberOfPages = (numberOfPages: number) => {
@@ -49,6 +54,9 @@ class PdfViewerStore implements PdfViewerState {
     this.numberOfPages = 0;
     this.currentPage = 1;
     this.previousRenderValue = null;
+    this.pdfDimensions = null;
+    this.zoom = 1;
+    this.rendering = false;
   };
 }
 

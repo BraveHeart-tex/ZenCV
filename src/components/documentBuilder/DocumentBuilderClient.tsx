@@ -1,7 +1,9 @@
 import { ArrowLeftIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
+import { useLayoutEffect } from 'react';
 import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget';
 import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
+import { DocumentSectionNavigation } from '@/components/documentBuilder/DocumentSectionNavigation';
 import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,6 +25,20 @@ type DocumentBuilderClientProps = Readonly<{
 export const DocumentBuilderClient = observer(
   ({ onReturnToDocuments }: DocumentBuilderClientProps) => {
     const view = builderSession.UIStore.currentView;
+
+    useLayoutEffect(() => {
+      if (view !== BUILDER_CURRENT_VIEWS.BUILDER) {
+        return;
+      }
+      window.scrollTo({
+        top: builderSession.UIStore.editorScrollY,
+        behavior: 'instant',
+      });
+      const rememberPosition = () =>
+        builderSession.UIStore.rememberEditorScroll(window.scrollY);
+      window.addEventListener('scroll', rememberPosition, { passive: true });
+      return () => window.removeEventListener('scroll', rememberPosition);
+    }, [view]);
 
     const handleBack = () => {
       onReturnToDocuments();
@@ -57,6 +73,7 @@ export const DocumentBuilderClient = observer(
               <DocumentBuilderHeader />
               <DocumentBuilderSettingsWidget />
             </div>
+            <DocumentSectionNavigation />
           </div>
 
           <div className='mx-auto mt-4 max-w-2xl md:mt-5'>

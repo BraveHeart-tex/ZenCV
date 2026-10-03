@@ -125,7 +125,7 @@ export class SemanticField<
   #version = 0;
   #timer: ReturnType<typeof setTimeout> | null = null;
   #saveTail: Promise<void> = Promise.resolve();
-  #pendingCount = 0;
+  private pendingCount = 0;
   #lastQueued: { version: number; promise: Promise<boolean> } | null = null;
   #disposed = false;
   readonly #persistence: DocumentPersistence;
@@ -155,11 +155,13 @@ export class SemanticField<
     >;
     this.value = record.value;
     this.persistedValue = record.value;
-    makeObservable<this, 'persistedValue'>(this, {
+    makeObservable<this, 'persistedValue' | 'pendingCount'>(this, {
       value: observable,
       saveError: observable,
       persistedValue: observable,
       isDirty: computed,
+      isSaving: computed,
+      pendingCount: observable,
       setDraft: action,
       setDebounced: action,
       rollback: action,
@@ -176,6 +178,10 @@ export class SemanticField<
 
   get isDirty(): boolean {
     return this.value !== this.persistedValue;
+  }
+
+  get isSaving(): boolean {
+    return this.pendingCount > 0;
   }
 
   setDraft(value: string): void {
@@ -210,7 +216,7 @@ export class SemanticField<
     if (this.#lastQueued?.version === this.#version) {
       return this.#lastQueued.promise;
     }
-    if (!this.isDirty && this.#pendingCount === 0) {
+    if (!this.isDirty && this.pendingCount === 0) {
       return Promise.resolve(true);
     }
     return this.#queueSave(this.#version, this.value);
@@ -221,7 +227,7 @@ export class SemanticField<
     this.#cancelTimer();
     this.value = this.persistedValue;
     this.#version += 1;
-    if (this.#pendingCount === 0) {
+    if (this.pendingCount === 0) {
       return Promise.resolve(true);
     }
     return this.#queueSave(this.#version, this.value);
@@ -252,7 +258,9 @@ export class SemanticField<
     if (this.#lastQueued?.version === version) {
       return this.#lastQueued.promise;
     }
-    this.#pendingCount += 1;
+    runInAction(() => {
+      this.pendingCount += 1;
+    });
     const promise = this.#saveTail.then(async () => {
       if (this.#disposed) {
         return false;
@@ -268,20 +276,25 @@ export class SemanticField<
         }
         runInAction(() => {
           this.persistedValue = value;
+          if (this.#version === version) {
+            this.saveError = null;
+          }
         });
         return true;
       } catch {
         runInAction(() => {
           if (this.#version === version) {
-            this.value = this.persistedValue;
-            this.saveError = 'Could not save this change. Please try again.';
+            this.saveError =
+              'This edit has not been saved. Your text is still here. Try saving again.';
           }
         });
         return false;
       }
     });
     this.#saveTail = promise.then(() => {
-      this.#pendingCount -= 1;
+      runInAction(() => {
+        this.pendingCount -= 1;
+      });
       if (this.#lastQueued?.promise === promise) {
         this.#lastQueued = null;
       }
@@ -577,6 +590,8 @@ export class BuilderDocumentModel {
     deep: false,
   });
   readonly sectionIds: IObservableArray<SectionId>;
+  private pendingCommands = 0;
+  commandSaveError: string | null = null;
   #commandTail: Promise<void> = Promise.resolve();
   #acceptingCommands = true;
   #discarded = false;
@@ -615,11 +630,25 @@ export class BuilderDocumentModel {
     this.updatedAt = record.updatedAt;
     this.jobPostingId = record.jobPostingId;
     this.sectionIds = observable.array([...sectionIds], { deep: false });
-    makeObservable(this, {
+    makeObservable<this, 'pendingCommands'>(this, {
+      pendingCommands: observable,
+      commandSaveError: observable,
+      saveState: computed,
       title: observable,
       templateType: observable,
       templateSettings: observable.ref,
     });
+  }
+
+  get saveState(): 'saving' | 'saved' | 'failed' {
+    const fields = [...this.fieldsById.values()];
+    if (this.pendingCommands > 0 || fields.some((field) => field.isSaving)) {
+      return 'saving';
+    }
+    if (this.commandSaveError || fields.some((field) => field.saveError)) {
+      return 'failed';
+    }
+    return fields.some((field) => field.isDirty) ? 'saving' : 'saved';
   }
 
   get sections(): readonly BuilderSectionModel[] {
@@ -688,28 +717,46 @@ export class BuilderDocumentModel {
     if (!this.#acceptingCommands) {
       return Promise.reject(new Error('Builder Document is closing'));
     }
+    runInAction(() => {
+      this.pendingCommands += 1;
+      this.commandSaveError = null;
+    });
     const result = this.#commandTail.then(() => {
       if (this.#discarded) {
         throw new Error('Builder Document was discarded');
       }
       return command();
     });
-    this.#commandTail = result.then(
-      (value) => {
-        if (
-          value === false ||
-          (typeof value === 'object' &&
-            value !== null &&
-            'success' in value &&
-            value.success === false)
-        ) {
+    this.#commandTail = result
+      .then(
+        (value) => {
+          if (
+            value === false ||
+            (typeof value === 'object' &&
+              value !== null &&
+              'success' in value &&
+              value.success === false)
+          ) {
+            this.#commandFailed = true;
+            runInAction(() => {
+              this.commandSaveError =
+                'The last action was not saved. Please try that action again.';
+            });
+          }
+        },
+        () => {
           this.#commandFailed = true;
+          runInAction(() => {
+            this.commandSaveError =
+              'The last action was not saved. Please try that action again.';
+          });
         }
-      },
-      () => {
-        this.#commandFailed = true;
-      }
-    );
+      )
+      .then(() => {
+        runInAction(() => {
+          this.pendingCommands -= 1;
+        });
+      });
     return result;
   }
 

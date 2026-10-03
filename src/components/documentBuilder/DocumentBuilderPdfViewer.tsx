@@ -28,7 +28,8 @@ export const DocumentBuilderPdfViewer = observer(
   }: DocumentBuilderPdfViewerProps) => {
     const currentPage = pdfViewerStore.currentPage;
     const previousRenderValue = pdfViewerStore.previousRenderValue;
-    const containerRef = useRef<HTMLDivElement>(null);
+    const zoom = pdfViewerStore.zoom;
+    const containerRef = useRef<HTMLElement>(null);
     const [containerDimensions, setContainerDimensions] = useState({
       width: 0,
       height: 0,
@@ -44,8 +45,10 @@ export const DocumentBuilderPdfViewer = observer(
       const element = containerRef.current;
 
       const updateDimensions = () => {
-        const { width, height } = element.getBoundingClientRect();
-        setContainerDimensions({ width, height });
+        setContainerDimensions({
+          width: element.clientWidth,
+          height: element.clientHeight,
+        });
       };
 
       const observer = new ResizeObserver(updateDimensions);
@@ -59,7 +62,7 @@ export const DocumentBuilderPdfViewer = observer(
     const pdfDimensions = useMemo(() => {
       const aspectRatio = Math.SQRT2; // A4 Page Aspect Ratio
       const maxWidth = containerDimensions.width * 0.98; // 98 % of the container width
-      const maxHeight = containerDimensions.height;
+      const maxHeight = Math.max(0, containerDimensions.height - 4);
 
       let width = maxWidth;
       let height = width * aspectRatio;
@@ -110,7 +113,8 @@ export const DocumentBuilderPdfViewer = observer(
         console.error('DocumentBuilderPdfViewer rendering error', error);
         setRenderError(true);
         showErrorToast('Preview could not refresh.', {
-          description: 'Your edits are still saved locally. Try again shortly.',
+          description:
+            'Your edits remain in the editor. Try refreshing the preview.',
         });
         return null;
       }
@@ -136,9 +140,12 @@ export const DocumentBuilderPdfViewer = observer(
     const shouldShowPreviousDocument = !isFirstRendering && isBusy;
 
     return (
-      <div
+      <section
         ref={containerRef}
-        className={'relative h-full overflow-hidden w-full'}
+        className='relative h-full w-full overflow-auto overscroll-contain'
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: This scroll region needs keyboard scrolling when zoomed.
+        tabIndex={0}
+        aria-label='PDF preview. Use the zoom controls to enlarge the page and scroll to read it.'
       >
         {shouldShowLoader ? <PreviewSkeleton /> : null}
         {renderError && !render.loading ? (
@@ -146,8 +153,7 @@ export const DocumentBuilderPdfViewer = observer(
             <div className='bg-background max-w-sm rounded-lg border p-4 text-center shadow-lg'>
               <p className='font-medium'>Preview could not refresh</p>
               <p className='text-muted-foreground mt-1 text-sm'>
-                Your edits are still saved locally. Try regenerating the
-                preview.
+                Your edits remain in the editor. Try regenerating the preview.
               </p>
               <Button
                 className='mt-4'
@@ -161,51 +167,89 @@ export const DocumentBuilderPdfViewer = observer(
           </div>
         ) : null}
         {previousRenderValue && shouldShowPreviousDocument ? (
-          <Document
-            key={previousRenderValue}
-            className='previous-document absolute inset-0 flex h-full items-center justify-center opacity-50 transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
-            file={previousRenderValue}
-            loading={null}
+          <div
+            className='absolute top-0 left-0'
+            style={{
+              width:
+                zoom === 1
+                  ? '100%'
+                  : Math.max(
+                      containerDimensions.width,
+                      pdfDimensions.pdfWidth * zoom
+                    ),
+              height:
+                zoom === 1
+                  ? '100%'
+                  : Math.max(
+                      containerDimensions.height,
+                      pdfDimensions.pdfHeight * zoom
+                    ),
+            }}
           >
-            <Page
-              key={currentPage}
-              pageNumber={currentPage}
-              renderAnnotationLayer={renderAnnotationLayer}
-              renderTextLayer={renderTextLayer}
-              width={pdfDimensions.pdfWidth}
-              height={pdfDimensions.pdfHeight}
+            <Document
+              key={previousRenderValue}
+              className='previous-document flex h-full w-full items-center justify-center opacity-50 transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
+              file={previousRenderValue}
               loading={null}
-              className='border shadow-sm'
-            />
-          </Document>
+            >
+              <Page
+                key={currentPage}
+                pageNumber={currentPage}
+                renderAnnotationLayer={renderAnnotationLayer}
+                renderTextLayer={renderTextLayer}
+                width={pdfDimensions.pdfWidth * zoom}
+                loading={null}
+                className='border shadow-sm'
+              />
+            </Document>
+          </div>
         ) : null}
 
         {render.value && !render.loading && (
-          <Document
-            key={render.value}
-            className={
-              'absolute inset-0 flex h-full items-center justify-center transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
-            }
-            file={render.value}
-            loading={null}
-            onLoadSuccess={onDocumentLoad}
+          <div
+            className='absolute top-0 left-0'
+            style={{
+              width:
+                zoom === 1
+                  ? '100%'
+                  : Math.max(
+                      containerDimensions.width,
+                      pdfDimensions.pdfWidth * zoom
+                    ),
+              height:
+                zoom === 1
+                  ? '100%'
+                  : Math.max(
+                      containerDimensions.height,
+                      pdfDimensions.pdfHeight * zoom
+                    ),
+            }}
           >
-            <Page
-              key={currentPage}
-              renderAnnotationLayer={renderAnnotationLayer}
-              renderTextLayer={renderTextLayer}
-              pageNumber={currentPage}
-              width={pdfDimensions.pdfWidth}
-              height={pdfDimensions.pdfHeight}
+            <Document
+              key={render.value}
+              className={
+                'flex h-full w-full items-center justify-center transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
+              }
+              file={render.value}
               loading={null}
-              className='border shadow-sm'
-              onRenderSuccess={() => {
-                pdfViewerStore.setPreviousRenderValue(render.value as string);
-              }}
-            />
-          </Document>
+              onLoadSuccess={onDocumentLoad}
+            >
+              <Page
+                key={currentPage}
+                renderAnnotationLayer={renderAnnotationLayer}
+                renderTextLayer={renderTextLayer}
+                pageNumber={currentPage}
+                width={pdfDimensions.pdfWidth * zoom}
+                loading={null}
+                className='border shadow-sm'
+                onRenderSuccess={() => {
+                  pdfViewerStore.setPreviousRenderValue(render.value as string);
+                }}
+              />
+            </Document>
+          </div>
         )}
-      </div>
+      </section>
     );
   }
 );

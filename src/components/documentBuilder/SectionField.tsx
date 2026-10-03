@@ -67,6 +67,10 @@ export const SectionField = observer((props: SectionFieldProps) => {
             id={htmlInputId}
             ref={setFieldRef}
             type='text'
+            aria-invalid={!!field.saveError}
+            aria-describedby={
+              field.saveError ? `${htmlInputId}-save-error` : undefined
+            }
             value={field.value}
             onChange={handleInputChange}
             placeholder={field.definition.placeholder}
@@ -119,6 +123,10 @@ export const SectionField = observer((props: SectionFieldProps) => {
           <Textarea
             ref={setFieldRef}
             id={htmlInputId}
+            aria-invalid={!!field.saveError}
+            aria-describedby={
+              field.saveError ? `${htmlInputId}-save-error` : undefined
+            }
             value={field.value}
             onChange={handleInputChange}
             placeholder={field.definition.placeholder}
@@ -140,7 +148,10 @@ export const SectionField = observer((props: SectionFieldProps) => {
       )}
     >
       {renderInput()}
-      <FieldPersistenceError field={field} />
+      {field.definition.control === 'text' ||
+      field.definition.control === 'textarea' ? (
+        <FieldPersistenceError field={field} />
+      ) : null}
     </div>
   );
 });

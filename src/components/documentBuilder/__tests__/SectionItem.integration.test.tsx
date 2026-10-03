@@ -203,7 +203,7 @@ describe('document editor integration', () => {
     await builderSession.load(records.document.id);
 
     const editor = renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     const start = screen.getByLabelText('Start Date');
     const end = screen.getByLabelText('End Date');
     expect(start.closest('.col-span-full')).toBe(end.closest('.col-span-full'));
@@ -221,7 +221,7 @@ describe('document editor integration', () => {
     editor.unmount();
     await builderSession.load(records.document.id);
     renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     expect(screen.getByLabelText('Start Date')).toHaveProperty(
       'value',
       'Jan 2024'
@@ -235,7 +235,7 @@ describe('document editor integration', () => {
     }
 
     const editor = renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     expect(
       screen.getByText('Employment dates', { selector: 'legend' })
     ).toBeTruthy();
@@ -257,7 +257,7 @@ describe('document editor integration', () => {
 
     await builderSession.load(records.document.id);
     renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     expect(screen.getByLabelText('Job Title')).toHaveProperty(
       'value',
       'Staff Engineer'
@@ -271,7 +271,7 @@ describe('document editor integration', () => {
     }
 
     const { container } = renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
 
     const outerGrid = container.querySelector('.grid.grid-cols-2.gap-4.p-4');
     const form = outerGrid?.firstElementChild;
@@ -301,7 +301,7 @@ describe('document editor integration', () => {
 
     renderItem(item.id);
     fireEvent.click(
-      screen.getByRole('button', { name: /value-role at value-employer/ })
+      screen.getByRole('button', { name: /^value-role at value-employer/ })
     );
 
     const dates = await screen.findByRole('group', {
@@ -329,7 +329,7 @@ describe('document editor integration', () => {
     await builderSession.load(records.document.id);
 
     const editor = renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     expect(screen.getByLabelText('Job Title')).toBeTruthy();
     expect(screen.queryByLabelText('Legacy note')).toBeNull();
     fireEvent.click(
@@ -346,7 +346,7 @@ describe('document editor integration', () => {
     editor.unmount();
     await builderSession.load(records.document.id);
     renderItem(item.id);
-    fireEvent.click(screen.getByRole('button', { name: 'Expand entry' }));
+    fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
     expect(screen.getByLabelText('Legacy note')).toHaveProperty(
       'value',
       'Updated note'

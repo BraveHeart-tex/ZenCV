@@ -77,7 +77,7 @@ export const EditableSectionTitle = observer(
             variant='outline'
             size='icon'
             aria-label={`Drag ${section.title} section`}
-            className='cursor-grab touch-none z-10 w-8 h-8'
+            className='cursor-grab touch-none z-10 size-11 md:size-9'
             {...attributes}
             {...listeners}
           >
@@ -86,6 +86,7 @@ export const EditableSectionTitle = observer(
         )}
         <h2
           id={getSectionTitleId(sectionId)}
+          tabIndex={-1}
           className='scroll-m-20 text-xl font-semibold tracking-tight'
         >
           {section.title}

@@ -1,4 +1,5 @@
 import { observer } from 'mobx-react-lite';
+import { DocumentSaveStatus } from '@/components/documentBuilder/DocumentSaveStatus';
 import { EditableDocumentTitle } from '@/components/documentBuilder/EditableDocumentTitle';
 import { Skeleton } from '@/components/ui/skeleton';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -14,6 +15,7 @@ export const DocumentBuilderHeader = observer(() => {
           <Skeleton className='w-9 h-9 rounded-md' />
         </div>
       )}
+      <DocumentSaveStatus />
     </header>
   );
 });

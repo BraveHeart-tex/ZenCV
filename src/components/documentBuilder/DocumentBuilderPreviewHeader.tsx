@@ -14,35 +14,31 @@ export const DocumentBuilderPreviewHeader = observer(() => {
   const previousRenderValue = pdfViewerStore.previousRenderValue;
 
   return (
-    <div
-      className={
-        'flex items-center justify-between xl:justify-end mb-2 mx-auto w-full'
-      }
-      style={{
-        width: pdfViewerStore.pdfDimensions?.width ?? '75%',
-      }}
-    >
+    <div className='mx-auto flex w-full items-center justify-between gap-2'>
       <Button
         className={cn('xl:hidden', view === 'preview' && 'flex xl:hidden')}
         variant='outline'
+        aria-label='Back to editor'
         onClick={action(() => {
           builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
         })}
       >
-        <ArrowLeftIcon />
+        <ArrowLeftIcon aria-hidden='true' />
+        <span>Edit</span>
       </Button>
       <Button
         onClick={action(async () => {
           builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.TEMPLATES;
         })}
-        className='hover:bg-primary/5 dark:hover:bg-primary/10 sm:mx-0 lg:mr-auto items-center gap-2 px-1 mx-auto'
+        className='text-muted-foreground min-w-0 gap-2 px-2 xl:mr-auto'
         variant='ghost'
       >
-        <LayoutGridIcon />
-        View in Template Gallery
+        <LayoutGridIcon aria-hidden='true' />
+        Templates
       </Button>
       <Button
         className='self-end'
+        aria-label='Download PDF'
         disabled={!previousRenderValue || pdfViewerStore.rendering}
         onClick={() =>
           downloadPDF({
@@ -51,8 +47,10 @@ export const DocumentBuilderPreviewHeader = observer(() => {
           })
         }
       >
-        <DownloadIcon className='md:hidden' />
-        <span className='md:inline hidden'>Download PDF</span>
+        <DownloadIcon aria-hidden='true' />
+        <span>
+          Download<span className='hidden md:inline'> PDF</span>
+        </span>
       </Button>
     </div>
   );

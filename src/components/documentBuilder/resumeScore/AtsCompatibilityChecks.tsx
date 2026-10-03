@@ -11,7 +11,7 @@ export const AtsCompatibilityChecks = observer(() => {
   }
 
   return (
-    <div className='space-y-4 py-4'>
+    <div className='space-y-3'>
       <div className='space-y-1'>
         <SuggestionGroupHeading>Resume checks</SuggestionGroupHeading>
         <p className='text-muted-foreground text-sm'>
@@ -22,20 +22,25 @@ export const AtsCompatibilityChecks = observer(() => {
 
       <div className='grid gap-2'>
         {atsCompatibility.checks.map((check) => (
-          <div
-            key={check.id}
-            className='bg-muted/40 flex items-center gap-3 rounded-md border p-3'
-          >
+          <div key={check.id} className='flex items-start gap-3 py-1.5'>
             {check.pass ? (
               <CheckCircle2Icon
-                className='text-emerald-600 shrink-0'
+                aria-hidden='true'
+                className='text-muted-foreground mt-0.5 shrink-0'
                 size={18}
               />
             ) : (
-              <CircleAlertIcon className='text-amber-600 shrink-0' size={18} />
+              <CircleAlertIcon
+                aria-hidden='true'
+                className='text-muted-foreground mt-0.5 shrink-0'
+                size={18}
+              />
             )}
             <div className='flex-1'>
-              <p className='text-sm font-medium'>{check.label}</p>
+              <p className='text-sm'>{check.label}</p>
+              <span className='text-muted-foreground text-xs'>
+                {check.pass ? 'Passed' : 'Review suggested'}
+              </span>
             </div>
           </div>
         ))}

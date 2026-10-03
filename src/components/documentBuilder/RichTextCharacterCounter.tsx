@@ -1,55 +1,20 @@
 import { observer } from 'mobx-react-lite';
-import type { ComponentProps } from 'react';
-import { SmoothEmotionIcon } from '@/components/misc/SmoothEmotionIcon';
 import type { ItemId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { SECTIONS_WITH_RICH_TEXT_CHARACTER_COUNTER } from '@/lib/stores/documentBuilder/documentBuilder.constants';
-import { cn, removeHTMLTags } from '@/lib/utils/stringUtils';
-
-interface RichTextCharacterCounterProps {
-  enabled: boolean;
-  fieldValue: string;
-  itemId: ItemId;
-}
-
-type EmotionIconExpression = ComponentProps<
-  typeof SmoothEmotionIcon
->['expression'];
-
-interface EmotionRange {
-  expression: EmotionIconExpression;
-  min: number;
-  max: number;
-}
-
-const summaryEmotionRanges: EmotionRange[] = [
-  { expression: 'sad', min: 0, max: 99 },
-  { expression: 'neutral', min: 100, max: 398 },
-  { expression: 'happy', min: 399, max: 609 },
-  { expression: 'neutral', min: 610, max: Infinity },
-];
-
-const workExperienceEmotionRanges: EmotionRange[] = [
-  { expression: 'sad', min: 0, max: 99 },
-  { expression: 'neutral', min: 100, max: 198 },
-  { expression: 'happy', min: 199, max: Infinity },
-];
-
-const getExpression = (
-  value: string,
-  ranges: EmotionRange[]
-): EmotionIconExpression => {
-  const length = value.trim().length;
-  const found = ranges.find(
-    (range) => length >= range.min && length <= range.max
-  );
-  return found ? found.expression : 'neutral';
-};
+import { removeHTMLTags } from '@/lib/utils/stringUtils';
 
 export const RichTextCharacterCounter = observer(
-  ({ enabled, fieldValue, itemId }: RichTextCharacterCounterProps) => {
+  ({
+    enabled,
+    fieldValue,
+    itemId,
+  }: {
+    enabled: boolean;
+    fieldValue: string;
+    itemId: ItemId;
+  }) => {
     const sectionKey = builderSession.getItem(itemId)?.sectionKey;
-
     if (
       !enabled ||
       !sectionKey ||
@@ -57,76 +22,17 @@ export const RichTextCharacterCounter = observer(
     ) {
       return null;
     }
-
-    const trimmedValue = removeHTMLTags(fieldValue);
-
-    const renderCounter = () => {
-      if (sectionKey === 'summary') {
-        return (
-          <div className='flex items-center justify-between w-full gap-8 pt-1 text-sm'>
-            <p className='text-muted-foreground lg:inline hidden'>
-              Keep it between 400-600 characters for better interview chances.
-            </p>
-
-            <div className='flex items-center ml-auto'>
-              <p
-                className={cn(
-                  'transition-[padding-right] duration-300 ease',
-                  trimmedValue.length > 0 && 'pr-1'
-                )}
-              >
-                <span className='text-foreground'>{trimmedValue.length}</span>{' '}
-                <span className='text-muted-foreground'> / 600</span>
-              </p>
-              <div className='h-7'>
-                {trimmedValue.length > 0 ? (
-                  <SmoothEmotionIcon
-                    expression={getExpression(
-                      trimmedValue,
-                      summaryEmotionRanges
-                    )}
-                  />
-                ) : null}
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      if (sectionKey === 'workExperience' || sectionKey === 'internships') {
-        return (
-          <div className='flex items-center justify-between w-full gap-8 pt-1 text-sm'>
-            <p className='text-muted-foreground lg:inline hidden'>
-              Write 200+ characters for better interview chances
-            </p>
-            <div className='flex items-center ml-auto'>
-              <p
-                className={cn(
-                  'transition-[padding-right] duration-300 ease',
-                  trimmedValue.length > 0 && 'pr-1'
-                )}
-              >
-                <span className='text-foreground'>{trimmedValue.length}</span>{' '}
-                <span className='text-muted-foreground'> / 200+</span>
-              </p>
-              <div className='h-7'>
-                {trimmedValue.length > 0 ? (
-                  <SmoothEmotionIcon
-                    expression={getExpression(
-                      trimmedValue,
-                      workExperienceEmotionRanges
-                    )}
-                  />
-                ) : null}
-              </div>
-            </div>
-          </div>
-        );
-      }
-
-      return null;
-    };
-
-    return <div className='w-full'>{renderCounter()}</div>;
+    return (
+      <div className='text-muted-foreground flex flex-wrap items-start justify-between gap-x-4 gap-y-1 pt-2 text-xs leading-5'>
+        <p className='max-w-[48ch]'>
+          {sectionKey === 'summary'
+            ? 'Briefly describe your experience and what you bring to this role.'
+            : 'Describe your contributions and results. Include specifics where useful.'}
+        </p>
+        <span className='ml-auto shrink-0 tabular-nums'>
+          {removeHTMLTags(fieldValue).length} characters
+        </span>
+      </div>
+    );
   }
 );

@@ -1,7 +1,9 @@
 import type { LucideIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { showErrorToast } from '@/components/ui/sonner';
 import type { SemanticSectionKey } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -20,13 +22,35 @@ export interface OtherSectionOption {
 }
 
 export const AddSectionWidget = observer(() => {
+  const [selectedKey, setSelectedKey] = useState('');
+  const [adding, setAdding] = useState(false);
+  const availableOptions = OTHER_SECTION_OPTIONS.filter(
+    (option) =>
+      option.sectionKey === 'custom' ||
+      !builderSession.document?.sections.some(
+        (section) => section.sectionKey === option.sectionKey
+      )
+  );
+  const selectedOption =
+    availableOptions.find((option) => option.sectionKey === selectedKey) ??
+    availableOptions[0];
   const handleAddSection = action(async (option: OtherSectionOption) => {
-    const result = await builderSession.document?.addSection(option);
-    if (result?.success && result.data) {
-      builderSession.UIStore.toggleItem(result.data.itemId);
-      builderSession.UIStore.focusFirstFieldInItem(result.data.itemId);
-    } else {
+    if (adding) {
+      return;
+    }
+    setAdding(true);
+    try {
+      const result = await builderSession.document?.addSection(option);
+      if (result?.success && result.data) {
+        builderSession.UIStore.toggleItem(result.data.itemId);
+        builderSession.UIStore.focusFirstFieldInItem(result.data.itemId);
+      } else {
+        showErrorToast('Could not add section. Please try again.');
+      }
+    } catch {
       showErrorToast('Could not add section. Please try again.');
+    } finally {
+      setAdding(false);
     }
   });
 
@@ -40,35 +64,35 @@ export const AddSectionWidget = observer(() => {
           Add only the sections that strengthen this version of your CV.
         </p>
       </div>
-      <div className='grid gap-2 md:grid-cols-2'>
-        {OTHER_SECTION_OPTIONS.map((option) => {
-          const isAlreadyAdded =
-            option.sectionKey !== 'custom' &&
-            builderSession.document?.sections.some(
-              (section) => section.sectionKey === option.sectionKey
-            );
-
-          return (
-            <Button
-              variant='ghost'
-              disabled={isAlreadyAdded}
-              title={isAlreadyAdded ? `${option.title} is already added` : ''}
-              onClick={() => handleAddSection(option)}
-              key={option.sectionKey}
-              className='min-h-11 justify-between gap-3 px-3 text-base'
-            >
-              <span className='flex min-w-0 items-center gap-2 text-left'>
-                <option.icon aria-hidden='true' className='shrink-0' />
-                <span className='truncate'>{option.title}</span>
-              </span>
-              {isAlreadyAdded ? (
-                <span className='text-muted-foreground shrink-0 text-xs font-medium'>
-                  Already added
-                </span>
-              ) : null}
-            </Button>
-          );
-        })}
+      <div className='space-y-2'>
+        <Label htmlFor='additional-resume-section'>Choose a section</Label>
+        <div className='flex flex-wrap gap-2'>
+          <select
+            id='additional-resume-section'
+            value={selectedOption?.sectionKey ?? ''}
+            disabled={adding}
+            onChange={(event) => setSelectedKey(event.target.value)}
+            className='border-input bg-background h-11 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2'
+          >
+            {availableOptions.map((option) => (
+              <option key={option.sectionKey} value={option.sectionKey}>
+                {option.title}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant='outline'
+            className='h-11'
+            disabled={adding || !selectedOption}
+            onClick={() => {
+              if (selectedOption) {
+                void handleAddSection(selectedOption);
+              }
+            }}
+          >
+            {adding ? 'Adding...' : 'Add section'}
+          </Button>
+        </div>
       </div>
     </article>
   );

@@ -32,8 +32,11 @@ export const ResumeScoreSuggestionContent = observer(
           {suggestions.length > 0 ? (
             <>
               <SuggestionGroupHeading>
-                Boost Your Resume Score
+                Optional additions
               </SuggestionGroupHeading>
+              <p className='text-muted-foreground mt-1 text-sm'>
+                Use these only when they are relevant to this application.
+              </p>
               <AnimatedSuggestionsContainer>
                 {suggestions.map((suggestion) => (
                   <ResumeScoreSuggestionItem

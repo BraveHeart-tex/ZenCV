@@ -427,7 +427,7 @@ export const sectionDefinitions = createSectionDefinitionRegistry([
         key: 'wantedJobTitle',
         labelRow: 'compact',
         persistedName: 'Wanted Job Title',
-        label: 'Wanted Job Title',
+        label: 'Target job title',
         expectedPersistedType: 'string',
         control: 'text',
         order: 0,

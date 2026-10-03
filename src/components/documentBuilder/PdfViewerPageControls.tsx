@@ -16,18 +16,18 @@ export const PdfViewerPageControls = observer(
     return (
       <div
         className={cn(
-          'flex items-center justify-center gap-2 mt-2',
+          'flex items-center justify-center gap-2',
           variant === 'primary' && 'bg-primary dark:bg-background rounded-full'
         )}
       >
         <Button
-          disabled={currentPage === 1}
+          disabled={currentPage <= 1 || numberOfPages === 0}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage - 1)}
           size='icon'
           aria-label='Previous PDF page'
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
-            'rounded-full size-7.5',
+            'rounded-full size-11',
             variant === 'primary' &&
               'text-primary-foreground dark:text-foreground'
           )}
@@ -41,16 +41,18 @@ export const PdfViewerPageControls = observer(
               'text-primary-foreground dark:text-foreground'
           )}
         >
-          {currentPage} of {numberOfPages}
+          {numberOfPages > 0
+            ? `${currentPage} of ${numberOfPages}`
+            : 'Loading pages'}
         </span>
         <Button
-          disabled={currentPage === numberOfPages}
+          disabled={currentPage >= numberOfPages || numberOfPages === 0}
           onClick={() => pdfViewerStore.setCurrentPage(currentPage + 1)}
           size='icon'
           aria-label='Next PDF page'
           variant={variant === 'primary' ? 'ghost' : 'outline'}
           className={cn(
-            'rounded-full size-7.5',
+            'rounded-full size-11',
             variant === 'primary' &&
               'text-primary-foreground dark:text-foreground'
           )}

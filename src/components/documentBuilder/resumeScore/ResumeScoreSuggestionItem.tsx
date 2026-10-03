@@ -1,10 +1,7 @@
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { snapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
-import {
-  getTextColorForBackground,
-  scrollItemIntoView,
-} from '@/lib/helpers/documentBuilderHelpers';
+import { scrollItemIntoView } from '@/lib/helpers/documentBuilderHelpers';
 import { scrollToCenterAndFocus } from '@/lib/helpers/domHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
@@ -13,9 +10,6 @@ import {
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import type { ResumeSuggestion } from '@/lib/types/documentBuilder.types';
 import { AnimatedSuggestionButton } from './AnimatedSuggestionButton';
-
-const scoreValueBgColor = '#388e3c'; // Green
-const scoreValueTextColor = getTextColorForBackground(scoreValueBgColor);
 
 interface ResumeScoreSuggestionItemProps {
   suggestion: ResumeSuggestion;
@@ -103,9 +97,6 @@ export const ResumeScoreSuggestionItem = observer(
       <AnimatedSuggestionButton
         label={suggestion.label}
         onClick={handleSuggestionClick}
-        scoreValue={suggestion.scoreValue}
-        scoreValueBgColor={scoreValueBgColor}
-        scoreValueTextColor={scoreValueTextColor}
       />
     );
   }

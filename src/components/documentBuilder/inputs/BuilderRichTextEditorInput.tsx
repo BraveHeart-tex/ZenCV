@@ -32,6 +32,8 @@ export const BuilderRichTextEditorInput = observer(
           }}
           id={id}
           ariaLabelledBy={ariaLabelledBy}
+          ariaInvalid={!!field.saveError}
+          ariaDescribedBy={field.saveError ? `${id}-save-error` : undefined}
           initialValue={field.value}
           placeholder={field.definition.richText?.guidance || ''}
           onChange={handleRichTextChange}

@@ -1,6 +1,6 @@
 # Document-oriented persistence boundary for the Builder
 
-Phase 5 routes active Document Builder commands through one injected document-oriented persistence interface while keeping Dexie records private to hydration. The Builder Document retains optimistic state and rollback; the adapter owns transactions, durable rules, record assembly, and stored formats. This avoids mirroring Dexie table CRUD in a repository layer and preserves existing IDs and schema during the remaining semantic-section migration.
+Phase 5 routes active Document Builder commands through one injected document-oriented persistence interface while keeping Dexie records private to hydration. The Builder Document retains optimistic state and structural rollback; failed Semantic Field saves preserve the draft for explicit retry, with observable saving and failure state. The adapter owns transactions, durable rules, record assembly, and stored formats. This avoids mirroring Dexie table CRUD in a repository layer and preserves existing IDs and schema during the remaining semantic-section migration.
 
 ## Considered Options
 

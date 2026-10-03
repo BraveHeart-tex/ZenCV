@@ -122,6 +122,10 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
         <Input
           ref={inputRef}
           id={htmlInputId}
+          aria-invalid={!!field.saveError || !!isError}
+          aria-describedby={
+            field.saveError ? `${htmlInputId}-save-error` : undefined
+          }
           type='text'
           value={field.value || ''}
           onChange={action(async (event) => {

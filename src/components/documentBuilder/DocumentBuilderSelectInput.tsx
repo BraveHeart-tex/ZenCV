@@ -34,6 +34,10 @@ export const DocumentBuilderSelectInput = observer(
           <SelectTrigger
             className='w-full'
             id={htmlInputId}
+            aria-invalid={!!field.saveError}
+            aria-describedby={
+              field.saveError ? `${htmlInputId}-save-error` : undefined
+            }
             ref={(ref) =>
               builderSession.UIStore.setFieldRef(field.id.toString(), ref)
             }
