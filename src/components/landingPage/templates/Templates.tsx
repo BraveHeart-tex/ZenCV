@@ -43,11 +43,14 @@ export const Templates = () => {
   }, [emblaApi, updateScrollState]);
 
   return (
-    <section id='templates' className='w-full py-16 md:py-24 lg:py-28'>
-      <div className='container mx-auto px-4 md:px-6'>
-        <div className='mb-10 flex items-end justify-between gap-4'>
+    <section
+      id='templates'
+      className='w-full scroll-mt-24 border-t border-border/70 py-16 md:py-24'
+    >
+      <div className='container mx-auto max-w-6xl px-4'>
+        <div className='mb-8 flex flex-wrap items-end justify-between gap-4'>
           <div className='space-y-3'>
-            <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
+            <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
               Templates
             </p>
             <h2 className='text-balance text-3xl font-bold tracking-tight md:text-4xl'>
@@ -64,7 +67,7 @@ export const Templates = () => {
               variant='outline'
               size='icon'
               aria-label='Previous template'
-              className='h-8 w-8'
+              className='size-11'
               onClick={scrollPrev}
               disabled={!canScrollPrev}
             >
@@ -74,7 +77,7 @@ export const Templates = () => {
               variant='outline'
               size='icon'
               aria-label='Next template'
-              className='h-8 w-8'
+              className='size-11'
               onClick={scrollNext}
               disabled={!canScrollNext}
             >
@@ -83,10 +86,13 @@ export const Templates = () => {
           </div>
         </div>
 
-        <div className='overflow-hidden' ref={emblaRef}>
+        <div className='overflow-hidden p-1 -m-1' ref={emblaRef}>
           <div className='flex gap-5'>
             {templateOptionsWithImages.map((template) => (
-              <div key={template.name} className='w-70 flex-none sm:w-75'>
+              <div
+                key={template.name}
+                className='w-[min(17.5rem,calc(100vw-3rem))] flex-none sm:w-75'
+              >
                 <TemplateCard template={template} />
               </div>
             ))}

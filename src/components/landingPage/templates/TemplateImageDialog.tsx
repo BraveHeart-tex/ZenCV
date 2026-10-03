@@ -48,7 +48,7 @@ export const TemplateImageDialog = ({
       <DialogTrigger asChild>
         <button
           type='button'
-          className='group/preview relative block w-full overflow-hidden bg-muted/30 text-left focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring'
+          className='group/preview relative block w-full overflow-hidden bg-muted/30 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring'
           aria-label={`Preview ${template.name} template`}
         >
           <TemplateImage
@@ -58,12 +58,12 @@ export const TemplateImageDialog = ({
               width: 400,
               height: 566,
               className:
-                'object-cover w-full transition-transform duration-500 hover:scale-[1.03]',
+                'object-cover w-full transition-transform duration-500 group-hover/preview:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover/preview:scale-100',
               alt: `${template.name} resume template preview`,
             }}
           />
           <span className='absolute inset-0 flex items-center justify-center bg-foreground/0 transition-colors duration-300 group-hover/preview:bg-foreground/10'>
-            <span className='rounded-full border border-border/60 bg-background/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground opacity-0 transition-opacity duration-300 group-hover/preview:opacity-100 group-focus-visible/preview:opacity-100'>
+            <span className='rounded-full border border-border/60 bg-background/90 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-foreground opacity-0 transition-opacity duration-300 group-hover/preview:opacity-100 group-focus-visible/preview:opacity-100 motion-reduce:transition-none'>
               Preview
             </span>
           </span>
@@ -100,7 +100,7 @@ export const TemplateImageDialog = ({
             <div className='shrink-0 border-b border-border/40 px-5 pt-5 pb-4'>
               <div className='flex items-start justify-between gap-4'>
                 <div>
-                  <p className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
+                  <p className='mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
                     Template
                   </p>
                   <h2 className='text-lg font-bold tracking-tight'>
@@ -111,7 +111,7 @@ export const TemplateImageDialog = ({
                   size='icon'
                   variant='ghost'
                   aria-label='Close template preview'
-                  className='-mt-1 -mr-1 h-8 w-8 shrink-0 text-muted-foreground'
+                  className='-mt-1 -mr-1 size-11 shrink-0 text-muted-foreground'
                   onClick={() => setIsOpen(false)}
                 >
                   <X className='size-4' />
@@ -125,7 +125,7 @@ export const TemplateImageDialog = ({
               </p>
               {template.tags.length > 0 && (
                 <div className='space-y-2'>
-                  <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground/70'>
+                  <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
                     Best for
                   </p>
                   <div className='flex flex-wrap gap-1.5'>

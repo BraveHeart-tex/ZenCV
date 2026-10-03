@@ -8,7 +8,7 @@ import { ModeToggle } from '../ui/mode-toggle';
 export const Header = () => {
   return (
     <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/70 backdrop-blur-md px-4'>
-      <div className='h-14 max-w-7xl flex items-center mx-auto gap-8'>
+      <div className='h-14 max-w-6xl flex items-center mx-auto gap-8'>
         <Link className='flex items-center gap-2 shrink-0' to='/'>
           <Icons.logo />
           <span className='font-semibold tracking-tight text-sm'>
@@ -16,12 +16,15 @@ export const Header = () => {
           </span>
         </Link>
 
-        <nav className='md:flex hidden items-center gap-6 text-sm'>
+        <nav
+          aria-label='Main navigation'
+          className='md:flex hidden items-center gap-6 text-sm'
+        >
           {['Features', 'Templates'].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
-              className='text-muted-foreground hover:text-foreground transition-colors duration-200'
+              className='text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring'
             >
               {item}
             </a>

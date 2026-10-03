@@ -33,7 +33,10 @@ const features = [
 
 export const Features = () => {
   return (
-    <section id='features' className='container mx-auto px-4 py-20 md:py-28'>
+    <section
+      id='features'
+      className='container mx-auto scroll-mt-24 px-4 py-16 md:py-24'
+    >
       <div className='mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16'>
         <div className='lg:sticky lg:top-24'>
           <div className='mb-5 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium text-muted-foreground'>
@@ -106,7 +109,7 @@ export const Features = () => {
             )}
           >
             <span>See the resume templates</span>
-            <ArrowDown className='size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0' />
+            <ArrowDown className='size-4 transition-transform duration-200 group-hover:translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0' />
           </a>
         </div>
       </div>

@@ -10,7 +10,7 @@ const heroTemplates = templateOptionsWithImages.slice(0, 3);
 export const Hero = () => {
   return (
     <section className='landing-hero overflow-hidden'>
-      <div className='container mx-auto px-4 pt-20 pb-12 md:pt-28 md:pb-20'>
+      <div className='container mx-auto px-4 pt-14 pb-10 sm:pt-20 md:pt-24 md:pb-16'>
         <div className='mx-auto max-w-3xl space-y-6 text-center'>
           <div
             className='inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3.5 py-1 text-xs font-medium text-muted-foreground shadow-sm'
@@ -26,16 +26,16 @@ export const Hero = () => {
           >
             Build a resume you
             <br />
-            <span className='relative inline-block text-muted-foreground/75'>
+            <span className='relative inline-block text-muted-foreground'>
               feel good sending.
               <svg
+                aria-hidden='true'
                 viewBox='0 0 300 12'
                 fill='none'
                 xmlns='http://www.w3.org/2000/svg'
                 className='absolute -bottom-2 left-0 w-full'
                 preserveAspectRatio='none'
               >
-                <title>Hero underline</title>
                 <path
                   d='M2 9.5C50 3.5 100 1 150 4C200 7 250 9 298 5'
                   stroke='currentColor'
@@ -53,7 +53,7 @@ export const Hero = () => {
           </h1>
 
           <p
-            className='mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg'
+            className='mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg'
             style={{ animation: 'fadeUp 0.5s 0.2s ease both' }}
           >
             A private-first CV builder with structured editing, live PDF
@@ -61,12 +61,15 @@ export const Hero = () => {
           </p>
 
           <div
-            className='flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row'
+            className='mx-auto flex max-w-sm flex-col items-center justify-center gap-3 pt-2 sm:max-w-none sm:flex-row'
             style={{ animation: 'fadeUp 0.5s 0.3s ease both' }}
           >
             <Link
               to='/documents'
-              className={cn(buttonVariants({ size: 'lg' }), 'min-w-40 gap-2')}
+              className={cn(
+                buttonVariants({ size: 'lg' }),
+                'w-full sm:w-auto min-w-40 gap-2'
+              )}
             >
               Start for free
               <ArrowRight className='size-4' />
@@ -75,7 +78,7 @@ export const Hero = () => {
               href='#templates'
               className={cn(
                 buttonVariants({ variant: 'outline', size: 'lg' }),
-                'min-w-40'
+                'w-full sm:w-auto min-w-40'
               )}
             >
               Browse templates
@@ -83,7 +86,7 @@ export const Hero = () => {
           </div>
 
           <p
-            className='pt-2 text-xs text-muted-foreground/70'
+            className='pt-2 text-sm leading-relaxed text-muted-foreground'
             style={{ animation: 'fadeUp 0.5s 0.4s ease both' }}
           >
             Local browser storage. Unlimited PDF export. JSON backup and

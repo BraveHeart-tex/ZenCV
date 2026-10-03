@@ -34,9 +34,9 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   };
 
   return (
-    <div className='group overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 hover:shadow-md'>
+    <div className='group overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 motion-reduce:transition-none'>
       <div className='overflow-hidden'>
-        <div className='transition-transform duration-500 group-hover:scale-[1.02]'>
+        <div className='transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100'>
           <TemplateImageDialog template={template} />
         </div>
       </div>
@@ -47,7 +47,8 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
         <Button
           variant='outline'
           size='sm'
-          className='w-full gap-2 transition-colors group-hover:border-foreground/30'
+          aria-label={`Use ${template.name} template`}
+          className='w-full min-h-11 gap-2 transition-colors group-hover:border-foreground/30'
           onClick={handleUseTemplate}
           disabled={isCreating}
         >
