@@ -1,177 +1,161 @@
 import { Download, Upload } from 'lucide-react';
-import { action, runInAction } from 'mobx';
-import { observer } from 'mobx-react-lite';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { SettingsSectionHeader } from '@/components/appHome/settings/SettingsShared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { showErrorToast, showSuccessToast } from '@/components/ui/sonner';
-import { clientDb } from '@/lib/client-db/clientDb';
+import { showSuccessToast } from '@/components/ui/sonner';
+import {
+  readBackup,
+  restoreBackup,
+  validateBackup,
+} from '@/lib/client-db/backupService';
 import { confirmDialogStore } from '@/lib/stores/confirmDialogStore';
 
-export const DataImportExport = observer(() => {
+export const DataImportExport = () => {
   const importInputRef = useRef<HTMLInputElement>(null);
+  const busyRef = useRef(false);
+  const [pending, setPending] = useState<'download' | 'validate' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleExport = async () => {
+    if (busyRef.current) {
+      return;
+    }
+    busyRef.current = true;
+    setPending('download');
+    setError(null);
+    try {
+      const backup = await readBackup();
+      const blob = new Blob([JSON.stringify(backup, null, 2)], {
+        type: 'application/json',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      try {
+        link.href = url;
+        link.download = 'zen-cv-data.json';
+        document.body.appendChild(link);
+        link.click();
+      } finally {
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+      showSuccessToast('Backup downloaded');
+    } catch {
+      setError(
+        'Could not download your backup. Your data is unchanged. Try downloading again.'
+      );
+    } finally {
+      busyRef.current = false;
+      setPending(null);
+    }
+  };
 
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) {
+    event.target.value = '';
+    if (!file || busyRef.current) {
       return;
     }
+    busyRef.current = true;
+    setPending('validate');
+    setError(null);
     try {
-      const content = await file.text();
-      const data = JSON.parse(content);
-      const requiredTables = [
-        'documents',
-        'sections',
-        'items',
-        'fields',
-        'settings',
-      ];
-      const missingTables = requiredTables.filter((table) => !data[table]);
-      if (missingTables.length > 0) {
-        throw new Error(`Missing required tables: ${missingTables.join(', ')}`);
-      }
-      await clientDb.delete();
-      await clientDb.open();
-      await clientDb.transaction(
-        'rw',
-        [
-          clientDb.documents,
-          clientDb.sections,
-          clientDb.items,
-          clientDb.fields,
-          clientDb.settings,
-        ],
-        async () => {
-          await Promise.all([
-            clientDb.documents.bulkPut(data.documents),
-            clientDb.sections.bulkPut(data.sections),
-            clientDb.items.bulkPut(data.items),
-            clientDb.fields.bulkPut(data.fields),
-            clientDb.settings.bulkPut(data.settings),
-          ]);
-        }
+      const input: unknown = JSON.parse(await file.text());
+      const backup = validateBackup(input);
+      const count = backup.documents.length;
+      confirmDialogStore.showDialog({
+        title: 'Restore backup?',
+        message: `${file.name} contains ${count} resume${count === 1 ? '' : 's'} and ${backup.sections.length} sections. Restoring replaces all resumes and editing preferences in this browser. Download a backup of your current work first if you want to keep it.`,
+        confirmText: 'Restore backup',
+        destructive: true,
+        pendingText: 'Restoring...',
+        errorMessage:
+          'Backup could not be restored. Your current data is unchanged. Try again or choose another backup.',
+        async onConfirm() {
+          try {
+            await restoreBackup(backup);
+            showSuccessToast('Backup restored');
+            confirmDialogStore.hideDialog();
+          } catch {
+            throw new Error(
+              'Could not restore this backup. Your current data is unchanged. Try again, or cancel and choose another backup.'
+            );
+          }
+        },
+      });
+    } catch (cause) {
+      setError(
+        cause instanceof SyntaxError
+          ? 'This file is not a valid backup. Choose a JSON file downloaded from ZenCV. Your data is unchanged.'
+          : cause instanceof Error
+            ? `${cause.message} Your data is unchanged.`
+            : 'Could not read this backup. Choose another file. Your data is unchanged.'
       );
-      showSuccessToast('Data imported successfully');
-    } catch (error) {
-      console.error('Import error:', error);
-      showErrorToast(
-        error instanceof Error
-          ? `Failed to import: ${error.message}`
-          : 'Failed to import data. Please check the file format.'
-      );
-    }
-    event.target.value = '';
-  };
-
-  const handleExport = async () => {
-    try {
-      const [documents, sections, items, fields, settings] = await Promise.all([
-        clientDb.documents.toArray(),
-        clientDb.sections.toArray(),
-        clientDb.items.toArray(),
-        clientDb.fields.toArray(),
-        clientDb.settings.toArray(),
-      ]);
-      const blob = new Blob(
-        [
-          JSON.stringify(
-            { documents, sections, items, fields, settings },
-            null,
-            2
-          ),
-        ],
-        {
-          type: 'application/json',
-        }
-      );
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'zen-cv-data.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      showSuccessToast('Data exported successfully');
-    } catch (error) {
-      console.error('Export error:', error);
-      showErrorToast(
-        error instanceof Error
-          ? `Failed to export: ${error.message}`
-          : 'Failed to export data'
-      );
+    } finally {
+      busyRef.current = false;
+      setPending(null);
     }
   };
 
   return (
-    <div id='data' tabIndex={-1} className='scroll-mt-6 space-y-6'>
+    <section id='data' tabIndex={-1} className='scroll-mt-6 space-y-4'>
       <SettingsSectionHeader
-        title='Data'
-        description='Export your data as a backup or import it on another device.'
+        title='Backups and transfer'
+        description='Keep a copy of your resumes and editing preferences, or move them to another browser.'
       />
-      <div className='grid sm:grid-cols-2 gap-3'>
-        <div className='rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3'>
-          <div className='space-y-0.5'>
-            <p className='text-sm font-medium'>Export</p>
-            <p className='text-xs text-muted-foreground'>
-              Download all your data as a JSON file.
+      <div className='divide-y divide-border/60'>
+        <div className='flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
+          <div className='space-y-1'>
+            <p className='text-sm font-medium'>Download backup</p>
+            <p className='text-sm text-muted-foreground'>
+              Save all your resumes and editing preferences in one file.
             </p>
           </div>
           <Button
             variant='outline'
-            size='sm'
-            className='w-full gap-2'
+            className='min-h-11 shrink-0 gap-2'
+            disabled={pending !== null}
             onClick={handleExport}
           >
-            <Download className='w-4 h-4' />
-            Export as JSON
+            <Download className='size-4' aria-hidden='true' />
+            {pending === 'download' ? 'Downloading...' : 'Download backup'}
           </Button>
         </div>
-
-        <div className='rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3'>
-          <div className='space-y-0.5'>
-            <p className='text-sm font-medium'>Import</p>
-            <p className='text-xs text-muted-foreground'>
-              Restore from a previously exported file.
+        <div className='flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
+          <div className='space-y-1'>
+            <p className='text-sm font-medium'>Restore backup</p>
+            <p className='text-sm text-muted-foreground'>
+              Replaces all resumes and editing preferences in this browser.
+              Download your current backup first.
             </p>
           </div>
           <Button
             variant='outline'
-            size='sm'
-            className='w-full gap-2'
+            className='min-h-11 shrink-0 gap-2'
+            disabled={pending !== null}
             onClick={() => importInputRef.current?.click()}
           >
-            <Upload className='w-4 h-4' />
-            Import from JSON
+            <Upload className='size-4' aria-hidden='true' />
+            {pending === 'validate'
+              ? 'Checking backup...'
+              : 'Choose backup file'}
           </Button>
           <Input
             ref={importInputRef}
             type='file'
-            id='import'
-            accept='.json'
+            accept='.json,application/json'
+            aria-label='Choose ZenCV backup'
             className='hidden'
-            onChange={action((event) => {
-              if (!event.target.files?.[0]) {
-                return;
-              }
-              confirmDialogStore.showDialog({
-                title: 'Import data',
-                message:
-                  'This will replace all your current data and cannot be undone. Continue?',
-                confirmText: 'Import',
-                async onConfirm() {
-                  await handleImport(event);
-                  runInAction(() => confirmDialogStore.hideDialog());
-                },
-                onClose() {
-                  event.target.value = '';
-                },
-              });
-            })}
+            onChange={handleImport}
           />
         </div>
       </div>
-    </div>
+      {error && (
+        <p role='alert' className='text-sm text-destructive'>
+          {error}
+        </p>
+      )}
+    </section>
   );
-});
+};

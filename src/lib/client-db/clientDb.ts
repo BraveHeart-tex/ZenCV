@@ -107,8 +107,9 @@ clientDb.documents.hook('updating', (modifications, _primKey, object) => {
 });
 
 clientDb.documents.hook('creating', (_, obj) => {
-  obj.createdAt = new Date().toISOString();
-  obj.updatedAt = new Date().toISOString();
+  const now = new Date().toISOString();
+  obj.createdAt ||= now;
+  obj.updatedAt ||= now;
 });
 
 clientDb.jobPostings.hook('deleting', (primKey) => {

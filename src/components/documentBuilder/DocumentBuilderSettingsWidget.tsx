@@ -23,19 +23,24 @@ export const DocumentBuilderSettingsWidget = () => {
           <SettingsIcon aria-hidden='true' />
         </Button>
       }
-      title='Settings'
+      title='App preferences'
+      autoFocus
       open={open}
       onOpenChange={setOpen}
-      description='Manage your application settings and preferences below.'
+      description='Applies to all resumes in this browser. Changes save automatically.'
       footer={
         <div className={cn(dialogFooterClassNames, 'mt-4')}>
-          <Button onClick={() => setOpen(false)} variant='outline'>
+          <Button
+            className='min-h-11'
+            onClick={() => setOpen(false)}
+            variant='outline'
+          >
             Close
           </Button>
         </div>
       }
     >
-      <div className='space-y-4'>
+      <div className='space-y-6'>
         <GeneralSettings />
         <Separator />
         <EditorPreferences />

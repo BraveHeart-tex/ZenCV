@@ -32,7 +32,9 @@ export const SettingsRow = ({
   disabled,
   action,
   children,
+  stackOnMobile = false,
 }: {
+  stackOnMobile?: boolean;
   label: string;
   htmlFor?: string;
   description?: string;
@@ -40,22 +42,37 @@ export const SettingsRow = ({
   action?: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className='flex items-center justify-between gap-4 py-3 border-b border-border/40 last:border-0'>
-    <div className='flex items-center gap-1.5 min-w-0'>
-      <Label
-        htmlFor={htmlFor}
-        className={cn(
-          'text-sm font-normal cursor-pointer',
-          disabled && 'opacity-50 cursor-not-allowed'
-        )}
-      >
-        {label}
-      </Label>
+  <div
+    className={cn(
+      'flex items-center justify-between gap-6 py-4 border-b border-border/60 last:border-0',
+      stackOnMobile &&
+        'flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6'
+    )}
+  >
+    <div className='min-w-0 flex-1 space-y-1'>
+      {htmlFor ? (
+        <Label
+          htmlFor={htmlFor}
+          className={cn(
+            'text-sm font-medium leading-5 cursor-pointer',
+            disabled && 'opacity-50 cursor-not-allowed'
+          )}
+        >
+          {label}
+        </Label>
+      ) : (
+        <p className='text-sm font-medium leading-5'>{label}</p>
+      )}
       {description && (
-        <p className='text-xs text-muted-foreground'>{description}</p>
+        <p
+          id={htmlFor ? `${htmlFor}-description` : undefined}
+          className='text-sm leading-5 text-muted-foreground'
+        >
+          {description}
+        </p>
       )}
       {action}
     </div>
-    {children}
+    <div className='shrink-0 max-w-full'>{children}</div>
   </div>
 );

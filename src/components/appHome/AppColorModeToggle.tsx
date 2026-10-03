@@ -29,10 +29,12 @@ const themeOptions = [
 
 interface SidebarColorModeToggleProps {
   shouldShowSidebarButton?: boolean;
+  segmented?: boolean;
 }
 
 export const AppColorModeToggle = ({
   shouldShowSidebarButton,
+  segmented = false,
 }: SidebarColorModeToggleProps) => {
   const { theme, setTheme } = useTheme();
 
@@ -67,6 +69,29 @@ export const AppColorModeToggle = ({
       </Button>
     );
   };
+
+  if (segmented) {
+    return (
+      <fieldset
+        aria-label='Color theme'
+        className='inline-flex rounded-lg border border-border bg-muted/40 p-1'
+      >
+        {themeOptions.map((option) => (
+          <Button
+            key={option.value}
+            type='button'
+            variant='ghost'
+            aria-pressed={theme === option.value}
+            onClick={() => setTheme(option.value)}
+            className={`min-h-11 gap-1.5 px-3 text-sm motion-safe:transition-colors ${theme === option.value ? 'bg-foreground text-background hover:bg-foreground/90 hover:text-background' : ''}`}
+          >
+            <option.icon aria-hidden='true' className='size-4' />
+            {option.label}
+          </Button>
+        ))}
+      </fieldset>
+    );
+  }
 
   return (
     <DropdownMenu>

@@ -6,13 +6,17 @@ import { AppColorModeToggle } from '../AppColorModeToggle';
 
 export const GeneralSettings = () => {
   return (
-    <div className='space-y-6'>
+    <div className='space-y-2'>
       <SettingsSectionHeader
-        title='General'
-        description='Manage your application preferences.'
+        title='Appearance'
+        description='Choose how ZenCV looks.'
       />
-      <SettingsRow label='Theme' htmlFor='colorScheme'>
-        <AppColorModeToggle />
+      <SettingsRow
+        stackOnMobile
+        label='Color theme'
+        description='System follows your browser’s appearance preference.'
+      >
+        <AppColorModeToggle segmented />
       </SettingsRow>
     </div>
   );

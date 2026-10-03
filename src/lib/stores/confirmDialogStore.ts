@@ -3,8 +3,11 @@ import { action, makeAutoObservable } from 'mobx';
 const DIALOG_CONTENT_RESET_DELAY_MS = 150 as const;
 
 interface ShowDialogParams {
+  destructive?: boolean;
+  pendingText?: string;
+  errorMessage?: string;
   message: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   title: string;
   cancelText?: string;
   confirmText?: string;
@@ -18,7 +21,11 @@ class ConfirmDialogStore {
   isOpen: boolean = false;
   message: string = '';
   title: string = '';
-  onConfirm: () => void = () => {};
+  destructive = false;
+  pendingText = 'Working…';
+  errorMessage = 'This action could not be completed. Please try again.';
+  private resetTimer: ReturnType<typeof setTimeout> | undefined;
+  onConfirm: () => void | Promise<void> = () => {};
   onCancel: () => void = () => {};
   onClose: (() => void) | (() => Promise<void>) = () => {};
   cancelText: string = 'Cancel';
@@ -32,6 +39,9 @@ class ConfirmDialogStore {
 
   showDialog = ({
     message,
+    destructive = false,
+    pendingText = 'Working…',
+    errorMessage = 'This action could not be completed. Please try again.',
     onConfirm,
     title,
     cancelText = 'Cancel',
@@ -41,6 +51,10 @@ class ConfirmDialogStore {
     onCancel = () => {},
     onClose = () => {},
   }: ShowDialogParams) => {
+    clearTimeout(this.resetTimer);
+    this.errorMessage = errorMessage;
+    this.destructive = destructive;
+    this.pendingText = pendingText;
     this.message = message;
     this.onConfirm = onConfirm;
     this.title = title;
@@ -65,8 +79,11 @@ class ConfirmDialogStore {
     this.onConfirm = () => {};
     this.onCancel = () => {};
 
-    setTimeout(
+    this.resetTimer = setTimeout(
       action(() => {
+        if (this.isOpen) {
+          return;
+        }
         this.message = '';
         this.title = 'Confirm';
         this.cancelText = 'Cancel';

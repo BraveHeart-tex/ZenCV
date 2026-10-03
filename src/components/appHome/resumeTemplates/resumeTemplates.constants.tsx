@@ -19,67 +19,67 @@ export type TemplateOptionWithVariants = {
 export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   {
     name: 'London',
-    layoutDescription: 'Structured sections',
+    layoutDescription: 'Single column · section rules',
     images: {
       card: '/templates/london-400.webp',
       hover: '/templates/london-700.webp',
       modal: '/templates/london-1000.webp',
     },
     description:
-      'The London template offers a clean and modern design for showcasing professional experience in a structured, elegant format. Its minimalist layout keeps the focus on readable sections and crisp hierarchy.',
-    tags: ['Clean & Modern', 'Readable', 'Professional'],
+      'A single-column layout with serif typography and horizontal rules separating sections.',
+    tags: ['Single column', 'Serif type', 'Section rules'],
     value: INTERNAL_TEMPLATE_TYPES.LONDON,
   },
   {
     name: 'Manhattan',
-    layoutDescription: 'Focused layout',
+    layoutDescription: 'Single column · softer typography',
     images: {
       card: '/templates/manhattan-400.webp',
       hover: '/templates/manhattan-700.webp',
       modal: '/templates/manhattan-1000.webp',
     },
     description:
-      'The Manhattan template combines a sleek, contemporary design with a focus on clarity and readability. Its professional layout highlights skills and achievements without visual clutter.',
-    tags: ['Clean & Modern', 'Focused', 'Professional'],
+      'A single-column layout with softer serif typography and compact, clearly grouped sections.',
+    tags: ['Single column', 'Serif type', 'Compact sections'],
     value: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
   },
   {
     name: 'Tokyo',
-    layoutDescription: 'Dark sidebar',
+    layoutDescription: 'Two columns · dark sidebar',
     images: {
       card: '/templates/tokyo-400.webp',
       hover: '/templates/tokyo-700.webp',
       modal: '/templates/tokyo-1000.webp',
     },
     description:
-      'The Tokyo template features a bold two-column layout with a dark sidebar and clean white main column. Designed for modern professionals who want a distinctive resume that stays easy to scan.',
-    tags: ['Two-Column', 'Modern', 'Scannable'],
+      'A two-column layout with a dark sidebar for supporting details and a white main column.',
+    tags: ['Two columns', 'Dark sidebar', 'Color accents'],
     value: INTERNAL_TEMPLATE_TYPES.TOKYO,
   },
   {
     name: 'Dubai',
-    layoutDescription: 'Light sidebar',
+    layoutDescription: 'Two columns · light sidebar',
     images: {
       card: '/templates/dubai-400.webp',
       hover: '/templates/dubai-700.webp',
       modal: '/templates/dubai-1000.webp',
     },
     description:
-      'The Dubai template features a warm two-column layout with a light sidebar and gold accent detailing. Refined and professional, it suits finance, consulting, and corporate roles where elegance matters.',
-    tags: ['Two-Column', 'Elegant', 'Professional'],
+      'A two-column layout with a light sidebar and accent details separating supporting information.',
+    tags: ['Two columns', 'Light sidebar', 'Color accents'],
     value: INTERNAL_TEMPLATE_TYPES.DUBAI,
   },
   {
     name: 'Sydney',
-    layoutDescription: 'Generous whitespace',
+    layoutDescription: 'Single column · generous spacing',
     images: {
       card: '/templates/sydney-400.webp',
       hover: '/templates/sydney-700.webp',
       modal: '/templates/sydney-1000.webp',
     },
     description:
-      'The Sydney template is a purely minimal, whitespace-driven design built for senior and executive profiles. A bold name treatment anchors the page while generous spacing lets your experience speak for itself.',
-    tags: ['Minimal', 'Executive', 'Whitespace'],
+      'A spacious single-column layout with a prominent name and generous space between sections.',
+    tags: ['Single column', 'Large name', 'Generous spacing'],
     value: INTERNAL_TEMPLATE_TYPES.SYDNEY,
   },
 ];

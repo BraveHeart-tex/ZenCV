@@ -8,9 +8,16 @@ import { TemplateImageDialog } from './TemplateImageDialog';
 
 interface TemplateCardProps {
   template: TemplateOptionWithVariants;
+  previewSizes?: string;
+  headingLevel?: 2 | 3;
 }
 
-export const TemplateCard = ({ template }: TemplateCardProps) => {
+export const TemplateCard = ({
+  template,
+  previewSizes = '300px',
+  headingLevel = 3,
+}: TemplateCardProps) => {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const navigate = useNavigate();
   const [isCreating, setIsCreating] = useState(false);
 
@@ -34,25 +41,26 @@ export const TemplateCard = ({ template }: TemplateCardProps) => {
   };
 
   return (
-    <div className='group overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 motion-reduce:transition-none'>
-      <div className='overflow-hidden'>
-        <div className='transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100'>
-          <TemplateImageDialog template={template} />
+    <div className='group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 motion-reduce:transition-none'>
+      <TemplateImageDialog template={template} previewSizes={previewSizes} />
+      <div className='flex flex-1 flex-col justify-between gap-3 p-3 sm:p-4'>
+        <div className='space-y-1'>
+          <Heading className='text-sm font-semibold tracking-tight'>
+            {template.name}
+          </Heading>
+          <p className='min-h-10 text-xs leading-5 text-muted-foreground sm:min-h-0'>
+            {template.layoutDescription}
+          </p>
         </div>
-      </div>
-      <div className='p-4 space-y-3'>
-        <h3 className='text-sm font-semibold tracking-tight'>
-          {template.name}
-        </h3>
         <Button
           variant='outline'
           size='sm'
-          aria-label={`Use ${template.name} template`}
+          aria-label={`Create resume with ${template.name} template`}
           className='w-full min-h-11 gap-2 transition-colors group-hover:border-foreground/30'
           onClick={handleUseTemplate}
           disabled={isCreating}
         >
-          {isCreating ? 'Creating...' : 'Use template'}
+          {isCreating ? 'Creating...' : 'Create resume'}
           <ArrowRight className='size-3.5' />
         </Button>
       </div>

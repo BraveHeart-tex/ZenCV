@@ -32,7 +32,7 @@ export const createAndNavigateToDocument = async ({
 
     if (!documentId) {
       const message =
-        'Could not create your resume. Your entries are still here. Select Create resume to try again.';
+        'Could not create your resume. Your entries are still here. Try creating your resume again.';
       if (onError) {
         onError(message);
       } else {
@@ -50,8 +50,8 @@ export const createAndNavigateToDocument = async ({
   } catch (error) {
     console.error(error);
     const message = documentId
-      ? 'Your resume was saved, but could not be opened. Open it from the resume library.'
-      : 'Could not create your resume. Your entries are still here. Select Create resume to try again.';
+      ? 'Your resume was saved, but could not be opened. Open it from Documents.'
+      : 'Could not create your resume. Your entries are still here. Try creating your resume again.';
     if (onError) {
       onError(message);
     } else {

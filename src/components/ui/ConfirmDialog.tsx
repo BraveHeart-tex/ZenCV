@@ -1,6 +1,7 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import { useEffect, useRef, useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -26,8 +27,38 @@ import {
 export const ConfirmDialog = observer(() => {
   const isDesktop = useMediaQuery('(min-width: 768px)', false);
 
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const locked = useRef(false);
+  const confirm = async () => {
+    if (locked.current) {
+      return;
+    }
+    locked.current = true;
+    setPending(true);
+    setError(null);
+    try {
+      await confirmDialogStore.onConfirm();
+    } catch {
+      setError(confirmDialogStore.errorMessage);
+    } finally {
+      locked.current = false;
+      setPending(false);
+    }
+  };
+  const close = () => {
+    if (!locked.current) {
+      setError(null);
+      void confirmDialogStore.hideDialog();
+    }
+  };
   const isOpen = confirmDialogStore.isOpen;
-  const onClose = confirmDialogStore.hideDialog;
+  const onClose = close;
+  useEffect(() => {
+    if (isOpen) {
+      setError(null);
+    }
+  }, [isOpen]);
 
   const descriptionContent = isDesktop ? (
     <DialogDescription className='text-muted-foreground mt-2'>
@@ -43,21 +74,27 @@ export const ConfirmDialog = observer(() => {
     <>
       <Button
         type='button'
+        disabled={pending}
         variant='outline'
         onClick={action(() => {
           confirmDialogStore?.onCancel?.();
           onClose();
         })}
-        className='bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors'
+        className='min-h-11 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground transition-colors'
       >
         {confirmDialogStore.cancelText}
       </Button>
       <Button
-        type='submit'
-        onClick={action(() => confirmDialogStore.onConfirm())}
-        className='bg-primary text-primary-foreground hover:bg-primary/90 transition-colors'
+        type='button'
+        disabled={pending}
+        aria-busy={pending}
+        variant={confirmDialogStore.destructive ? 'destructive' : 'default'}
+        onClick={() => void confirm()}
+        className='min-h-11'
       >
-        {confirmDialogStore.confirmText}
+        {pending
+          ? confirmDialogStore.pendingText
+          : confirmDialogStore.confirmText}
       </Button>
     </>
   );
@@ -81,6 +118,11 @@ export const ConfirmDialog = observer(() => {
               <VisuallyHidden>{descriptionContent}</VisuallyHidden>
             )}
           </DialogHeader>
+          {error && (
+            <p role='alert' className='text-sm text-destructive'>
+              {error}
+            </p>
+          )}
           <DoNotAskAgainCheckbox />
           <DialogFooter className='mt-6'>{actionButtons}</DialogFooter>
         </DialogContent>
@@ -91,6 +133,7 @@ export const ConfirmDialog = observer(() => {
   return (
     <Drawer
       open={isOpen}
+      autoFocus
       onOpenChange={action(() => {
         onClose();
       })}
@@ -107,6 +150,11 @@ export const ConfirmDialog = observer(() => {
           )}
         </DrawerHeader>
         <div className='px-4'>
+          {error && (
+            <p role='alert' className='text-sm text-destructive'>
+              {error}
+            </p>
+          )}
           <DoNotAskAgainCheckbox />
         </div>
         <DrawerFooter className='flex-col-reverse mt-6'>
