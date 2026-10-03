@@ -1,33 +1,52 @@
 import {
-  ArrowDown,
-  Download,
-  FileText,
+  ArrowRight,
+  Eye,
+  FileDown,
+  HardDrive,
   Palette,
-  ShieldCheck,
+  PencilLine,
 } from 'lucide-react';
-import { cn } from '@/lib/utils/stringUtils';
+import { LandingSectionIntro } from '@/components/landingPage/LandingSectionIntro';
 
 const features = [
   {
-    icon: ShieldCheck,
+    icon: HardDrive,
     label: 'Local workspace',
     title: 'Your resume starts and stays in your browser.',
     description:
-      'Create, edit, and export without making an account. Your document data stays stored locally in your browser.',
+      'Create, edit, and export without making an account. Your document data is stored locally in your browser.',
   },
   {
-    icon: Download,
-    label: 'PDF export',
-    title: 'Send polished PDFs without watermarks or limits.',
+    icon: Eye,
+    label: 'Live preview',
+    title: 'See the page take shape as you work.',
     description:
-      'Preview as you edit, export whenever the version is ready, and keep iterating for every application.',
+      'Review the resume preview while you edit, then export a PDF when the version is ready.',
   },
   {
     icon: Palette,
-    label: 'Templates',
+    label: 'Five templates',
     title: 'Choose a layout that fits the role, not the trend.',
     description:
-      'Start from five professional resume templates, including options with restrained accent-color customization.',
+      'Start from five resume templates, including options with restrained accent-color customization.',
+  },
+];
+
+const workflowSteps = [
+  {
+    icon: PencilLine,
+    title: 'Edit',
+    description: 'Build your document in the browser.',
+  },
+  {
+    icon: Eye,
+    title: 'Preview',
+    description: 'Review the layout as you work.',
+  },
+  {
+    icon: FileDown,
+    title: 'Export PDF',
+    description: 'Download a copy when it is ready.',
   },
 ];
 
@@ -35,83 +54,81 @@ export const Features = () => {
   return (
     <section
       id='features'
-      className='container mx-auto scroll-mt-24 px-4 py-16 md:py-24'
+      aria-labelledby='features-title'
+      className='scroll-mt-28 px-[var(--page-gutter)] py-20 sm:py-24 lg:py-32'
     >
-      <div className='mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:gap-16'>
-        <div className='lg:sticky lg:top-24'>
-          <div className='mb-5 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium text-muted-foreground'>
-            <span className='size-1.5 rounded-full bg-emerald-500' />
-            Private by default
-          </div>
-          <h2 className='max-w-xl text-balance text-3xl font-bold tracking-tight md:text-4xl'>
-            Built for the messy middle of job hunting.
-          </h2>
-          <p className='mt-4 max-w-lg text-base leading-relaxed text-muted-foreground'>
-            ZenCV keeps the essentials close: structured editing, live preview,
-            professional templates, and clear privacy boundaries.
-          </p>
+      <div className='mx-auto max-w-6xl'>
+        <LandingSectionIntro
+          titleId='features-title'
+          title='Built for the messy middle of job hunting.'
+          description='ZenCV keeps the essentials close: structured editing, live preview, professional templates, and clear privacy boundaries.'
+        />
 
-          <div className='mt-8 rounded-xl border border-border/70 bg-muted/35 p-5 dark:bg-muted/20 hidden md:block'>
-            <div className='flex items-center gap-3 border-b border-border/70 pb-4'>
-              <div className='flex size-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'>
-                <FileText className='size-5' />
-              </div>
-              <div>
-                <p className='text-sm font-semibold'>Resume data</p>
-                <p className='text-sm text-muted-foreground'>
-                  Stored in your browser
-                </p>
-              </div>
-            </div>
-
-            <div className='grid gap-3 py-4 text-sm text-muted-foreground sm:grid-cols-3'>
-              <div className='rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border/70'>
-                Edit
-              </div>
-              <div className='rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border/70'>
-                Preview
-              </div>
-              <div className='rounded-lg bg-background px-3 py-2 text-foreground ring-1 ring-border/70'>
-                Export PDF
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className='divide-y divide-border/70 border-y border-border/70'>
+        <div className='mx-auto mt-14 max-w-6xl border-y border-border/70 sm:mt-16'>
           {features.map((feature) => (
             <article
               key={feature.title}
-              className='group grid grid-cols-[2.75rem_1fr] gap-4 py-6 sm:gap-5 md:py-7'
+              className='grid gap-3 border-b border-border/60 py-6 last:border-b-0 sm:gap-4 sm:py-7 md:grid-cols-[minmax(8.5rem,0.72fr)_minmax(0,1fr)_minmax(0,1.2fr)] md:items-start md:gap-6 lg:gap-10'
             >
-              <div className='flex size-11 items-center justify-center rounded-lg bg-muted text-muted-foreground transition-colors duration-200 group-hover:bg-foreground group-hover:text-background motion-reduce:transition-none'>
-                <feature.icon className='size-5' />
-              </div>
-              <div>
-                <p className='mb-2 text-xs font-semibold text-muted-foreground'>
+              <div className='flex items-center gap-3 md:items-start md:pt-1'>
+                <feature.icon
+                  aria-hidden='true'
+                  className='size-4 shrink-0 text-muted-foreground'
+                />
+                <span className='text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground'>
                   {feature.label}
-                </p>
-                <h3 className='max-w-2xl text-pretty text-lg font-semibold tracking-tight'>
-                  {feature.title}
-                </h3>
-                <p className='mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground'>
-                  {feature.description}
-                </p>
+                </span>
               </div>
+              <h3 className='max-w-sm text-pretty text-xl font-semibold leading-snug tracking-[-0.025em] sm:text-2xl'>
+                {feature.title}
+              </h3>
+              <p className='max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base sm:leading-relaxed'>
+                {feature.description}
+              </p>
             </article>
           ))}
-
-          <a
-            href='#templates'
-            className={cn(
-              'group flex items-center justify-between gap-4 py-6 text-sm font-medium outline-hidden transition-colors duration-200 hover:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background motion-reduce:transition-none',
-              'md:py-7'
-            )}
-          >
-            <span>See the resume templates</span>
-            <ArrowDown className='size-4 transition-transform duration-200 group-hover:translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0' />
-          </a>
         </div>
+
+        <div className='mx-auto mt-14 grid max-w-6xl gap-7 sm:mt-16 md:grid-cols-[minmax(12rem,0.72fr)_minmax(0,1.7fr)] md:items-center md:gap-10 lg:gap-16'>
+          <div>
+            <h3 className='text-2xl font-semibold tracking-[-0.035em] sm:text-3xl'>
+              Edit, review, export.
+            </h3>
+            <p className='mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground sm:text-base'>
+              Resume data stays in your browser during this core workflow.
+            </p>
+          </div>
+
+          <ol className='grid list-none border-y border-border/70 sm:grid-cols-3 sm:divide-x sm:divide-border/60'>
+            {workflowSteps.map((step) => (
+              <li
+                key={step.title}
+                className='flex items-start gap-3 border-b border-border/60 py-4 last:border-b-0 sm:flex-col sm:gap-5 sm:border-b-0 sm:px-5 sm:py-5 first:sm:pl-0 last:sm:pr-0'
+              >
+                <step.icon
+                  aria-hidden='true'
+                  className='mt-0.5 size-4 shrink-0 text-muted-foreground sm:mt-0'
+                />
+                <div>
+                  <h4 className='text-sm font-semibold text-foreground'>
+                    {step.title}
+                  </h4>
+                  <p className='mt-1 text-sm leading-relaxed text-muted-foreground'>
+                    {step.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <a
+          href='#templates'
+          className='group mx-auto mt-10 flex min-h-11 w-fit items-center gap-2 rounded-sm text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-200 hover:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring motion-reduce:transition-none sm:mt-12'
+        >
+          See the resume templates
+          <ArrowRight className='size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0' />
+        </a>
       </div>
     </section>
   );

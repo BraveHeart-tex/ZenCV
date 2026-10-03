@@ -41,29 +41,34 @@ export const TemplateCard = ({
   };
 
   return (
-    <div className='group flex flex-col overflow-hidden rounded-xl border border-border/70 bg-card transition-[background-color,border-color,box-shadow] duration-200 hover:border-foreground/15 motion-reduce:transition-none'>
-      <TemplateImageDialog template={template} previewSizes={previewSizes} />
-      <div className='flex flex-1 flex-col justify-between gap-3 p-3 sm:p-4'>
-        <div className='space-y-1'>
-          <Heading className='text-sm font-semibold tracking-tight'>
+    <article className='group flex h-full flex-col'>
+      <div className='overflow-hidden border border-border/70 bg-card'>
+        <TemplateImageDialog template={template} previewSizes={previewSizes} />
+      </div>
+      <div className='flex flex-1 flex-col justify-between gap-3 pt-4'>
+        <div>
+          <Heading className='text-xl font-semibold tracking-[-0.025em]'>
             {template.name}
           </Heading>
-          <p className='min-h-10 text-xs leading-5 text-muted-foreground sm:min-h-0'>
+          <p className='mt-1 text-xs leading-relaxed text-muted-foreground'>
             {template.layoutDescription}
           </p>
         </div>
         <Button
-          variant='outline'
+          variant='ghost'
           size='sm'
           aria-label={`Create resume with ${template.name} template`}
-          className='w-full min-h-11 gap-2 transition-colors group-hover:border-foreground/30'
+          className='-ml-3 min-h-11 w-fit justify-start gap-2 px-3 text-sm font-medium transition-colors group-hover:text-foreground'
           onClick={handleUseTemplate}
           disabled={isCreating}
         >
           {isCreating ? 'Creating...' : 'Create resume'}
-          <ArrowRight className='size-3.5' />
+          <ArrowRight
+            aria-hidden='true'
+            className='size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0'
+          />
         </Button>
       </div>
-    </div>
+    </article>
   );
 };

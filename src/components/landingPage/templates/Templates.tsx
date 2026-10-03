@@ -1,103 +1,139 @@
-import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useReducedMotion } from 'motion/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { LandingSectionIntro } from '@/components/landingPage/LandingSectionIntro';
 import { Button } from '@/components/ui/button';
 import { templateOptionsWithImages } from '../../appHome/resumeTemplates/resumeTemplates.constants';
 import { TemplateCard } from './TemplateCard';
 
 export const Templates = () => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    loop: false,
-    slidesToScroll: 1,
-  });
-
+  const railRef = useRef<HTMLElement>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const updateScrollState = useCallback(() => {
-    if (!emblaApi) {
+    const rail = railRef.current;
+    if (!rail) {
       return;
     }
 
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, [emblaApi]);
+    const startInset = Number.parseFloat(
+      window.getComputedStyle(rail).paddingLeft
+    );
+    const maxScroll = rail.scrollWidth - rail.clientWidth;
+    setCanScrollPrev(rail.scrollLeft > startInset + 1);
+    setCanScrollNext(rail.scrollLeft < maxScroll - 1);
+  }, []);
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollByCard = useCallback(
+    (direction: -1 | 1) => {
+      const rail = railRef.current;
+      const firstSlide = rail?.querySelector<HTMLElement>(
+        '[data-template-slide]'
+      );
+      if (!rail || !firstSlide) {
+        return;
+      }
+
+      const track = rail.firstElementChild;
+      const gap = Number.parseFloat(
+        track ? window.getComputedStyle(track).columnGap : '0'
+      );
+      rail.scrollBy({
+        left:
+          direction * (firstSlide.offsetWidth + (Number.isNaN(gap) ? 0 : gap)),
+        behavior: shouldReduceMotion ? 'auto' : 'smooth',
+      });
+    },
+    [shouldReduceMotion]
+  );
 
   useEffect(() => {
-    if (!emblaApi) {
+    const rail = railRef.current;
+    if (!rail) {
       return;
     }
 
     updateScrollState();
-    emblaApi.on('select', updateScrollState);
-    emblaApi.on('reInit', updateScrollState);
+    rail.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updateScrollState);
+    resizeObserver?.observe(rail);
+    if (rail.firstElementChild) {
+      resizeObserver?.observe(rail.firstElementChild);
+    }
 
     return () => {
-      emblaApi.off('select', updateScrollState);
-      emblaApi.off('reInit', updateScrollState);
+      rail.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+      resizeObserver?.disconnect();
     };
-  }, [emblaApi, updateScrollState]);
+  }, [updateScrollState]);
 
   return (
     <section
       id='templates'
-      className='w-full scroll-mt-24 border-t border-border/70 py-16 md:py-24'
+      aria-labelledby='templates-title'
+      className='scroll-mt-28 border-t border-border/70 px-[var(--page-gutter)] py-20 sm:py-24 lg:py-28'
     >
-      <div className='container mx-auto max-w-6xl px-4'>
-        <div className='mb-8 flex flex-wrap items-end justify-between gap-4'>
-          <div className='space-y-3'>
-            <p className='text-xs font-semibold uppercase tracking-widest text-muted-foreground'>
-              Templates
-            </p>
-            <h2 className='text-balance text-3xl font-bold tracking-tight md:text-4xl'>
-              Pick your style.
-            </h2>
-            <p className='max-w-md text-base text-muted-foreground'>
-              Five polished layouts for different roles, levels, and personal
-              taste.
-            </p>
-          </div>
+      <div className='mx-auto max-w-7xl'>
+        <LandingSectionIntro
+          titleId='templates-title'
+          title='Pick your style.'
+          description='Five polished layouts for different roles, levels, and personal taste.'
+        />
 
+        <div className='mb-5 mt-8 flex items-center justify-between gap-4 sm:mb-6 sm:mt-10'>
+          <p className='text-sm text-muted-foreground'>
+            Swipe or scroll to explore all five layouts.
+          </p>
           <div className='flex shrink-0 items-center gap-2'>
             <Button
               variant='outline'
               size='icon'
-              aria-label='Previous template'
+              aria-label='Previous resume templates'
               className='size-11'
-              onClick={scrollPrev}
+              onClick={() => scrollByCard(-1)}
               disabled={!canScrollPrev}
             >
-              <ChevronLeft className='size-4' />
+              <ChevronLeft aria-hidden='true' className='size-4' />
             </Button>
             <Button
               variant='outline'
               size='icon'
-              aria-label='Next template'
+              aria-label='Next resume templates'
               className='size-11'
-              onClick={scrollNext}
+              onClick={() => scrollByCard(1)}
               disabled={!canScrollNext}
             >
-              <ChevronRight className='size-4' />
+              <ChevronRight aria-hidden='true' className='size-4' />
             </Button>
           </div>
         </div>
 
-        <div className='overflow-hidden p-1 -m-1' ref={emblaRef}>
-          <div className='flex gap-5'>
+        <section
+          ref={railRef}
+          aria-label='Five resume templates'
+          aria-roledescription='carousel'
+          className='-mx-[var(--page-gutter)] snap-x snap-mandatory overflow-x-auto overscroll-x-contain px-[var(--page-gutter)] pb-3 pt-1'
+        >
+          <ul className='flex list-none gap-6'>
             {templateOptionsWithImages.map((template) => (
-              <div
+              <li
                 key={template.name}
-                className='w-[min(17.5rem,calc(100vw-3rem))] flex-none sm:w-75'
+                data-template-slide
+                className='w-[min(82vw,18rem)] shrink-0 snap-start sm:w-[min(40vw,17rem)] lg:w-[15rem] xl:w-[13.5rem]'
               >
                 <TemplateCard template={template} />
-              </div>
+              </li>
             ))}
-          </div>
-        </div>
+          </ul>
+        </section>
       </div>
     </section>
   );
