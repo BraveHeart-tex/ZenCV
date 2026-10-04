@@ -111,10 +111,7 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     <>
       <article
         className={cn(
-          'group flex min-h-[13rem] min-w-0 flex-col gap-6 rounded-md border border-border/70 bg-card/40 p-4 sm:p-5',
-          'transition-[background-color,border-color,transform] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)]',
-          'hover:-translate-y-px hover:border-border hover:bg-card',
-          'motion-reduce:transform-none motion-reduce:transition-none'
+          'flex min-h-[13rem] min-w-0 flex-col gap-6 rounded-md border border-border/70 bg-card/40 p-4 sm:p-5'
         )}
       >
         <div className='flex min-w-0 items-start justify-between gap-3'>
