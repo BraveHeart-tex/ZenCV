@@ -3,14 +3,17 @@ import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils/stringUtils';
 import { CreateDocumentForm } from './CreateDocumentForm';
 
 interface CreateDocumentDialogProps {
   triggerVariant?: 'default' | 'sidebar' | 'icon' | 'card';
+  triggerClassName?: string;
 }
 
 export const CreateDocumentDialog = ({
   triggerVariant = 'default',
+  triggerClassName,
 }: CreateDocumentDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -19,7 +22,10 @@ export const CreateDocumentDialog = ({
   const renderTrigger = () => {
     if (triggerVariant === 'default') {
       return (
-        <Button variant={open ? 'outline' : 'default'} className='h-11 lg:h-9'>
+        <Button
+          variant={open ? 'outline' : 'default'}
+          className={cn('h-11 lg:h-9', triggerClassName)}
+        >
           <PlusIcon className='w-4 h-4' />
           New Resume
         </Button>

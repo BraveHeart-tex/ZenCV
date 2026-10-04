@@ -1,5 +1,6 @@
 // DocumentCard.tsx
 import {
+  ArrowUpRight,
   CopyIcon,
   FileSymlink,
   FileText,
@@ -110,40 +111,38 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
     <>
       <article
         className={cn(
-          'group relative flex flex-col gap-3 rounded-xl border border-border bg-card p-4',
-          'hover:border-border hover:shadow-md hover:bg-accent/30',
-          'shadow-sm transition-all duration-200'
+          'group flex min-h-[13rem] min-w-0 flex-col gap-6 rounded-md border border-border/70 bg-card/40 p-4 sm:p-5',
+          'transition-[background-color,border-color,transform] duration-[var(--duration-quick)] ease-[var(--ease-out-quart)]',
+          'hover:-translate-y-px hover:border-border hover:bg-card',
+          'motion-reduce:transform-none motion-reduce:transition-none'
         )}
       >
-        <div className='flex items-start justify-between gap-3 sm:gap-2'>
-          <div className='min-w-0 flex-1 space-y-1.5 pr-1'>
+        <div className='flex min-w-0 items-start justify-between gap-3'>
+          <div className='min-w-0 flex-1 space-y-3'>
             <h3
-              className='line-clamp-2 text-sm font-semibold leading-snug lg:truncate'
+              className='break-words text-lg font-semibold leading-snug tracking-tight [overflow-wrap:anywhere]'
               title={document.title}
             >
               {document.title}
             </h3>
-            <div className='flex min-w-0 flex-wrap items-center gap-1.5'>
-              <span className='inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground'>
-                <FileText className='h-3 w-3' />
-                {templateName}
-              </span>
-            </div>
+            <p className='flex min-w-0 items-center gap-2 text-sm text-muted-foreground'>
+              <FileText
+                aria-hidden='true'
+                className='size-4 shrink-0 text-editorial-accent'
+                strokeWidth={1.75}
+              />
+              <span className='min-w-0 truncate'>{templateName} template</span>
+            </p>
           </div>
 
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant='ghost'
-                className={cn(
-                  'h-11 w-11 shrink-0 p-0 text-muted-foreground lg:h-7 lg:w-7',
-                  'opacity-100',
-                  'hover:text-foreground hover:bg-muted/60',
-                  isOpen && 'opacity-100'
-                )}
+                aria-label={`Actions for ${document.title}`}
+                className='size-11 shrink-0 p-0 text-muted-foreground hover:bg-muted/60 hover:text-foreground sm:size-9'
               >
-                <span className='sr-only'>Actions for {document.title}</span>
-                <MoreHorizontal className='w-4 h-4' />
+                <MoreHorizontal aria-hidden='true' className='size-4' />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
@@ -172,18 +171,23 @@ export const DocumentCard = ({ document }: DocumentCardProps) => {
           </DropdownMenu>
         </div>
 
-        <div className='mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 lg:pt-2'>
-          <span className='min-w-0 truncate text-xs tabular-nums text-muted-foreground'>
+        <div className='mt-auto flex min-w-0 items-center justify-between gap-3 border-t border-border/60 pt-3'>
+          <time
+            dateTime={document.updatedAt}
+            className='min-w-0 flex-1 text-xs leading-5 tabular-nums text-muted-foreground'
+          >
             Updated {formattedDate}
-          </span>
+          </time>
           <Button
             asChild
-            size='sm'
             variant='outline'
-            className='h-11 shrink-0 px-3 lg:h-8'
+            className='h-11 shrink-0 px-3 sm:h-9'
           >
-            <Link to={`/builder/${document.id}`}>
-              <FileSymlink className='w-4 h-4' />
+            <Link
+              to={`/builder/${document.id}`}
+              aria-label={`Open ${document.title}`}
+            >
+              <ArrowUpRight aria-hidden='true' className='size-4' />
               Open
             </Link>
           </Button>
