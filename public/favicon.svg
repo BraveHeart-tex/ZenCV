@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <style>
+    .ink { fill: #171715; }
+    .accent { fill: #b9493c; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #f0eee4; }
+    }
+  </style>
+  <g transform="translate(3.5 3.5)">
+    <g transform="rotate(45 8.5 8.5)">
+      <rect class="ink" width="7.5" height="7.5" />
+      <rect class="accent" x="9.5" width="7.5" height="7.5" />
+      <rect class="ink" y="9.5" width="7.5" height="7.5" />
+      <rect class="ink" x="9.5" y="9.5" width="7.5" height="7.5" />
+    </g>
+  </g>
+</svg>

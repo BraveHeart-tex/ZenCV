@@ -42,26 +42,28 @@ export const AppSidebar = () => {
 
   return (
     <Sidebar collapsible='icon' className='border-sidebar-border/70'>
-      <SidebarHeader className='px-4 py-5'>
+      <SidebarHeader className='px-4 py-5 group-data-[collapsible=icon]:px-2'>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size='lg'
               asChild
               tooltip={APP_NAME}
-              className='gap-3 rounded-md px-2 hover:bg-transparent'
+              className='gap-3 rounded-md px-2 hover:bg-transparent group-data-[collapsible=icon]:justify-center'
             >
-              <Link to='/'>
+              <Link to='/' aria-label={APP_NAME}>
                 <div className='flex aspect-square size-8 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground'>
                   <Icons.logo />
                 </div>
-                <span className='font-semibold leading-none'>{APP_NAME}</span>
+                <span className='font-semibold leading-none group-data-[collapsible=icon]:hidden'>
+                  {APP_NAME}
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className='gap-5 px-3 py-4'>
+      <SidebarContent className='gap-5 px-3 py-4 group-data-[collapsible=icon]:px-2'>
         <SidebarGroup className='p-0'>
           <SidebarGroupContent>
             <SidebarMenu className='gap-1.5'>
@@ -81,7 +83,8 @@ export const AppSidebar = () => {
                       asChild
                       isActive={item.url === pathname}
                       tooltip={item.title}
-                      className='h-10 rounded-md px-3 font-medium text-sidebar-foreground/75 transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground data-[active=true]:[&_svg]:text-editorial-accent motion-reduce:transition-none'
+                      aria-label={item.title}
+                      className='h-10 rounded-md px-3 font-medium text-sidebar-foreground/75 transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground data-[active=true]:[&_svg]:text-editorial-accent group-data-[collapsible=icon]:justify-center motion-reduce:transition-none'
                     >
                       <SidebarLink
                         item={item}
@@ -95,7 +98,7 @@ export const AppSidebar = () => {
           </SidebarGroup>
         </nav>
       </SidebarContent>
-      <SidebarFooter className='border-t border-sidebar-border/70 px-3 py-3'>
+      <SidebarFooter className='border-t border-sidebar-border/70 px-3 py-3 group-data-[collapsible=icon]:px-2'>
         <SidebarMenu>
           <SidebarMenuItem>
             <AppColorModeToggle shouldShowSidebarButton />
@@ -131,7 +134,7 @@ export const SidebarLink = ({
       }
     >
       <item.icon />
-      <span>{item.title}</span>
+      <span className='group-data-[collapsible=icon]:hidden'>{item.title}</span>
     </Link>
   );
 };

@@ -37,7 +37,7 @@ export const ApplicationLayoutWithSidebar = () => {
           title={currentPage.title}
           icon={currentPage.icon}
         />
-        <div className='mx-auto flex w-full max-w-[var(--content-max-width)] flex-1 flex-col px-[var(--page-gutter)] py-8 sm:py-10 lg:py-12'>
+        <div className='ml-0 mr-auto flex w-full max-w-[var(--content-max-width)] flex-1 flex-col pl-4 pr-[var(--page-gutter)] py-8 sm:py-10 sm:pl-5 lg:py-12 lg:pl-6'>
           <Outlet />
         </div>
       </SidebarInset>

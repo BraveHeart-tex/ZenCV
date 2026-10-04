@@ -43,7 +43,7 @@ export function SettingsPage() {
     }
   }, [hash]);
   return (
-    <div className='mx-auto w-full max-w-5xl'>
+    <div className='ml-0 mr-auto w-full max-w-5xl'>
       <p className='mb-7 max-w-[38rem] border-b border-border/70 pb-6 text-sm leading-6 text-muted-foreground'>
         Preferences apply to all resumes in this browser. Changes save
         automatically.

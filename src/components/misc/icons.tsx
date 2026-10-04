@@ -1,7 +1,32 @@
-import { FileUser, type LucideProps, Moon, SunMedium } from 'lucide-react';
+import { type LucideProps, Moon, SunMedium } from 'lucide-react';
+import type { SVGProps } from 'react';
 
 export const Icons = {
-  logo: (props: LucideProps) => <FileUser className='size-6' {...props} />,
+  logo: (props: SVGProps<SVGSVGElement>) => (
+    <svg
+      aria-hidden='true'
+      className='size-6'
+      fill='currentColor'
+      viewBox='0 0 24 24'
+      xmlns='http://www.w3.org/2000/svg'
+      {...props}
+    >
+      <g transform='translate(3.5 3.5)'>
+        <g transform='rotate(45 8.5 8.5)'>
+          <rect height='7.5' width='7.5' x='0' y='0' />
+          <rect
+            className='fill-editorial-accent'
+            height='7.5'
+            width='7.5'
+            x='9.5'
+            y='0'
+          />
+          <rect height='7.5' width='7.5' x='0' y='9.5' />
+          <rect height='7.5' width='7.5' x='9.5' y='9.5' />
+        </g>
+      </g>
+    </svg>
+  ),
   sun: SunMedium,
   moon: Moon,
   twitter: (props: LucideProps) => (

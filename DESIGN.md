@@ -40,7 +40,8 @@ ZenCV uses a restrained editorial interface: Swiss typographic clarity, Japanese
 
 ## Icons
 
-- Use the existing Lucide icon set. Keep icon size and stroke weight consistent with adjacent text and controls.
+- Use Lucide for actions and states. Use the prototype's four-part geometric mark for ZenCV branding, with one muted red segment.
+- Keep functional icon size and stroke weight consistent with adjacent text and controls.
 - Icons should clarify an action or state. Avoid decorative icon clusters, emoji, and icon-only controls without an accessible name.
 
 ## Motion
