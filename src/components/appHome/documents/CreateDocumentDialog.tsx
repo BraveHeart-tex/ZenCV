@@ -50,7 +50,11 @@ export const CreateDocumentDialog = ({
 
     if (triggerVariant === 'sidebar') {
       return (
-        <SidebarMenuButton variant='outline'>
+        <SidebarMenuButton
+          variant='outline'
+          tooltip='New Resume'
+          className='h-10 rounded-md border-transparent bg-sidebar-primary px-3 font-semibold text-sidebar-primary-foreground shadow-none transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:bg-sidebar-primary/90 hover:text-sidebar-primary-foreground [&_svg]:text-editorial-accent group-data-[collapsible=icon]:size-10! motion-reduce:transition-none'
+        >
           <FilePlusIcon /> New Resume
         </SidebarMenuButton>
       );

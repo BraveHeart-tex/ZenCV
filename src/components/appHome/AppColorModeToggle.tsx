@@ -49,15 +49,21 @@ export const AppColorModeToggle = ({
 
     const content = (
       <div className='flex items-center gap-2'>
-        <selectedOption.icon className='h-[1.2rem] w-[1.2rem]' />
-        {selectedOption.label}
-        <span className='sr-only'>Select color theme</span>
+        <selectedOption.icon aria-hidden='true' className='size-4' />
+        <span>Appearance</span>
+        <span className='sr-only'>
+          Current theme: {selectedOption.label}. Select color theme.
+        </span>
       </div>
     );
 
     if (shouldShowSidebarButton) {
       return (
-        <SidebarMenuButton variant='outline' className='justify-start w-full'>
+        <SidebarMenuButton
+          variant='outline'
+          tooltip='Appearance'
+          className='h-10 w-full justify-start rounded-md border-transparent bg-transparent px-3 text-sidebar-foreground/75 shadow-none transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:size-10! motion-reduce:transition-none'
+        >
           {content}
         </SidebarMenuButton>
       );

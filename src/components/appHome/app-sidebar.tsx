@@ -1,12 +1,12 @@
-import { Cog, Files, FileUser } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Files, FileUser, Settings2 } from 'lucide-react';
+import type { ComponentProps } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -33,19 +33,26 @@ const appLinks = [
   {
     title: 'Settings',
     url: '/settings',
-    icon: Cog,
+    icon: Settings2,
   },
 ];
 
 export const AppSidebar = () => {
+  const { pathname } = useLocation();
+
   return (
-    <Sidebar collapsible='icon'>
-      <SidebarHeader>
+    <Sidebar collapsible='icon' className='border-sidebar-border/70'>
+      <SidebarHeader className='px-4 py-5'>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size='lg' asChild tooltip={APP_NAME}>
+            <SidebarMenuButton
+              size='lg'
+              asChild
+              tooltip={APP_NAME}
+              className='gap-3 rounded-md px-2 hover:bg-transparent'
+            >
               <Link to='/'>
-                <div className='aspect-square size-8 bg-primary text-primary-foreground flex items-center justify-center rounded-lg'>
+                <div className='flex aspect-square size-8 items-center justify-center rounded-sm bg-sidebar-primary text-sidebar-primary-foreground'>
                   <Icons.logo />
                 </div>
                 <span className='font-semibold leading-none'>{APP_NAME}</span>
@@ -54,33 +61,41 @@ export const AppSidebar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Shortcuts</SidebarGroupLabel>
+      <SidebarContent className='gap-5 px-3 py-4'>
+        <SidebarGroup className='p-0'>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className='gap-1.5'>
               <SidebarMenuItem>
                 <CreateDocumentDialog triggerVariant='sidebar' />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {appLinks.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <SidebarLink item={item} />
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <nav aria-label='Application navigation'>
+          <SidebarGroup className='p-0'>
+            <SidebarGroupContent>
+              <SidebarMenu className='gap-1.5'>
+                {appLinks.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={item.url === pathname}
+                      tooltip={item.title}
+                      className='h-10 rounded-md px-3 font-medium text-sidebar-foreground/75 transition-colors duration-[var(--duration-quick)] ease-[var(--ease-out-quart)] data-[active=true]:font-semibold data-[active=true]:text-sidebar-foreground data-[active=true]:[&_svg]:text-editorial-accent motion-reduce:transition-none'
+                    >
+                      <SidebarLink
+                        item={item}
+                        isActive={item.url === pathname}
+                      />
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </nav>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className='border-t border-sidebar-border/70 px-3 py-3'>
         <SidebarMenu>
           <SidebarMenuItem>
             <AppColorModeToggle shouldShowSidebarButton />
@@ -93,17 +108,20 @@ export const AppSidebar = () => {
 
 export const SidebarLink = ({
   item,
+  isActive,
   ...props
 }: {
   item: (typeof appLinks)[number];
-}) => {
+  isActive: boolean;
+} & Omit<ComponentProps<typeof Link>, 'to' | 'onClick' | 'aria-current'>) => {
   const isMobile = useIsMobile();
   const { setOpenMobile } = useSidebar();
 
   return (
     <Link
-      to={item.url}
       {...props}
+      to={item.url}
+      aria-current={isActive ? 'page' : undefined}
       onClick={
         isMobile
           ? () => {

@@ -1,6 +1,14 @@
-import { Outlet } from 'react-router-dom';
+import { Files, FileUser, Settings2 } from 'lucide-react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { ApplicationPageHeader } from '@/components/appHome/ApplicationPageHeader';
 import { AppSidebar } from '@/components/appHome/app-sidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+
+const applicationPages = [
+  { path: '/documents', title: 'Documents', icon: Files },
+  { path: '/resume-templates', title: 'Resume Templates', icon: FileUser },
+  { path: '/settings', title: 'Settings', icon: Settings2 },
+] as const;
 
 const getDefaultSidebarOpen = () => {
   try {
@@ -16,10 +24,23 @@ const getDefaultSidebarOpen = () => {
 };
 
 export const ApplicationLayoutWithSidebar = () => {
+  const { pathname } = useLocation();
+  const currentPage =
+    applicationPages.find((page) => page.path === pathname) ??
+    applicationPages[0];
+
   return (
     <SidebarProvider defaultOpen={getDefaultSidebarOpen()}>
       <AppSidebar />
-      <Outlet />
+      <SidebarInset className='min-w-0'>
+        <ApplicationPageHeader
+          title={currentPage.title}
+          icon={currentPage.icon}
+        />
+        <div className='mx-auto flex w-full max-w-[var(--content-max-width)] flex-1 flex-col px-[var(--page-gutter)] py-8 sm:py-10 lg:py-12'>
+          <Outlet />
+        </div>
+      </SidebarInset>
     </SidebarProvider>
   );
 };
