@@ -115,31 +115,31 @@ const DocumentsIntroduction = () => (
 const EmptyLibraryState = () => (
   <section
     aria-labelledby='empty-library-title'
-    className='flex min-w-0 flex-col gap-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:py-9'
+    className='flex min-h-0 min-w-0 flex-1 items-center justify-center py-12 sm:py-16'
   >
-    <div className='flex min-w-0 items-start gap-3'>
+    <div className='flex w-full max-w-md flex-col items-center text-center'>
       <FileText
         aria-hidden='true'
-        className='mt-0.5 size-5 shrink-0 text-muted-foreground'
-        strokeWidth={1.75}
+        className='mb-5 size-8 text-editorial-accent'
+        strokeWidth={1.5}
       />
-      <div className='min-w-0 space-y-1.5'>
+      <div className='space-y-2'>
         <h3
           id='empty-library-title'
-          className='text-lg font-semibold tracking-tight'
+          className='text-xl font-semibold tracking-tight sm:text-2xl'
         >
           No resumes yet
         </h3>
-        <p className='max-w-lg text-sm leading-6 text-muted-foreground'>
-          Create your first resume. Your work is saved locally in this browser.
+        <p className='mx-auto max-w-sm text-sm leading-6 text-muted-foreground'>
+          Choose a template and make it yours.
         </p>
       </div>
-    </div>
-    <div className='flex min-w-0 flex-col items-start gap-2 sm:shrink-0 sm:items-end'>
-      <CreateDocumentDialog />
-      <Button asChild variant='link' className='h-11 px-0 text-sm lg:h-9'>
-        <Link to='/settings#data'>Import backup</Link>
-      </Button>
+      <div className='mt-6 flex min-w-0 flex-col items-center gap-2'>
+        <CreateDocumentDialog />
+        <Button asChild variant='link' className='h-11 px-0 text-sm lg:h-9'>
+          <Link to='/settings#data'>Already have a backup? Import it</Link>
+        </Button>
+      </div>
     </div>
   </section>
 );
