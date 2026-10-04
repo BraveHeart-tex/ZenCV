@@ -102,7 +102,7 @@ export const RichTextEditor = ({
     <div className='w-full' ref={containerRef}>
       <div className='border-border bg-card focus-within:border-ring focus-within:ring-ring/30 rounded-md border shadow-none transition-[border-color,box-shadow] focus-within:ring-2 motion-reduce:transition-none'>
         <RichTextEditorMenubar editor={editor} />
-        <div className='min-h-[200px] overflow-auto relative pb-10'>
+        <div className='min-h-[200px] overflow-auto relative bg-background pb-10'>
           <EditorContent ref={ref} editor={editor} className='max-w-none' />
           {footer}
         </div>

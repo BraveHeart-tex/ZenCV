@@ -122,7 +122,7 @@ export const CollapsibleSectionItemContainer = observer(
       <>
         <div
           className={cn(
-            'group relative w-full border-t border-border/50 first:border-t-0',
+            'group relative w-full border-t border-border/75',
             isDragging && 'max-h-68 overflow-hidden'
           )}
           ref={(ref) => {
@@ -178,7 +178,8 @@ export const CollapsibleSectionItemContainer = observer(
                 <Button
                   variant='ghost'
                   className={cn(
-                    'hover:bg-transparent hover:text-foreground flex min-h-14 w-full items-center justify-start py-3 text-left bg-transparent',
+                    'hover:bg-secondary/40 hover:text-foreground flex min-h-14 w-full items-center justify-start py-3 text-left bg-transparent',
+                    open && 'bg-secondary/50 hover:bg-secondary/50',
                     isMobileOrTablet && 'pl-12'
                   )}
                   aria-expanded={open}

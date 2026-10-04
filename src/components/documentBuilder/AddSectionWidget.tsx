@@ -79,7 +79,10 @@ export const AddSectionWidget = observer(() => {
           >
             <SelectTrigger
               id='additional-resume-section'
-              className={`${builderInputClassNames} h-10 min-w-0 flex-1`}
+              className={cn(
+                builderInputClassNames,
+                'h-10 md:h-10 min-w-0 flex-1'
+              )}
             >
               <SelectValue placeholder='Choose a section' />
             </SelectTrigger>
