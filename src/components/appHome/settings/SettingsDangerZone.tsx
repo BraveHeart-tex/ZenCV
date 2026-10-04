@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import {
   SettingsRow,
   SettingsSectionHeader,
@@ -32,21 +33,27 @@ export const SettingsDangerZone = () => {
     });
   };
   return (
-    <div className='space-y-2'>
-      <SettingsSectionHeader title='Reset local data' />
+    <section id='reset' tabIndex={-1} className='space-y-5'>
+      <SettingsSectionHeader
+        title='Reset local data'
+        description='This permanently deletes resumes and editing preferences stored in this browser.'
+      />
       <SettingsRow
         stackOnMobile
+        destructive
+        icon={Trash2}
         label='Delete all local data'
-        description='Permanently removes all resumes and editing preferences in this browser.'
+        description='You will be asked to confirm before anything is removed.'
       >
         <Button
           variant='outline'
-          className='min-h-11 text-destructive hover:text-destructive'
+          className='min-h-11 w-full border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive sm:w-auto'
           onClick={handleDeleteAllData}
         >
+          <Trash2 aria-hidden='true' />
           Delete all data
         </Button>
       </SettingsRow>
-    </div>
+    </section>
   );
 };

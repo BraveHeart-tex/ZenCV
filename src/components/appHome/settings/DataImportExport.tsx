@@ -99,22 +99,23 @@ export const DataImportExport = () => {
   };
 
   return (
-    <section id='data' tabIndex={-1} className='scroll-mt-6 space-y-4'>
+    <section id='data' tabIndex={-1} className='space-y-5'>
       <SettingsSectionHeader
         title='Backups and transfer'
-        description='Keep a copy of your resumes and editing preferences, or move them to another browser.'
+        description='Download all resumes and editing preferences as a JSON file, or restore them in this browser.'
       />
-      <div className='divide-y divide-border/60'>
-        <div className='flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
+      <div className='divide-y divide-border/60 border-y border-border/60'>
+        <div className='flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
           <div className='space-y-1'>
             <p className='text-sm font-medium'>Download backup</p>
             <p className='text-sm text-muted-foreground'>
-              Save all your resumes and editing preferences in one file.
+              Creates one JSON file with all resumes and editing preferences in
+              this browser.
             </p>
           </div>
           <Button
-            variant='outline'
-            className='min-h-11 shrink-0 gap-2'
+            variant='default'
+            className='min-h-11 w-full shrink-0 gap-2 sm:w-auto'
             disabled={pending !== null}
             onClick={handleExport}
           >
@@ -122,17 +123,17 @@ export const DataImportExport = () => {
             {pending === 'download' ? 'Downloading...' : 'Download backup'}
           </Button>
         </div>
-        <div className='flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
+        <div className='flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
           <div className='space-y-1'>
             <p className='text-sm font-medium'>Restore backup</p>
             <p className='text-sm text-muted-foreground'>
-              Replaces all resumes and editing preferences in this browser.
-              Download your current backup first.
+              Replaces all resumes and editing preferences currently in this
+              browser. Download a backup first if you want to keep them.
             </p>
           </div>
           <Button
             variant='outline'
-            className='min-h-11 shrink-0 gap-2'
+            className='min-h-11 w-full shrink-0 gap-2 sm:w-auto'
             disabled={pending !== null}
             onClick={() => importInputRef.current?.click()}
           >

@@ -80,16 +80,16 @@ export const AppColorModeToggle = ({
     return (
       <fieldset
         aria-label='Color theme'
-        className='inline-flex rounded-lg border border-border bg-muted/40 p-1'
+        className='inline-flex w-full max-w-96 rounded-md border border-border bg-muted/50 p-1 sm:w-auto'
       >
         {themeOptions.map((option) => (
           <Button
             key={option.value}
             type='button'
-            variant='ghost'
+            variant={theme === option.value ? 'default' : 'ghost'}
             aria-pressed={theme === option.value}
             onClick={() => setTheme(option.value)}
-            className={`min-h-11 gap-1.5 px-3 text-sm motion-safe:transition-colors ${theme === option.value ? 'bg-foreground text-background hover:bg-foreground/90 hover:text-background' : ''}`}
+            className='min-h-10 min-w-0 flex-1 gap-1.5 rounded-sm px-2 text-xs sm:min-w-20 sm:px-3 sm:text-sm'
           >
             <option.icon aria-hidden='true' className='size-4' />
             {option.label}

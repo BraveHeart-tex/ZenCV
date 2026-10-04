@@ -4,9 +4,13 @@ import {
 } from '@/components/appHome/settings/SettingsShared';
 import { AppColorModeToggle } from '../AppColorModeToggle';
 
-export const GeneralSettings = () => {
+export const GeneralSettings = ({ sectionId }: { sectionId?: string }) => {
   return (
-    <div className='space-y-2'>
+    <section
+      id={sectionId}
+      tabIndex={sectionId ? -1 : undefined}
+      className='space-y-5'
+    >
       <SettingsSectionHeader
         title='Appearance'
         description='Choose how ZenCV looks.'
@@ -18,6 +22,6 @@ export const GeneralSettings = () => {
       >
         <AppColorModeToggle segmented />
       </SettingsRow>
-    </div>
+    </section>
   );
 };
