@@ -59,12 +59,13 @@ export const ResumeOverViewContent = observer(
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className='bg-popover/95 backdrop-blur-sm w-64 mr-3 border border-border/60 rounded-lg shadow-lg overflow-hidden'
+            id='resume-overview-panel'
+            role='region'
+            aria-label='Resume overview'
+            className='bg-popover w-64 overflow-hidden rounded-md border border-border shadow-overlay'
           >
-            <div className='px-3 py-2.5 border-b border-border/40'>
-              <p className='text-xs font-semibold tracking-widest uppercase text-muted-foreground/60'>
-                Overview
-              </p>
+            <div className='border-b border-border/60 px-3 py-2.5'>
+              <p className='text-sm font-medium'>Resume overview</p>
             </div>
 
             <div className='flex flex-col py-1.5 max-h-[50vh] overflow-y-auto'>
@@ -75,16 +76,11 @@ export const ResumeOverViewContent = observer(
                   section.items.filter(isCollapsibleItem);
 
                 return (
-                  <motion.div
-                    key={section.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.15 }}
-                  >
+                  <div key={section.id}>
                     <Button
                       className={cn(
-                        'justify-start w-full px-3 h-8 text-sm font-medium rounded-none',
-                        'hover:bg-muted/60 transition-colors',
+                        'h-9 w-full justify-start rounded-none px-3 text-sm font-medium transition-colors motion-reduce:transition-none',
+                        'hover:bg-muted/60',
                         isSectionFocused
                           ? 'text-foreground'
                           : 'text-muted-foreground hover:text-foreground'
@@ -104,8 +100,8 @@ export const ResumeOverViewContent = observer(
                             <Button
                               key={item.id}
                               className={cn(
-                                'justify-start w-full pl-6 pr-3 h-7 text-xs font-normal rounded-none',
-                                'hover:bg-muted/60 transition-colors truncate',
+                                'h-8 w-full justify-start truncate rounded-none py-1 pl-6 pr-3 text-xs font-normal transition-colors motion-reduce:transition-none',
+                                'hover:bg-muted/60',
                                 isItemFocused
                                   ? 'text-foreground'
                                   : 'text-muted-foreground/70 hover:text-muted-foreground'
@@ -121,7 +117,7 @@ export const ResumeOverViewContent = observer(
                         })}
                       </div>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>

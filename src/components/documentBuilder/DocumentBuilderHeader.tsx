@@ -10,9 +10,9 @@ export const DocumentBuilderHeader = observer(() => {
       {builderSession.document?.title ? (
         <EditableDocumentTitle />
       ) : (
-        <div className='flex items-center gap-2 max-w-[95%]'>
-          <Skeleton className='md:h-9 w-64 h-8' />
-          <Skeleton className='w-9 h-9 rounded-md' />
+        <div className='flex max-w-[95%] items-center gap-2'>
+          <Skeleton className='h-6 w-48 md:h-7 md:w-56' />
+          <Skeleton className='size-8 rounded-md' />
         </div>
       )}
       <DocumentSaveStatus />

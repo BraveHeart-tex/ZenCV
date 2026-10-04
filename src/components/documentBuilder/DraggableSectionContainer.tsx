@@ -32,7 +32,10 @@ export const DraggableSectionContainer = memo(
           transform: CSS.Translate.toString(transform),
         }}
         id={getSectionContainerId(sectionId)}
-        className={cn('grid gap-2 relative group/container', className)}
+        className={cn(
+          'relative grid gap-3 border-t border-border/50 py-5 first:border-t-0 first:pt-0 group/container',
+          className
+        )}
       >
         {children}
       </section>

@@ -10,7 +10,7 @@ export const DocumentBuilderPreviewContent = observer(() => {
   }
 
   return (
-    <div className='hide-scrollbar w-full h-full overflow-auto rounded-md'>
+    <div className='hide-scrollbar h-full w-full overflow-auto'>
       <DocumentBuilderPdfViewer>
         {getPdfTemplateByType(pdfTemplateData)}
       </DocumentBuilderPdfViewer>

@@ -25,16 +25,18 @@ export const MobileTemplatePickerItem = observer(
       <CarouselItem className='basis-1/3 sm:basis-1/4 pl-2'>
         <button
           type='button'
-          className='relative w-full flex flex-col gap-1.5 cursor-pointer'
+          aria-label={`Select ${template.name} template`}
+          aria-pressed={isSelected}
+          className='relative flex w-full flex-col gap-1.5 text-left focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
           onClick={handleSelectTemplate}
         >
           <div
             className={cn(
-              'relative aspect-3/4 rounded-lg w-full transition-all duration-200 border border-transparent',
-              isSelected && 'border-blue-500'
+              'relative aspect-3/4 w-full rounded-md border border-border/70 transition-[border-color,box-shadow] duration-150 motion-reduce:transition-none',
+              isSelected && 'border-foreground ring-1 ring-foreground'
             )}
           >
-            <div className='absolute inset-0 rounded-lg overflow-hidden'>
+            <div className='absolute inset-0 overflow-hidden rounded-md'>
               <TemplateImage
                 template={template}
                 variant='card'
@@ -42,14 +44,13 @@ export const MobileTemplatePickerItem = observer(
                   width: 400,
                   height: 566,
                   className: 'object-cover w-full h-full',
-                  alt: template.name,
+                  alt: '',
                 }}
               />
               {isSelected && (
-                <div className='absolute inset-0 bg-blue-500/10 flex items-center justify-center'>
-                  <span className='bg-blue-500 text-white flex items-center justify-center w-7 h-7 rounded-full shadow-md'>
-                    <CheckIcon className='w-4 h-4' />
-                  </span>
+                <div className='absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border border-border/70 bg-background/95 text-foreground shadow-sm'>
+                  <span className='sr-only'>Selected</span>
+                  <CheckIcon aria-hidden='true' className='size-4' />
                 </div>
               )}
             </div>
@@ -57,8 +58,8 @@ export const MobileTemplatePickerItem = observer(
 
           <p
             className={cn(
-              'text-xs font-medium text-center truncate w-full transition-colors',
-              isSelected ? 'text-blue-500' : 'text-muted-foreground'
+              'w-full truncate text-xs font-medium text-center transition-colors motion-reduce:transition-none',
+              isSelected ? 'text-foreground' : 'text-muted-foreground'
             )}
           >
             {template.name}

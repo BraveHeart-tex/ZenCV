@@ -17,6 +17,8 @@ export const TemplateGalleryHeader = observer(() => {
       <Button
         variant='ghost'
         className='items-center gap-2 px-1'
+        aria-label='Back to editor'
+        title='Back to editor'
         onClick={action(() => {
           builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
         })}

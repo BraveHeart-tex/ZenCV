@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useBlocker, useNavigate, useParams } from 'react-router-dom';
-import { DocumentBuilderViewToggle } from '@/components/documentBuilder/builderViewOptions/DocumentBuilderViewToggle';
 import { DocumentBuilderClient } from '@/components/documentBuilder/DocumentBuilderClient';
 import { PreviewSkeleton } from '@/components/documentBuilder/PreviewSkeleton';
 import { ResumeOverview } from '@/components/documentBuilder/resumeOverview/ResumeOverview';
@@ -113,7 +112,7 @@ export const BuilderPage = observer(() => {
   if (session.state.status === 'failed') {
     return (
       <main className='bg-background flex min-h-screen items-center justify-center p-6'>
-        <section className='border-border bg-card w-full max-w-md rounded-xl border p-6'>
+        <section className='border-border bg-card w-full max-w-md rounded-md border p-6'>
           <h1 className='text-lg font-semibold'>Unable to open this resume</h1>
           <p className='text-muted-foreground mt-2 text-sm leading-6'>
             {session.state.message}
@@ -151,7 +150,6 @@ export const BuilderPage = observer(() => {
           </Suspense>
         ) : null}
       </div>
-      <DocumentBuilderViewToggle />
     </LazyMotionWrapper>
   );
 });

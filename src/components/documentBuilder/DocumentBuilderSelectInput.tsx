@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
+import { builderInputClassNames } from './inputs/builderInput.constants';
 
 export const DocumentBuilderSelectInput = observer(
   ({ fieldId }: { fieldId: FieldId }) => {
@@ -32,7 +33,7 @@ export const DocumentBuilderSelectInput = observer(
           })}
         >
           <SelectTrigger
-            className='w-full'
+            className={`${builderInputClassNames} w-full`}
             id={htmlInputId}
             aria-invalid={!!field.saveError}
             aria-describedby={

@@ -14,13 +14,13 @@ export const DocumentBuilderPreview = observer(() => {
   return (
     <div
       className={cn(
-        'bg-secondary fixed inset-y-0 right-0 w-1/2',
+        'bg-secondary/70 fixed inset-y-0 right-0 w-1/2',
         view === BUILDER_CURRENT_VIEWS.PREVIEW && 'w-full xl:w-1/2',
         view === BUILDER_CURRENT_VIEWS.BUILDER && 'hidden xl:block'
       )}
     >
-      <div className='mx-auto flex h-dvh flex-col gap-3 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-5'>
-        <div className='shrink-0 space-y-1'>
+      <div className='mx-auto flex h-dvh flex-col gap-2 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:px-5'>
+        <div className='shrink-0'>
           <DocumentBuilderPreviewHeader />
           <div className='xl:hidden'>
             <DocumentSaveStatus />
@@ -29,7 +29,7 @@ export const DocumentBuilderPreview = observer(() => {
         <div className='min-h-0 flex-1'>
           <DocumentBuilderPreviewContent />
         </div>
-        <div className='flex shrink-0 flex-wrap items-center justify-center gap-x-6 gap-y-1'>
+        <div className='flex shrink-0 flex-wrap items-center justify-center gap-x-4 gap-y-0 border-t border-border/40 pt-1'>
           <PdfViewerPageControls />
           <PdfViewerZoomControls />
         </div>

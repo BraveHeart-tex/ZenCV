@@ -17,7 +17,7 @@ export const DocumentBuilderPreviewHeader = observer(() => {
     <div className='mx-auto flex w-full items-center justify-between gap-2'>
       <Button
         className={cn('xl:hidden', view === 'preview' && 'flex xl:hidden')}
-        variant='outline'
+        variant='ghost'
         aria-label='Back to editor'
         onClick={action(() => {
           builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.BUILDER;
@@ -37,7 +37,7 @@ export const DocumentBuilderPreviewHeader = observer(() => {
         Templates
       </Button>
       <Button
-        className='self-end'
+        className='shrink-0'
         aria-label='Download PDF'
         disabled={!previousRenderValue || pdfViewerStore.rendering}
         onClick={() =>
@@ -48,9 +48,7 @@ export const DocumentBuilderPreviewHeader = observer(() => {
         }
       >
         <DownloadIcon aria-hidden='true' />
-        <span>
-          Download<span className='hidden md:inline'> PDF</span>
-        </span>
+        <span>Download PDF</span>
       </Button>
     </div>
   );

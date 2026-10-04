@@ -122,7 +122,7 @@ export const CollapsibleSectionItemContainer = observer(
       <>
         <div
           className={cn(
-            'group relative w-full',
+            'group relative w-full border-t border-border/50 first:border-t-0',
             isDragging && 'max-h-68 overflow-hidden'
           )}
           ref={(ref) => {
@@ -171,17 +171,14 @@ export const CollapsibleSectionItemContainer = observer(
             </TooltipProvider>
           )}
           <motion.div
-            className={cn(
-              'rounded-md border flex flex-col transition-all w-full pt-2 lg:pt-0',
-              open && 'max-h-max'
-            )}
+            className={cn('flex w-full flex-col py-1', open && 'max-h-max')}
           >
             <div className='flex items-center justify-center w-full h-full'>
               <div className='group flex items-center justify-between w-full h-full'>
                 <Button
                   variant='ghost'
                   className={cn(
-                    'hover:bg-transparent hover:text-primary flex items-center justify-start w-full h-full py-4 text-left bg-transparent',
+                    'hover:bg-transparent hover:text-foreground flex min-h-14 w-full items-center justify-start py-3 text-left bg-transparent',
                     isMobileOrTablet && 'pl-12'
                   )}
                   aria-expanded={open}
@@ -206,7 +203,7 @@ export const CollapsibleSectionItemContainer = observer(
                       <div className='flex flex-col'>
                         <Button
                           variant='ghost'
-                          className='flex items-center justify-start w-full gap-2 py-6 border-b rounded-none'
+                          className='flex min-h-11 w-full items-center justify-start gap-2 rounded-none border-b py-3'
                           onClick={() =>
                             builderSession.UIStore.toggleItem(itemId)
                           }
@@ -216,7 +213,7 @@ export const CollapsibleSectionItemContainer = observer(
                         </Button>
                         <Button
                           variant='ghost'
-                          className='flex items-center justify-start w-full gap-2 py-6'
+                          className='flex min-h-11 w-full items-center justify-start gap-2 py-3'
                           onClick={handleDeleteItemClick}
                         >
                           <TrashIcon className='text-primary' size={18} />
@@ -262,7 +259,9 @@ export const CollapsibleSectionItemContainer = observer(
                       transition: itemContentTransition,
                     }}
                   >
-                    <div className='grid grid-cols-2 gap-4 p-4'>{children}</div>
+                    <div className='grid grid-cols-1 gap-x-4 gap-y-5 px-3 pb-5 pt-1 sm:grid-cols-2 sm:px-4'>
+                      {children}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

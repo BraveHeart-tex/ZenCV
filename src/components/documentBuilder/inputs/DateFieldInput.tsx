@@ -35,6 +35,7 @@ import {
 } from '@/lib/helpers/dateInputHelpers';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
+import { builderInputClassNames } from './builderInput.constants';
 import { canMarkDateAsPresent } from './dateFieldInputUtils';
 
 const PRESENT = 'Present';
@@ -138,6 +139,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
           onBlur={handleBlur}
           placeholder={isPresent ? 'Present' : 'e.g. Mar 2023'}
           className={cn(
+            builderInputClassNames,
             'pl-10',
             isPresent && 'text-muted-foreground italic',
             isError && 'focus-visible:ring-destructive border-destructive/50'

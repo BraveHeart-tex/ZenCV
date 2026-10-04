@@ -1,6 +1,6 @@
 import { autorun } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import {
   getItemContainerId,
@@ -20,6 +20,7 @@ export const ResumeOverview = observer(() => {
     sectionId: null,
     itemId: null,
   });
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -90,15 +91,37 @@ export const ResumeOverview = observer(() => {
 
   return (
     <article
-      className='group fixed right-0 top-[25%] z-500 flex items-start'
+      className='fixed right-[calc(50%_+_0.5rem)] top-[25%] z-50 hidden flex-row-reverse items-start gap-2 xl:flex'
       onMouseEnter={() => {
         setVisible(true);
       }}
       onMouseLeave={() => {
         setVisible(false);
       }}
+      onFocus={() => {
+        setVisible(true);
+      }}
+      onBlur={(event) => {
+        const nextTarget = event.relatedTarget;
+        if (
+          !(nextTarget instanceof Node) ||
+          !event.currentTarget.contains(nextTarget)
+        ) {
+          setVisible(false);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') {
+          setVisible(false);
+          triggerRef.current?.focus();
+        }
+      }}
     >
-      <ResumeOverviewTrigger focusState={focusState} visible={visible} />
+      <ResumeOverviewTrigger
+        visible={visible}
+        onToggle={() => setVisible((current) => !current)}
+        triggerRef={triggerRef}
+      />
       <ResumeOverViewContent focusState={focusState} visible={visible} />
     </article>
   );

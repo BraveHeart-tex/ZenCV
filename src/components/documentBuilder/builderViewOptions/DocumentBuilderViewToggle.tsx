@@ -1,4 +1,4 @@
-import { File } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { action } from 'mobx';
 import { Button } from '@/components/ui/button';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
@@ -13,15 +13,16 @@ export const DocumentBuilderViewToggle = () => {
 
   return (
     <Button
-      aria-label='Open preview and download options'
-      className='fixed right-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 flex h-12 max-w-[calc(100%-1.5rem)] items-center justify-center gap-2 rounded-lg px-5 text-base shadow-lg transition-[background-color,box-shadow] duration-200 ease-(--ease-out-quart) active:shadow-md motion-reduce:transition-none sm:right-5 xl:hidden'
-      size='lg'
+      aria-label='Open resume preview'
+      className='h-9 shrink-0 gap-1.5 px-2 text-xs xl:hidden'
+      size='sm'
+      variant='ghost'
       onClick={action(() => {
         builderSession.UIStore.currentView = BUILDER_CURRENT_VIEWS.PREVIEW;
       })}
     >
+      <Eye aria-hidden='true' className='size-4' />
       <span className='font-medium'>Preview</span>
-      <File aria-hidden='true' size={22} />
     </Button>
   );
 };

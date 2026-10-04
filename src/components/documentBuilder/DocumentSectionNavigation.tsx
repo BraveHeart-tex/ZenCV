@@ -76,7 +76,7 @@ export const DocumentSectionNavigation = observer(() => {
     <nav
       id='editor-section-navigation'
       aria-label='Resume sections'
-      className='mx-auto max-w-2xl border-t px-3 py-2 md:px-0'
+      className='mx-auto max-w-2xl border-t border-border/50 px-3 py-2 md:px-0'
     >
       <div className='flex items-center gap-3 xl:hidden'>
         <label
@@ -91,7 +91,7 @@ export const DocumentSectionNavigation = observer(() => {
           onChange={(event) =>
             goToSection(Number(event.target.value) as SectionId)
           }
-          className='border-input bg-background text-foreground h-11 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2'
+          className='border-border bg-card text-foreground focus-visible:ring-ring/40 h-10 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-hidden focus-visible:ring-2'
         >
           {sections.map((section) => (
             <option key={section.id} value={section.id}>
@@ -100,7 +100,7 @@ export const DocumentSectionNavigation = observer(() => {
           ))}
         </select>
       </div>
-      <div className='hidden flex-wrap gap-1 xl:flex'>
+      <div className='hide-scrollbar hidden gap-1 overflow-x-auto xl:flex xl:flex-nowrap'>
         {sections.map((section) => (
           <button
             key={section.id}
@@ -110,7 +110,7 @@ export const DocumentSectionNavigation = observer(() => {
             }
             onClick={() => goToSection(section.id)}
             className={cn(
-              'min-h-9 rounded-md px-2.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
+              'min-h-9 shrink-0 rounded-md px-2.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none',
               ui.activeSectionId === section.id
                 ? 'bg-secondary text-foreground font-medium'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'

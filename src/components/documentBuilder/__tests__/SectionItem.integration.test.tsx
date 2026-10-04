@@ -273,11 +273,14 @@ describe('document editor integration', () => {
     const { container } = renderItem(item.id);
     fireEvent.click(screen.getByRole('button', { name: /^Expand entry:/ }));
 
-    const outerGrid = container.querySelector('.grid.grid-cols-2.gap-4.p-4');
+    const outerGrid = container.querySelector(
+      '.grid.grid-cols-1.gap-x-4.gap-y-5'
+    );
     const form = outerGrid?.firstElementChild;
     const dates = screen.getByRole('group', { name: 'Employment dates' });
     expect(form?.classList.contains('lg:col-span-2')).toBe(true);
     expect(form?.classList.contains('lg:grid-cols-2')).toBe(true);
+    expect(outerGrid?.classList.contains('sm:grid-cols-2')).toBe(true);
     expect(dates.parentElement).toBe(form);
     expect(dates.classList.contains('col-span-1')).toBe(true);
     expect(dates.classList.contains('lg:col-span-2')).toBe(true);

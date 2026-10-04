@@ -1,4 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
+import { type LucideIcon, PlusIcon } from 'lucide-react';
 import { action } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
@@ -19,6 +19,7 @@ import {
   OTHER_SECTION_OPTIONS,
 } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { cn } from '@/lib/utils/stringUtils';
+import { builderInputClassNames } from './inputs/builderInput.constants';
 
 export interface OtherSectionOption {
   sectionKey: SemanticSectionKey;
@@ -62,18 +63,15 @@ export const AddSectionWidget = observer(() => {
   });
 
   return (
-    <article className='border-border/70 space-y-3 border-t pt-6'>
-      <div className='space-y-1'>
-        <h3 className={cn(builderSectionTitleClassNames, 'text-xl')}>
-          Add section
-        </h3>
-        <p className='text-muted-foreground text-sm'>
-          Add only the sections that strengthen this version of your CV.
-        </p>
-      </div>
-      <div className='space-y-2'>
-        <Label htmlFor='additional-resume-section'>Choose a section</Label>
-        <div className='flex flex-wrap gap-2'>
+    <article className='space-y-3 border-t border-border/60 pt-5'>
+      <h3 className={cn(builderSectionTitleClassNames, 'text-base')}>
+        Add section
+      </h3>
+      <div>
+        <Label className='sr-only' htmlFor='additional-resume-section'>
+          Choose a section
+        </Label>
+        <div className='flex gap-2'>
           <Select
             value={selectedOption?.sectionKey ?? ''}
             disabled={adding}
@@ -81,7 +79,7 @@ export const AddSectionWidget = observer(() => {
           >
             <SelectTrigger
               id='additional-resume-section'
-              className='h-11 min-w-0 flex-1'
+              className={`${builderInputClassNames} h-10 min-w-0 flex-1`}
             >
               <SelectValue placeholder='Choose a section' />
             </SelectTrigger>
@@ -95,7 +93,7 @@ export const AddSectionWidget = observer(() => {
           </Select>
           <Button
             variant='outline'
-            className='h-11'
+            className='h-10 shrink-0'
             disabled={adding || !selectedOption}
             onClick={() => {
               if (selectedOption) {
@@ -103,7 +101,8 @@ export const AddSectionWidget = observer(() => {
               }
             }}
           >
-            {adding ? 'Adding...' : 'Add section'}
+            <PlusIcon aria-hidden='true' />
+            {adding ? 'Adding…' : 'Add'}
           </Button>
         </div>
       </div>

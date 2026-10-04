@@ -74,10 +74,10 @@ export const EditableSectionTitle = observer(
       <div className='group flex items-center w-full gap-1'>
         {section.definition.sectionCardinality === 'required-one' ? null : (
           <Button
-            variant='outline'
+            variant='ghost'
             size='icon'
             aria-label={`Drag ${section.title} section`}
-            className='cursor-grab touch-none z-10 size-11 md:size-9'
+            className='text-muted-foreground hover:text-foreground z-10 size-11 cursor-grab touch-none md:size-9'
             {...attributes}
             {...listeners}
           >
@@ -87,14 +87,14 @@ export const EditableSectionTitle = observer(
         <h2
           id={getSectionTitleId(sectionId)}
           tabIndex={-1}
-          className='scroll-m-20 text-xl font-semibold tracking-tight'
+          className='scroll-m-20 text-lg font-semibold tracking-tight'
         >
           {section.title}
         </h2>
         <div className='flex items-center gap-1'>
           <RenameSectionFormDialog sectionId={sectionId} />
           {isSectionDeletable && (
-            <div className='lg:opacity-0 lg:-translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-in-out'>
+            <div className='transition-opacity duration-150 motion-reduce:transition-none lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100'>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button

@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useLayoutEffect } from 'react';
 import { AddSectionWidget } from '@/components/documentBuilder/AddSectionWidget';
+import { DocumentBuilderViewToggle } from '@/components/documentBuilder/builderViewOptions/DocumentBuilderViewToggle';
 import { DocumentBuilderHeader } from '@/components/documentBuilder/DocumentBuilderHeader';
 import { DocumentSectionNavigation } from '@/components/documentBuilder/DocumentSectionNavigation';
 import { DocumentSections } from '@/components/documentBuilder/DocumentSections';
@@ -49,13 +50,13 @@ export const DocumentBuilderClient = observer(
         <main
           aria-label='Resume editor'
           className={cn(
-            'bg-background hide-scrollbar relative min-h-screen w-full px-3 pb-36 md:px-8 xl:w-1/2 xl:border-r xl:pb-10',
+            'bg-background relative min-h-dvh w-full px-4 pb-8 md:px-8 xl:w-1/2 xl:border-r xl:border-border/60',
             view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
             view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block'
           )}
         >
-          <div className='bg-background/95 supports-[backdrop-filter]:bg-background/85 sticky top-0 z-40 -mx-3 border-b backdrop-blur md:-mx-8'>
-            <div className='mx-auto flex max-w-2xl items-center justify-between gap-2 px-3 py-2.5 md:gap-3 md:px-0 md:py-3'>
+          <div className='bg-background/95 sticky top-0 z-40 -mx-4 border-b border-border/60 backdrop-blur-sm md:-mx-8'>
+            <div className='mx-auto grid max-w-2xl grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-1.5 px-3 py-2.5 md:gap-3 md:px-0 md:py-3 xl:grid-cols-[auto_minmax(0,1fr)_auto]'>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
@@ -71,6 +72,7 @@ export const DocumentBuilderClient = observer(
                 <TooltipContent side='bottom'>Back to documents</TooltipContent>
               </Tooltip>
               <DocumentBuilderHeader />
+              <DocumentBuilderViewToggle />
               <DocumentBuilderSettingsWidget />
             </div>
             <DocumentSectionNavigation />
@@ -80,7 +82,7 @@ export const DocumentBuilderClient = observer(
             <ImproveResumeWidget />
           </div>
 
-          <div className='mx-auto mt-6 grid max-w-2xl gap-7 pb-10 md:mt-8 md:gap-8'>
+          <div className='mx-auto mt-4 grid max-w-2xl gap-8 pb-10 md:mt-6 md:gap-10'>
             <DocumentSections />
             <AddSectionWidget />
           </div>

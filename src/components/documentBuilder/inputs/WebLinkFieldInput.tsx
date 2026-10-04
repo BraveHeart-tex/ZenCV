@@ -8,6 +8,7 @@ import type { FieldId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { cn } from '@/lib/utils/stringUtils';
 import { normalizeWebUrl } from '@/lib/utils/urlUtils';
+import { builderInputClassNames } from './builderInput.constants';
 
 export const WebLinkFieldInput = observer(
   ({ fieldId }: { fieldId: FieldId }) => {
@@ -77,6 +78,7 @@ export const WebLinkFieldInput = observer(
           data-lpignore='true'
           data-protonpass-ignore='true'
           data-bwignore='true'
+          className={builderInputClassNames}
         />
         {hasError ? (
           <p id={errorId} className='text-destructive text-sm' role='alert'>

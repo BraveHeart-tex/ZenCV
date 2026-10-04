@@ -18,12 +18,12 @@ export const ImproveResumeWidget = observer(() => {
     <Collapsible
       open={open}
       onOpenChange={setOpen}
-      className='border-border/70 bg-muted/20 w-full rounded-lg border shadow-xs'
+      className='w-full border-y border-border/60'
     >
       <CollapsibleTrigger asChild>
         <Button
           variant='ghost'
-          className='hover:bg-muted/60 h-11 w-full justify-start px-3'
+          className='hover:bg-muted/50 h-11 w-full justify-start px-1'
         >
           <LightbulbIcon aria-hidden='true' className='text-muted-foreground' />
           <span className='font-medium'>Resume checks</span>

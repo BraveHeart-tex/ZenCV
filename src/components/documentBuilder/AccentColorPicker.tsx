@@ -36,7 +36,13 @@ export const AccentColorPicker = observer(() => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant='outline' size='sm' className='gap-2 h-9'>
+        <Button
+          aria-label='Change accent color'
+          title='Accent color'
+          variant='outline'
+          size='sm'
+          className='gap-2 h-9'
+        >
           <span
             className='w-3.5 h-3.5 rounded-full border border-border/40 shrink-0'
             style={{ backgroundColor: currentColor }}

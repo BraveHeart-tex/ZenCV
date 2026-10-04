@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { DocumentBuilderSelectInput } from '@/components/documentBuilder/DocumentBuilderSelectInput';
 import { FieldPersistenceError } from '@/components/documentBuilder/FieldPersistenceError';
 import { BuilderRichTextEditorInput } from '@/components/documentBuilder/inputs/BuilderRichTextEditorInput';
+import { builderInputClassNames } from '@/components/documentBuilder/inputs/builderInput.constants';
 import { DateFieldInput } from '@/components/documentBuilder/inputs/DateFieldInput';
 import { WebLinkFieldInput } from '@/components/documentBuilder/inputs/WebLinkFieldInput';
 import { Input } from '@/components/ui/input';
@@ -73,6 +74,7 @@ export const SectionField = observer((props: SectionFieldProps) => {
             }
             value={field.value}
             onChange={handleInputChange}
+            className={builderInputClassNames}
             placeholder={field.definition.placeholder}
             data-1p-ignore='true'
             data-lpignore='true'
@@ -129,6 +131,7 @@ export const SectionField = observer((props: SectionFieldProps) => {
             }
             value={field.value}
             onChange={handleInputChange}
+            className={builderInputClassNames}
             placeholder={field.definition.placeholder}
             data-1p-ignore='true'
             data-lpignore='true'

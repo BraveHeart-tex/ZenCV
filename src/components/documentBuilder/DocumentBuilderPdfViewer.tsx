@@ -199,7 +199,7 @@ export const DocumentBuilderPdfViewer = observer(
                 renderTextLayer={renderTextLayer}
                 width={pdfDimensions.pdfWidth * zoom}
                 loading={null}
-                className='border shadow-sm'
+                className='border-border/50 shadow-editorial'
               />
             </Document>
           </div>
@@ -241,7 +241,7 @@ export const DocumentBuilderPdfViewer = observer(
                 pageNumber={currentPage}
                 width={pdfDimensions.pdfWidth * zoom}
                 loading={null}
-                className='border shadow-sm'
+                className='border-border/50 shadow-editorial'
                 onRenderSuccess={() => {
                   pdfViewerStore.setPreviousRenderValue(render.value as string);
                 }}

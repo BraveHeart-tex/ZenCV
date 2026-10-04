@@ -1,5 +1,6 @@
 import { observer } from 'mobx-react-lite';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
+import { cn } from '@/lib/utils/stringUtils';
 
 export const DocumentSaveStatus = observer(() => {
   const document = builderSession.document;
@@ -11,7 +12,13 @@ export const DocumentSaveStatus = observer(() => {
   );
   return (
     <div className='flex max-w-full flex-wrap items-center justify-center gap-x-2 text-xs leading-5'>
-      <output aria-live='polite' className='text-muted-foreground'>
+      <output
+        aria-live='polite'
+        className={cn(
+          'text-muted-foreground',
+          document.saveState === 'failed' && 'text-destructive'
+        )}
+      >
         {document.saveState === 'saving'
           ? 'Saving in this browser...'
           : document.saveState === 'failed'

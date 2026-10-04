@@ -72,8 +72,7 @@ const ContainerElement = ({
   return (
     <div
       className={cn(
-        'p-4 pt-0 px-0 grid grid-cols-2 gap-4',
-        responsiveLayout && 'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6'
+        'grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5 border-t border-border/50 py-4 first:border-t-0 first:pt-0'
       )}
     >
       {content}
