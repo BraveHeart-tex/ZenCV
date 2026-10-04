@@ -1,5 +1,12 @@
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { SectionId } from '@/lib/builderDocument/builderDocument';
 import { builderSession } from '@/lib/stores/documentBuilder/builderSession';
 import { BUILDER_CURRENT_VIEWS } from '@/lib/stores/documentBuilder/builderUIStore';
@@ -85,20 +92,24 @@ export const DocumentSectionNavigation = observer(() => {
         >
           Section
         </label>
-        <select
-          id='editor-section-select'
-          value={ui.activeSectionId ?? sections[0]?.id ?? ''}
-          onChange={(event) =>
-            goToSection(Number(event.target.value) as SectionId)
-          }
-          className='border-border bg-card text-foreground focus-visible:ring-ring/40 h-10 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-hidden focus-visible:ring-2 pointer-coarse:min-h-11'
+        <Select
+          value={String(ui.activeSectionId ?? sections[0]?.id ?? '')}
+          onValueChange={(value) => goToSection(Number(value) as SectionId)}
         >
-          {sections.map((section) => (
-            <option key={section.id} value={section.id}>
-              {section.title}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger
+            id='editor-section-select'
+            className='h-10 min-w-0 flex-1'
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {sections.map((section) => (
+              <SelectItem key={section.id} value={String(section.id)}>
+                {section.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <div className='hide-scrollbar hidden gap-1 overflow-x-auto xl:flex xl:flex-nowrap'>
         {sections.map((section) => (

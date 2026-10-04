@@ -24,6 +24,10 @@ Read only what the task needs:
 - Production dependencies must be exact-pinned; ask before adding one.
 - File names: components `PascalCase.tsx`; helpers `camelCase.ts`; constants `camelCase.constants.ts`; types `camelCase.types.ts`; PDF styles `[template].styles.ts`.
 
+## UI Controls
+
+- Prefer the project's styled Radix UI primitives for interactive controls. Do not use native browser controls when a matching styled primitive exists.
+
 ## Gotchas
 
 - `vite.config.ts` owns manual chunking; preserve lazy boundaries for heavy editor/PDF/AI code.
