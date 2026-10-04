@@ -1,40 +1,51 @@
 import { Sliders, SunMoon, Trash2, Upload } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DataImportExport } from '@/components/appHome/settings/DataImportExport';
 import { EditorPreferences } from '@/components/appHome/settings/EditorPreferences';
 import { GeneralSettings } from '@/components/appHome/settings/GeneralSettings';
 import { SettingsDangerZone } from '@/components/appHome/settings/SettingsDangerZone';
+import { cn } from '@/lib/utils/stringUtils';
 
 const settingsNavigationItems = [
   {
+    id: 'appearance',
     href: '#appearance',
     label: 'Appearance',
-    compactLabel: 'Appearance',
     icon: SunMoon,
   },
   {
+    id: 'editing',
     href: '#editing',
     label: 'Editing',
-    compactLabel: 'Editing',
     icon: Sliders,
   },
   {
+    id: 'data',
     href: '#data',
-    label: 'Backups & transfer',
-    compactLabel: 'Backups',
+    label: 'Backups and transfer',
     icon: Upload,
   },
   {
+    id: 'reset',
     href: '#reset',
-    label: 'Reset data',
-    compactLabel: 'Reset',
+    label: 'Reset local data',
     icon: Trash2,
   },
 ] as const;
 
+type SettingsSectionId = (typeof settingsNavigationItems)[number]['id'];
+
+const ACTIVE_SECTION_OFFSET = 220;
+
 export function SettingsPage() {
   const { hash } = useLocation();
+  const [activeSectionId, setActiveSectionId] = useState<SettingsSectionId>(
+    () =>
+      settingsNavigationItems.find((item) => item.href === hash)?.id ??
+      settingsNavigationItems[0].id
+  );
+
   useEffect(() => {
     if (hash === '#data') {
       const section = document.getElementById('data');
@@ -42,6 +53,46 @@ export function SettingsPage() {
       section?.focus({ preventScroll: true });
     }
   }, [hash]);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      let nextActiveSectionId: SettingsSectionId =
+        settingsNavigationItems[0].id;
+
+      for (const item of settingsNavigationItems) {
+        const section = document.getElementById(item.id);
+        if (
+          section &&
+          section.getBoundingClientRect().top <= ACTIVE_SECTION_OFFSET
+        ) {
+          nextActiveSectionId = item.id;
+        }
+      }
+
+      const isAtPageEnd =
+        window.scrollY > 0 &&
+        window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 2;
+
+      const lastSection =
+        settingsNavigationItems[settingsNavigationItems.length - 1];
+      if (isAtPageEnd && lastSection) {
+        nextActiveSectionId = lastSection.id;
+      }
+
+      setActiveSectionId(nextActiveSectionId);
+    };
+
+    updateActiveSection();
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
+  }, []);
+
   return (
     <div className='ml-0 mr-auto w-full max-w-5xl'>
       <p className='mb-7 max-w-[38rem] border-b border-border/70 pb-6 text-sm leading-6 text-muted-foreground'>
@@ -49,7 +100,10 @@ export function SettingsPage() {
         automatically.
       </p>
       <div className='grid min-w-0 grid-cols-1 gap-6 xl:grid-cols-[11rem_minmax(0,42rem)] xl:gap-14'>
-        <SettingsNavigation />
+        <SettingsNavigation
+          activeSectionId={activeSectionId}
+          onSectionSelect={setActiveSectionId}
+        />
         <div className='min-w-0 w-full max-w-[42rem] [&>section+section]:border-t [&>section+section]:border-border/70 [&>section]:scroll-mt-24 [&>section]:py-8 [&>section:first-child]:pt-0 [&>section:last-child]:border-t-destructive/30'>
           <GeneralSettings sectionId='appearance' />
           <EditorPreferences sectionId='editing' />
@@ -61,27 +115,43 @@ export function SettingsPage() {
   );
 }
 
-const SettingsNavigation = () => (
+const SettingsNavigation = ({
+  activeSectionId,
+  onSectionSelect,
+}: {
+  activeSectionId: SettingsSectionId;
+  onSectionSelect: (sectionId: SettingsSectionId) => void;
+}) => (
   <nav
     aria-label='Settings sections'
-    className='flex min-w-0 gap-1 overflow-x-auto border-y border-border/70 xl:sticky xl:top-24 xl:flex-col xl:gap-0 xl:self-start xl:overflow-visible xl:border-y-0 xl:border-t'
+    className='flex min-w-0 flex-wrap gap-1 border-y border-border/70 xl:sticky xl:top-24 xl:flex-nowrap xl:flex-col xl:gap-1 xl:self-start xl:border-y-0'
   >
-    {settingsNavigationItems.map(
-      ({ href, label, compactLabel, icon: Icon }) => (
+    {settingsNavigationItems.map(({ id, href, label, icon: Icon }) => {
+      const isActive = id === activeSectionId;
+
+      return (
         <a
           key={href}
           href={href}
-          className='inline-flex min-h-11 min-w-max items-center gap-2 border-b-2 border-transparent px-2 text-sm font-medium text-muted-foreground transition-colors duration-[var(--duration-quick)] hover:bg-muted/50 hover:text-foreground focus-visible:text-foreground xl:min-h-12 xl:w-full xl:gap-2.5 xl:border-b xl:px-0 xl:py-3 xl:hover:bg-transparent motion-reduce:transition-none'
+          onClick={() => onSectionSelect(id)}
+          aria-current={isActive ? 'location' : undefined}
+          className={cn(
+            'inline-flex min-h-11 min-w-max items-center gap-2 border-b-2 border-transparent px-2 text-sm font-medium text-muted-foreground transition-colors duration-[var(--duration-quick)] hover:bg-muted/50 hover:text-foreground focus-visible:text-foreground xl:min-h-12 xl:w-full xl:gap-2.5 xl:rounded-md xl:border-b-2 xl:border-l-0 xl:px-3 xl:py-3 xl:hover:bg-muted/40 motion-reduce:transition-none',
+            isActive &&
+              'border-b-editorial-accent bg-muted/40 text-foreground xl:border-b-editorial-accent xl:bg-muted/50'
+          )}
         >
           <Icon
             aria-hidden='true'
-            className='hidden size-4 shrink-0 sm:inline'
+            className={cn(
+              'hidden size-4 shrink-0 sm:inline',
+              isActive && 'text-editorial-accent'
+            )}
             strokeWidth={1.75}
           />
-          <span className='xl:hidden'>{compactLabel}</span>
-          <span className='hidden xl:inline'>{label}</span>
+          <span>{label}</span>
         </a>
-      )
-    )}
+      );
+    })}
   </nav>
 );

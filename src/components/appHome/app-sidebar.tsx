@@ -98,13 +98,15 @@ export const AppSidebar = () => {
           </SidebarGroup>
         </nav>
       </SidebarContent>
-      <SidebarFooter className='border-t border-sidebar-border/70 px-3 py-3 group-data-[collapsible=icon]:px-2'>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <AppColorModeToggle shouldShowSidebarButton />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
+      {pathname !== '/settings' && (
+        <SidebarFooter className='border-t border-sidebar-border/70 px-3 py-3 group-data-[collapsible=icon]:px-2'>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <AppColorModeToggle shouldShowSidebarButton />
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 };

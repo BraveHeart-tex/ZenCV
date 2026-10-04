@@ -102,15 +102,14 @@ export const DataImportExport = () => {
     <section id='data' tabIndex={-1} className='space-y-5'>
       <SettingsSectionHeader
         title='Backups and transfer'
-        description='Download all resumes and editing preferences as a JSON file, or restore them in this browser.'
+        description='Download a backup to move your resumes and editing preferences to another browser, or restore a backup in this browser.'
       />
       <div className='divide-y divide-border/60 border-y border-border/60'>
         <div className='flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6'>
           <div className='space-y-1'>
             <p className='text-sm font-medium'>Download backup</p>
             <p className='text-sm text-muted-foreground'>
-              Creates one JSON file with all resumes and editing preferences in
-              this browser.
+              Saves a JSON backup file to your device.
             </p>
           </div>
           <Button
