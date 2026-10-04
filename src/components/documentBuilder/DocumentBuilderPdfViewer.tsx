@@ -1,5 +1,12 @@
 import { type DocumentProps, pdf } from '@react-pdf/renderer';
-import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  type TransitionEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { pdfViewerStore } from '@/lib/stores/pdfViewerStore';
 import 'react-pdf/dist/Page/TextLayer.css';
@@ -36,6 +43,7 @@ export const DocumentBuilderPdfViewer = observer(
     });
     const [renderVersion, setRenderVersion] = useState(0);
     const [renderError, setRenderError] = useState(false);
+    const [renderedValue, setRenderedValue] = useState<string | null>(null);
 
     useEffect(() => {
       if (!containerRef.current) {
@@ -136,8 +144,39 @@ export const DocumentBuilderPdfViewer = observer(
     const isLatestValueRendered = previousRenderValue === render.value;
     const isBusy = render.loading || !isLatestValueRendered;
 
-    const shouldShowLoader = isFirstRendering && isBusy;
-    const shouldShowPreviousDocument = !isFirstRendering && isBusy;
+    const shouldShowLoader =
+      isFirstRendering && isBusy && renderedValue !== render.value;
+
+    const renderValues = Array.from(
+      new Set(
+        [previousRenderValue, renderedValue, render.value].filter(
+          (value): value is string => value !== null && value !== undefined
+        )
+      )
+    );
+
+    const handlePageRenderSuccess = (value: string) => {
+      setRenderedValue(value);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        pdfViewerStore.setPreviousRenderValue(value);
+      }
+    };
+
+    const handleRenderTransitionEnd = (
+      event: TransitionEvent<HTMLDivElement>,
+      value: string
+    ) => {
+      if (
+        event.target !== event.currentTarget ||
+        event.propertyName !== 'opacity' ||
+        renderedValue !== value ||
+        previousRenderValue === value
+      ) {
+        return;
+      }
+
+      pdfViewerStore.setPreviousRenderValue(value);
+    };
 
     return (
       <section
@@ -166,89 +205,61 @@ export const DocumentBuilderPdfViewer = observer(
             </div>
           </div>
         ) : null}
-        {previousRenderValue && shouldShowPreviousDocument ? (
-          <div
-            className='absolute top-0 left-0'
-            style={{
-              width:
-                zoom === 1
-                  ? '100%'
-                  : Math.max(
-                      containerDimensions.width,
-                      pdfDimensions.pdfWidth * zoom
-                    ),
-              height:
-                zoom === 1
-                  ? '100%'
-                  : Math.max(
-                      containerDimensions.height,
-                      pdfDimensions.pdfHeight * zoom
-                    ),
-            }}
-          >
-            <Document
-              key={previousRenderValue}
-              className='previous-document flex h-full w-full items-center justify-center opacity-50 transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
-              file={previousRenderValue}
-              loading={null}
-            >
-              <Page
-                key={currentPage}
-                pageNumber={currentPage}
-                renderAnnotationLayer={renderAnnotationLayer}
-                renderTextLayer={renderTextLayer}
-                width={pdfDimensions.pdfWidth * zoom}
-                loading={null}
-                className='border-border/50 shadow-editorial'
-              />
-            </Document>
-          </div>
-        ) : null}
+        {renderValues.map((value) => {
+          const isActiveRender = value === previousRenderValue;
+          const isRenderedCandidate =
+            !isActiveRender && renderedValue === value;
 
-        {render.value && !render.loading && (
-          <div
-            className='absolute top-0 left-0'
-            style={{
-              width:
-                zoom === 1
-                  ? '100%'
-                  : Math.max(
-                      containerDimensions.width,
-                      pdfDimensions.pdfWidth * zoom
-                    ),
-              height:
-                zoom === 1
-                  ? '100%'
-                  : Math.max(
-                      containerDimensions.height,
-                      pdfDimensions.pdfHeight * zoom
-                    ),
-            }}
-          >
-            <Document
-              key={render.value}
-              className={
-                'flex h-full w-full items-center justify-center transition-opacity duration-200 ease-(--ease-out-quart) motion-reduce:transition-none'
+          return (
+            <div
+              key={value}
+              className={`absolute top-0 left-0 ${
+                isActiveRender ? 'previous-document' : 'rendering-document'
+              }${isRenderedCandidate ? ' rendered' : ''}`}
+              onTransitionEnd={(event) =>
+                handleRenderTransitionEnd(event, value)
               }
-              file={render.value}
-              loading={null}
-              onLoadSuccess={onDocumentLoad}
+              style={{
+                width:
+                  zoom === 1
+                    ? '100%'
+                    : Math.max(
+                        containerDimensions.width,
+                        pdfDimensions.pdfWidth * zoom
+                      ),
+                height:
+                  zoom === 1
+                    ? '100%'
+                    : Math.max(
+                        containerDimensions.height,
+                        pdfDimensions.pdfHeight * zoom
+                      ),
+              }}
             >
-              <Page
-                key={currentPage}
-                renderAnnotationLayer={renderAnnotationLayer}
-                renderTextLayer={renderTextLayer}
-                pageNumber={currentPage}
-                width={pdfDimensions.pdfWidth * zoom}
+              <Document
+                className='flex h-full w-full items-center justify-center'
+                file={value}
                 loading={null}
-                className='border-border/50 shadow-editorial'
-                onRenderSuccess={() => {
-                  pdfViewerStore.setPreviousRenderValue(render.value as string);
-                }}
-              />
-            </Document>
-          </div>
-        )}
+                onLoadSuccess={onDocumentLoad}
+              >
+                <Page
+                  key={currentPage}
+                  pageNumber={currentPage}
+                  renderAnnotationLayer={renderAnnotationLayer}
+                  renderTextLayer={renderTextLayer}
+                  width={pdfDimensions.pdfWidth * zoom}
+                  loading={null}
+                  className='border border-border/50 shadow-sm'
+                  onRenderSuccess={
+                    isActiveRender
+                      ? undefined
+                      : () => handlePageRenderSuccess(value)
+                  }
+                />
+              </Document>
+            </div>
+          );
+        })}
       </section>
     );
   }

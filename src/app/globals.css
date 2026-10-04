@@ -304,30 +304,6 @@
   border-radius: var(--radius) !important;
 }
 
-.previous-document {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 1;
-  z-index: 1;
-  transition: opacity 0.22s var(--ease-out-quart);
-}
-
-.rendering-document {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  z-index: 10;
-  transition: opacity 0.22s var(--ease-out-quart);
-}
-
-.rendered {
-  opacity: 1;
-  z-index: 30;
-  transition: opacity 0.22s var(--ease-out-quart);
-}
-
 .react-pdf__Document {
   display: flex;
   flex-direction: column;
@@ -368,6 +344,14 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .previous-document,
+  .rendering-document,
+  .rendered {
+    transition: none;
+  }
 }
 
 .highlighted-element {
