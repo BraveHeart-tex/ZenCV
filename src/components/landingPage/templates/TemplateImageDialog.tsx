@@ -71,7 +71,7 @@ export const TemplateImageDialog = ({
       </DialogTrigger>
 
       <DialogContent
-        className='flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl flex-col gap-0 overflow-hidden rounded-xl p-0'
+        className='flex max-h-[90dvh] w-[calc(100%-2rem)] max-w-5xl flex-col gap-0 overflow-hidden rounded-md p-0'
         showCloseButton={false}
       >
         <DialogHeader className='shrink-0 border-b px-4 py-3 text-left sm:px-5'>

@@ -93,7 +93,7 @@ export const GalleryPdfViewer = observer(() => {
           loading={null}
           onLoadSuccess={onDocumentLoad}
           className={cn(
-            'transition-opacity duration-500 ease-in-out relative z-20',
+            'relative z-20 transition-opacity duration-500 ease-in-out motion-reduce:transition-none',
             isVisible ? 'opacity-100' : 'opacity-0'
           )}
         >

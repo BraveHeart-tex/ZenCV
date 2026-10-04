@@ -14,7 +14,7 @@ export const DocumentBuilderViewToggle = () => {
   return (
     <Button
       aria-label='Open resume preview'
-      className='h-9 shrink-0 gap-1.5 px-2 text-xs xl:hidden'
+      className='min-h-11 shrink-0 gap-1.5 px-2 text-xs xl:hidden'
       size='sm'
       variant='ghost'
       onClick={action(() => {

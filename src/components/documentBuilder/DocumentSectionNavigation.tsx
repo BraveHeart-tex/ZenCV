@@ -91,7 +91,7 @@ export const DocumentSectionNavigation = observer(() => {
           onChange={(event) =>
             goToSection(Number(event.target.value) as SectionId)
           }
-          className='border-border bg-card text-foreground focus-visible:ring-ring/40 h-10 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-hidden focus-visible:ring-2'
+          className='border-border bg-card text-foreground focus-visible:ring-ring/40 h-10 min-w-0 flex-1 rounded-md border px-3 text-sm focus-visible:outline-hidden focus-visible:ring-2 pointer-coarse:min-h-11'
         >
           {sections.map((section) => (
             <option key={section.id} value={section.id}>
@@ -110,7 +110,7 @@ export const DocumentSectionNavigation = observer(() => {
             }
             onClick={() => goToSection(section.id)}
             className={cn(
-              'min-h-9 shrink-0 rounded-md px-2.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none',
+              'min-h-9 shrink-0 rounded-md px-2.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 pointer-coarse:min-h-11 pointer-coarse:min-w-11 motion-reduce:transition-none',
               ui.activeSectionId === section.id
                 ? 'bg-secondary text-foreground font-medium'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'

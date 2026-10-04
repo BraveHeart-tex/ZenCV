@@ -56,7 +56,6 @@ export const EditorPreferences = observer(
             <Switch
               id='askBeforeDeletingItem'
               aria-describedby='askBeforeDeletingItem-description'
-              className='before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[" "] relative'
               disabled={busy}
               checked={
                 pending.askBeforeDeletingItem ??
@@ -76,7 +75,6 @@ export const EditorPreferences = observer(
             <Switch
               id='askBeforeDeletingSection'
               aria-describedby='askBeforeDeletingSection-description'
-              className='before:absolute before:-inset-x-1 before:-inset-y-3 before:content-[" "] relative'
               disabled={busy}
               checked={
                 pending.askBeforeDeletingSection ??

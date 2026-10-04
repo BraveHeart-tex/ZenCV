@@ -59,9 +59,7 @@ describe('resume creation recovery', () => {
     expect(onError).toHaveBeenCalledWith(
       expect.stringContaining('Your resume was saved')
     );
-    expect(onError).toHaveBeenCalledWith(
-      expect.stringContaining('resume library')
-    );
+    expect(onError).toHaveBeenCalledWith(expect.stringContaining('Documents'));
     expect(onSuccess).not.toHaveBeenCalled();
     expect(mocks.successToast).not.toHaveBeenCalled();
   });

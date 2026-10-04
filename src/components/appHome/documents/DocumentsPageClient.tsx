@@ -212,7 +212,7 @@ const SearchBar = ({
       type='search'
       aria-label='Search resumes'
       placeholder='Search resumes...'
-      className='h-11 rounded-md border-input bg-card/50 pl-10 pr-3 shadow-none placeholder:text-muted-foreground focus-visible:ring-1'
+      className='h-11 rounded-md border-input bg-card/50 pl-10 pr-3 shadow-none placeholder:text-muted-foreground'
       value={value}
       onChange={(event) => onChange(event.target.value)}
     />

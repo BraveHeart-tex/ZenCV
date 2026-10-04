@@ -43,6 +43,7 @@ const PRESENT = 'Present';
 export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
   const field = builderSession.getField(fieldId);
   const htmlInputId = `field-${fieldId}`;
+  const presentSwitchId = `field-${fieldId}-present`;
   const inputRef = useRef<HTMLInputElement>(null);
 
   const month = useMemo(() => {
@@ -92,7 +93,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
               variant='ghost'
               size='xsIcon'
               aria-label='Show date format help'
-              className='h-[14px] hidden lg:inline-flex'
+              className='hidden size-8 lg:inline-flex'
             >
               {isError ? (
                 <CircleAlert className='stroke-destructive' />
@@ -140,7 +141,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
           placeholder={isPresent ? 'Present' : 'e.g. Mar 2023'}
           className={cn(
             builderInputClassNames,
-            'pl-10',
+            'pl-12 md:pl-10',
             isPresent && 'text-muted-foreground italic',
             isError && 'focus-visible:ring-destructive border-destructive/50'
           )}
@@ -151,7 +152,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
               size='icon'
               variant='ghost'
               aria-label={`Open ${field.label} date picker`}
-              className='absolute left-0 top-1/2 -translate-y-1/2 p-1 rounded-md bg-muted text-muted-foreground hover:text-foreground'
+              className='absolute left-0 top-1/2 size-11 -translate-y-1/2 rounded-md bg-muted p-1 text-muted-foreground hover:text-foreground md:size-9'
             >
               <CalendarIcon className='w-4 h-4' />
             </Button>
@@ -162,12 +163,16 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
               <div className='flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/40'>
                 <div className='flex items-center gap-2'>
                   <Switch
+                    id={presentSwitchId}
                     checked={isPresent}
                     onCheckedChange={action(async (checked) => {
                       field.setDebounced(checked ? PRESENT : '');
                     })}
                   />
-                  <Label className='text-sm cursor-pointer'>
+                  <Label
+                    htmlFor={presentSwitchId}
+                    className='cursor-pointer text-sm'
+                  >
                     Currently here
                   </Label>
                 </div>
@@ -191,7 +196,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
                   size='icon'
                   variant='ghost'
                   aria-label='Previous year'
-                  className='h-7 w-7'
+                  className='size-11 md:size-9'
                   disabled={isPresent}
                   onClick={action(async () => {
                     field.setDebounced(`${month} ${year - 1}`);
@@ -206,7 +211,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
                   size='icon'
                   variant='ghost'
                   aria-label='Next year'
-                  className='h-7 w-7'
+                  className='size-11 md:size-9'
                   disabled={isPresent || year >= CURRENT_YEAR}
                   onClick={action(async () => {
                     field.setDebounced(`${month} ${year + 1}`);
@@ -228,7 +233,7 @@ export const DateFieldInput = observer(({ fieldId }: { fieldId: FieldId }) => {
                       key={monthItem}
                       variant={isSelected ? 'default' : 'ghost'}
                       className={cn(
-                        'h-7 text-xs px-0',
+                        'min-h-11 px-0 text-xs md:min-h-9',
                         isFuture && 'opacity-30'
                       )}
                       disabled={isPresent || isFuture}

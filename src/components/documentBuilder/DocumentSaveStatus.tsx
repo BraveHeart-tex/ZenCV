@@ -30,7 +30,7 @@ export const DocumentSaveStatus = observer(() => {
       {failedFields.length > 0 && (
         <button
           type='button'
-          className='text-foreground min-h-8 rounded-sm px-1 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50'
+          className='min-h-11 rounded-sm px-1 text-foreground underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 lg:min-h-8'
           disabled={document.saveState === 'saving'}
           onClick={() => {
             void Promise.all(failedFields.map((field) => field.flush()));

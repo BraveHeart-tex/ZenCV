@@ -32,7 +32,7 @@ export const Header = () => {
             <a
               key={item.label}
               href={item.href}
-              className='rounded-sm text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring motion-reduce:transition-none'
+              className='inline-flex min-h-11 items-center rounded-sm text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring motion-reduce:transition-none'
             >
               {item.label}
             </a>

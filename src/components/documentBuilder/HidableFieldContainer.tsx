@@ -63,7 +63,7 @@ export const HidableFieldContainer = observer(
             </span>
             <ChevronDownIcon
               className={cn(
-                'transition-all duration-300',
+                'transition-all duration-300 motion-reduce:transition-none',
                 !areExtraFieldsHidden && 'rotate-180'
               )}
             />

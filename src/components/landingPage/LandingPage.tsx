@@ -1,4 +1,3 @@
-import { MotionConfig } from 'motion/react';
 import { Features } from '@/components/landingPage/Features';
 import { Footer } from '@/components/landingPage/Footer';
 import { Header } from '@/components/landingPage/Header';
@@ -10,18 +9,16 @@ import { Templates } from './templates/Templates';
 export const LandingPage = () => {
   return (
     <LazyMotionWrapper>
-      <MotionConfig reducedMotion='user'>
-        <div className='min-h-screen bg-background text-foreground'>
-          <Header />
-          <main>
-            <Hero />
-            <Features />
-            <Templates />
-            <Cta />
-          </main>
-          <Footer />
-        </div>
-      </MotionConfig>
+      <div className='min-h-screen bg-background text-foreground'>
+        <Header />
+        <main>
+          <Hero />
+          <Features />
+          <Templates />
+          <Cta />
+        </main>
+        <Footer />
+      </div>
     </LazyMotionWrapper>
   );
 };

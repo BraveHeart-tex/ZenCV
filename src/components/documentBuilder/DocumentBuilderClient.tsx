@@ -50,7 +50,7 @@ export const DocumentBuilderClient = observer(
         <main
           aria-label='Resume editor'
           className={cn(
-            'bg-background relative min-h-dvh w-full px-4 pb-8 md:px-8 xl:w-1/2 xl:border-r xl:border-border/60',
+            'bg-background relative min-h-dvh w-full px-4 pb-[max(2rem,env(safe-area-inset-bottom))] md:px-8 xl:w-1/2 xl:border-r xl:border-border/60',
             view === BUILDER_CURRENT_VIEWS.BUILDER && 'w-full xl:w-1/2',
             view === BUILDER_CURRENT_VIEWS.PREVIEW && 'hidden xl:block'
           )}

@@ -1,4 +1,4 @@
-import { domAnimation, LazyMotion } from 'motion/react';
+import { domAnimation, LazyMotion, MotionConfig } from 'motion/react';
 
 export const LazyMotionWrapper = ({
   children,
@@ -6,8 +6,10 @@ export const LazyMotionWrapper = ({
   children: React.ReactNode;
 }) => {
   return (
-    <LazyMotion features={domAnimation} strict>
-      {children}
-    </LazyMotion>
+    <MotionConfig reducedMotion='user'>
+      <LazyMotion features={domAnimation} strict>
+        {children}
+      </LazyMotion>
+    </MotionConfig>
   );
 };

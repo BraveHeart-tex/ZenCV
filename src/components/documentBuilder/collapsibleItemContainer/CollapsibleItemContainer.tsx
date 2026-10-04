@@ -197,7 +197,7 @@ export const CollapsibleSectionItemContainer = observer(
                       aria-label={`Open actions for ${entryLabel}`}
                       className='flex size-11 shrink-0 items-center justify-center'
                     >
-                      <EllipsisIcon className='group text-muted-foreground mr-2 transition-all' />
+                      <EllipsisIcon className='group mr-2 text-muted-foreground transition-all motion-reduce:transition-none' />
                     </PopoverTrigger>
                     <PopoverContent className='p-0'>
                       <div className='flex flex-col'>
@@ -234,11 +234,11 @@ export const CollapsibleSectionItemContainer = observer(
                     tabIndex={-1}
                     onClick={() => builderSession.UIStore.toggleItem(itemId)}
                     className={cn(
-                      'mr-2 group-hover:text-primary text-muted-foreground transition-all',
+                      'mr-2 text-muted-foreground transition-all motion-reduce:transition-none group-hover:text-primary',
                       open ? '[&_svg]:rotate-180' : '[&_svg]:rotate-0'
                     )}
                   >
-                    <ChevronDownIcon className='transition-transform' />
+                    <ChevronDownIcon className='transition-transform motion-reduce:transition-none' />
                   </Button>
                 )}
               </div>

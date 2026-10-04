@@ -46,7 +46,7 @@ export const EditableDocumentTitle = observer(() => {
             <TooltipTrigger asChild>
               <Button
                 aria-label='Rename resume'
-                className='size-8 shrink-0'
+                className='relative size-8 shrink-0 before:absolute before:-inset-1.5 before:content-[" "]'
                 size='icon'
                 variant='ghost'
                 onClick={() => {
