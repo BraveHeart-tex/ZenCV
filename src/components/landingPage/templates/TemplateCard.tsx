@@ -12,6 +12,7 @@ interface TemplateCardProps {
   previewSizes?: string;
   headingLevel?: 2 | 3;
   presentation?: 'default' | 'gallery';
+  onCreateResume?: (template: TemplateOptionWithVariants) => void;
 }
 
 export const TemplateCard = ({
@@ -19,6 +20,7 @@ export const TemplateCard = ({
   previewSizes = '300px',
   headingLevel = 3,
   presentation = 'default',
+  onCreateResume,
 }: TemplateCardProps) => {
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const navigate = useNavigate();
@@ -26,6 +28,11 @@ export const TemplateCard = ({
   const isGalleryPresentation = presentation === 'gallery';
 
   const handleUseTemplate = async () => {
+    if (onCreateResume) {
+      onCreateResume(template);
+      return;
+    }
+
     if (isCreating) {
       return;
     }
@@ -59,7 +66,11 @@ export const TemplateCard = ({
             : 'border border-border/70 bg-card'
         )}
       >
-        <TemplateImageDialog template={template} previewSizes={previewSizes} />
+        <TemplateImageDialog
+          template={template}
+          previewSizes={previewSizes}
+          onCreateResume={onCreateResume}
+        />
       </div>
       <div className='flex flex-1 flex-col justify-between gap-3 pt-4'>
         <div>

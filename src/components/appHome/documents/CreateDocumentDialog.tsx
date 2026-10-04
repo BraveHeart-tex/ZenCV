@@ -3,23 +3,49 @@ import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ResponsiveDialog } from '@/components/ui/ResponsiveDialog';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 import { cn } from '@/lib/utils/stringUtils';
 import { CreateDocumentForm } from './CreateDocumentForm';
 
 interface CreateDocumentDialogProps {
-  triggerVariant?: 'default' | 'sidebar' | 'icon' | 'card';
+  triggerVariant?: 'default' | 'sidebar' | 'icon' | 'card' | 'none';
   triggerClassName?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialTemplate?: ResumeTemplate;
 }
 
 export const CreateDocumentDialog = ({
   triggerVariant = 'default',
   triggerClassName,
+  open: controlledOpen,
+  onOpenChange,
+  initialTemplate,
 }: CreateDocumentDialogProps) => {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const formId = useId();
+  const open = controlledOpen ?? uncontrolledOpen;
 
-  const renderTrigger = () => {
+  const setOpen = (nextOpen: boolean) => {
+    if (controlledOpen === undefined) {
+      setUncontrolledOpen(nextOpen);
+    }
+
+    onOpenChange?.(nextOpen);
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!isCreating) {
+      setOpen(nextOpen);
+    }
+  };
+
+  const renderTrigger = (): React.ReactNode => {
+    if (triggerVariant === 'none') {
+      return null;
+    }
+
     if (triggerVariant === 'default') {
       return (
         <Button
@@ -76,6 +102,8 @@ export const CreateDocumentDialog = ({
         </Button>
       );
     }
+
+    return null;
   };
 
   return (
@@ -84,11 +112,7 @@ export const CreateDocumentDialog = ({
       description='Give your resume a title, pick a template, and optionally start with sample data.'
       trigger={renderTrigger()}
       open={open}
-      onOpenChange={(nextOpen) => {
-        if (!isCreating) {
-          setOpen(nextOpen);
-        }
-      }}
+      onOpenChange={handleOpenChange}
       autoFocus
       footer={
         <div className='flex w-full items-center justify-end gap-2'>
@@ -96,7 +120,7 @@ export const CreateDocumentDialog = ({
             type='button'
             variant='outline'
             className='h-11 md:h-9'
-            onClick={() => setOpen(false)}
+            onClick={() => handleOpenChange(false)}
             disabled={isCreating}
           >
             Cancel
@@ -114,9 +138,11 @@ export const CreateDocumentDialog = ({
       }
     >
       <CreateDocumentForm
-        setOpen={setOpen}
+        isOpen={open}
+        onSuccessClose={() => setOpen(false)}
         formId={formId}
         onSubmittingChange={setIsCreating}
+        initialTemplate={initialTemplate}
       />
     </ResponsiveDialog>
   );

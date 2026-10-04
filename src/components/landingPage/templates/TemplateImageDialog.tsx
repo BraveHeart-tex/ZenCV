@@ -17,15 +17,22 @@ import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocum
 export const TemplateImageDialog = ({
   template,
   previewSizes,
+  onCreateResume,
 }: {
   template: TemplateOptionWithVariants;
   previewSizes: string;
+  onCreateResume?: (template: TemplateOptionWithVariants) => void;
 }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
   const handleUseTemplate = async () => {
+    if (onCreateResume) {
+      onCreateResume(template);
+      return;
+    }
+
     if (isCreating) {
       return;
     }

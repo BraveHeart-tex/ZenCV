@@ -44,7 +44,7 @@ export const ResponsiveDialog = ({
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
+        {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
         <DialogContent className='max-h-[98%] overflow-hidden px-0 w-full'>
           <DialogHeader className='px-6'>
             <DialogTitle>{title}</DialogTitle>
@@ -63,7 +63,7 @@ export const ResponsiveDialog = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} autoFocus={autoFocus}>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+      {trigger ? <DrawerTrigger asChild>{trigger}</DrawerTrigger> : null}
       <DrawerContent className='max-h-[98%] overflow-clip px-0 w-full'>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>

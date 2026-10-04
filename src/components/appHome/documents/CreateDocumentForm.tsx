@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
@@ -30,11 +31,16 @@ import { createAndNavigateToDocument } from '@/lib/misc/createAndNavigateToDocum
 import { INTERNAL_TEMPLATE_TYPES } from '@/lib/stores/documentBuilder/documentBuilder.constants';
 import { sampleDataOptions } from '@/lib/templates/prefilledTemplates';
 import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
-import type { UseState } from '@/lib/types/utils.types';
 import {
   type CreateDocumentFormData,
   createNewDocumentSchema,
 } from '@/lib/validation/createDocument.schema';
+
+const getDefaultValues = (initialTemplate?: ResumeTemplate) => ({
+  title: '',
+  template: initialTemplate ?? INTERNAL_TEMPLATE_TYPES.MANHATTAN,
+  shouldUseSampleData: false,
+});
 
 function TemplatePreviewPopover({
   templateValue,
@@ -88,25 +94,32 @@ function TemplatePreviewPopover({
 }
 
 interface CreateDocumentFormProps {
-  setOpen: UseState<boolean>;
+  isOpen: boolean;
+  onSuccessClose: () => void;
   formId: string;
   onSubmittingChange: (isSubmitting: boolean) => void;
+  initialTemplate?: ResumeTemplate;
 }
 
 export const CreateDocumentForm = ({
-  setOpen,
+  isOpen,
+  onSuccessClose,
   formId,
   onSubmittingChange,
+  initialTemplate,
 }: CreateDocumentFormProps) => {
   const navigate = useNavigate();
   const form = useForm<CreateDocumentFormData>({
     resolver: zodResolver(createNewDocumentSchema),
-    defaultValues: {
-      title: '',
-      template: INTERNAL_TEMPLATE_TYPES.MANHATTAN,
-      shouldUseSampleData: false,
-    },
+    defaultValues: getDefaultValues(initialTemplate),
   });
+  const { reset } = form;
+
+  useEffect(() => {
+    if (isOpen) {
+      reset(getDefaultValues(initialTemplate));
+    }
+  }, [initialTemplate, isOpen, reset]);
 
   const onSubmit = async (data: CreateDocumentFormData) => {
     const {
@@ -124,8 +137,8 @@ export const CreateDocumentForm = ({
         selectedPrefillStyle: shouldUseSampleData ? selectedPrefillStyle : null,
         onSuccess(documentId) {
           navigate(`/builder/${documentId}`);
-          setOpen(false);
-          form.reset();
+          onSuccessClose();
+          reset(getDefaultValues(initialTemplate));
         },
         onError(message) {
           form.setError('root', { message });

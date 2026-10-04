@@ -1,7 +1,23 @@
-import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
+import { useState } from 'react';
+import { CreateDocumentDialog } from '@/components/appHome/documents/CreateDocumentDialog';
+import {
+  type TemplateOptionWithVariants,
+  templateOptionsWithImages,
+} from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { TemplateCard } from '@/components/landingPage/templates/TemplateCard';
+import type { ResumeTemplate } from '@/lib/types/documentBuilder.types';
 
 export function ResumeTemplatesPage() {
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<
+    ResumeTemplate | undefined
+  >();
+
+  const handleCreateResume = (template: TemplateOptionWithVariants) => {
+    setSelectedTemplate(template.value);
+    setIsCreateDialogOpen(true);
+  };
+
   return (
     <div className='@container min-w-0 flex flex-1 flex-col gap-8'>
       <p className='max-w-[38rem] text-sm leading-6 text-muted-foreground sm:text-base'>
@@ -28,6 +44,7 @@ export function ResumeTemplatesPage() {
             headingLevel={2}
             presentation='gallery'
             previewSizes='(min-width: 1536px) 20vw, (min-width: 1024px) 33vw, (min-width: 360px) 50vw, 100vw'
+            onCreateResume={handleCreateResume}
           />
         ))}
       </section>
@@ -35,6 +52,12 @@ export function ResumeTemplatesPage() {
         Tab to reach each preview and create action. On narrow screens, the
         gallery scrolls each focused template into view.
       </p>
+      <CreateDocumentDialog
+        triggerVariant='none'
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        initialTemplate={selectedTemplate}
+      />
     </div>
   );
 }
