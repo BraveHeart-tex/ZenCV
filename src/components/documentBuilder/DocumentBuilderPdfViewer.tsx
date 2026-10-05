@@ -214,7 +214,9 @@ export const DocumentBuilderPdfViewer = observer(
             <div
               key={value}
               className={`absolute top-0 left-0 ${
-                isActiveRender ? 'previous-document' : 'rendering-document'
+                isActiveRender
+                  ? `previous-document ${isBusy ? 'opacity-50' : 'opacity-100'} transition-opacity duration-(--duration-standard) ease-(--ease-out-quart) motion-reduce:transition-none`
+                  : 'rendering-document'
               }${isRenderedCandidate ? ' rendered' : ''}`}
               onTransitionEnd={(event) =>
                 handleRenderTransitionEnd(event, value)

@@ -10,8 +10,6 @@ import {
 } from 'lucide-react';
 import { action, runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { AnimatePresence } from 'motion/react';
-import * as motion from 'motion/react-m';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useMedia } from 'react-use';
@@ -37,11 +35,6 @@ import { cn, getItemContainerId } from '@/lib/utils/stringUtils';
 import { CollapsibleItemHeader } from './CollapsibleItemHeader';
 import { CollapsibleItemMobileContent } from './CollapsibleItemMobileContent';
 import { getCollapsibleItemContent } from './getCollapsibleItemContent';
-
-const itemContentTransition = {
-  opacity: { duration: 0.14, ease: [0.23, 1, 0.32, 1] },
-  height: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
-};
 
 interface CollapsibleSectionItemContainerProps {
   children: React.ReactNode;
@@ -170,9 +163,7 @@ export const CollapsibleSectionItemContainer = observer(
               </Tooltip>
             </TooltipProvider>
           )}
-          <motion.div
-            className={cn('flex w-full flex-col py-1', open && 'max-h-max')}
-          >
+          <div className={cn('flex w-full flex-col py-1', open && 'max-h-max')}>
             <div className='flex items-center justify-center w-full h-full'>
               <div className='group flex items-center justify-between w-full h-full'>
                 <Button
@@ -244,30 +235,12 @@ export const CollapsibleSectionItemContainer = observer(
                 )}
               </div>
             </div>
-            {!isMobileOrTablet ? (
-              <AnimatePresence initial={false}>
-                {open && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{
-                      height: 'auto',
-                      opacity: 1,
-                      transition: itemContentTransition,
-                    }}
-                    exit={{
-                      height: 0,
-                      opacity: 0,
-                      transition: itemContentTransition,
-                    }}
-                  >
-                    <div className='grid grid-cols-1 gap-x-4 gap-y-5 px-3 pb-5 pt-1 sm:grid-cols-2 sm:px-4'>
-                      {children}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            {!isMobileOrTablet && open ? (
+              <div className='grid grid-cols-1 gap-x-4 gap-y-5 px-3 pb-5 pt-1 sm:grid-cols-2 sm:px-4'>
+                {children}
+              </div>
             ) : null}
-          </motion.div>
+          </div>
           {shouldShowDeleteButton ? (
             <TooltipProvider>
               <Tooltip>

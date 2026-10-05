@@ -62,7 +62,7 @@ export const CreateDocumentDialog = ({
       return (
         <button
           type='button'
-          className='flex min-h-30 w-full min-w-0 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border/70 bg-transparent p-4 text-center transition-all duration-200 hover:border-border hover:bg-muted/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none'
+          className='flex min-h-30 w-full min-w-0 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border/70 bg-transparent p-4 text-center transition-[background-color,border-color,box-shadow] duration-(--duration-quick) ease-(--ease-out-quart) hover:border-border hover:bg-muted/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 motion-reduce:transition-none'
         >
           <div className='rounded-lg border border-border/50 bg-muted/40 p-2'>
             <PlusIcon className='w-4 h-4 text-muted-foreground' />

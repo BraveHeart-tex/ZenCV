@@ -1,12 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence, useReducedMotion } from 'motion/react';
 import * as motion from 'motion/react-m';
-import { useEffect, useState } from 'react';
 import { templateOptionsWithImages } from '@/components/appHome/resumeTemplates/resumeTemplates.constants';
 import { Button } from '@/components/ui/button';
 import {
   Carousel,
-  type CarouselApi,
   CarouselContent,
   CarouselNext,
   CarouselPrevious,
@@ -16,22 +14,13 @@ import { MobileTemplatePickerItem } from './MobileTemplatePickerItem';
 
 export const MobileTemplatePickerContent = observer(() => {
   const isOpen = builderSession.UIStore.isMobileTemplateSelectorVisible;
-  const [api, setApi] = useState<CarouselApi>();
   const prefersReducedMotion = useReducedMotion();
-
-  // scroll to selected template when picker opens
-  useEffect(() => {
-    if (!isOpen || !api) {
-      return;
-    }
-    const selectedIndex = templateOptionsWithImages.findIndex(
+  const selectedIndex = Math.max(
+    templateOptionsWithImages.findIndex(
       (t) => t.value === builderSession.document?.templateType
-    );
-    if (selectedIndex !== -1) {
-      // slight delay to let animation complete
-      setTimeout(() => api.scrollTo(selectedIndex, true), 350);
-    }
-  }, [isOpen, api]);
+    ),
+    0
+  );
 
   return (
     <div className='fixed bottom-0 left-0 right-0 z-50'>
@@ -67,8 +56,11 @@ export const MobileTemplatePickerContent = observer(() => {
 
               <div className='relative'>
                 <Carousel
-                  setApi={setApi}
-                  opts={{ align: 'start', dragFree: true }}
+                  opts={{
+                    align: 'start',
+                    dragFree: true,
+                    startIndex: selectedIndex,
+                  }}
                 >
                   <CarouselContent className='-ml-2'>
                     {templateOptionsWithImages.map((template) => (

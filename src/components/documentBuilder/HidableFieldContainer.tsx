@@ -1,7 +1,5 @@
 import { ChevronDownIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { AnimatePresence } from 'motion/react';
-import * as motion from 'motion/react-m';
 import { useFieldMapper } from '@/hooks/useFieldMapper';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import type { GenericRenderPlan } from '@/lib/builderDocument/createGenericRenderPlan';
@@ -32,22 +30,11 @@ export const HidableFieldContainer = observer(
       >
         {renderFields(plan.primary)}
         <div className='col-span-full'>
-          <AnimatePresence>
-            {areExtraFieldsHidden ? null : (
-              <motion.div
-                className={cn('grid grid-cols-1 gap-6', gridColumns)}
-                initial={{ height: 0 }}
-                animate={{
-                  height: 'auto',
-                  opacity: 1,
-                  transition: { duration: 0.3 },
-                }}
-                exit={{ height: 0, opacity: 0 }}
-              >
-                {renderFields(plan.additional)}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {areExtraFieldsHidden ? null : (
+            <div className={cn('grid grid-cols-1 gap-6', gridColumns)}>
+              {renderFields(plan.additional)}
+            </div>
+          )}
           <Button
             variant='outline'
             className={cn(
@@ -63,7 +50,7 @@ export const HidableFieldContainer = observer(
             </span>
             <ChevronDownIcon
               className={cn(
-                'transition-all duration-300 motion-reduce:transition-none',
+                'transition-transform duration-(--duration-quick) ease-(--ease-out-quart) motion-reduce:transition-none',
                 !areExtraFieldsHidden && 'rotate-180'
               )}
             />

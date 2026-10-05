@@ -18,7 +18,7 @@ export const CollapsibleItemHeader = observer(
         </span>
         <span
           className={cn(
-            'text-xs text-muted-foreground opacity-100 transition-all ease-in whitespace-normal wrap-break-word text-left',
+            'text-xs text-muted-foreground opacity-100 transition-opacity duration-(--duration-quick) ease-(--ease-out-quart) motion-reduce:transition-none whitespace-normal wrap-break-word text-left',
             !description && 'opacity-0'
           )}
         >
