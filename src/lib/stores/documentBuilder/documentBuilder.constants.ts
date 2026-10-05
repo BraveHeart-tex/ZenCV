@@ -38,6 +38,7 @@ export const INTERNAL_TEMPLATE_TYPES = {
   TOKYO: 'tokyo',
   DUBAI: 'dubai',
   SYDNEY: 'sydney',
+  JAKE: 'jake',
 } as const;
 
 export const MAX_PERSONAL_DETAILS_LINKS = 4;

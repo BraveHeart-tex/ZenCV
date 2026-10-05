@@ -92,6 +92,7 @@ Resume template IDs live in `INTERNAL_TEMPLATE_TYPES`:
 - `tokyo`
 - `dubai`
 - `sydney`
+- `jake`
 
 Template option metadata and preview paths live in `src/components/appHome/resumeTemplates/resumeTemplates.constants.tsx`.
 

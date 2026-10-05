@@ -25,10 +25,10 @@ const features = [
   },
   {
     icon: Palette,
-    label: 'Five templates',
+    label: 'Six templates',
     title: 'Choose a layout that fits the role, not the trend.',
     description:
-      'Start from five resume templates, including options with restrained accent-color customization.',
+      'Start from six resume templates, including options with restrained accent-color customization.',
   },
 ];
 

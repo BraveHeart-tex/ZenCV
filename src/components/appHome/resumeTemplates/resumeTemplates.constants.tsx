@@ -18,6 +18,19 @@ export type TemplateOptionWithVariants = {
 
 export const templateOptionsWithImages: TemplateOptionWithVariants[] = [
   {
+    name: "Jake's Template",
+    layoutDescription: 'Single column · compact ruled sections',
+    images: {
+      card: '/templates/jake-400.webp',
+      hover: '/templates/jake-700.webp',
+      modal: '/templates/jake-1000.webp',
+    },
+    description:
+      'A compact black-and-white layout with a centered header, serif typography, and fine rules beneath section headings.',
+    tags: ['Single column', 'Serif type', 'Compact sections'],
+    value: INTERNAL_TEMPLATE_TYPES.JAKE,
+  },
+  {
     name: 'London',
     layoutDescription: 'Single column · section rules',
     images: {

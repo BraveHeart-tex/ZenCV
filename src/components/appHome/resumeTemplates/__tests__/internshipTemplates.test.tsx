@@ -16,6 +16,8 @@ import type {
   InternshipPdfEntry,
   PdfTemplateData,
 } from '@/lib/types/documentBuilder.types';
+import { JakeInternshipsSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 
 const internshipsSection: InternshipSectionSnapshot = {
   id: 30,
@@ -102,6 +104,7 @@ describe.each([
   [DubaiTemplate, DubaiInternshipsSection],
   [LondonTemplate, LondonInternshipsSection],
   [ManhattanTemplate, ManhattanInternshipsSection],
+  [JakeTemplate, JakeInternshipsSection],
   [SydneyTemplate, SydneyInternshipsSection],
   [TokyoTemplate, TokyoInternshipsSection],
 ])('Internship PDF template', (Template, InternshipsSection) => {

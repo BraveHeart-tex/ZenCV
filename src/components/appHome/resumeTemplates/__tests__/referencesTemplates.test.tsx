@@ -13,6 +13,8 @@ import { TokyoReferencesSection } from '@/components/appHome/resumeTemplates/tok
 import { TokyoTemplate } from '@/components/appHome/resumeTemplates/tokyo/TokyoTemplate';
 import type { ReferencesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { JakeReferencesSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 import { getReferencesSectionEntries } from '../resumeTemplates.helpers';
 
 const referencesSection: ReferencesSectionSnapshot = {
@@ -114,6 +116,7 @@ describe.each([
   [DubaiTemplate, DubaiReferencesSection],
   [LondonTemplate, LondonReferencesSection],
   [ManhattanTemplate, ManhattanReferencesSection],
+  [JakeTemplate, JakeReferencesSection],
   [SydneyTemplate, SydneyReferencesSection],
   [TokyoTemplate, TokyoReferencesSection],
 ])('References PDF template', (Template, ReferencesSection) => {

@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { DubaiPersonalDetailsSection } from '../dubai/DubaiPersonalDetailsSection';
 import { DubaiTemplate } from '../dubai/DubaiTemplate';
+import { JakePersonalDetailsSection } from '../jake/JakePersonalDetailsSection';
+import { JakeTemplate } from '../jake/JakeTemplate';
 import { LondonPersonalDetailsSection } from '../london/LondonPersonalDetailsSection';
 import { LondonTemplate } from '../london/LondonTemplate';
 import { ManhattanPersonalDetailsSection } from '../manhattan/ManhattanPersonalDetailsSection';
@@ -57,6 +59,7 @@ describe.each([
   [DubaiTemplate, DubaiPersonalDetailsSection],
   [LondonTemplate, LondonPersonalDetailsSection],
   [ManhattanTemplate, ManhattanPersonalDetailsSection],
+  [JakeTemplate, JakePersonalDetailsSection],
   [SydneyTemplate, SydneyPersonalDetailsSection],
   [TokyoTemplate, TokyoPersonalDetailsSection],
 ])('Personal Details PDF template', (Template, PersonalDetailsSection) => {

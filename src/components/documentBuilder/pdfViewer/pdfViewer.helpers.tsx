@@ -1,5 +1,6 @@
 import { Font } from '@react-pdf/renderer';
 import { DubaiTemplate } from '@/components/appHome/resumeTemplates/dubai/DubaiTemplate';
+import { JakeTemplate } from '@/components/appHome/resumeTemplates/jake/JakeTemplate';
 import { LondonTemplate } from '@/components/appHome/resumeTemplates/london/LondonTemplate';
 import { ManhattanTemplate } from '@/components/appHome/resumeTemplates/manhattan/ManhattanTemplate';
 import { SydneyTemplate } from '@/components/appHome/resumeTemplates/sydney/SydneyTemplate';
@@ -10,6 +11,10 @@ import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 Font.registerHyphenationCallback((word) => [word]);
 
 export const getPdfTemplateByType = (pdfTemplateData: PdfTemplateData) => {
+  if (pdfTemplateData.templateType === INTERNAL_TEMPLATE_TYPES.JAKE) {
+    return <JakeTemplate templateData={pdfTemplateData} />;
+  }
+
   if (pdfTemplateData.templateType === INTERNAL_TEMPLATE_TYPES.MANHATTAN) {
     return <ManhattanTemplate templateData={pdfTemplateData} />;
   }

@@ -13,6 +13,8 @@ import { TokyoEducationSection } from '@/components/appHome/resumeTemplates/toky
 import { TokyoTemplate } from '@/components/appHome/resumeTemplates/tokyo/TokyoTemplate';
 import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { JakeEducationSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 
 const educationSection = {
   id: 20,
@@ -101,6 +103,7 @@ describe.each([
   [DubaiTemplate, DubaiEducationSection],
   [LondonTemplate, LondonEducationSection],
   [ManhattanTemplate, ManhattanEducationSection],
+  [JakeTemplate, JakeEducationSection],
   [SydneyTemplate, SydneyEducationSection],
   [TokyoTemplate, TokyoEducationSection],
 ])('Education PDF template', (Template, EducationSection) => {

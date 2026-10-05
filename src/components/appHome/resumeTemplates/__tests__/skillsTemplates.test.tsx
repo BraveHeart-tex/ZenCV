@@ -4,6 +4,8 @@ import type { SkillsSectionSnapshot } from '@/lib/builderDocument/resumeDocument
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { DubaiSkillsSection } from '../dubai/DubaiSkillsSection';
 import { DubaiTemplate } from '../dubai/DubaiTemplate';
+import { JakeSkillsSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 import { LondonSkillsSection } from '../london/LondonSkillsSection';
 import { LondonTemplate } from '../london/LondonTemplate';
 import { ManhattanSkillsSection } from '../manhattan/ManhattanSkillsSection';
@@ -87,6 +89,7 @@ describe.each([
   [DubaiTemplate, DubaiSkillsSection, false],
   [LondonTemplate, LondonSkillsSection, true],
   [ManhattanTemplate, ManhattanSkillsSection, true],
+  [JakeTemplate, JakeSkillsSection, true],
   [SydneyTemplate, SydneySkillsSection, true],
   [TokyoTemplate, TokyoSkillsSection, false],
 ] as const)('Skills PDF template', (Template, SkillsSection, supportsCommas) => {

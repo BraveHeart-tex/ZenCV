@@ -85,12 +85,12 @@ export const Templates = () => {
         <LandingSectionIntro
           titleId='templates-title'
           title='Pick your style.'
-          description='Five polished layouts for different roles, levels, and personal taste.'
+          description='Six polished layouts for different roles, levels, and personal taste.'
         />
 
         <div className='mb-5 mt-8 flex items-center justify-between gap-4 sm:mb-6 sm:mt-10'>
           <p className='text-sm text-muted-foreground'>
-            Swipe or scroll to explore all five layouts.
+            Swipe or scroll to explore all six layouts.
           </p>
           <div className='flex shrink-0 items-center gap-2'>
             <Button
@@ -118,7 +118,7 @@ export const Templates = () => {
 
         <section
           ref={railRef}
-          aria-label='Five resume templates'
+          aria-label='Six resume templates'
           aria-roledescription='carousel'
           className='-mx-[var(--page-gutter)] snap-x snap-mandatory overflow-x-auto overscroll-x-contain px-[var(--page-gutter)] pb-3 pt-1'
         >

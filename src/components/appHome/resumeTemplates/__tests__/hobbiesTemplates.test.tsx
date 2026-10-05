@@ -13,6 +13,8 @@ import { TokyoHobbiesSection } from '@/components/appHome/resumeTemplates/tokyo/
 import { TokyoTemplate } from '@/components/appHome/resumeTemplates/tokyo/TokyoTemplate';
 import type { HobbiesSectionSnapshot } from '@/lib/builderDocument/resumeDocumentSnapshot';
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
+import { JakeHobbiesSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 
 const hobbiesSection: HobbiesSectionSnapshot = {
   id: 50,
@@ -69,6 +71,7 @@ describe.each([
   [DubaiTemplate, DubaiHobbiesSection],
   [LondonTemplate, LondonHobbiesSection],
   [ManhattanTemplate, ManhattanHobbiesSection],
+  [JakeTemplate, JakeHobbiesSection],
   [SydneyTemplate, SydneyHobbiesSection],
   [TokyoTemplate, TokyoHobbiesSection],
 ])('Hobbies PDF template', (Template, HobbiesSection) => {

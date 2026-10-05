@@ -5,6 +5,8 @@ import type { CustomSectionSnapshot } from '@/lib/builderDocument/resumeDocument
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { DubaiCustomSection } from '../dubai/DubaiCustomSection';
 import { DubaiTemplate } from '../dubai/DubaiTemplate';
+import { JakeCustomSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 import { LondonCustomSection } from '../london/LondonCustomSection';
 import { LondonTemplate } from '../london/LondonTemplate';
 import { ManhattanCustomSection } from '../manhattan/ManhattanCustomSection';
@@ -109,6 +111,7 @@ describe.each([
   [DubaiTemplate, DubaiCustomSection],
   [LondonTemplate, LondonCustomSection],
   [ManhattanTemplate, ManhattanCustomSection],
+  [JakeTemplate, JakeCustomSection],
   [SydneyTemplate, SydneyCustomSection],
   [TokyoTemplate, TokyoCustomSection],
 ])('Custom PDF template', (Template, CustomSection) => {

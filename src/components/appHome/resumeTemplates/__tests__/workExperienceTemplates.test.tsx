@@ -14,6 +14,8 @@ import type {
   PdfTemplateData,
   WorkExperienceSectionSnapshot,
 } from '@/lib/types/documentBuilder.types';
+import { JakeWorkExperienceSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 
 const workExperienceSection: WorkExperienceSectionSnapshot = {
   id: 10,
@@ -88,6 +90,7 @@ describe.each([
   [DubaiTemplate, DubaiWorkExperienceSection],
   [LondonTemplate, LondonWorkExperienceSection],
   [ManhattanTemplate, ManhattanWorkExperienceSection],
+  [JakeTemplate, JakeWorkExperienceSection],
   [SydneyTemplate, SydneyWorkExperienceSection],
   [TokyoTemplate, TokyoWorkExperienceSection],
 ])('Work Experience PDF template', (Template, WorkExperienceSection) => {

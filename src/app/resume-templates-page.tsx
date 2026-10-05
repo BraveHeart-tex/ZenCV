@@ -21,7 +21,7 @@ export function ResumeTemplatesPage() {
   return (
     <div className='@container min-w-0 flex flex-1 flex-col gap-8'>
       <p className='max-w-[38rem] text-sm leading-6 text-muted-foreground sm:text-base'>
-        Compare five layouts, then create a new resume with your favorite.
+        Compare six layouts, then create a new resume with your favorite.
       </p>
       <section
         aria-describedby='resume-template-gallery-help'

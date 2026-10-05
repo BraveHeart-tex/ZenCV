@@ -4,6 +4,8 @@ import type { ResumeSnapshotSection } from '@/lib/builderDocument/resumeDocument
 import type { PdfTemplateData } from '@/lib/types/documentBuilder.types';
 import { DubaiLanguagesSection } from '../dubai/DubaiLanguagesSection';
 import { DubaiTemplate } from '../dubai/DubaiTemplate';
+import { JakeLanguagesSection, JakeSection } from '../jake/JakeSections';
+import { JakeTemplate } from '../jake/JakeTemplate';
 import { LondonLanguagesSection } from '../london/LondonLanguagesSection';
 import { LondonTemplate } from '../london/LondonTemplate';
 import { ManhattanLanguagesSection } from '../manhattan/ManhattanLanguagesSection';
@@ -82,6 +84,11 @@ const visibleText = (node: ReactNode): string => {
       )
     );
   }
+  if (node.type === JakeSection) {
+    return visibleText(
+      JakeSection(node.props as Parameters<typeof JakeSection>[0])
+    );
+  }
   return visibleText(node.props.children);
 };
 
@@ -89,6 +96,7 @@ describe.each([
   [DubaiTemplate, DubaiLanguagesSection],
   [LondonTemplate, LondonLanguagesSection],
   [ManhattanTemplate, ManhattanLanguagesSection],
+  [JakeTemplate, JakeLanguagesSection],
   [SydneyTemplate, SydneyLanguagesSection],
   [TokyoTemplate, TokyoLanguagesSection],
 ] as const)('Languages PDF template', (Template, LanguagesSection) => {
