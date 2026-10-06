@@ -128,6 +128,9 @@ export const DocumentBuilderPdfViewer = observer(
       }
     }, [renderVersion, children]);
 
+    const latestRenderRef = useRef(render);
+    latestRenderRef.current = render;
+
     useEffect(() => {
       runInAction(() => {
         pdfViewerStore.rendering = render.loading;
@@ -156,6 +159,14 @@ export const DocumentBuilderPdfViewer = observer(
     );
 
     const handlePageRenderSuccess = (value: string) => {
+      // A superseded PDF can finish painting after a newer preview is ready.
+      if (
+        latestRenderRef.current.loading ||
+        latestRenderRef.current.value !== value
+      ) {
+        return;
+      }
+
       setRenderedValue(value);
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         pdfViewerStore.setPreviousRenderValue(value);
@@ -169,6 +180,8 @@ export const DocumentBuilderPdfViewer = observer(
       if (
         event.target !== event.currentTarget ||
         event.propertyName !== 'opacity' ||
+        latestRenderRef.current.loading ||
+        latestRenderRef.current.value !== value ||
         renderedValue !== value ||
         previousRenderValue === value
       ) {
